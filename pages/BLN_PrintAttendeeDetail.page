@@ -1,0 +1,460 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_AttendeeDetailReportCon" readOnly="true">
+<apex:stylesheet value="{!URLFOR($Resource.boothscreen_pdf, 'boothscreen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.landscape_pdf, 'landscape_pdf.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ordersummary-report.css')}"/>
+
+
+
+<apex:stylesheet value="{!URLFOR($Resource.pdfstyles, 'pdfstyles.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.styles_for_report_pring, 'styles_for_report_pring.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.portrait_pdf, 'portrait_pdf.css')}"/>
+
+
+
+  <body>
+  <apex:pageBlock >
+    <apex:stylesheet value="{!URLFOR($Resource.pdfstyles, 'pdfstyles.css')}"/>
+    <html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <style>
+.propimg-box {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+}
+.propimg-box .propimg {
+    width: 50px;
+    height: auto;
+}
+td{width:auto;}
+</style>
+    </head>
+    <!--header-->
+    
+    <div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+      <h3>Attendee Detail Report</h3>
+      <div style="width:100%; background-color:#ddd;">
+        <c:EventDetails BLN_EventDetails="{!eventInfo}"></c:EventDetails>
+      </div>
+      
+      <div id="TableInfo"> 
+      <table width="200%" cellspacing="0" cellpadding="0">
+        <thead>
+        <tr>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cPrefix__c'),'','none')};">Prefix</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cFirst_Name__c'),'','none')};">First Name</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cLast_Name__c'),'','none')};">Last Name</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSuffix__c'),'','none')};">Suffix</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cEmail__c'),'','none')};">Email Id</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company__cName'),'','none')};">Company</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cTitle__c'),'','none')};">Designation</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cPhone__c'),'','none')};">Mobile Number
+            <h1 style="width: 80px"></h1>
+          </th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork_Phone__c'),'','none')};">Work Phone Number
+            <h1 style="width: 80px"></h1>
+          </th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cHome_Phone__c'),'','none')};">Home Phone Number
+            <h1 style="width: 80px"></h1>
+          </th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cAge__c'),'','none')};">Age</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cGender__c'),'','none')};">Gender</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cDOB__c'),'','none')};">DOB</th>
+          
+          <th class="tableHeader">Ticket Type</th>
+          <th class="tableHeader">Ticket Name</th>
+          <th class="tableHeader">Badge Label</th>
+          <th class="tableHeader">Seat No</th>
+          <th class="tableHeader">Badge Status</th>
+          <th class="tableHeader">Checkin Status</th>
+          <th class="tableHeader">Pay Type</th>
+          <th class="tableHeader">Buyer Name</th>
+          <th class="tableHeader">Tag</th>
+          <th class="tableHeader">Order Id</th>
+          <th class="tableHeader">Ticket Id</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cPrimary_Business_Category__c'),'','none')};">Primary Business Category</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cSecondary_Business_Category__c'),'','none')};">Secondary Business Category</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cEstablished_Date__c'),'','none')};">Business Established Date</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cDuns_Number__c'),'','none')};">Business Duns Number</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cRevenue__c'),'','none')};">Business Revenue</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cNumber_Of_Employees__c'),'','none')};">No. Of Employees</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cTax_Id__c'),'','none')};">Business Tax Id</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company__cWebsite_URL__c'),'','none')};">Website URL</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cBlog_URL__c'),'','none')};">Blog URL</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company__cDescription__c'),'','none')};">Business Description</th>
+          
+          <!-- work address -->
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};">Business Address1</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};">Business Address2</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};">Business City</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};">Business State</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};">Business Country</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};">Business Zip Code</th>
+          
+          <!-- Billing address -->
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};">Billing Address1</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};">Billing Address2</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};">Billing City</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};">Billing State</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};">Billing Country</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};">Billing Zip Code</th>
+          
+          <!-- Home address -->
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};">Home Address1</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};">Home Address2</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};">Home City</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};">Home State</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};">Home Country</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};">Home Zip Code</th>
+          
+          <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cNAICS Codes')}">
+            <th class="tableHeader"><p style="padding: 0px 200px; line-height: 0px;">&nbsp;</p>NAICS Codes</th>
+          </apex:outputText>
+          
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cDiversity Type'),'','none')};">
+          <p style="padding: 0px 200px; line-height: 0px;">&nbsp;</p>
+          Diversity Type</th>
+          
+          <!-- speaker info adding -->
+          <!--  <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerAttachment'),'','none')};">
+          <p style="padding: 0px 200px; line-height: 0px;">&nbsp;</p>Attachment</th>
+          
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerImage'),'','none')};">Image</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerFaceBookId'),'','none')};">FaceBookId</th>-->
+          
+          <!--<th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerRole'),'','none')};">
+          <p style="padding: 0px 200px; line-height: 0px;">&nbsp;</p>Role</th>-->
+          
+          <!--  <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerLinkedInId'),'','none')};">LinkedInId</th>
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerTwitterId'),'','none')};">TwitterId</th>-->
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerBlogger'),'','none')};">Blogger</th>
+          
+          <!--  <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cBiography__c'),'','none')};">
+          <p style="padding: 0px 200px; line-height: 0px;">&nbsp;</p>
+          Biography</th>
+          
+          <th class="tableHeader" style="display:{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerVideo'),'','none')};">Video</th> -->
+          
+          <th class="tableHeader">Order Date</th>
+          
+        </tr>
+        </thead>
+        <!-- header --> 
+        
+        <!--table-->
+        
+        <apex:repeat value="{!listOfListTickets}" var="tickets">
+          <apex:repeat value="{!tickets}" var="ticket">
+            <apex:variable value="" var="contentHiding"/>
+            <apex:repeat value="{!ticket.regSetData}" var="r">
+              <apex:variable value="{!(contentHiding+r.Table_Name__c+r.Column_Name__c+',')}" var="contentHiding" rendered="{!r.Included__c==true}"/>
+            </apex:repeat>
+            <apex:repeat value="{!ticket.regSetDataPool}" var="r1">
+              <apex:variable value="{!(contentHiding+r1.Table_Name__c+r1.Column_Name__c+',')}" var="contentHiding" rendered="{!r1.Included__c==true}"/>
+            </apex:repeat>
+            <tbody>
+            <tr  style="page-break-after:auto;">
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cPrefix__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cPrefix__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cPrefix__c')}"> {!ticket.ticketData.tkt_profile__r.Prefix__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cFirst_Name__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cFirst_Name__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cFirst_Name__c')}"> {!ticket.ticketData.tkt_profile__r.First_Name__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cLast_Name__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cLast_Name__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cLast_Name__c')}">  {!ticket.ticketData.tkt_profile__r.Last_Name__c}   </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSuffix__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSuffix__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cSuffix__c')}"> {!ticket.ticketData.tkt_profile__r.Suffix__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cEmail__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cEmail__c'),'','none')};"><p style="padding: 0px 100px; line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'GN_User__cEmail__c')}"> {!ticket.ticketData.tkt_profile__r.Email__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company__cName')}">
+              <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company__cName'),'','none')};"><p style="padding: 0px 80px; line-height: 0px;">&nbsp;</p>
+                <apex:outputText rendered="{!Contains(contentHiding,'Company__cName')}">
+                <apex:outputText value="{!ticket.ticketData.tkt_profile__r.TKT_Company__c}"/>
+                </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cTitle__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cTitle__c'),'','none')};"><p style="padding: 0px 80px; line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'GN_User__cTitle__c')}"> {!ticket.ticketData.tkt_profile__r.TKT_Job_Title__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cPhone__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cPhone__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cPhone__c')}"> {!ticket.ticketData.tkt_profile__r.Mobile__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cWork_Phone__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork_Phone__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cWork_Phone__c')}"> {!ticket.ticketData.tkt_profile__r.Work_Phone__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cHome_Phone__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cHome_Phone__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cHome_Phone__c')}">  {!ticket.ticketData.tkt_profile__r.Home_Phone__c}  </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cAge__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cAge__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cAge__c')}"> {!ticket.ticketData.tkt_profile__r.Age__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cGender__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cGender__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cGender__c')}">  {!ticket.ticketData.tkt_profile__r.Gender__c}  </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cDOB__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cDOB__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cDOB__c')}">
+                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                        <apex:param value="{!ticket.ticketData.tkt_profile__r.DOB__c}" /> 
+                    </apex:outputText>
+                    <!--<c:MFSI_FormatDateTime date_Timevalue="{!ticket.ticketData.Client_GN_User__r.DOB__c}"/>-->
+                  </apex:outputText></td>
+              </apex:outputText>
+              
+              <td class="tableContent">
+              <apex:outputText value="Attendee" rendered="{!(ticket.ticketData.item_type__r.name=='Admissions' || ticket.ticketData.Item_Pool__r.Item_Type__r.name=='Admissions')}"/>
+            <apex:outputText value="{!ticket.ticketData.item_type__r.name}" rendered="{!(ticket.ticketData.item_type__r.name!='Admissions' && ticket.ticketData.item_type__r.name!='Package')}"/>
+            <apex:outputText value="{!ticket.ticketData.Item_Pool__r.Item_Type__r.name}" rendered="{!(ticket.ticketData.Item_Pool__r.Item_Type__r.name!='Admissions' && ticket.ticketData.item_type__r.name=='Package')}"/>
+                
+                <!-- <apex:variable value="" var="type"/>
+                                    <apex:repeat value="{!regsetTickType}" var="r" >
+                                        
+                                        <apex:variable value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Attendee' && ticket.ticketData.Item_Type__r.name!='Package' && ticket.ticketData.Item_Type__r.name=='Admissions' && r.Included__c==true)}" var="type"/>
+                                        <apex:variable value="{!r.Column_Name__c}" rendered="{!(r.Column_Name__c=='Attendee' && ticket.ticketData.Item_Type__r.name!='Package' && ticket.ticketData.Item_Type__r.name=='Admissions' && r.Included__c==false)}" var="type"/>
+                                        
+                                        <apex:variable value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Attendee' && ticket.ticketData.Item_Type__r.name=='Package' &&  ticket.ticketData.Item_Pool__r.Item_Type__r.name=='Admissions' && r.Included__c==true)}" var="type"/>
+                                        <apex:variable value="{!r.Column_Name__c}" rendered="{!(r.Column_Name__c=='Attendee' && ticket.ticketData.Item_Type__r.name=='Package' &&  ticket.ticketData.Item_Pool__r.Item_Type__r.name=='Admissions' && r.Included__c==false)}" var="type"/>
+                                        
+                                        
+                                        <apex:variable value="{!r.Label_Name__c}" rendered="{!(ticket.ticketData.Item_Type__r.name!='Package' && ticket.ticketData.Item_Type__r.name==r.Column_Name__c && r.Included__c==true)}" var="type"/>
+                                        <apex:variable value="{!r.Column_Name__c}" rendered="{!(ticket.ticketData.Item_Type__r.name!='Package' && ticket.ticketData.Item_Type__r.name==r.Column_Name__c && r.Included__c==false)}" var="type"/>
+                                        
+                                        <apex:variable value="{!r.Label_Name__c}" rendered="{!(ticket.ticketData.Item_Type__r.name=='Package' && ticket.ticketData.Item_Pool__r.Item_Type__r.name==r.Column_Name__c && r.Included__c==true)}" var="type"/>
+                                        <apex:variable value="{!r.Column_Name__c}" rendered="{!(ticket.ticketData.Item_Type__r.name=='Package' && ticket.ticketData.Item_Pool__r.Item_Type__r.name==r.Column_Name__c && r.Included__c==false)}" var="type"/>
+                                        
+                                    </apex:repeat>
+                                    {!type}
+                                    
+                                    
+                                    <apex:outputText value="{!ticket.ticketData.Item_Type__r.name}" rendered="{!(ticket.ticketData.Item_Type__r.name!='Package' && ticket.ticketData.Item_Type__r.name!='Admissions' && ticket.ticketData.Item_Type__r.name!='Exhibitor' && ticket.ticketData.Item_Type__r.name!='Speaker' && ticket.ticketData.Item_Type__r.name!='Sponsor')}"/>
+                                    <apex:outputText value="{!ticket.ticketData.Item_Pool__r.Item_Type__r.name}" rendered="{!(ticket.ticketData.Item_Type__r.name=='Package' && ticket.ticketData.Item_Pool__r.Item_Type__r.name!='Admissions' && ticket.ticketData.Item_Pool__r.Item_Type__r.name!='Exhibitor' && ticket.ticketData.Item_Pool__r.Item_Type__r.name!='Speaker' && ticket.ticketData.Item_Pool__r.Item_Type__r.name!='Sponsor')}"/>
+                                    --></td>
+              <td class="tableContent"><apex:outputText value="{!ticket.ticketData.Item_Pool__r.Item_Pool_Name__c}" />
+                <br />
+                <p class="pkg_label labeltitles">
+                  <apex:outputText rendered="{!(ticket.ticketData.Item_Pool__r.Item_Pool_Name__c!=ticket.ticketData.Item__r.item_name__c)}">({!ticket.ticketData.Item__r.item_name__c}) </apex:outputText>
+                </p></td>
+              <td class="tableContent">{!ticket.ticketData.Badge_Label__c}</td>
+              <td class="tableContent">{!ticket.ticketData.Tag_No__c}</td>
+              <td class="tableContent"><apex:outputText rendered="{!ticket.ticketData.Badge_ID__c!=null}">Printed</apex:outputText>
+                <apex:outputText rendered="{!ticket.ticketData.Badge_ID__c==null}">Not Printed</apex:outputText></td>
+              <td class="tableContent"><apex:outputText rendered="{!ticket.ticketData.Tstatus_Id__c!=null}">
+                  <apex:outputText rendered="{!IF(ticket.ticketData.Tstatus_Id__r.Tstatus_name__c==true,true,false)}">Checked In</apex:outputText>
+                  <apex:outputText rendered="{!IF(ticket.ticketData.Tstatus_Id__r.Tstatus_name__c==false,true,false)}">Checked Out</apex:outputText>
+                </apex:outputText>
+                <apex:outputText rendered="{!ticket.ticketData.Tstatus_Id__c==null}">Checked Out</apex:outputText></td>
+              <td class="tableContent">{!ticket.ticketData.item__r.Payment__c}</td>
+              <td class="tableContent">{!ticket.ticketData.Order__r.bln_tkt_profile__r.First_Name__c} {!ticket.ticketData.Order__r.bln_tkt_profile__r.Last_Name__c}</td>
+              <td class="tableContent"><apex:repeat value="{!tagsmap1}" var="x">
+                  <apex:outputtext rendered="{!ticket.ticketData.Item_Pool__c == x}" value="{!tagsmap1[x]}"/>
+                  &nbsp; </apex:repeat>
+                &nbsp;
+                <apex:repeat value="{!tickettagsmap1}" var="x">
+                  <apex:outputtext rendered="{!ticket.ticketData.Id == x}" value="{!tickettagsmap1[x]}"/>
+                  &nbsp; </apex:repeat></td>
+              <td class="tableContent">{!ticket.ticketData.order__r.NAME}</td>
+              <td class="tableContent">{!ticket.ticketData.Name}</td>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cPrimary_Business_Category__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cPrimary_Business_Category__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cPrimary_Business_Category__c')}">  {!ticket.ticketData.tkt_profile__r.Primary_Business_Category__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cSecondary_Business_Category__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cSecondary_Business_Category__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cSecondary_Business_Category__c')}"> {!ticket.ticketData.tkt_profile__r.Secondary_Business_Category__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cEstablished_Date__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cEstablished_Date__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cEstablished_Date__c')}">
+                    <apex:outputField value="{!ticket.ticketData.tkt_profile__r.Established_Date__c}" />
+                  </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cDuns_Number__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cDuns_Number__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cDuns_Number__c')}"> {!ticket.ticketData.tkt_profile__r.Duns_Number__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cRevenue__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cRevenue__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cRevenue__c')}">{!ticket.ticketData.tkt_profile__r.Revenue__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cNumber_Of_Employees__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cNumber_Of_Employees__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cNumber_Of_Employees__c')}"> {!ticket.ticketData.tkt_profile__r.Number_Of_Employees__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cTax_Id__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cTax_Id__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cTax_Id__c')}">  {!ticket.ticketData.tkt_profile__r.Tax_Id__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company__cWebsite_URL__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company__cWebsite_URL__c'),'','none')};"><p style="padding: 0px 100px; line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'Company__cWebsite_URL__c')}"> {!ticket.ticketData.tkt_profile__r.Company_Website_URL__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cBlog_URL__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cBlog_URL__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cBlog_URL__c')}">{!ticket.ticketData.tkt_profile__r.Blog_URL__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company__cDescription__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company__cDescription__c'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company__cDescription__c')}"> {!ticket.ticketData.tkt_profile__r.Company_Description__c} </apex:outputText></td>
+              </apex:outputText>
+              
+              <!-- work address -->
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cWork Address')}"> {!ticket.ticketData.tkt_Profile__r.Work_Address__r.Address1__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cWork Address')}"> {!ticket.ticketData.tkt_Profile__r.Work_Address__r.Address2__c}</apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cWork Address')}">{!ticket.ticketData.tkt_Profile__r.Work_Address__r.City__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cWork Address')}"> {!ticket.ticketData.tkt_Profile__r.Work_Address__r.State__r.Long_Name__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};"><p style="padding:0px 80px;  line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cWork Address')}"> {!ticket.ticketData.tkt_Profile__r.Work_Address__r.Country__r.Long_Name__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                <td class="tableContent" style="text-align:left;width:2%;font-family: Arial,Helvetica,sans-serif;font-size:11px;border-top: 1px black;display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cWork Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cWork Address')}"> {!ticket.ticketData.tkt_Profile__r.Work_Address__r.ZipCode__c} </apex:outputText></td>
+              </apex:outputText>
+              
+              <!-- Billing address -->
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Pay_Address__cBilling Address')}"> {!ticket.ticketData.tkt_Profile__r.Billing_Address__r.Address1__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Pay_Address__cBilling Address')}"> {!ticket.ticketData.tkt_Profile__r.Billing_Address__r.Address2__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Pay_Address__cBilling Address')}">   {!ticket.ticketData.tkt_Profile__r.Billing_Address__r.City__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Pay_Address__cBilling Address')}"> {!ticket.ticketData.tkt_Profile__r.Billing_Address__r.State__r.Long_Name__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};"><p style="padding:0px 80px;  line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'Pay_Address__cBilling Address')}"> {!ticket.ticketData.tkt_Profile__r.Billing_Address__r.Country__r.Long_Name__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Pay_Address__cBilling Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'Pay_Address__cBilling Address')}">  {!ticket.ticketData.tkt_Profile__r.Billing_Address__r.ZipCode__c} </apex:outputText></td>
+              </apex:outputText>
+              
+              <!-- home address -->
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};"><p style="padding: 0px 100px; line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'User_Ext__cHome Address')}"> {!ticket.ticketData.tkt_Profile__r.Home_Address__r.Address1__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};"><p style="padding: 0px 100px; line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'User_Ext__cHome Address')}"> {!ticket.ticketData.tkt_Profile__r.Home_Address__r.Address2__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};"><p style="padding: 0px 70px; line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'User_Ext__cHome Address')}">  {!ticket.ticketData.tkt_Profile__r.Home_Address__r.City__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'User_Ext__cHome Address')}"> {!ticket.ticketData.tkt_Profile__r.Home_Address__r.State__r.Long_Name__c}</apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};"><p style="padding: 0px 80px; line-height: 0px;">&nbsp;</p>
+                  <apex:outputText rendered="{!Contains(contentHiding,'User_Ext__cHome Address')}"> {!ticket.ticketData.tkt_Profile__r.Home_Address__r.Country__r.Long_Name__c}</apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'User_Ext__cHome Address'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'User_Ext__cHome Address')}"> {!ticket.ticketData.tkt_Profile__r.Home_Address__r.ZipCode__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cNAICS Codes')}">
+                <td class="tableContent">
+                     <p style="padding: 0px 120px; line-height: 0px;">&nbsp;</p>                          
+                    <apex:variable value="" var="NCCodes"/>
+                    <apex:repeat value="{!ticket.companyNaicsCode}" var="nc">
+                        
+                             <apex:variable value="{!IF(NCCodes==Null,nc.BLN_NAICS_Code__r.name+' '+nc.BLN_NAICS_Code__r.Description__c,NCCodes+', '+nc.BLN_NAICS_Code__r.name+' '+nc.BLN_NAICS_Code__r.Description__c)}" var="NCCodes"/>                                                
+                        
+                    </apex:repeat>
+                    <apex:outputText value="{!NCCodes}" rendered="{!Contains(contentHiding,'Company_Ext__cNAICS Codes')}"></apex:outputText>
+                
+                </td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cDiversity Type')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'Company_Ext__cDiversity Type'),'','none')}">
+                <apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cDiversity Type')}">
+                    <p style="padding: 0px 120px; line-height: 0px;">&nbsp;</p> 
+                                    
+                         <apex:variable value="" var="DVType"/>
+                         <apex:repeat value="{!ticket.companyDiversityData}"  var="diversity">
+                     <apex:variable value="{!IF(DVType==Null,diversity.Diversity__r.Name,DVType+', '+diversity.Diversity__r.Name)}" var="DVType"/>                                                
+                     
+                    </apex:repeat>
+                    <apex:outputText value="{!DVType}" rendered="{!Contains(contentHiding,'Company_Ext__cDiversity Type')}"></apex:outputText>
+                  </apex:outputText>
+                  </td>
+              </apex:outputText>
+              
+              <!-- speaker info adding -->
+             <!--   <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSpeakerAttachment')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerAttachment'),'','none')};">
+                <p style="padding: 0px 100px; line-height: 0px;">&nbsp;</p> 
+                    <apex:outputText rendered="{!(Contains(contentHiding,'GN_User__cSpeakerAttachment')) }">                                    
+                        <apex:variable value="" var="attachment"/>
+                        <apex:repeat value="{!ticket.attchmntsData}" var="att">                                                
+                            <apex:variable value="{!IF(attachment==null,att.name,attachment+', '+att.name)}" var="attachment"/> 
+                        </apex:repeat>
+                        <apex:outputText value="{!attachment}"></apex:outputText> 
+                    </apex:outputText>
+                </td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSpeakerImage')}">
+                <td align="center" class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerImage'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cSpeakerImage')}">
+                    <div class="fixedimg_div" style="">
+                      <div class="propimg-box"> <img class="propimg" src="/servlet/servlet.ImageServer?id={!ticket.ticketData.Client_GN_User__r.User_Pic__c}&oid={!$Organization.Id}" /> </div>
+                    </div>
+                  </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSpeakerFaceBookId')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerFaceBookId'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cSpeakerFaceBookId')}"> {!ticket.ticketData.Client_GN_User__r.FaceBookId__c} </apex:outputText></td>
+              </apex:outputText> -->
+              <!--<apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSpeakerRole')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerRole'),'','none')};">
+                <p style="padding: 0px 80px; line-height: 0px;">&nbsp;</p>
+                <apex:outputText rendered="{!Contains(contentHiding,'GN_User__cSpeakerRole')}">
+                        <apex:variable value="" var="rolesforspkr"/>
+                        <apex:repeat value="{!participantmap}" var="x">
+                            <apex:variable value="{!IF(rolesforspkr==Null,participantmap[x],rolesforspkr+', '+participantmap[x])}" var="rolesforspkr" rendered="{!ticket.ticketData.Client_GN_User__c == x}"/>
+                            
+                        </apex:repeat>
+                        <apex:outputText value="{!rolesforspkr}"></apex:outputText>
+                </apex:outputText>
+                </td>
+              </apex:outputText>-->
+              <!--  <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSpeakerLinkedInId')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerLinkedInId'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cSpeakerLinkedInId')}"> {!ticket.ticketData.Client_GN_User__r.LinkedInId__c} </apex:outputText></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSpeakerTwitterId')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerTwitterId'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cSpeakerTwitterId')}"> {!ticket.ticketData.Client_GN_User__r.TwitterId__c} </apex:outputText></td>
+              </apex:outputText>-->
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSpeakerBlogger')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerBlogger'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cSpeakerBlogger')}"> {!ticket.ticketData.tkt_profile__r.Blogger__c} </apex:outputText></td>
+              </apex:outputText>
+              <!--  <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cBiography__c')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cBiography__c'),'','none')};">
+                <p style="padding: 0px 200px; line-height: 0px;">&nbsp;</p>
+                <apex:outputText value="{!ticket.ticketData.Client_GN_User__r.Biography__c}" rendered="{!Contains(contentHiding,'GN_User__cBiography__c')}" escape="false"/></td>
+              </apex:outputText>
+              <apex:outputText rendered="{!Contains(checkUnionForAttRep,'GN_User__cSpeakerVideo')}">
+                <td class="tableContent" style="display{!IF(CONTAINS(checkUnionForAttRep, 'GN_User__cSpeakerVideo'),'','none')};"><apex:outputText rendered="{!Contains(contentHiding,'GN_User__cSpeakerVideo')}"> {!ticket.ticketData.Client_GN_User__r.Video__c} </apex:outputText></td>
+              </apex:outputText>-->
+              <td class="tableContent">
+              <p style="padding: 0px 60px; line-height: 0px;">&nbsp;</p>
+              <c:MFSI_FormatDateTime date_Timevalue="{!ticket.ticketData.order__r.createdDate}"/></td>
+              
+            </tr>
+            </tbody>
+            
+          </apex:repeat>
+        </apex:repeat>
+      </table>
+    </div>
+    </div>
+    </html>
+  </apex:pageBlock>
+  <c:printPageFooter />
+  </body>
+  
+</apex:page>

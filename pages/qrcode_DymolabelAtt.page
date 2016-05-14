@@ -1,0 +1,284 @@
+<apex:page controller="BL_EventAdmin_AttendeesCon" showHeader="false" standardStylesheets="false" sidebar="false">
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
+<style>@page{size:4.19in 2.44in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}
+
+</style>
+
+<script type="text/javascript">
+
+                           
+(function($) {
+    $.fn.textfill = function(maxFontSize, maxWords) {
+        
+        maxFontSize = parseInt(maxFontSize, 10);
+        maxWords = parseInt(maxWords, 10) || 3;
+       
+        return this.each(function(){
+            var self = $(this),
+                orgText = self.text(),
+                fontSize = parseInt(self.css("fontSize"), 10),
+                lineHeight = parseInt(self.css("lineHeight"), 10),
+                maxHeight = self.height(),
+                maxWidth = self.width(),
+                words = self.text().split(" ");
+                
+            
+            function calcSize(text) {
+                var ourText = $("<span>"+text+"</span>").appendTo(self),
+                    multiplier = maxWidth/ourText.width(),
+                    newSize = fontSize*(multiplier-0.1);
+                ourText.css(
+                    "fontSize", 
+                    (maxFontSize > 0 && newSize > maxFontSize) ? 
+                        maxFontSize : 
+                        newSize
+                );
+                var scrollHeight = self[0].scrollHeight;
+                if (scrollHeight  > maxHeight) {
+                    multiplier = maxHeight/scrollHeight;
+                    newSize = (newSize*multiplier);
+                    ourText.css(
+                        "fontSize", 
+                        (maxFontSize > 0 && newSize > maxFontSize) ? 
+                            maxFontSize : 
+                            newSize
+                    );
+                }
+            }
+            self.empty();
+            if (words.length > maxWords) {
+                while (words.length > 0) {
+                    var newText = words.splice(0, maxWords).join(" ");
+                    console.log
+                    calcSize(newText);
+                    self.append("<br>");
+                }
+            } else {
+                calcSize(orgText);
+            }
+        });
+    };
+})(jQuery);
+
+
+</script>
+<script>
+
+window.onload=function()
+{
+window.print();
+location.href=location.href;
+//var batch =  window.open('','Batch Print','width=600,height=600,location=_newtab');
+        //var html = 'abc'; // Perhaps some header info here?!
+        //batch.document.open();
+        //batch.document.write(document.getElementsByTagName('html')[0].innerHTML);
+        //batch.document.close();
+}
+
+</script>
+
+
+<apex:variable var="i" value="{!1}"/>
+<apex:variable var="j" value="{!1}"/>
+<apex:repeat value="{!innbadgelist}" var="evatt">
+
+
+<div style="position:relative;width:4.19in;height:2.44in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;" >
+<apex:repeat var="el" value="{!elems}">
+  
+  <apex:outputpanel rendered="{!IF(el.id=='firn'||el.id=='cfirn'||el.id=='badgeFirstName',"true","false")}">
+   <span class="atextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!evatt.eamap.AS_id__r.AS_FirstName__c}</span>
+ <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".atextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  
+ <apex:variable var="i" value="{!i+1}"/> 
+  <apex:outputpanel rendered="{!IF(el.id=='lstn'||el.id=='clstn'||el.id=='badgeLastName',"true","false")}">
+   <span class="btextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!evatt.eamap.AS_id__r.AS_LastName__c}</span>
+ <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".btextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+<!-- ------------------------------------------------------------ For Uniq Code Start ------------------------------------------- -->
+   
+ <apex:variable var="i" value="{!i+1}"/> 
+  <apex:outputpanel rendered="{!IF(el.id=='uniqNo'||el.id=='cuniqNo',"true","false")}">
+  
+   <span class="utextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!evatt.eamap.UniqNo__c}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".utextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  
+  <!-- ------------------------------------------------------------ For Uniq Code End------------------------------------------- -->
+<apex:variable var="i" value="{!i+1}"/>
+ <apex:outputpanel rendered="{!IF(el.id=='cfulln'||el.id=='fulln'||el.id=='badgeFullName',"true","false")}">
+ <span class="ctextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}"><apex:outputtext value="dr. " rendered="{!CONTAINS(UPPER(el.contentText), 'DR.')}"/>{!evatt.eamap.AS_id__r.AS_FirstName__c} {!evatt.eamap.AS_id__r.AS_LastName__c}</span>
+ <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".ctextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+   
+   
+      <apex:variable var="i" value="{!i+1}"/>
+      
+    <apex:outputpanel rendered="{!IF(el.id=='ccomn'||el.id=='comn'||el.id=='badgeCompanyName',"true","false")}">
+   <span class="dtextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!evatt.eamap.AS_id__r.AS_Company__c}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".dtextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  
+  <apex:variable var="i" value="{!i+1}"/>
+      
+    <apex:outputpanel rendered="{!IF(el.id=='ccity',"true","false")}">
+   <span class="etextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!evatt.eamap.AS_id__r.AS_WorkCity__c}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".etextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  <apex:variable var="i" value="{!i+1}"/>
+      
+    <apex:outputpanel rendered="{!IF(el.id=='cstate',"true","false")}">
+   <span class="sttextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}"><apex:repeat value="{!statemap.states}" var="key"> 
+                                                             
+  <apex:OutputText value="{!statemap.states[evatt.eamap.AS_id__r.AS_Work_States__c]}" rendered="{!key==evatt.eamap.AS_id__r.AS_Work_States__c}"  id="Ticketdisplayid" />
+   
+    </apex:repeat></span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".sttextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  <apex:variable var="i" value="{!i+1}"/>
+  <apex:outputpanel rendered="{!IF(el.id=='ccitystate',"true","false")}">
+   <span class="csttextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!evatt.eamap.AS_id__r.AS_WorkCity__c}<apex:OutputText value="," rendered="{!evatt.eamap.AS_id__r.AS_Work_States__c!=null&&evatt.eamap.AS_id__r.AS_WorkCity__c!=null}"   />&nbsp; <apex:repeat value="{!statemap.states}" var="key"> 
+                                                             
+  <apex:OutputText value="{!statemap.states[evatt.eamap.AS_id__r.AS_Work_States__c]}" rendered="{!key==evatt.eamap.AS_id__r.AS_Work_States__c}"  id="Ticketdisplayid" />
+   
+    </apex:repeat></span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".csttextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+   <apex:variable var="i" value="{!i+1}"/>
+  <apex:outputpanel rendered="{!IF(el.id=='cstext',"true","false")}">
+   <span class="ltextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!el.contentText}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".ltextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  
+  
+   <apex:variable var="i" value="{!i+1}"/>
+  <apex:outputpanel rendered="{!IF(el.id=='cstext2',"true","false")}">
+   <span class="mtextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!el.contentText}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".mtextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+   <apex:variable var="i" value="{!i+1}"/>
+  <apex:outputpanel rendered="{!IF(el.id=='cstext3',"true","false")}">
+   <span class="ntextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!el.contentText}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".ntextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  
+    <apex:variable var="i" value="{!i+1}"/> 
+  <apex:outputpanel rendered="{!IF(el.id=='ticketCategory'||el.id=='cticketCategory'||el.id=='badgeExhibitor',"true","false")}">
+   <span class="ftextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!evatt.eamap.GuestType__c}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".ftextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+   <apex:variable var="i" value="{!i+1}"/> 
+  <apex:outputpanel rendered="{!IF(el.id=='ticketn'||el.id=='cticketn'||el.id=='badgeTicket',"true","false")}">
+   <span class="gtextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!el.contentText}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".gtextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  
+   <apex:variable var="i" value="{!i+1}"/> 
+  <apex:outputpanel rendered="{!IF(el.id=='jobTitle'||el.id=='cjobTitle'||el.id=='badgeJobTitle',"true","false")}">
+   <span class="htextfill" id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!evatt.eamap.AS_id__r.AS_Title__c}</span>
+   <script>
+ var fonts='{!el.fontSize}';
+ var newfonts = fonts.substring(0,fonts.length-2);
+$(".htextfill").textfill(newfonts, 11);
+
+</script>
+  </apex:outputpanel>
+  <apex:outputpanel rendered="{!IF(el.id=='cdline',"true","false")}">
+   <span id="elementspan{!i}" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor}">{!el.contentText}</span>
+   
+  </apex:outputpanel> 
+  <apex:outputpanel rendered="{!IF(el.id=='badgeLogof',"true", "false")}">
+  
+   <div style="position:absolute;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};background-image:url('{!el.urlResult}');background-size:100% 100%">                                                        
+   </div>
+  </apex:outputpanel>
+  <apex:outputpanel rendered="{!IF(el.id=='Logo'||el.id=='cclogo'||el.id=='badgeLogo',"true", "false")}">
+  
+   <div style="position:absolute;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};background-image:url('/servlet/servlet.FileDownload?file={!attach.EV_EventLogo__c}');background-size:100% 100%">                                                        
+   </div>
+  </apex:outputpanel>
+  
+  <apex:outputpanel rendered="{!IF(el.id=='badgeQrCode'||el.id=='cqrcd'||el.id=='qrcode',"true", "false")}">
+ 
+   <div style="position:absolute;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};font-family:{!el.fontFamily};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};background-image:url('https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl={!evatt.eamap.EA_AttendeeBarcode__c}');background-size:100% 100%">                                                        
+   </div>
+   
+  </apex:outputpanel>
+ 
+ </apex:repeat>
+</div>
+<apex:outputPanel layout="none" rendered="{!IF(j<checkedbadge.size,'true','false')}">
+ <div style="page-break-after:always"></div> 
+ </apex:outputpanel>
+   <apex:variable var="i" value="{!i+1}"/>
+    <apex:variable var="j" value="{!j+1}"/>
+</apex:repeat>
+
+
+</apex:page>

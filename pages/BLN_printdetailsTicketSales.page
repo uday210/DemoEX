@@ -1,0 +1,77 @@
+<apex:page showHeader="false" sidebar="false" controller="BLN_TicketSalesReportCon" renderAs="PDF" readOnly="true">
+
+<apex:stylesheet value="{!URLFOR($Resource.boothscreen_pdf, 'boothscreen.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.landscape_pdf, 'landscape_pdf.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+<!--<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ticketreport.css')}"/>-->
+
+         
+<!-- header start renderAs="PDF"-->
+<div style=" text-align:center;" class="printpdfreportname">Ticket Detail Report</div>
+<div>
+<c:EventDetails BLN_EventDetails="{!eventInfo}"></c:EventDetails>
+</div>
+<!-- header end -->
+
+<table id="example" class="myTable myTable-zebra myTable-horizontal display" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;page-break-inside: avoid !important;">
+                <thead>
+                    <tr>
+                    
+                        <th width="9%">Ticket No.</th>
+                        <th width="12%">Ticket Name</th>
+                        <th width="9%">Order Id</th>
+                        <th width="10%">Ticket Type</th>
+                        <th width="10%">First Name</th>
+                        <th width="10%">Last Name</th>
+                        <th width="15%">Email</th>
+                        <th >Title</th>
+                        <th width="10%">Company</th>
+                        <th width="8%">Status</th>
+                        <th width="15%">Sale Date</th>
+                   
+                    </tr>
+                </thead>
+              <!----->  
+                
+   <tbody>
+   <apex:repeat value="{!ShowticketDetail}" var="ticket">
+
+
+                  <tr>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.Name}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">
+                            <apex:outputText rendered="{!ticket.Item_Type__r.Name=='Package'}" >{!ticket.Item_pool__r.Item_Pool_Name__c} 
+                            <br/>
+                            <p class="pkg_label labeltitles" style="font-size:10px">({!ticket.Item__r.Item_Pool__r.Item_Pool_Name__c})
+                            </p></apex:outputText>
+                            
+                            <apex:outputText rendered="{!ticket.Item_Type__r.Name!='Package'}" >{!ticket.Item_pool__r.Item_Pool_Name__c} 
+                            </apex:outputText></div>
+                            </td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.Order__r.Name}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.Item_type__r.Name}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.tkt_Profile__r.First_Name__c}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.tkt_Profile__r.Last_Name__c}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.tkt_Profile__r.Email__c}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.tkt_Profile__r.TKT_Job_Title__c}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.tkt_Profile__r.TKT_Company__c}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;">{!ticket.Ticket_Status__c}</div></td>
+                            <td><div class="record_wrap" style="page-break-inside: avoid !important;"><c:EV_FormatDt date_Timevalue="{!ticket.Order__r.CreatedDate}" t_Zone="{!se.Time_Zone__c}"></c:EV_FormatDt></div> </td>
+                                
+                  </tr>
+  </apex:repeat>
+  
+  </tbody>
+</table>
+
+
+
+
+
+<!-- footer start -->
+
+ <c:printPageFooter ></c:printPageFooter>
+
+<!-- footer end -->
+
+</apex:page>

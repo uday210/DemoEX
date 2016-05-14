@@ -1,0 +1,214 @@
+<apex:page controller="MM_eventadmin_sponsorsdirectorycon" standardStylesheets="false" sidebar="false" showHeader="false">
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/jquery.akordeon.css")}"/>
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/reveal.css")}"/>
+<apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+
+  <apex:includeScript value="{!$Resource.PhoneSetup}"/> 
+   <script type="text/javascript" >
+    $(document).ready(function()
+    {
+    $(".account").click(function()
+    {
+    var X=$(this).attr('id');
+    if(X==1)
+    {
+    $(".submenu").hide( );
+    $(this).attr('id', '0');    
+    }
+    else
+    {
+    $(".submenu").show();
+    $(this).attr('id', '1');
+    }    
+    });
+    
+    //Mouseup textarea false
+    $(".submenu").mouseup(function()
+    {
+    return false
+    });
+    $(".account").mouseup(function()
+    {
+    return false
+    });
+    
+    
+    //Textarea without editing.
+    $(document).mouseup(function()
+    {
+    $(".submenu").hide();
+    $(".account").attr('id', '');
+    });
+        
+    });
+        
+        </script>
+  <!--topblock start-->
+    <div id="topblock"> 
+    <div id="logo"></div>
+    <div id="topblockright" style="position:absolute; top:0px; right:0px;">
+    <table width="98%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+        <td align="right" ><div style="padding-right:10px;color:#83CBF2">Hello {!$User.Firstname}&nbsp;{!$User.Lastname}</div></td>        
+        <td style="width:150px;"><div class="dropdown">
+            <a class="account" ><span><B>Settings</b></span></a>
+            <div class="submenu" style="display: none;">
+            <apex:form >
+            <ul class="root">
+                
+                <li><apex:outputLink value="/apex/MM_Profile" ><span>View/Edit Profile</span> </apex:outputLink></li>
+                <li><a href="change-password.html">Change Password</a></li>
+                <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}">{!$Label.site.logout}</apex:commandLink></li>
+            </ul>
+            </apex:form>
+            </div>
+            </div>
+        </td>
+       
+       <td align="left" >
+       <!--  <apex:outputLink value="http://boothleads.force.com/MatchMaking/apex/BL_Eventadmin_BoothAdmins?id={!SelectEvent}" ><span style="color:#0F87BA;"><u>Switch to BoothLeads</u></span></apex:outputLink>-->
+      <apex:form style="align:center;"> 
+       
+       <apex:selectList value="{!selectedapp}" multiselect="false" size="1" onchange="return move();" style="border-radius:20px;width:180px;align:center;" styleClass="listcls" >
+                                  
+                                  <apex:selectOptions value="{!apps}">
+                                  </apex:selectOptions>
+                                 </apex:selectList>
+                                 
+                                 </apex:form>
+         </td>
+         </tr>
+    </table>
+    </div>
+    </div>   
+<!--topblock end-->
+    <!--menublock start-->
+        <div id="menublock">
+            <div id='cssmenu'>
+                  <ul>
+                     
+                     
+                         <li><apex:outputLink value="/apex/Matchleads_eventsPage" ><span>Events</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_schedule" ><span>Schedule</span></apex:outputLink></li>
+                         <li><apex:outputLink value="/apex/MM_Eventadmin_ExhibitorsDirectory" ><span>{!exhibitoralias}</span></apex:outputLink></li>
+                         <li><apex:outputLink value="/apex/bl_eventadmin_corporatestaff" ><span>Prime Partners</span></apex:outputLink></li>
+                         
+                         <li><apex:outputLink value="/apex/MM_Eventadmin_AttendeesDirectory" ><span>{!attendeealias}</span></apex:outputLink></li>
+                         <li class="active"><apex:outputLink value="/apex/MM_eventadmin_SponsorsDirectory" ><span>Resource Partner Directory</span></apex:outputLink></li>
+                         <li><apex:outputLink value="/apex/MM_EventAdmin_Reports" ><span>Reports</span></apex:outputLink></li>
+                    
+                    
+                  </ul>
+            </div>
+        </div>
+    <!--menublock end-->  
+    
+     <!--headerbar start-->    
+     <div id="headdingbar" style="padding-top:1px;">
+         <apex:form > <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="30" style="text-align:left;padding-left:10px;">Event :&nbsp;<b><apex:outputText value="{!attach.EV_Title__c}" style="font-weight:bold;"/></b></td>
+               
+                <td height="30" align="left" style=" padding-top:5px;padding-left:10px;"> 
+                    Event Type :&nbsp;<b><apex:outputText value="{!attach.MatchMaking_Type__c}" style="font-weight:bold;"></apex:outputText></b> 
+                  
+                </td>
+    <!-- 
+    <td style="text-align:right;">Search MBE :&nbsp; </td>
+   <td style="text-align:right; width:180px;">
+    
+    <apex:inputText value="{!serarchstringvalue}" onfocus="blank(this)" onblur="unblank(this)" style="font-size:17px;"/>
+   
+    </td>
+    <td style="text-align:right; width:50px;">
+    <apex:commandButton action="{!search}" value="GO"/>
+    </td>-->
+    
+  </tr>
+</table> </apex:form>
+     </div>
+      <!--headerbar end--> 
+      <apex:form > 
+       <div id="content-outer">
+    <!-- start content -->
+    <div id="content">
+    
+   
+    
+    <table  width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    
+    <tr>
+    <td id="tbl-border-left"></td>
+    <td>
+    <!--  start content-table-inner ...................................................................... START -->
+    <div id="content-table-inner">
+    
+    <!--  start table-content  -->
+    <div id="table-content">
+      
+       <apex:outputPanel id="gridMain">
+      
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0px auto; padding-left:0px;" class="table">
+    
+    <tr>
+        <th style="width:10%;">Logo</th>
+        
+        <th style="width:25%;"> <apex:commandLink value="Name" style="color:blue;" action="{!toggleSort}" reRender="gridMain"> 
+    <apex:param name="sortField" value="AS_id__r.AS_LastName__c" assignTo="{!sortField}"/>
+    </apex:commandLink></th>
+       
+        <th style="width:25%;"> <apex:commandLink value="Company" style="color:blue;" action="{!toggleSort}" reRender="gridMain"> 
+    <apex:param name="sortField" value="AS_id__r.AS_Company__c" assignTo="{!sortField}"/>
+    </apex:commandLink></th>
+        <th style="width:29%;">&nbsp;</th>
+        <th style="width:3%;">&nbsp;</th>
+         </tr>
+    </table>
+      
+      <div style="height:400px; overflow:scroll;">
+     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="gridtable "> 
+      <apex:dataTable value="{!eventlist}" var="val" columns="3">
+      <apex:column headerValue=" LOGO">
+          <apex:image url="/servlet/servlet.ImageServer?id={!val.AS_id__r.AS_ImageUrl__c}&oid={!$Organization.Id}" height="50px" width="60px" rendered="{! IF(val.AS_id__r.AS_ImageUrl__c !=null, 'TRUE' ,'FALSE')}"/>
+          <apex:image url="/servlet/servlet.ImageServer?id=015Z0000000MekE&oid={!$Organization.Id}" height="40px" width="40px" rendered="{! IF(val.AS_id__r.AS_ImageUrl__c ==null, 'TRUE' ,'FALSE')}"/> 
+      </apex:column>
+      <apex:column headerValue="Name">
+      {!val.AS_id__r.AS_FirstName__c} {!val.AS_id__r.AS_LastName__c}
+      </apex:column>
+      <apex:column headerValue="Company">
+      {!val.AS_id__r.AS_Company__c}
+      </apex:column>
+     </apex:dataTable>
+    </table></div>
+      
+      </apex:outputpanel>
+      
+      
+      
+   
+      
+      </div>
+    <!--  end content-table  -->
+    <!--  start actions-box ............................................... -->
+    <!-- end actions-box........... -->
+    <div class="clear"></div>
+    </div>
+    <!--  end content-table-inner ............................................END  -->
+    </td>
+    <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+    <th class="sized bottomleft"></th>
+    <td id="tbl-border-bottom">&nbsp;</td>
+    <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+    
+  </div>
+    <!--  end content -->
+    
+    </div>
+       </apex:form>  
+</apex:page>

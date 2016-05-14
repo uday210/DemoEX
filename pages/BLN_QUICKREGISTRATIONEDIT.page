@@ -1,0 +1,836 @@
+<apex:page controller="Attendee_Details_PrintCon" standardStylesheets="false" showHeader="false" id="Thepage" action="{!getattdata}">
+
+<head>
+
+<title>Quick Registration</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
+<apex:includeScript value="{!$Resource.PhoneSetup}"/>
+<apex:stylesheet value="{!URLFOR($Resource.quickregistrationnew, 'quickregistrationnew/css/style.css')}"/>
+
+<script language="JavaScript">
+
+
+function move() {
+var x = document.getElementById('{!$Component.Thepage:Attendee:firstname}').value;
+var y = document.getElementById('{!$Component.Thepage:Attendee:lastname}').value;
+var z = document.getElementById('{!$Component.Thepage:Attendee:title}').value;
+var p = document.getElementById('{!$Component.Thepage:Attendee:phone}').value;
+var c = document.getElementById('{!$Component.Thepage:Attendee:Company}').value;
+x =x.trim();
+y =y.trim();
+z =z.trim();
+c =c.trim();
+p =p.trim();
+
+
+
+if(x == "" || x == null)
+{
+alert('Please enter First name');
+return false;
+}else
+if(y == "" || y == null)
+{
+alert('Please enter Last name');
+return false;
+}
+else{
+
+//printPdf();
+//window.open("http://boothleads.boothleads.cs11.force.com/Attendee_Details_Print?id={!EventId}","location=0" );
+//location.href = 'http://boothleads.boothleads.cs11.force.com/Attendee_Details_Print?id={!EventId}';
+$(".loaderBackground").css("display","block");
+return true;
+}
+}
+function back(){
+
+window.open("http://boothleads.boothleads.cs11.force.com/Attendee_Details_Print?id={!EventId}","location=0" );
+window.close();
+}
+</script>
+
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+#formfield tr td {
+    padding: 5px;
+}
+#formfield input[type="text"] {
+    width: 100%;
+    box-shadow: #F4F4F4 1px 4px 10px 0px;
+    background: none;
+    background-color: #FCFCFC;
+    color: #5298FC;
+    border: 1px solid #e3e3e3;
+    text-indent: 5px;
+    padding-left: 2px;
+    height: 40px;
+    border-radius: 3px;
+    padding: 0px;
+    margin: 0px;
+    outline: none;
+    font-weight: 200;
+    font-size: 16px;
+}
+#formfield input[type="email"] {
+    width: 100%;
+    box-shadow: #F4F4F4 1px 4px 10px 0px;
+    background: none;
+    background-color: #FCFCFC;
+    color: #5298FC;
+    border: 1px solid #e3e3e3;
+    text-indent: 5px;
+    padding-left: 2px;
+    height: 40px;
+    border-radius: 3px;
+    padding: 0px;
+    margin: 0px;
+    outline: none;
+}
+#formfield input[type="checkbox"] {
+    outline: none;
+    border: none;
+}
+#printbadge {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #67bcd1;
+    -webkit-border-radius: 3px;
+    cursor: pointer;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    font-size: 18px;
+    font-family: cuprum;
+    padding: 10px 10px 10px 10px;
+    text-decoration: none;
+    display: inline-block;
+    color: #FFFFFF;
+    font-weight: bold;
+    background-color: #92cfde;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#92cfde), to(#76bdd1));
+    letter-spacing: 1px;
+    background-image: -webkit-linear-gradient(top, #92cfde, #76bdd1);
+    background-image: -moz-linear-gradient(top, #92cfde, #76bdd1);
+    background-image: -ms-linear-gradient(top, #92cfde, #76bdd1);
+    background-image: -o-linear-gradient(top, #92cfde, #76bdd1);
+    background-image: linear-gradient(to bottom, #92cfde, #76bdd1);
+filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#92cfde, endColorstr=#76bdd1);
+}
+#printbadge:hover {
+    border: 1px solid #44adc6;
+    background-color: #6bbed2;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#6bbed2), to(#50abc4));
+    background-image: -webkit-linear-gradient(top, #6bbed2, #50abc4);
+    background-image: -moz-linear-gradient(top, #6bbed2, #50abc4);
+    background-image: -ms-linear-gradient(top, #6bbed2, #50abc4);
+    background-image: -o-linear-gradient(top, #6bbed2, #50abc4);
+    background-image: linear-gradient(to bottom, #6bbed2, #50abc4);
+filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#6bbed2, endColorstr=#50abc4);
+}
+.printbadge {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #67bcd1;
+    -webkit-border-radius: 3px;
+    cursor: pointer;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    font-size: 18px;
+    font-family: cuprum;
+    padding: 10px 10px 10px 10px;
+    text-decoration: none;
+    display: inline-block;
+    color: #FFFFFF;
+    font-weight: bold;
+    background-color: #92cfde;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#92cfde), to(#76bdd1));
+    letter-spacing: 1px;
+    background-image: -webkit-linear-gradient(top, #92cfde, #76bdd1);
+    background-image: -moz-linear-gradient(top, #92cfde, #76bdd1);
+    background-image: -ms-linear-gradient(top, #92cfde, #76bdd1);
+    background-image: -o-linear-gradient(top, #92cfde, #76bdd1);
+    background-image: linear-gradient(to bottom, #92cfde, #76bdd1);
+filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#92cfde, endColorstr=#76bdd1);
+}
+.printbadge:hover {
+    border: 1px solid #44adc6;
+    background-color: #6bbed2;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#6bbed2), to(#50abc4));
+    background-image: -webkit-linear-gradient(top, #6bbed2, #50abc4);
+    background-image: -moz-linear-gradient(top, #6bbed2, #50abc4);
+    background-image: -ms-linear-gradient(top, #6bbed2, #50abc4);
+    background-image: -o-linear-gradient(top, #6bbed2, #50abc4);
+    background-image: linear-gradient(to bottom, #6bbed2, #50abc4);
+filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=#6bbed2, endColorstr=#50abc4);
+}
+</style>
+
+</head>
+<body style="background:#efefef;">
+
+
+<section id="middle" style=" border:0px #000000 solid; padding:0px;" class="res" >
+  <div id="container" style="border:0px #ccc solid; background-color: #EFEFEF; margin-top:0px;">
+    <div id="content" style="padding:0px; margin-top:x    0px;">
+      
+      <!----------------------------------------->
+      <div class="grid-1">
+        
+        
+        <!------------------------------------------> 
+        
+        <!--start of promocodebox-->
+        <apex:form id="Attendee">
+        <div id="promocodebox" style="width:95%; margin:0px auto; margin-top:30px;"> 
+          
+          <!--start of left div form-->
+          <div style="width:35%; border:2px solid #78DBE9; height:auto; padding-bottom:20px; margin-top:-10px; margin-right:20px; background-color:#efefef; background: url(images/timer-component-bg.jpg); box-shadow: #999 1px 3px 10px 0px; float:left;">
+            <div style="width:100%; height:30px; background-color:#78DBE9"></div>
+            <table width="95%" id="formfield" border="0"  style="margin:0px auto; margin-top:20px; border-collapse:collapse;">
+              <tr>
+                <td width="42%" style="text-align:left; width:50%"><apex:inputText value="{!att.AS_FirstName__c}" html-placeholder="First Name"  style=""  id="firstname"/></td>
+                <td colspan="2" style="text-align:right;"><apex:inputText value="{!att.AS_LastName__c}" html-placeholder="Last Name" style="" id="lastname"/></td>
+              </tr>
+              <tr>
+                <td colspan="3"><div style="width: 100%;box-shadow: #F4F4F4 1px 4px 10px 0px;background: none;background-color: #FCFCFC;color: #5298FC;border: 1px solid #e3e3e3;text-indent: 5px;padding-left:2px;height: 40px;border-radius: 3px;padding: 0px;margin: 0px;outline: none;font-weight: 200;font-size: 16px;"><apex:outputText value="{!Attendee.AS_id__r.AS_Email__c}" /></div></td>
+              </tr>
+              <tr>
+                <td colspan="3" width="100%">
+               <apex:inputField value="{!att.AS_Company__c}"  id="Company" style="" html-placeholder="Company" />
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3"><apex:inputfield html-placeholder="Title" value="{!att.AS_Title__c}" onkeyup="update()" id="title" style=""/></td>
+              </tr>
+              <tr>
+                <td colspan="3"><apex:inputField value="{!att.AS_WorkPhone__c}" html-placeholder="Phone" style="" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"   id="phone"/></td>
+              </tr>
+              <tr>
+                <td colspan="3">Country</td>
+              </tr>
+               <tr>
+              <td colspan="3"><apex:inputField value="{!att.AS_Work_Country__c}" styleClass="selectlist" onchange="update()" id="country"/></td>
+              </tr>
+              <tr>
+                <td colspan="3">State</td>
+              </tr>
+               <tr>
+                <td colspan="3"><apex:inputField value="{!att.AS_Work_States__c}" styleClass="selectlist" onchange="update()" onfocus="update()"  id="states"/></td>
+              </tr>
+               <tr>
+                <td colspan="3"><apex:inputField value="{!att.AS_WorkCity__c}" html-placeholder="City" onkeyup="update()" style=""   id="city"/></td>
+              </tr>
+              <tr style="border-top:thin solid;border-bottom:thin solid; border-left:thin solid;border-right:thin solid;border-color:#78DBE9;">
+              <td>
+              <apex:inputField value="{!Attendeetypes.TicketTypesBP__c}" onkeyup="update()" id="badgettype" html-placeholder="Badge Ticket Type"/>
+              </td>
+              <td>
+              <p style="font-size:14px; font-family:cuprum; float:left;">Visibility:</p>
+              <apex:inputField value="{!Attendeetypes.Display_Ticket_Label__c}" onchange="update()" id="badgettypevisible"/> 
+              </td>
+              </tr>
+              <tr>
+              <td/>
+              </tr>
+              <tr style="border-top:thin solid;border-bottom:thin solid; border-left:thin solid;border-right:thin solid;border-color:#78DBE9;">
+                <td ><apex:inputField value="{!Attendeetypes.GuestType__c}" onkeyup="update()" id="badgelabel" html-placeholder="Badge Ticket Category"/></td>
+                <td style="font-size:14px; font-family:cuprum; line-height:none;"><div style="float:left; margin-right:4%;">Color:</div><span><input type='color' name='color' value="{!Attendeetypes.Badge_Color__c}" onchange="update()" id="badgecolor"/> 
+  <apex:inputHidden value="{!Attendeetypes.Badge_Color__c}" id="myHiddenField"/></span></td>
+           
+              <td style=" "><p style="font-size:14px; font-family:cuprum; float:left;">Visibility:</p><span><apex:inputField value="{!Attendeetypes.Display_Badge_Label__c}" onchange="update()" id="badgevisible"/>
+          </span></td>
+              </tr>
+              
+              
+              <tr id="printbadgebttnrow">
+                <td  style=" padding:15px;">
+                
+                <!--<apex:commandLink style="text-decoration:none;" Onclick="return move();" action="{!PrintAttendee}" > 
+    <apex:commandButton value="Print Badge" styleClass="printbadge"/>
+    </apex:commandLink>-->
+    <apex:commandLink style="text-decoration:none;" Onclick="if(!move()){return false;$('.loaderBackground').css('display','none');}" action="{!PrintAttendee}" rerender="renderhere" oncomplete="$('.loaderBackground').css('display','none');printPdf();">
+    <apex:commandButton value="Print Badge" styleClass="printbadge" />
+    </apex:commandLink>
+                </td>
+                <td colspan="2"  style=" padding:15px;">
+                
+                <apex:commandLink style="text-decoration:none;" Onclick="cancelbadge();"   > 
+    <apex:commandButton value="Cancel" styleClass="printbadge" />
+    </apex:commandLink>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!--end of left div form--> 
+          <div class="loaderBackground" style="display:none;text-align:center;">
+    <img src="http://www.boothleads.com/badge_images/icons/ajax_loader.gif" id="loaderImg"  alt="Loading...."    />
+  </div> 
+          <!--start of  right div iframe-->
+          <div  style="width:50%;  margin-top:50px; margin-right:0px; background-color:#eaeaea;border: #F6F6F6 10px solid; padding:10px; box-shadow: #999 1px 3px 10px 0px; float:right; text-align:center;">
+          
+             <iframe name="pdf" id="ifrmeSummary" frameborder="0" width="405" height="300"></iframe>
+           
+           
+           </div>
+     
+    <apex:outputpanel id="renderhere">  
+          <!--end of left div form--> 
+          <script type="text/javascript">
+function cancelbadge()
+{
+    window.parent.location.href=window.parent.location.href;window.parent.load();
+}
+
+   
+
+$(document).ready(function(){
+$('#preview').hide();   
+$("#Thepage\\:Attendee\\:firstname").keyup(update);
+$("#Thepage\\:Attendee\\:lastname").keyup(update);
+$("#Thepage\\:Attendee\\:Company").keyup(update);
+try{
+$("#Thepage\\:Attendee\\:atttypes").click(update);
+}catch(e){}
+
+$("#Thepage\\:Attendee\\:firstname").focus();
+
+
+});
+  var statemap = {'None': 'None', 'Alabama': 'AL','Alaska': 'AK','Arizona': 'AZ','Arkansas': 'AR','California': 'CA','Colorado': 'CO','Connecticut': 'CT','Delaware': 'DE','District of Columbia': 'DC','Florida': 'FL','Georgia': 'GA','Hawaii': 'HI','Idaho': 'ID','Illinois': 'IL','Indiana': 'IN','Iowa': 'IA','Kansas': 'KS','Kentucky': 'KY','Louisiana': 'LA','Maine': 'ME','Maryland': 'MD','Massachusetts': 'MA','Michigan': 'MI','Minnesota': 'MN','Mississippi': 'MS','Missouri': 'MO','Montana': 'MT','Nebraska': 'NE','Nevada': 'NV','New Hampshire': 'NH','New Jersey': 'NJ','New Mexico': 'NM','New York': 'NY','North Carolina': 'NC','North Dakota': 'ND','Ohio': 'OH','Oklahoma': 'OK','Oregon': 'OR','Pennsylvania': 'PA','Rhode Island': 'RI','South Carolina': 'SC','South Dakota': 'SD','Tennessee': 'TN','Texas': 'TX','Utah': 'UT','Vermont': 'VT','Virginia': 'VA','Washington': 'WA','West Virginia': 'WV','Wisconsin': 'WI','Wyoming': 'WY','United States Of America': 'USA'};  
+  window.onload = function(){ update(); };
+     
+ function update(){ 
+   
+var atypes="{!Attendee.EV_id__r.Attendee_Types__c}";
+
+
+//show name
+var fname= $("#Thepage\\:Attendee\\:firstname").val();
+var lname= $("#Thepage\\:Attendee\\:lastname").val();
+var company=$("#Thepage\\:Attendee\\:Company").val();
+var badgelabel=$("#Thepage\\:Attendee\\:badgelabel").val();
+var jobtitle=$("#Thepage\\:Attendee\\:title").val();
+if(badgelabel.toUpperCase()=='EXECUTIVE DURECTOR')
+   $("#badgecolor").val('#792e2e');
+   else if(badgelabel.toUpperCase()=='PRESIDENT')
+   $("#badgecolor").val('#2e79ce');
+   else if(badgelabel.toUpperCase()=='EXHIBITOR')
+   $("#badgecolor").val('#008000');
+   else if(badgelabel.toUpperCase()=='SECURITY')
+   $("#badgecolor").val('#2e5c77');
+   else if(badgelabel.toUpperCase()=='STAFF')
+   $("#badgecolor").val('#a63032');
+   else if(badgelabel.toUpperCase()=='SPONSOR')
+   $("#badgecolor").val('#ff0000');
+   else if(badgelabel.toUpperCase()=='SPEAKER')
+   $("#badgecolor").val('#df3434');
+   else if(badgelabel.toUpperCase()=='VIP')
+   $("#badgecolor").val('#501f76');
+   else if(badgelabel.toUpperCase()=='HOST')
+   $("#badgecolor").val('#8a26d4');
+   else if(badgelabel.toUpperCase()=='ATTENDEE')
+   $("#badgecolor").val('#1b75bb');
+   else if(badgelabel.toUpperCase()=='BOARD MEMBER')
+   $("#badgecolor").val('#6e325c');
+   else if(badgelabel.toUpperCase()=='MODERATOR')
+   $("#badgecolor").val('#314542');
+
+
+//if(atypes.indexOf(badgelabel)>=0){
+//$("#badgecolor").attr('disabled','disabled');
+//}
+//else
+//$("#badgecolor").removeAttr('disabled');
+var badgecolor=$("#badgecolor").val();
+document.getElementById('Thepage:Attendee:myHiddenField').value=badgecolor;
+var badgevisible=document.getElementById('Thepage:Attendee:badgevisible').checked;
+var badgettypevisible=document.getElementById('Thepage:Attendee:badgettypevisible').checked;
+var name=fname+' '+lname;
+
+var atttype='';
+//code for attendee type
+try{
+if(badgevisible==true)
+atttype='<font style="valign:bottom;text-align:center;background-color:'+badgecolor+';display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;">'+badgelabel+'</font>';
+
+}catch(e){}
+
+//
+//code for ticket type
+var badgettype='';
+try{
+if(badgettypevisible==true)
+badgettype=$("#Thepage\\:Attendee\\:badgettype").val();
+}catch(e){}
+
+//
+
+var abarcodeimage='';
+abarcodeimage='<img src="https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl={!Attendee.EA_AttendeeBarcode__c }"/>';
+
+
+ var evlogo='';
+//var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+//if (isChrome)
+//evlogo='<img src="/servlet/servlet.FileDownload?file={!Attendee.EV_id__r.EV_EventLogo__c}" style="width:100%;height:auto;padding-left:3px;padding-top:3px">';
+//else
+evlogo='<object type="image/jpeg" data="/servlet/servlet.FileDownload?file={!Attendee.EV_id__r.EV_EventLogo__c}" style="width:150px;height:100px;padding-left:3px;padding-top:3px">';
+
+var statevar;
+if(statemap[$("#Thepage\\:Attendee\\:states").val()]==undefined)
+statevar=$("#Thepage\\:Attendee\\:states").val();
+else
+statevar=statemap[$("#Thepage\\:Attendee\\:states").val()];
+
+var comma='';
+if(statevar!=''&&$("#Thepage\\:Attendee\\:city").val()!='')
+comma=',';
+
+
+var fspan='';
+var id='';
+var ffamily='';
+<apex:repeat var="el" value="{!elems}">
+var id="{!el.id}";
+try{
+ffamily="{!el.fontFamily}";}catch(e){}
+if(id=="firn"||id=="cfirn"||id=="badgeFirstName")
+{
+
+fspan=fspan+'<span class="atextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+fname+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".atextfill").textfill(newfonts, 11);</scr'+'ipt>';
+}
+if(id=="lstn"||id=="clstn"||id=="badgeLastName")
+{
+
+fspan=fspan+'<span class="btextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+lname+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".btextfill").textfill(newfonts, 11);</scr'+'ipt>';
+}
+if(id=="cfulln"||id=="fulln"||id=="badgeFullName")
+{
+
+fspan=fspan+'<span class="ctextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';"><apex:outputtext value="dr. " rendered="{!CONTAINS(UPPER(el.contentText), 'DR.')}"/>'+name+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".ctextfill").textfill(newfonts, 11);</scr'+'ipt>';
+}
+if(id=="cdline")
+fspan=fspan+'<span style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">{!el.contentText}<\/span>';
+
+if(id=="ccomn"||id=="comn"||id=="badgeCompanyName")
+{
+
+fspan=fspan+'<span class="dtextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+company+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".dtextfill").textfill(newfonts, 11);</scr'+'ipt>';
+}
+if(id=="ccity")
+fspan=fspan+'<span class="cctextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+$("#Thepage\\:Attendee\\:city").val()+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".cctextfill").textfill(newfonts, 11);</scr'+'ipt>';
+
+if(id=="cstate")
+fspan=fspan+'<span class="sttextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+statevar+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".sttextfill").textfill(newfonts, 11);</scr'+'ipt>';
+
+if(id=="ccitystate")
+fspan=fspan+'<span class="csttextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+$("#Thepage\\:Attendee\\:city").val()+comma+' '+statevar+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".csttextfill").textfill(newfonts, 11);</scr'+'ipt>';
+
+if(id=="cstext")
+fspan=fspan+'<span class="ltextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">{!el.contentText}<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".ltextfill").textfill(newfonts, 11);</scr'+'ipt>';
+
+if(id=="cstext2")
+fspan=fspan+'<span class="mtextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">{!el.contentText}<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".mtextfill").textfill(newfonts, 11);</scr'+'ipt>';
+
+if(id=="cstext3")
+fspan=fspan+'<span class="ntextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">{!el.contentText}<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".ntextfill").textfill(newfonts, 11);</scr'+'ipt>';
+
+if(id=="uniqNo"||id=="cuniqNo")
+fspan=fspan+'<span class="vtextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">{!Attendee.UniqNo__c}<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".vtextfill").textfill(newfonts, 11);</scr'+'ipt>';
+
+if(badgettypevisible==true){
+if(id=="ticketn"||id=="cticketn"||id=="badgeTicket")
+fspan=fspan+'<span class="etextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+badgettype+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".etextfill").textfill(newfonts, 11);</scr'+'ipt>';
+}
+
+if(badgevisible==true){
+if(id=="ticketCategory"||id=="cticketCategory"||id=="badgeExhibitor")
+fspan=fspan+'<span class="ftextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+badgelabel+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".ftextfill").textfill(newfonts, 11);</scr'+'ipt>';
+}
+if(id=="jobTitle"||id=="cjobTitle"||id=="badgeJobTitle")
+fspan=fspan+'<span class="gtextfill" style="line-height:{!el.height}px;position:absolute;white-space:nowrap;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};font-family:'+ffamily+';">'+jobtitle+'<\/span><scr'+'ipt>var fonts="{!el.fontSize}";var newfonts = fonts.substring(0,fonts.length-2);$(".gtextfill").textfill(newfonts, 11);</scr'+'ipt>';
+
+if(id=="Logo"||id=="cclogo"||id=="badgeLogo")
+fspan=fspan+'<div style="position:absolute;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};background-image:url(\'/servlet/servlet.FileDownload?file={!Attendee.EV_id__r.EV_EventLogo__c}\');background-size:100% 100%"></div>';
+
+if(id=="badgeLogof")
+fspan=fspan+'<div style="position:absolute;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};background-image:url(\'{!el.urlResult}\');background-size:100% 100%"></div>';
+
+
+if(id=="badgeQrCode"||id=="cqrcd"||id=="qrcode")
+fspan=fspan+'<div style="position:absolute;height:{!el.height}px;width:{!el.width}px;top:{!el.positionTop}px;left:{!el.positionLeft}px;margin-top:{!el.marginTop};margin-right:{!el.marginRight};margin-bottom:{!el.marginBottom};margin-left:{!el.marginLeft};padding-top:{!el.paddingTop};padding-right:{!el.paddingRight};padding-bottom:{!el.paddingBottom};padding-left:{!el.paddingLeft};text-align:{!el.textAlign};font-size:{!el.fontSize};text-transform:{!el.textTransform};background-color:{!el.backgroundColor};opacity:{!el.opacity};color:{!el.textcolor};background-image:url(\'https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl={!Attendee.EA_AttendeeBarcode__c}\');background-size: 100% 100%;"></div>';
+
+
+
+
+
+</apex:repeat>
+var y='';
+var pgsz='';
+
+
+if('{!btstyle.Badge_Type__c}'=='Brother')
+pgsz='<style>@page{size:3.9in 2.4in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}</style>';
+if('{!btstyle.Badge_Type__c}'=='Zebra')
+{
+if(navigator.userAgent.indexOf("Chrome") != -1 ) 
+    {
+        pgsz='<style>@page{size:3.75in 3in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}</style>';
+    }
+    
+    else if(navigator.userAgent.indexOf("Firefox") != -1 ) 
+    {
+       
+         pgsz='<style>@page{size:4in 3in;margin-top:0px;margin-left:-2px;margin-bottom:0px;margin-right:-2px;}</style>';
+    }
+    else
+pgsz='<style>@page{size:3.75in 3in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}</style>';
+}
+if('{!btstyle.Badge_Type__c}'=='Avery')
+pgsz='<style>@page{size:3.375in 2.33in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}</style>';
+if('{!btstyle.Badge_Type__c}'=='Dymo')
+pgsz='<style>@page{size:4.19in 2.44in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}</style>';
+if('{!btstyle.Badge_Type__c}'=='CustScanBadge')
+pgsz='<style>@page{size:3.0in 2.25in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}</style>';
+var y='<html><head><scr'+'ipt type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></scr'+'ipt><scr'+'ipt type="text/javascript">(function($) {$.fn.textfill = function(maxFontSize, maxWords) {maxFontSize = parseInt(maxFontSize, 10);maxWords = parseInt(maxWords, 10) || 3;return this.each(function(){var self = $(this),orgText = self.text(),fontSize = parseInt(self.css("fontSize"), 10),lineHeight = parseInt(self.css("lineHeight"), 10),maxHeight = self.height(),maxWidth = self.width(),words = self.text().split(" ");function calcSize(text) {var ourText = $("<span>"+text+"</span>").appendTo(self),multiplier = maxWidth/ourText.width(),newSize = fontSize*(multiplier-0.1);ourText.css("fontSize",(maxFontSize > 0 && newSize > maxFontSize) ?maxFontSize :newSize );var scrollHeight = self[0].scrollHeight;if (scrollHeight  > maxHeight) {multiplier = maxHeight/scrollHeight;newSize = (newSize*multiplier);ourText.css("fontSize",(maxFontSize > 0 && newSize > maxFontSize) ?maxFontSize :newSize);}}self.empty();if (words.length > maxWords) {while (words.length > 0) {var newText = words.splice(0, maxWords).join(" ");calcSize(newText);elf.append("<br>");}} else {calcSize(orgText);}});};})(jQuery);$(function(){$(".textfill").textfill(0, 11);});</scr'+'ipt>'+pgsz+'</head><body bgcolor="white">'+fspan+'</body></html>';
+
+
+//var y='<html><head><scr'+'ipt type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></scr'+'ipt><scr'+'ipt type="text/javascript">(function($) {$.fn.textfill = function(maxFontSize, maxWords) {maxFontSize = parseInt(maxFontSize, 10);maxWords = parseInt(maxWords, 10) || 3;return this.each(function(){var self = $(this),orgText = self.text(),fontSize = parseInt(self.css("fontSize"), 10),lineHeight = parseInt(self.css("lineHeight"), 10),maxHeight = self.height(),maxWidth = self.width(),words = self.text().split(" ");function calcSize(text) {var ourText = $("<span>"+text+"</span>").appendTo(self),multiplier = maxWidth/ourText.width(),newSize = fontSize*(multiplier-0.1);ourText.css("fontSize",(maxFontSize > 0 && newSize > maxFontSize) ?maxFontSize :newSize );var scrollHeight = self[0].scrollHeight;if (scrollHeight  > maxHeight) {multiplier = maxHeight/scrollHeight;newSize = (newSize*multiplier);ourText.css("fontSize",(maxFontSize > 0 && newSize > maxFontSize) ?maxFontSize :newSize);}}self.empty();if (words.length > maxWords) {while (words.length > 0) {var newText = words.splice(0, maxWords).join(" ");calcSize(newText);elf.append("<br>");}} else {calcSize(orgText);}});};})(jQuery);$(function(){$(".textfill").textfill(0, 11);});</scr'+'ipt>'+pgsz+'</head><body bgcolor="white">'+fspan+'</body></html>';
+//var y='<html><head><style>@page{size:4.19in 2.44in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}</style><scr'+'ipt type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></scr'+'ipt><scr'+'ipt type="text/javascript">(function($) {$.fn.textfill = function(maxFontSize, maxWords) {maxFontSize = parseInt(maxFontSize, 10);maxWords = parseInt(maxWords, 10) || 3;return this.each(function(){var self = $(this),orgText = self.text(),fontSize = parseInt(self.css("fontSize"), 10),lineHeight = parseInt(self.css("lineHeight"), 10),maxHeight = self.height(),maxWidth = self.width(),words = self.text().split(" ");function calcSize(text) {var ourText = $("<span>"+text+"</span>").appendTo(self),multiplier = maxWidth/ourText.width(),newSize = fontSize*(multiplier-0.1);ourText.css("fontSize",(maxFontSize > 0 && newSize > maxFontSize) ?maxFontSize :newSize );var scrollHeight = self[0].scrollHeight;if (scrollHeight  > maxHeight) {multiplier = maxHeight/scrollHeight;newSize = (newSize*multiplier);ourText.css("fontSize",(maxFontSize > 0 && newSize > maxFontSize) ?maxFontSize :newSize);}}self.empty();if (words.length > maxWords) {while (words.length > 0) {var newText = words.splice(0, maxWords).join(" ");calcSize(newText);elf.append("<br>");}} else {calcSize(orgText);}});};})(jQuery);$(function(){$(".textfill").textfill(0, 11);});</scr'+'ipt></head><body bgcolor="white">'+fspan+'</body></html>';
+
+$('iframe').attr('srcdoc',y );
+
+
+}
+
+
+function printPdf() {
+  
+var getMyFrame = document.getElementById('ifrmeSummary');
+    getMyFrame.focus();
+    getMyFrame.contentWindow.print();
+   
+    alert("Send to printer.Now you will be redirected to main page");
+    window.parent.location.href=window.parent.location.href;
+    window.parent.load();
+  setTimeout(function(){window.parent.location.href=window.parent.location.href;window.parent.load();}, 1000);
+           
+  
+}
+
+
+    
+</script>
+
+   </apex:outputpanel>          
+        </div>
+        <!--end of promocodebox--> 
+        </apex:form>
+      </div>
+      <!--close of-grid1--> 
+      
+      <!----------------------------------->
+      
+      <div class="clear"></div>
+      
+       <!--------start of payment hide and show------------->
+            <style>
+            #ordersummarytitles{
+                border-collapse:collapse;
+                font-size: 22px;
+color: #5283cc;
+margin-right: 10px;
+letter-spacing: .5px;
+font-family: Bebas Neue;
+font-weight: normal;
+                }
+                
+            #ordersummarytitles td{ padding:0px 5px ;}
+            #ordersummarycontent table { border-collapse:collapse;}
+            #ordersummarycontent table tr{ border-bottom:1px solid #ffffff;}
+            #ordersummarycontent table td{ padding:5px; text-align:center; font-size:14px;} 
+            #paymentwrapper{width:90%;  margin:0px auto; padding:10px; border: 4px solid #ffffff; background-image:url({!URLFOR($Resource.quickregistrationnew, 'quickregistrationnew/images/background.gif')});box-shadow: 0 1px 3px 0 #b5b5b5;-moz-box-shadow: 0 1px 3px 0 #b5b5b5;-webkit-box-shadow: 0 1px 3px 0 #b5b5b5;}
+            #ordersummarytitle{ font-size:16px; font-family:cuprum; background-color:#D7D7D7;} 
+                   #stripe-line{
+          background:url({!URLFOR($Resource.quickregistrationnew, 'quickregistrationnew/images/stripe.png')}); 
+          overflow:hidden; 
+          height:12px; 
+          margin-top:5px; 
+           }
+           .loaderBackground {
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#66EBEAE4, endColorstr=#66EBEAE4);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#66EBEAE4,endColorstr=#66EBEAE4)";
+    background: -webkit-linear-gradient(left top, rgba(204, 204, 204, 0), gray); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, rgba(204, 204, 204, 0), gray); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, rgba(204, 204, 204, 0), gray); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, rgba(204, 204, 204, 0), gray);
+    width:100%;
+    height:100%;  
+    z-index:2499;
+    position:absolute;       
+    left:0px;
+    right:0px;
+}  
+#loaderImg{
+   
+    width:200px;  
+    height:200px;
+     margin-top:100px;
+}  
+ </style>
+           
+            <div id="payment" style="width:100%; display:none;padding-bottom:30px; margin-top:20px;">
+            <div id="paymentwrapper" style="">
+           <!---Start of titles----------->
+            <table id="ordersummarytitles" width="100%" border="0">
+  <tr> 
+    <td width="11%" style=" text-align:left; color:#6bbed2;" >Ticket Details</td>
+    <td width="34%"> <div id="stripe-line" style="margin-top:0px;"></div><!--close fo stripe-line--></td>
+    <td width="19%" style=" text-indent:2%;color:#6bbed2;">Payment Information</td>
+    <td width=""> <div id="stripe-line" style="margin-top:0px;"></div><!--close fo stripe-line--></td>
+  </tr>
+</table>
+ <!---close of titles----------->
+            <div id="paymentcontentwrapper" style="width:99%; display:inline-block; padding:5px 5px 0px 5px; margin-top:0px;">
+            <div id="ordersummarycontent" style="width:44%; display:inline-block; height:232px; background-color:#f8f8f8; border: 1px solid #ffffff;">
+            <table width="100%" border="0" style="background-color:#F8F8F8;">
+ <!-- <tr id="ordersummarytitle">
+    <td style="text-align:center;">Item</td>
+    <td style="text-align:center;">Quantity</td>
+    <td style="text-align:center;">Price</td>
+  </tr>-->
+  <tr>
+    <td style="color:#6bbed2; font-size:14px; font-weight:700; text-align:right;">Select Ticket</td>
+    <td style="text-align:left;"><select class="selectlist">
+    <option>Full Registration</option>
+    <option>MBE Registration</option>
+    <option>Corporate Registration</option>
+    
+    </select></td>
+ 
+  </tr>
+
+   <tr>
+  <td style=" font-size:14px; text-align:left; color:#6bbed2; font-weight:700; text-align:right;">Amount</td>
+  <td  style="text-align:left;"><input type="text" style="" placeholder="$200.00"/><!--<button class="button-a blue" style="width:25%;height:32px; margin-left:3%;"  onClick="">Add</button>--></td>
+  </tr>
+</table>
+
+            
+            </div><!--close of ordersummary content-->
+           
+           
+           
+           
+           
+            <div id="paymentdetailscontent" style="width:52%; border:1px solid #ffffff; display:inline-block; padding:5px ; margin-bottom:5px; background-color:#f8f8f7; float:right;">
+           <div  id="cardholder" style="height:220px; margin-left:13%; background: url({!URLFOR($Resource.quickregistrationnew, 'quickregistrationnew/images/111.png')}) no-repeat ">
+            <div style="width:83%; margin:0px auto; height:80px;"></div>
+             <div id="cardno" style="width:86%; margin:0px auto; height:44px;">
+             
+             <input type="text" placeholder="Enter Number" style=" width:80%;outline:none; background:none; font-size:14px; color:#999; border-radius:3px; margin:0px auto;height:38px; border:none"/> 
+             
+             </div><!--close of cardno-->
+             
+             <div style="width:100%; height:35px; "></div>
+              <div style="width:34%; height:37px; margin-left:7.5%; float:left;">
+             <select class="selectoption" style="outline:none; width:70%; margin-top:2px; height:100%; background:none;border:none;" >
+                   <option>- Month -</option>
+                  <option value="1">January (01)</option>
+                  <option value="2">February (02)</option>
+                   <option value="3">March (03) </option>
+                      <option value="4">April (04)</option>
+                  <option value="5">May (05)</option>
+                   <option value="6">June (06)</option>
+                      <option value="7">July (07)</option>
+                  <option value="8">August (08)</option>
+                   <option value="9">September (09)</option>
+                      <option value="10">October (10)</option>
+                  <option value="11">November (11)</option>
+                   <option value="12">December (12)</option>
+                </select>   
+             </div>
+             
+             <!-------------------------------------------->
+              <div style="width:21%; height:37px; margin-left:-3.5%; float:left;">
+                    <!--       <input type="date" placeholder="January (01)" style="width:99%;background:none; margin-left:3%;   font-size:9px; color:#999; border-radius:3px; margin:0px auto;height:38px; border:none"/>-->
+               <select class="selectoption" style="outline:none;margin-top:2px; height:100%; background:none;border:none; margin-left:-20px;">
+    <option>- Year -</option>
+     <option value="2011">2020</option>
+    <option value="2010">2019</option>
+    <option value="2009">2018</option>
+    <option value="2008">2017</option>
+    <option value="2007">2016</option>
+    <option value="2006">2015</option>
+    <option value="2005">2014</option>
+    <option value="2004">2013</option>
+    <option value="2003">2012</option>
+    <option value="2011">2011</option>
+    <option value="2010">2010</option>
+    <option value="2009">2009</option>
+    <option value="2008">2008</option>
+    <option value="2007">2007</option>
+    <option value="2006">2006</option>
+    <option value="2005">2005</option>
+    <option value="2004">2004</option>
+    <option value="2003">2003</option>
+    <option value="2002">2002</option>
+    <option value="2001">2001</option>
+    <option value="2000">2000</option>
+    <option value="1999">1999</option>
+    <option value="1998">1998</option>
+    <option value="1997">1997</option>
+    <option value="1996">1996</option>
+    <option value="1995">1995</option>
+    <option value="1994">1994</option>
+    <option value="1993">1993</option>
+    <option value="1992">1992</option>
+    <option value="1991">1991</option>
+    <option value="1990">1990</option>
+    <option value="1989">1989</option>
+    <option value="1988">1988</option>
+    <option value="1987">1987</option>
+    <option value="1986">1986</option>
+    <option value="1985">1985</option>
+    <option value="1984">1984</option>
+    <option value="1983">1983</option>
+    <option value="1982">1982</option>
+    <option value="1981">1981</option>
+    <option value="1980">1980</option>
+    <option value="1979">1979</option>
+    <option value="1978">1978</option>
+    <option value="1977">1977</option>
+    <option value="1976">1976</option>
+    <option value="1975">1975</option>
+    <option value="1974">1974</option>
+    <option value="1973">1973</option>
+    <option value="1972">1972</option>
+    <option value="1971">1971</option>
+    <option value="1970">1970</option>
+    <option value="1969">1969</option>
+    <option value="1968">1968</option>
+    <option value="1967">1967</option>
+    <option value="1966">1966</option>
+    <option value="1965">1965</option>
+    <option value="1964">1964</option>
+    <option value="1963">1963</option>
+    <option value="1962">1962</option>
+    <option value="1961">1961</option>
+    <option value="1960">1960</option>
+    <option value="1959">1959</option>
+    <option value="1958">1958</option>
+    <option value="1957">1957</option>
+    <option value="1956">1956</option>
+    <option value="1955">1955</option>
+    <option value="1954">1954</option>
+    <option value="1953">1953</option>
+    <option value="1952">1952</option>
+    <option value="1951">1951</option>
+    <option value="1950">1950</option>
+    <option value="1949">1949</option>
+    <option value="1948">1948</option>
+    <option value="1947">1947</option>
+    <option value="1946">1946</option>
+    <option value="1945">1945</option>
+    <option value="1944">1944</option>
+    <option value="1943">1943</option>
+    <option value="1942">1942</option>
+    <option value="1941">1941</option>
+    <option value="1940">1940</option>
+    <option value="1939">1939</option>
+    <option value="1938">1938</option>
+    <option value="1937">1937</option>
+    <option value="1936">1936</option>
+    <option value="1935">1935</option>
+    <option value="1934">1934</option>
+    <option value="1933">1933</option>
+    <option value="1932">1932</option>
+    <option value="1931">1931</option>
+    <option value="1930">1930</option>
+    <option value="1929">1929</option>
+    <option value="1928">1928</option>
+    <option value="1927">1927</option>
+    <option value="1926">1926</option>
+    <option value="1925">1925</option>
+    <option value="1924">1924</option>
+    <option value="1923">1923</option>
+    <option value="1922">1922</option>
+    <option value="1921">1921</option>
+    <option value="1920">1920</option>
+    <option value="1919">1919</option>
+    <option value="1918">1918</option>
+    <option value="1917">1917</option>
+    <option value="1916">1916</option>
+    <option value="1915">1915</option>
+    <option value="1914">1914</option>
+    <option value="1913">1913</option>
+    <option value="1912">1912</option>
+    <option value="1911">1911</option>
+    <option value="1910">1910</option>
+    <option value="1909">1909</option>
+    <option value="1908">1908</option>
+    <option value="1907">1907</option>
+    <option value="1906">1906</option>
+    <option value="1905">1905</option>
+    <option value="1904">1904</option>
+    <option value="1903">1903</option>
+    <option value="1902">1902</option>
+    <option value="1901">1901</option>
+    <option value="1900">1900</option>
+</select>
+              </div>
+             <!-------------------------------------------->
+             <!------------------------------------------->
+             <div style="width:16%; height:39px; float:left; margin-left:-6%;">
+                    <!--       <input type="date" placeholder="January (01)" style="width:99%;background:none; margin-left:3%;   font-size:9px; color:#999; border-radius:3px; margin:0px auto;height:38px; border:none"/>-->
+                  <input type="text" placeholder="ABC" style=" outline:none;width:100%; background:none; font-size:14px; color:#999; border-radius:3px; margin:0px auto;height:38px; border:none" />
+              </div>
+             <!----------------------------------------------->
+           </div><!--close of cardholder-->
+         
+            </div><!--close of paymentetailscontent-->
+           
+            </div><!--close of paymentcontentwrapper-->
+            
+            <input type="button" id="printbadge" title="Print" value="Pay and Print" style=" width:30%; margin-left:36%; margin-top:5px;"/>
+            
+            </div><!--close of paymentwrapper-->
+            
+            
+            </div><!--close of payment-------->
+      
+    </div>
+    <!-- #content--> 
+  </div>
+  <!-- #container-->
+  <footer style="width:100%; padding:0px;">
+    <div class="info-footer" style="margin:0px;" >
+      <div id="left">
+        <p>Copyright &copy; 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Booth Leads </p>
+      </div>
+    </div>
+  </footer>
+  
+</section>
+<!-- #middle-->
+
+<div class="clear"></div>
+</body>
+
+</apex:page>

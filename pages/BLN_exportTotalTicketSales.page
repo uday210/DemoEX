@@ -1,0 +1,55 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_TicketSalesReportCon" contentType="application/vnd.ms-excel#TotalTicketSales.xls" readOnly="true">
+<table class="display" border="1">
+  <thead>
+  
+      <tr>
+      <th style="width:11%;">Payment Type</th>
+      <th style="width:11%;">Sold Quantity</th>
+      <th style="width:11%;">Item Total ({!currencySymbol})</th>
+      <th style="width:11%;">Tax({!currencySymbol})</th>
+      <th style="width:11%;">Fee ({!currencySymbol})</th>
+      <th style="width:11%;">Discount ({!currencySymbol})</th>
+      <th style="width:11%;">Amount ({!currencySymbol})</th>
+    </tr>
+   
+  </thead>
+  <!----->
+  
+  <tbody>
+  <apex:variable var="totqty" value="{!0}"/> 
+  <apex:variable var="totprice" value="{!0}"/> 
+  <apex:variable var="tottax" value="{!0}"/> 
+  <apex:variable var="totfee" value="{!0}"/> 
+  <apex:variable var="totdiscount" value="{!0}"/> 
+  <apex:variable var="totamt" value="{!0}"/> 
+  <apex:repeat value="{!mainlistpayment}" var="mainp">
+  <tr>
+  <td>{!mainp.PaymentType}</td>
+  <td>{!mainp.Quantity}</td>
+  <td class="amount">{!mainp.Price}</td>
+  <td class="amount">{!mainp.Tax}</td>
+  <td class="amount">{!mainp.Fee}</td>
+  <td class="amount">{!mainp.Discount}</td>
+  <td class="amount">{!mainp.Amount}</td>
+  </tr>
+  <apex:variable var="totqty" value="{!totqty+mainp.Quantity}"/>
+  <apex:variable var="totprice" value="{!totprice+mainp.Price}"/>  
+  <apex:variable var="tottax" value="{!tottax+mainp.Tax}"/> 
+  <apex:variable var="totfee" value="{!totfee+mainp.Fee}"/> 
+  <apex:variable var="totdiscount" value="{!totdiscount+mainp.Discount}"/> 
+  <apex:variable var="totamt" value="{!totamt+mainp.Amount}"/>
+  </apex:repeat>
+  <tr>
+  <td>Total Sales</td>
+  <td>{!totqty}</td>
+  <td class="amount">{!totprice}</td>
+  <td class="amount">{!tottax}</td>
+  <td class="amount">{!totfee}</td>
+  <td class="amount">{!totdiscount}</td>
+  <td class="amount">{!totamt}</td>
+  </tr>
+    
+  </tbody>
+ 
+</table>
+</apex:page>

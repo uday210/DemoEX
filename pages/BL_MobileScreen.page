@@ -1,0 +1,162 @@
+<apex:page controller="BL_MobileScreenCon" standardStylesheets="false" showHeader="false" action="{!login1}">
+ 
+
+  <style>
+.custPopup{
+            color:#000000;
+            background-color:white;
+            
+            
+             position: absolute;
+             top:10px;
+             left:0px;
+             right:0px;
+             z-index: 9999;
+            
+            
+            width:70%;
+            height: auto;
+            margin:0 auto;
+
+          -moz-border-radius-bottomleft:6px; -webkit-border-bottom-left-radius:6px; -moz-border-radius-bottomright:6px; -webkit-border-bottom-right-radius:6px; border-radius:0 0 6px 6px; -moz-box-shadow:0 0 64px #000; -webkit-box-shadow:0 0 64px #000; box-shadow:0 0 64px #000;
+           font: 12px/24px "Lucida Grande",Arial,sans-serif;
+        
+           //background-color:#eee; color:#000;  padding-bottom:4px; width:600px; margin-top:100px; -moz-border-radius-bottomleft:6px; -webkit-border-bottom-left-radius:6px; -moz-border-radius-bottomright:6px; -webkit-border-bottom-right-radius:6px; border-radius:0 0 6px 6px; -moz-box-shadow:0 0 64px #000; -webkit-box-shadow:0 0 64px #000; box-shadow:0 0 64px #000;
+
+        }
+        .popupBackground{
+        
+            background-color:#000000;
+            Opacity:0.50;                    
+            width: 100%;
+            height: 150%;
+            position: absolute;
+            left:0px;
+            top:0px;
+            z-index: 599;
+                        
+            }
+
+</style>
+
+
+
+
+<html> 
+<head> 
+    <title>My Page</title> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"/> 
+    
+    <apex:includeScript value="{!$Resource.jquerymobilejs}"/>
+ <apex:includeScript value="{!$Resource.minmobile}"/>
+ <apex:stylesheet value="{!$Resource.jquerymobilecss}"/>
+  
+</head> 
+<body> 
+
+<div data-role="page">
+
+    <div data-role="header" data-theme="b">
+    <h1>{!bg.BT_Name__c}</h1>
+    <!--    <h1>{!companyName}</h1> -->
+    </div><!-- /header -->
+
+<apex:form forceSSL="true">
+  
+  
+  <script type="text/javascript">
+function disp_prompt()
+  {
+  var fname=prompt("Please enter Email Address:","Email Address");
+  
+ if(fname.indexOf("@")!= -1){
+ hitMe(fname);
+  }
+  }
+</script>
+  
+ <div data-role="content">  
+   <ul data-role="listview" data-inset="true">
+     
+     <apex:repeat value="{!forPdfType}" var="pdfval">
+      <apex:repeat value="{!pdfval.attachments}" var="attvalue">
+      <li data-icon="false">
+        <a rel="external" href="/servlet/servlet.FileDownload?file={!attvalue.id}" style="color:#008AB8;text-decoration:underline;" target="_blank">{!pdfval.Link_LabelName__c}</a>     </li>  
+     </apex:repeat>
+   </apex:repeat>
+    
+    
+    <apex:repeat value="{!forurlType}" var="urlval">
+        <li data-icon="false">
+        <a rel="external" href="http://{!urlval.Registration_Link__c}" style="color:#008AB8;text-decoration:underline;" target="_blank">{!urlval.Link_LabelName__c}</a>     </li>  
+    
+     </apex:repeat>
+    
+    
+    
+    <apex:repeat value="{!inn}" var="innval">
+       <li data-icon="false">
+        <a rel="external" href="/servlet/servlet.FileDownload?file={!innval.str}" style="color:#008AB8;text-decoration:underline;">{!innval.strobj.Link_LabelName__c}</a>     </li>  
+       </apex:repeat>
+    
+    <li data-icon="false">
+    <apex:commandLink action="{!interested}" value="I am Interested"  style="color:#008AB8;text-decoration:underline;" /></li>
+    
+    <apex:outputpanel >
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!intren}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:70%;"  rendered="{!intren}">
+    
+    
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="margin:0px auto;">
+   
+    <tr>
+        <td colspan="2">
+               <div data-role="header" data-theme="b">
+                   <h1>Lead Contact Details</h1>
+               </div>
+         </td>
+   
+  </tr>
+  <tr>
+    <td style="padding-left:20px;">Name:</td>
+    <td style="padding-right:20px;"><apex:inputText value="{!Name}" styleClass="gwt-TextBox glow"/></td>
+  </tr>
+  <tr>
+    <td style="padding-left:20px;">Email:</td>
+    <td style="padding-right:20px;"><apex:inputText value="{!EmailAddress}" styleClass="gwt-TextBox glow"/></td>
+  </tr>
+  <tr>
+    <td style="padding-left:20px;">Phone:</td>
+    <td style="padding-right:20px;"><apex:inputText value="{!Phonenumber}" styleClass="gwt-TextBox glow"/>  </td>
+  </tr>
+</table>
+ 
+      
+    <table cellpadding="0" cellspacing="5" border="0" align="center" style="text-align:center;">
+        <tr>
+            <td><apex:commandButton action="{!send}" value="Send"/></td>
+            <td><apex:commandButton action="{!cancel}" value="Close"/></td>
+        </tr>
+    </table>
+    
+    </apex:outputpanel>
+    </apex:outputpanel>
+    
+    </ul> <br /><br /><br />
+    
+    <font style="color:Red;">Note: Please use Opera Mini Browser to download Contact Information, it is not supported on Android Browser.</font>
+    
+ </div>   
+
+     
+</apex:form>
+</div>
+
+</body>
+ </html>
+ 
+ 
+ 
+ 
+ 
+</apex:page>

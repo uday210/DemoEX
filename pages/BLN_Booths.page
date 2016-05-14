@@ -1,0 +1,2618 @@
+<apex:page controller="BLN_BoothsCon" showheader="false" sidebar="false" action="{!displayPermissions}" standardStylesheets="false" id="pg">
+<style>
+.ytwrapersp {
+   width: 100%;
+   display: none;
+   float: left;
+   margin-bottom: 10px;
+}
+
+.ytboxsp{
+position: relative;
+   border: 1px solid #ddd;
+   width: 30%;
+   height: 180px;
+   margin-top: 10px;
+   /* display: inline-block; */
+   float: left;
+   margin-right: 1%;
+   margin-left: 1%;
+   border-radius: 3px;
+   padding: 4px;
+}
+.ytboxsp .crossiconsp{
+position: absolute;
+   right: -17px;
+   top: -17px;
+   width: 30px;
+   cursor: pointer;
+}
+</style>
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+    <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" />
+    <!-----------//datatable stylescss------------->
+ 
+    <!-------------basic template html component------------------------------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!Booths}">
+    <c:ed_popupbox >
+    </c:ed_popupbox>
+     
+        <!----------AjaxLoader Component------------------>
+        <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}" />
+        <!----------//AjaxLoader Component------------------>
+        <apex:form id="fm">
+        
+         <apex:inputhidden value="{!boothid}" id="hiddenboothid"/>
+                        <!---------------------template code------------------>
+           <apex:outputPanel id="maingrid" rendered="{!IF((editPopUp==false && editspPopUp ==false),true,false)}"> 
+            <div class="TabbedPanelsdf"> 
+                <!---------------print and options button------------------>
+                <div class="print_export_cont" id="print_export_cont">
+                    <!-----start of actions buttons nav----->
+                    <nav class="togglebtnnav" style="display: inline-block;">
+                        <ul style="float: none; margin-top: 0px; margin-left: 4px;">
+                            <li id="login1"><span class="togglebtn"> <i
+                                class="fa fa-gear">&nbsp;&nbsp;</i> <strong> <i class="fa fa-angle-down fa-1x"></i> </strong>
+                        </span>
+                                <ul class="login-content1">
+                                    <li><a id="bootharea_btn" onclick="checklen(this);">Update Booth Area </a></li>
+                                    <li><a id="updateroom_btn" onclick="checklen(this);">Update Room</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!-----end of actions nav---->
+                    &nbsp;
+                    <apex:commandLink styleClass="togglebtn" action="{!printBooths}" target="_blank" style="padding: 3px 5px;padding-bottom:5px;" title="Print">
+                        <i class="fa  fa-print" style="font-size: 15px; color: #ffffff;"></i>
+                    </apex:commandLink>
+                </div>
+                <div class="clear"></div>
+
+                <div class="print_export_cont" id="print_sponsor" style="display:none">
+                    <apex:commandLink styleClass="togglebtn" action="{!printSponsors}" target="_blank" style="padding: 3px 5px;padding-bottom:5px;" title="Print">
+                        <i class="fa  fa-print" style="font-size: 15px; color: #ffffff;"></i>
+                    </apex:commandLink>
+                </div>
+                 <br/><br/>
+               
+                <div class="clear"></div>
+                </div> 
+
+                <!-------------//end of print options button-------->
+                <div id="TabbedPanels1" class="TabbedPanels" style=" width:97.7%; margin-left:1%; margin-top:10px;">
+                    <ul class="TabbedPanelsTabGroup">
+                        <li id="tab1clk" class="TabbedPanelsTab" onClick="document.getElementById('print_export_cont').style.display='';document.getElementById('print_sponsor').style.display='none';">Exhibitors</li>
+                        <li id="tab2clk" class="TabbedPanelsTab" onClick="document.getElementById('print_export_cont').style.display='none';document.getElementById('print_sponsor').style.display='';">Sponsors</li>
+                    </ul>
+                    <div class="TabbedPanelsContentGroup" style="padding-top:5px;">
+
+                        <!--------------------start of ist tab------------------>
+                        <div class="TabbedPanelsContent" style="padding-top:0px;">
+                            <!---------------------template code------------------>
+                            
+                            <span class="right" style="text-align:right;">
+                            <apex:selectList value="{!selectedFilterType}" size="1" multiselect="false" styleClass="selectlist-datatable" id="sl"> 
+                                <apex:selectOptions value="{!filterTypes}"/>
+                                <apex:actionSupport event="onchange" oncomplete="table.draw()"/>
+                            </apex:selectList></span>
+                            <span class="labeltitles right" style="text-align:left;">Filter By : &nbsp;</span>
+                            <div class="datatable-wrapper">
+                                <!---start of table----->
+                                
+                                <table id="example" class="display">
+                                
+                                    <thead>
+                                        <tr>
+                                            <td class="chkboxth">
+                                                <input type="checkbox" name="set" onclick="setChecked1(this)" />
+                                            </td>
+                                            <th style="display:none">Ticket ID</th>
+                                            <th>Action</th>
+                                            <th>Company Logo</th>
+                                            <th>Company Name</th>
+                                            <th class="border-ryt0px">Booth Number</th>
+                                            <th>&nbsp;</th> 
+                                            <th class="border-ryt0px">Booth Size</th>
+                                           <th>&nbsp;</th> 
+                                            <th class="border-ryt0px">Booth Area</th>
+                                             <th>&nbsp;</th> 
+                                            <th class="border-ryt0px">Room</th>
+                                            <th>&nbsp;</th> 
+                                           <!--<th> <div class="textofl">Company Description  </div></th> -->
+                                            <th>FaceBookId</th>
+                                            <th>LinkedInId</th>
+                                            <th>TwitterId</th>
+                                            <th>Blogger</th>
+                                            <th>Blog URL</th>
+                                            <th>Website URL</th>
+                                            <th>Visibility</th>
+                                            <th>Ticket Name</th>
+                                            <th>Ticket Type</th>
+                                            <th>Order ID</th>
+
+                                        </tr>
+                                    </thead>
+
+                                   <!-- <tbody> -->
+                                       
+                                        <!--------------------->
+                                   <!-- </tbody> -->
+                                </table>
+
+                                <!---end of table----->
+                            </div>
+                            <!--close of datatable-wrapper---->
+                        </div>
+                        <!--close of tab content1---->
+
+                        <!-----------------------start of 2nd tab content------------------------------>
+
+                        <div class="TabbedPanelsContent" style="padding-top:0px;">
+                            <!------------>
+
+                            <span class="right" style="text-align:right;">
+                            <apex:selectList value="{!selectedFilterType1}" size="1" multiselect="false" styleClass="selectlist-datatable" id="sl1"> 
+                                <apex:selectOptions value="{!filterTypes1}"/>
+                                <apex:actionSupport event="onchange" action="{!mainMethod}"/>
+                            </apex:selectList></span>
+                            <span class="labeltitles right" style="text-align:left;">Filter By : &nbsp;</span>
+                            <!--------->
+                            <div class="datatable-wrapper">
+
+                                <!-----datatable start----->
+                                <table id="example1" class="display" >
+
+                                    <thead>
+                                        <tr>
+                                            <th width="2%"></th>
+                                            <th>Action</th>
+                                            <th>Company Logo</th>
+                                            <th>Company Name</th>
+                                            <th>Sponsorship Category</th>
+                                            <th>&nbsp;</th>
+                                            <th>Logo Size</th>
+                                            <!--<th>
+                                                <div class="textofl"> Company Description </div>
+                                            </th>-->
+                                            <th>FaceBookId</th>
+                                            <th>LinkedInId</th>
+                                            <th>TwitterId</th>
+                                            <th>Blogger</th>
+                                            <th>Blog URL</th>
+                                            <th>Website URL</th>
+                                            <th>Visibility</th>
+                                            <th>Ticket Name</th>
+                                            <th>Ticket Type</th>
+                                            <th>Order ID</th>
+
+                                        </tr>
+                                    </thead>
+                                    <!----->
+
+                                    <tbody>
+                                    <apex:variable var="listcou" value="{!0}" id="listcountid"/>
+                                        <apex:repeat value="{!sponsorticlist}" var="sp">
+                                         <apex:variable var="listcou" value="{!listcou+1}"/>
+                                            <tr id="{!sp.ID}">
+                                                <td width="2%">
+                                                    <apex:image url="{!$Resource.DragButton}" style="margin-left:-5px;" /> </td>
+                                                <td>
+                                                    <apex:commandLink styleClass="edit-link" title="Edit" action="{!editspMethod}">
+                                                        <i class="fa fa-pencil fa-edit20px"></i>
+                                                        <apex:param value="{!sp.id}" name="editspID" />
+                                                    </apex:commandLink>
+                                                </td>
+                                                <td>
+                                                    <apex:outputPanel rendered="{!IF((sp.Ticket_id__r.tkt_profile__r.Company_Logo__c!=null),true,false)}">
+                                                        <div class="fixedimg_div" style="">
+                                                           
+                                                          <img class="fixedimg" src="/servlet/servlet.ImageServer?id={!sp.Ticket_id__r.tkt_profile__r.Company_Logo__c}&oid={!$Organization.Id}" /> 
+                                                        
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!IF((sp.Ticket_id__r.tkt_profile__r.Company_Logo__c==null),true,false)}">
+                                                        <div class="fixedimg_div" style="">
+                                                            <img class="fixedimg" src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/noimage.jpg')}" /></div>
+                                                    </apex:outputPanel>
+                                                </td>
+                                                <td>{!sp.Ticket_id__r.tkt_profile__r.TKT_Company__c}</td>
+                                                <td>{!sp.Sponsorship_Category__c}</td>
+                                                <td><i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_sc" title="Edit">&nbsp;</i></td>
+                                                <td>{!sp.Logo_Size__c}</td>
+                                                <!--<td>
+                                                    <div class="textofl">
+                                                     <apex:outputText value="{!left(sp.Ticket_id__r.tkt_profile__r.Company_Description__c, LEN(sp.Ticket_id__r.tkt_profile__r.Company_Description__c)-5)}" escape="false"/>
+                                                    </div>
+                                                </td>-->
+                                                <td>{!sp.Ticket_id__r.tkt_profile__r.FaceBookId__c}</td>
+                                                <td>{!sp.Ticket_id__r.tkt_profile__r.LinkedInId__c}</td>
+                                                <td>{!sp.Ticket_id__r.tkt_profile__r.TwitterId__c}</td>
+                                                <td>{!sp.Ticket_id__r.tkt_profile__r.Blogger__c}</td>
+                                                <td>{!sp.Ticket_id__r.tkt_profile__r.Blog_URL__c}</td>
+                                                <td>{!sp.Ticket_id__r.tkt_profile__r.Company_Website_URL__c}</td>
+                                                <td>{!sp.Visibility__c}</td>
+                                                <td>{!sp.Ticket_id__r.Item_Pool__r.Item_Pool_Name__c}</td>
+                                                <td>{!sp.Ticket_id__r.Item_Type__r.Name}</td>
+                                                <td>{!sp.Ticket_id__r.Order__r.Name}</td>
+                                            </tr>
+                                        </apex:repeat>
+                                    </tbody>
+
+                                </table>
+                                <!-----------end of datatable report-->
+                            </div>
+                            <!--close of datatable-wrapper-->
+
+                            <!----------->
+
+                        </div>
+                        <!--close of tab content2---->
+
+                        <!------------------------------------------------->
+                    </div>
+                    <!---close of TabbedPanelsContentGroup---->
+                </div>
+                <!-----close of TabbedPanels1--------->
+                <!-- script for DRAG & DROP Functionality -->
+                 <c:ed_RowDragAndDropByAsc ></c:ed_RowDragAndDropByAsc>
+                <!-- component for drag and drop -->
+                <script>
+                    $(document).ready(function() {
+                        var table = document.getElementById('example1');
+                        var tableDnD = new TableDnD();
+                        tableDnD.init(table);
+                    });
+                </script>
+                
+            </apex:outputPanel>
+            <!------------------------------------------------------------->
+            <!------Actions Functions for making a save call to database---------->
+            
+           
+            <apex:actionFunction name="save_boothsize" action="{!update_boothsize}" rerender="aaa">
+                <apex:param name="new_bsize" value="" />
+                <apex:param name="row_tid" value="" />
+            </apex:actionFunction>
+
+            <apex:actionFunction name="save_boothNo" action="{!update_boothNo}" rerender="bbb">
+                <apex:param name="new_bNo" value="" />
+                <apex:param name="row_tid1" value="" />
+            </apex:actionFunction>
+
+            <apex:actionFunction name="save_boothArea" action="{!update_boothArea}" rerender="ccc">
+                <apex:param name="new_bArea" value="" />
+                <apex:param name="row_tid2" value="" />
+            </apex:actionFunction>
+
+            <apex:actionFunction name="save_boothRoom" action="{!update_boothRoom}" rerender="ddd">
+                <apex:param name="new_bRoom" value="" />
+                <apex:param name="row_tid3" value="" />
+            </apex:actionFunction>
+
+            <apex:actionFunction name="save_boothRooms" action="{!update_boothRooms}" rerender="eee" status="AjaxLoader" oncomplete="location.reload();">
+                <apex:param name="newroom" value="" />
+                <apex:param name="ticketlist" value="" />
+            </apex:actionFunction>
+
+            <apex:actionFunction name="save_boothareas" action="{!update_boothareas}" rerender="fff" status="AjaxLoader" oncomplete="location.reload();">
+                <apex:param name="newbooth" value="" />
+                <apex:param name="ticketlist1" value="" />
+            </apex:actionFunction>
+
+
+            <apex:actionFunction name="save_newboothsize" action="{!update_newboothsize}" rerender="ggg" status="AjaxLoader">
+                <apex:param name="nw_bsizetxtval" value="" />
+                <apex:param name="row_tid4" value="" />
+            </apex:actionFunction>
+
+
+            <!----------Start Action function for updating display order---------------------->
+            <apex:actionFunction action="{!updateDisplayOrder}" name="rowOrderDisplay" reRender="example1">
+                <apex:param value="" name="displayOrder" />
+            </apex:actionFunction>
+
+
+            
+            
+          <apex:actionFunction action="{!editMethod}" name="Editexpform"  status="AjaxLoader" oncomplete="loaddefaultroom()" rerender="editPopUp,t">
+                 <apex:param value="" name="editID" />
+            </apex:actionFunction>
+                        
+                 <apex:actionFunction name="save_sponscat" action="{!save_sponscat}" reRender="hhhh" status="ajaxLoader" oncomplete="location.reload();">
+                <apex:param name="new_sc" value="" />
+                
+                <apex:param name="spid" value="" />
+            </apex:actionFunction>        
+
+             <script>
+  
+  try{
+ // Alert_orderview.render('dialogbox_orderview','orderview_dialogoverlay','Alert_orderview' ,this);
+  }catch(e){
+  //alert(e);
+  }
+  //}
+  //}
+  </script>
+    
+    <!--/*********************Java Script Section*******************/-->
+    <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/jquery.js')}">
+    </script>
+    <!------------------------script for inline editing-------------------------->
+    <script>
+
+
+       
+           </script>
+
+    <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+  <!--  <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"></script>-->
+  
+    <script type="text/javascript" class="init">
+        var localArray=[];
+        var j = jQuery.noConflict();
+        j(document).ready(function() {
+        
+           j('.popuppanel').hide();
+            j('#example1').dataTable({
+
+                "pagingType": "full_numbers",
+
+                "aLengthMenu": [
+                    [10, 15, 20, 25, -1],
+                    [10, 15, 20, 25, "All"]
+                ],
+                "iDisplayLength": 10,
+                "scrollX": true,
+                "sScrollX": "100%",
+                "sScrollXInner": "120%",
+
+
+
+                /**default orderid in asc sorting**/
+                "order": [
+                    [9, "desc"]
+                ],
+                "bSort": true,
+                "bAutoWidth": false, // Disable the auto width calculation
+
+                <!---------->
+
+
+
+            });
+
+
+
+        });
+        
+        
+        
+        var spid = '';
+        var tdsponscat_field = '';
+        var tdimgholder = '';
+        var tdsponscat_field1 ='';
+        var new_sc ='';
+        var old_sc='';
+        var jk4 = jQuery.noConflict();
+         
+            <!-------------->
+            jk4(".btnEditar_sc").bind("click", Editar_sc);
+          
+            function Editar_sc() {
+                jk4(".btnSalvar_sc").unbind("click", Save_sc);
+                jk4(".btnEditar_sc").unbind("click", Editar_sc);
+                var par = jk4(this).parent().parent(); //tr
+                var parid = jk4(this).parent().parent().index();
+                //alert(parid);
+                var editrowid = jk4(this).closest('tr').attr('id');
+                spid = editrowid;
+               // alert(spid);
+                var unqsel_id1 = '\'selectList' + parid + '\'';
+
+                tdsponscat_field = par.children("td:nth-child(5)");
+
+                old_sc= tdsponscat_field.text();
+
+                tdimgholder = par.children("td:nth-child(6)");
+                
+                var sponscatlst1 = '{!sponscatlst}'.split(",");
+               // alert(sponscatlst1);
+
+                tdsponscat_field.html("<select id=" + unqsel_id1 + " class='selectlist' style='width:auto;'></select>");
+                
+                var sel = document.getElementById('selectList' + parid);//selectList1
+                
+               // var sel =$('#selectList' + parid);//selectList1
+              //  console.log(sel);
+                if (sponscatlst1.length > 1) {
+               console.log(sel);
+                    for (var i = 0; i < sponscatlst1.length - 1; i++) {
+                        var opt = document.createElement('option');
+                       // console.log(opt);
+                       // alert(sel);
+                        opt.innerHTML = sponscatlst1[i];
+                        opt.value = sponscatlst1[i];
+                        //alert(sel);
+                        sel.appendChild(opt);
+                    }
+                    tdimgholder.html("<i class='fa fa-save  fa-save20px btnSalvar_sc' title='Save' >&nbsp;</i> <i class='fa fa-plus-square-o fa-add-blue' id='save_nwsc'  onclick =Alert_sc.render('dialogbox_sc','sc_dialogoverlay','Alert_sc',this) title='Add New' ></i>");
+                } else {
+                    var opt = document.createElement('option');
+                    opt.innerHTML = "---None---";
+                    opt.value = "---None---";
+                    sel.appendChild(opt);
+                    tdimgholder.html("<i class='fa fa-plus-square-o fa-add-blue' id='save_nwsc'  onclick =Alert_sc.render('dialogbox_sc','sc_dialogoverlay','Alert_sc',this) title='Add New' ></i>");
+                }
+
+                //tdsponscat_field1.html("<input type='text' id='txt' style='width:auto;display:none;' value='"+tdsponscat_field1.html()+"'/>");
+
+
+                jk4(".btnSalvar_sc").bind("click", Save_sc);
+                jk4(".btnEditar_sc").bind("click", Editar_sc);
+
+            };
+        
+            <!------------->
+            function Save_sc() {
+                jk4(".btnEditar_sc").unbind("click", Editar_sc);
+                var par = jk4(this).parent().parent(); //tr
+                var parid = jk4(this).parent().parent().index();
+
+
+                tdsponscat_field1 = par.children("td:nth-child(5)");
+
+                var tdimgholder = par.children("td:nth-child(6)");
+                var sel = document.getElementById('selectList' + parid);
+                //alert(sel.id);
+                var selectid = '#' + sel.id + ' option:selected';
+                //alert(selectid);
+                //added to send to backend start
+
+                new_sc = jk4(selectid).text();
+                //alert(new_bsize);
+                // alert(tdboothsize_field1.children("input[type=text]").val());
+
+                //var row_tid=par.text();
+                //alert('spidcfvvfffff ' + spid);
+                
+                var sc_val=par.children("td:nth-child(7)").text();
+               // alert('sc_val'+sc_val);
+               // var temps=confirm('Changing the Category to ' + new_sc + ' will affect the Logo size.');
+                Alertconfirm.render('Changing the Category to ' + new_sc + ' will affect the Logo size.', 'Confirmation', this, 'Ok', 'Cancel', 'Alertconfirm');
+               // if(temps = true){
+               // save_sponscat(new_sc, spid);
+                
+                //}
+
+
+                tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_sc' title='Edit' >&nbsp;</i>");
+
+                jk4(".btnEditar_sc").bind("click", Editar_sc);
+
+            };
+
+            <!------------------>
+        
+        /********end of inline editing for sponsorship category*****/
+
+    </script>
+    <!--------//end of datatable js component------------->
+
+    <!---------checkbox select function-------------------->
+    <script>
+        var arr = []; //Global array list variable 
+        /*******adding select row arraylist function*******/
+        function pusharrobj(rowidd) {
+            arr.push(rowidd);
+        }
+        /*****************function calling on select all checkbox*******************************/
+        function setChecked1(obj) {
+        
+            var check = document.getElementsByName("id[]");
+            for (var i = 0; i < check.length; i++) {
+                check[i].checked = obj.checked;
+                if (obj.checked == true) {
+                    $(check[i]).parent().parent().addClass("currenttr"); //highlighting the checked rows
+                    //var x = check[i].parentNode.parentNode.setAttribute('id', 'trr' + (i + 1)); //assign select row's id
+                    //alert(x);
+                    pusharrobj(check[i].parentNode.parentElement.id); //id's adding into array
+                } else {
+                    $(check[i]).parent().parent().removeClass("currenttr"); //removing the highlight the checked rows
+                    arr = []; //on unchecked clearing the arraylist 
+                }
+
+            }
+        }
+        /********************function for rowlevel(individual) check****************************/
+        function rowchk1(rowchks) {
+            var y = rowchks.parentNode.parentNode.rowIndex; //getting the select checkbox row index
+           // var x = rowchks.parentNode.parentNode.setAttribute('id', 'trr' + (y)); //assigining the id =       
+            if (rowchks.checked == true) {
+                $(rowchks).parent().parent().addClass("currenttr"); //highlighting the checked rows
+              // alert(rowchks.parentNode.parentNode.id);
+                pusharrobj(rowchks.parentNode.parentNode.id); //adding into the arraylist
+            } else {
+                $(rowchks).parent().parent().removeClass("currenttr"); //removing the highlight the checked rows
+                for (var i = 0; i < arr.length; i++) {
+                    if (rowchks.parentNode.parentNode.id == arr[i]) //comparing the rowid if already in the list
+                    {
+                        arr.splice(i, 1); //removing the unselectedchkbox row id
+                    }
+
+                }
+
+            }
+          // alert( pusharrobj);
+        }
+
+        /****************function calling on click of options(condition if arraylength greater than1)******************/
+        function checklen(clkbtn_id) {
+            if (arr.length >= 1) {
+                if (clkbtn_id.id == 'bootharea_btn') {
+                    Alert_barea.render('dialogbox_area', 'broom_dialogoverlay', 'Alert_barea', clkbtn_id);
+                } else if (clkbtn_id.id == 'updateroom_btn') {
+                    Alert_broom.render('dialogbox_room', 'barea_dialogoverlay', 'Alert_broom', clkbtn_id);
+                }
+            } else {
+                Alert.render('Please Select Atleast One Record', 'Alert', 'ok');
+            }
+        }
+
+        /*********************function for roomupdates value on save button********/
+        function roomupdate() {
+            var newroom= document.getElementById("roomtxt").value;
+            if (arr.length == 0) {
+
+                Alert.render('Please Select Atleast One Record', 'Alert !', 'ok'); //calling alert popup
+                Alert_broom.Cancel(); //call of closing the popup method    
+                document.getElementById("roomtxt").value = ''; //clearing the roomtextbox
+            } else {
+                var ticketlist = ''; //added tosave to db
+                for (var j = 0; j < arr.length; j++) {
+                //   var roomval =document.getElementById("roomtxt").value;
+                     ticketlist +=arr[j]+ ',';
+
+                    Alert_broom.Cancel(); //call of closing the popup method    
+                }
+                save_boothRooms(newroom, ticketlist); //added tosave to db
+            }
+
+
+
+
+        }
+        /********************function for booth Area updates value on save button*************/
+        function boothupdate() {
+        //alert('updateroom');
+            var newbooth= document.getElementById("boothtxt").value;
+            if (arr.length == 0) {
+
+                Alert.render('Please Select Atleast One Record', 'Alert !', 'ok'); //calling alert popup
+                Alert_barea.Cancel(); //call of closing the popup method
+                document.getElementById("boothtxt").value = '';
+
+            } else {
+                var ticketlist1 = ''; //added tosave to db   
+                for (var j = 0; j < arr.length; j++) {
+                       //added tosave to db start
+
+                  // var newbooth   =document.getElementById("boothtxt").value;
+               
+                    ticketlist1 +=arr[j]+ ',';
+                    //added tosave to db end
+                    Alert_barea.Cancel(); //call of closing the popup method
+
+
+
+                }
+                save_boothareas(newbooth, ticketlist1); //added tosave to db
+            }
+
+
+
+        }
+        /*******************************************************/
+    </script>
+    <!------------//checkbox function------------------>
+    <!------------start of popup component function------------------>
+  <!--  <c:ed_popupbox >
+    </c:ed_popupbox>  -->
+    <!------------/close of popup component function------------------>
+    <script>
+        /*******creating instances for calling popups*******/
+        var Alert_barea = new Custom_formPopup(); //Area popup
+        var Alert_broom = new Custom_formPopup(); //room popup
+        var Alert_bsize = new Custom_formPopup(); //size popup  
+        var Alert_bsize1 = new Custom_formPopup(); //size popup 
+        var Alert_sc = new Custom_formPopup(); //sc popup
+        /***************/
+    </script>
+    <!---------popup for booth Area------->
+    <!--close of dialogoverlay-->
+    <div class="dialogoverlay" id="barea_dialogoverlay" style="z-index:9999;"></div>
+    <div id="dialogbox_area" style="display: none; width: 40%; margin-left: 29%;z-index:99991;">
+        <a id="close" onclick="Alert_barea.Cancel()">×</a>
+        <div class="grid-1" style="width: 98%; margin-left: 1%; padding-right: 0px;">
+            <div class="title-grid">Booth Area</div>
+            <div class="content-gird">
+                <!-------------->
+                <div style="width: 65%; margin: 0px auto;">
+                    <label>Booth Area:</label>
+                    <input type="text" id="boothtxt" />
+                </div>
+                <!--close of content-grid--->
+                <!----------------->
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="button-a blue" onclick="Alert_barea.Save( ); return false;">Save</button>
+                    &nbsp;&nbsp;
+                    <button class="button-a dark-blue" onclick="Alert_barea.Cancel( )">Cancel</button>
+                </div>
+                <!--------------->
+            </div>
+            <!--close of content-grid--->
+        </div>
+        <!--close of grid-1----->
+    </div>
+    <!--close of dialogbox---->
+    <!------------end of popup for booth Area------------->
+
+    <!---------popup for booth Room------->
+    <div class="dialogoverlay" style=" z-index:9999;" id="broom_dialogoverlay"></div>
+    <div id="dialogbox_room" style="display: none; width: 40%; margin-left: 29%;z-index:99991;">
+        <a id="close" onclick="Alert_broom.Cancel()">×</a>
+        <div class="grid-1" style="width: 98%; margin-left: 1%; padding-right: 0px;">
+            <div class="title-grid">Room</div>
+            <div class="content-gird">
+                <!-------------->
+                <div style="width: 65%; margin: 0px auto;">
+                    <label>Room:</label>
+                    <input type="text" id="roomtxt" />
+                </div>
+                <!--close of conteent-grid--->
+
+                <!----------------->
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="button-a blue" onclick="Alert_broom.Save();return false;">Save</button>
+                    &nbsp;&nbsp;
+                    <button class="button-a dark-blue" onclick="Alert_broom.Cancel()">Cancel</button>
+                </div>
+                <!--------------->
+                <!----------------->
+            </div>
+            <!--close of content-grid--->
+        </div>
+        <!--close of grid-1----->
+    </div>
+    <!--close of dialogbox---->
+    <!------------end of popup for booth Room------------->
+    <!---------popup for addboothsize------->
+    <div class="dialogoverlay" id="bsize_dialogoverlay" style="z-index:9999;"></div>
+    <div id="dialogbox_addsize" style="display: none; width: 40%; margin-left: 29%;z-index:99991;">
+        <a id="close" onclick="Alert_bsize.Cancel()">×</a>
+        <div class="grid-1" style="width: 98%; margin-left: 1%; padding-right: 0px;">
+            <div class="title-grid">New Booth Size</div>
+            <div class="content-gird">
+                <!-------------->
+                <div style="width: 65%; margin: 0px auto;">
+                    <label>Booth Size:</label>
+                    <input type="text" id="nw_bsizetxt" />
+                </div>
+                <!--close of conteent-grid--->
+
+                <!----------------->
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="button-a blue" onclick="Alert_bsize.Save(); return false;">Save</button>
+                    &nbsp;&nbsp;
+                    <button class="button-a dark-blue" onclick="Alert_bsize.Cancel()">Cancel</button>
+                </div>
+                <!--------------->
+
+
+                <!----------------->
+            </div>
+            <!--close of content-grid--->
+        </div>
+        <!--close of grid-1----->
+    </div>
+    <!--close of dialogbox---->
+
+
+
+    <!---------popup for addboothsize------->
+    <div class="dialogoverlay" id="bsize_dialogoverlay1" style="z-index:9999;"></div>
+    <div id="dialogbox_addsize1" style="display: none; width: 40%; margin-left: 29%;z-index:99991;">
+        <a id="close" onclick="Alert_bsize1.Cancel()">×</a>
+        <div class="grid-1" style="width: 98%; margin-left: 1%; padding-right: 0px;">
+            <div class="title-grid">New Booth Size1</div>
+            <div class="content-gird">
+                <!-------------->
+                <div style="width: 65%; margin: 0px auto;">
+                    <label>Booth Size:</label>
+                    <input type="text" id="nw_bsizetxt1" />
+                </div>
+                <!--close of conteent-grid--->
+
+                <!----------------->
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="button-a blue" onclick="Alert_bsize1.Save()">Save</button>
+                    &nbsp;&nbsp;
+                    <button class="button-a dark-blue" onclick="Alert_bsize1.Cancel()">Cancel</button>
+                </div>
+                <!--------------->
+
+
+                <!----------------->
+            </div>
+            <!--close of content-grid--->
+        </div>
+        <!--close of grid-1----->
+    </div>
+    <!--close of dialogbox---->
+    <!-------------end of function call on New Booth Size Update---->
+
+    <!---------popup for add sponsorship category------->
+    <div class="dialogoverlay" id="sc_dialogoverlay" style="z-index:9999;"></div>
+    <div id="dialogbox_sc" style="display: none; width: 40%; margin-left: 29%;z-index:99991;">
+        <a id="close" onclick="Alert_sc.Cancel()">×</a>
+        <div class="grid-1" style="width: 98%; margin-left: 1%; padding-right: 0px;">
+            <div class="title-grid">New Sponsorship Category</div>
+            <div class="content-gird">
+                <!-------------->
+                <div style="width: 65%; margin: 0px auto;">
+                    <label>Sponsorship Category:</label>
+                    <input type="text" id="nw_sc" />
+                </div>
+                <!--close of conteent-grid--->
+
+                <!----------------->
+                
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="button-a blue" onclick="Alert_sc.Save(); return false;">Save</button>
+                    &nbsp;&nbsp;
+                    <button class="button-a dark-blue" onclick="Alert_sc.Cancel()">Cancel</button>
+                </div>
+                <!--------------->
+
+
+                <!----------------->
+            </div>
+            <!--close of content-grid--->
+        </div>
+        <!--close of grid-1----->
+    </div>
+    <!--close of dialogbox---->
+    <!-------------end of function call on New sponsorship category---->
+
+
+    <!--------------savecallbackfunction------------->
+     
+    <script>
+     
+
+       
+        function boothNum() {
+            save_boothNo(new_bNo, row_tid1);
+        }
+        
+        
+       
+        var oldvl = '';
+        var cnt=1;
+        function sendOldVal(oldval){
+            if(cnt==1)
+            oldvl=oldval;
+            cnt++;
+            //alert('DDDDD' + oldval);
+        }
+        
+        function validatesize(clkbtn_id ) { //clkbtn_id,oldval
+            
+            var spct = $('[id$=spcat]').text();
+            var logosz = $('[id$=logosize]').val();
+            //alert('oldvl111'+oldvl);
+            Alertconfirm.render('Changing the Logo Size to ' + logosz + ' will affect for all the ' + spct + ' categories', 'Confirmation', clkbtn_id, 'Ok', 'Cancel', 'Alertconfirm');
+        }
+                                    
+        
+
+<!------new code removed---------->
+<!----sponser code----->
+        function popup_savecallback(clkbtn) {
+            // update bootharea save logic  
+            if (clkbtn.id == 'bootharea_btn') {
+
+                boothupdate();
+            }
+            // update room save logic       
+            else if (clkbtn.id == 'updateroom_btn') {
+
+                roomupdate();
+            }
+            // update booth size save logic 
+            else if (clkbtn.id == 'save_nwbsize') {
+
+                ///update bsize saving function
+                var y = clkbtn.parentNode.parentNode.rowIndex; //getting the row index
+               // var x = clkbtn.parentNode.parentNode.setAttribute('id', 'trr' + (y)); //assigining the trid    
+                var nw_bsizetxtval = document.getElementById("nw_bsizetxt").value;
+                var currentrowid = clkbtn.parentNode.parentNode.id;
+                var new_bsize11 = currentrowid;
+                //alert(new_bsize11);
+               // var row_tid4 = document.getElementById(currentrowid).childNodes[3].innerHTML;
+                var row_tid4 = currentrowid;
+               // alert(row_tid4);
+                save_newboothsize(nw_bsizetxtval, row_tid4);
+                nw_bsizetxt.value = ''; //clearing the value....
+
+            } else if (clkbtn.id == 'save_nwbsize1') {
+                // alert('here');
+
+
+
+                if (document.getElementById("nw_bsizetxt1").value != '') {
+                    //    alert("notnull");
+                    var newval = document.getElementById("nw_bsizetxt1").value; //capturing text value
+                    /*  select = document.getElementById("bszlst");
+                    var nwsegmentlistopt = document.createElement('option');
+                    nwsegmentlistopt.value = newval;
+                    nwsegmentlistopt.innerHTML = newval;
+
+                //    alert('qqqqqq');
+                    
+                    $('#bszlst').append($('<option>', {
+                        value: nwsegmentlistopt,
+                        text: nwsegmentlistopt
+                    }));
+                   // alert('www');
+                    $("#bszlst option").val(nwsegmentlistopt.value).attr("selected", true);*/
+
+                    var select2 = $('[id$=bszlst]');
+
+                    select2.append('<option value="' + newval + ' " selected="selected">' + newval + '</option>');
+                    $('[id$=newbs]').val(newval);
+
+
+                }
+                Alert_bsize1.Cancel();
+                //alert('111');
+
+                /* var newval = document.getElementById("nw_bsizetxt1").value
+                 var sel = document.getElementById("bszlst");
+
+                     var opt = document.createElement('option');
+                     opt.innerHTML = newval;
+                     opt.value = newval;
+                     sel.appendChild(opt);*/
+
+            } else if (clkbtn.id == 'save_nwsc') {
+                //alert('sc');//nw_sc
+                var new_sc = $('[id$=nw_sc]').val();
+                //alert('spid1uday '+spid );
+                save_sponscat(new_sc, spid);
+                tdsponscat_field.html(new_sc);
+
+                tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_sc' title='Edit' >&nbsp;</i>");
+                $('[id$=nw_sc]').val('');
+
+            }
+        }
+        
+                var table;
+                var myresultlist;
+                var mynummyresultlist;
+                    $(document).ready(function() {
+                    
+                       
+                       
+                //alert('aa');
+                        j('#example').dataTable( {
+                        
+                       "scrollX": true, 
+         "sScrollX": "100%", 
+          "sScrollXInner": "250%", 
+             "pagingType": "full_numbers",
+             
+             "aLengthMenu": [[10, 15,20,25,50], [10,15,20, 25,50]],
+             "iDisplayLength": 10,
+                           "sDom": 'W<"clear">lfrtip', 
+             
+             /**default orderid in asc sorting**/
+              "order": [[0, "asc"]],
+         "bSort": false,
+         "bAutoWidth": false, // Disable the auto width calculation
+         "bFilter": true,
+         //"oColumnFilterWidgets": {
+         //"aiExclude": [ 0,2,4,5,6,7,9,10 ]
+         
+         //},
+         
+         "processing": true,
+             "serverSide": true,
+                "ajax": '{!$Page.BLN_boothshelperpage}',
+                 "fnServerData" : function ( sSource, aoData, fnCallback ) {
+
+    var aa= j('#example_filter').find('input').val();
+     aoData.push({ "name": "searchKey", "value": aa });
+     aoData.push({ "name": "filterKey", "value": $("[id$='sl']").val()});
+      j.ajax( {
+      "dataType": 'json',
+      "type": "GET",
+      "url": '{!$Page.BLN_boothshelperpage}',
+      "data": aoData,
+      "success": fnCallback,
+      "error": function (e) {
+           //  console.log(e);
+         }
+      } );
+      
+      },
+                  
+      "rowCallback": function( row, data ) {
+                         
+                         
+                         localArray.push(data.DT_RowId)
+                         if ( j.inArray(data.DT_RowId, arr) !== -1 ) {
+                              j(row).addClass("currenttr");
+                               j(row).find(":checkbox").prop("checked",true);
+                                
+                            }
+                       
+                              },
+                  
+                           "columns": [
+                           {
+                data:   "active",
+                render: function ( data, type, row ) {
+                       return '<input type="checkbox" name="id[]" onClick="rowchk1(this)" value="1" />';
+                    
+                }
+            },
+            {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       
+                        return '<div style="display:none">row.item.Ticket_id__r.Name</div>';
+                    }
+                },
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       return '<a onclick=editMethodaction("'+data.Id+'",this);> <i class="fa fa-pencil fa-edit20px"></i></a>';
+                    }
+                },
+                {
+                    data:  "imageUrl",
+                    render: function (data, type, row ) {
+                       
+                      
+                  if(row.item.Ticket_id__r.tkt_profile__r.Company_Logo__c==undefined){
+                        return '<div><img class="fixedimg" src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/noimage.jpg')}"  style=height:30px;width:60px;/></div>';
+                       }else{
+                       
+                        var ids= row.item.Ticket_id__r.tkt_profile__r.Company_Logo__c;
+                        
+                 
+                        return '<div><img class="fixedimg" src="/servlet/servlet.ImageServer?id='+ids+'&oid={!$Organization.Id}+" style=height:30px;width:60px; /></div>';
+
+                        }
+                                                  
+                       
+                    }
+                },
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                      if(row.item.Ticket_id__r.tkt_profile__r.TKT_Company__c !=undefined){
+                        return row.item.Ticket_id__r.tkt_profile__r.TKT_Company__c;
+                       }else{
+                       return '';
+                       }                             
+                       
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                      if(row.item.Booth_Number__c !=undefined){
+                        return row.item.Booth_Number__c;
+                        }else{
+                        return '';
+                        }
+                    }
+                },
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       return '<i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_bl" title="Edit" >&nbsp;</i>';
+                    }
+                },
+                
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       if(row.item.Booth_Size__c !=undefined){
+                        return row.item.Booth_Size__c;
+                       }else{
+                       return '';
+                       }                             
+                       
+                    }
+                },
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                        return '<i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_bsz" title="Edit">&nbsp;</i>';
+                    }
+                },
+                
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                      if(row.item.Booth_Area__c !=undefined){
+                        return row.item.Booth_Area__c;
+                        }else{
+                        return '';
+                        }                            
+                       
+                    }
+                },
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                        return '<i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_barea" title="Edit">&nbsp;</i>';
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                     if(row.item.BLN_Room__r !=undefined){
+                      return row.item.BLN_Room__r.Name;
+                       }else{
+                       return '';
+                       }                             
+                       
+                    }
+                },
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                        return '<i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_broom" title="Edit">&nbsp;</i>';
+                    }
+                },/*{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       
+                       // console.log(row);
+              if(row.item.Ticket_id__r.tkt_profile__r.Company_Description__c !=undefined){
+              
+                      return row.item.Ticket_id__r.tkt_profile__r.Company_Description__c;
+                        }else{
+                       return '';
+                       }                               
+                       
+                    }
+                },*/{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       if(row.item.Ticket_id__r.tkt_profile__r.FaceBookId__c!=undefined){
+                        return row.item.Ticket_id__r.tkt_profile__r.FaceBookId__c;
+                         } else{
+                       return '';
+                       }        
+                       
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       if(row.item.Ticket_id__r.tkt_profile__r.LinkedInId__c!=undefined){
+                        return row.item.Ticket_id__r.tkt_profile__r.LinkedInId__c;
+                        }else{
+                        return '';
+                        }
+                                                    
+                       
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       if(row.item.Ticket_id__r.tkt_profile__r.TwitterId__c!=undefined){
+                        return row.item.Ticket_id__r.tkt_profile__r.TwitterId__c;
+                        }else{
+                        return '';
+                        }                            
+                       
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+              if(row.item.Ticket_id__r.tkt_profile__r.Blogger__c!=undefined){
+                        return row.item.Ticket_id__r.tkt_profile__r.Blogger__c;
+                            }else{
+                            
+                            return '';
+                            }
+
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                     if(row.item.Ticket_id__r.tkt_profile__r.Blog_URL__c!=undefined){
+                        return row.item.Ticket_id__r.tkt_profile__r.Blog_URL__c;
+                        }  else{
+                        return '';
+                        }                          
+                       
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                       
+                       // console.log(row);
+             if(row.item.Ticket_id__r.tkt_profile__r.Company_Website_URL__c!=undefined){
+                        return row.item.Ticket_id__r.tkt_profile__r.Company_Website_URL__c;
+                      }else{
+                      return '';
+                      }                              
+                       
+                    }
+                },
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                        return row.item.Visibility__c;                           
+                    }
+                },
+                
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                      if(row.item.Ticket_id__r!=undefined && row.item.Ticket_id__r.Item_Pool__r!=undefined && row.item.Ticket_id__r.Item_Pool__r.Item_Pool_Name__c!=undefined){
+                        return row.item.Ticket_id__r.Item_Pool__r.Item_Pool_Name__c;
+                        }else{
+                        return '';
+                        }                       
+                       
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                     if(row.item.Ticket_id__r.Item_Type__r.Name!=undefined){
+                        return row.item.Ticket_id__r.Item_Type__r.Name;
+                        }else{
+                        return '';
+                        }                            
+                       
+                    }
+                },{
+                    data:   "item",
+                    render: function (data, type, row ) {
+                     if(row.item.Ticket_id__r.Order__r.Name!=undefined){
+                        return row.item.Ticket_id__r.Order__r.Name;
+                        }else{
+                        return '';
+                        }                            
+                       
+                    }
+                }
+                
+                
+            ],"columnDefs": [
+            {
+                "targets": [ 1 ],
+                "visible": false,
+                //"searchable": false
+            }
+        ],
+        
+        "fnDrawCallback":function(){
+             $("#example tbody tr").hover(function(){
+                        
+    
+        $(this).has("td").find(".fa_edithover").css("visibility","visible");
+        }, function(){
+       $(this).has("td").find(".fa_edithover").css("visibility"," hidden");
+    });
+    
+    $(".btnSalvar_bno").bind("click", Salvar_bno);
+     $(".btnEditar_bl").bind("click", Editar_bno);
+   
+                
+            /***********/
+            
+            function Editar_bno() {
+            //alert('123456');
+                $(".btnSalvar_bno").unbind("click", Salvar_bno);
+                $(".btnEditar_bl").unbind("click", Editar_bno);
+                var par = $(this).parent().parent(); //tr
+                var tdbadgeno_field = par.children("td:nth-child(5)");
+               // tdbadgeno_field1 = par.children("td:nth-child(6)");
+               // alert(tdbadgeno_field);
+                console.log(tdbadgeno_field);
+                oldVal = tdbadgeno_field;
+                //alert('oldVal'+oldVal);
+                var tdimgholder = par.children("td:nth-child(6)");
+                //var tdimgholder1 = par.children("td:nth-child(7)");
+                //console.log(tdimgholder1);
+                tdbadgeno_field.html("<input type='text'  value='" + tdbadgeno_field.html() + "'/>");
+
+                tdimgholder.html("<i class='fa fa-save  fa-save20px btnSalvar_bno' title='Save' id='ftab' >&nbsp;</i>");
+
+                $(".btnSalvar_bno").bind("click", Salvar_bno);
+                $(".btnEditar_bno").bind("click", Editar_bno);
+
+            };
+            /***********/
+        var jk2 = jQuery.noConflict();
+            function Salvar_bno() {
+              // console.log(oldVal);
+                
+                jk2(".btnEditar_bno").unbind("click", Editar_bno);
+                var par = jk2(this).parent().parent(); //tr
+                tdbadgeno_field1 = par.children("td:nth-child(5)");
+
+                var tdimgholder = par.children("td:nth-child(6)");
+              
+                //added to send to backend start
+                new_bNo = tdbadgeno_field1.children("input[type=text]").val();
+               
+                console.log(par[0].id);
+               
+                row_tid1 =par[0].id;
+
+                //var bnos = '{!bnolist}';
+                //var bnos='mynummyresultlist';
+                var bno = mynummyresultlist.split(',');
+                var r = true;
+                //alert(bno);
+                for (var i = 0; i < bno.length - 1; i++) {
+                    //alert(bno[i]+'bno[i]');
+                    //alert('new_bNo'+new_bNo);
+                    if (bno[i] == new_bNo && oldVal != new_bNo) {
+                        //r=confirm('Booth Number already used. Do you want to use the booth number again?');
+                        r = false;
+                        Alertconfirm.render('Booth Number already used. Do you want to use the booth number again?', 'Confirmation', this, 'Ok', 'Cancel', 'Alertconfirm');
+                        break;
+                    }
+                }
+
+                if (r == true) {
+                    //save_boothNo(new_bNo,row_tid1);
+                    boothNum();
+                    tdbadgeno_field1.html(tdbadgeno_field1.children("input[type=text]").val());
+                } else if (r == false) {
+                    tdbadgeno_field1.html(tdbadgeno_field1.children("input[type=text]").val());
+                }
+                //added to send to backend end
+
+
+
+                tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_bno' title='Edit' >&nbsp;</i>");
+
+                $(".btnEditar_bno").bind("click", Editar_bno);
+
+            };
+
+            /***********/
+/********inline editing for boothsize*****/
+    function Editar_bsz() {
+    //alert('r');
+                $(".btnSalvar_bsz").unbind("click", Save_bsz);
+                $(".btnEditar_bsz").unbind("click", Editar_bsz);
+                var par = $(this).parent().parent(); //tr
+                var parid = $(this).parent().parent().index();
+                var unqsel_id = '\'selectList' + parid + '\'';
+               // alert(unqsel_id);
+                var tdboothsize_field = par.children("td:nth-child(7)");
+
+                var tdimgholder = par.children("td:nth-child(8)");
+
+               // var boothsizelist1 = '{!boothsizelist}'.split(","); myresultlist
+                var boothsizelist1 = myresultlist.split(",");
+                tdboothsize_field.html("<select id=" + unqsel_id + " class='selectlist' style='width:auto;'></select>");
+
+                var sel = document.getElementById('selectList' + parid);
+                console.log(boothsizelist1 );
+                if (boothsizelist1.length > 1) {
+                //alert('tt');
+                    for (var i = 0; i < boothsizelist1.length - 1; i++) {
+                        var opt = document.createElement('option');
+                        opt.innerHTML = boothsizelist1[i];
+                        opt.value = boothsizelist1[i];
+                        sel.appendChild(opt);
+                    }
+                    tdimgholder.html("<i class='fa fa-save  fa-save20px btnSalvar_bsz' title='Save' >&nbsp;</i> <i class='fa fa-plus-square-o fa-add-blue' id='save_nwbsize'  onclick =Alert_bsize.render('dialogbox_addsize','bsize_dialogoverlay','Alert_bsize',this) title='Add New' ></i>");
+                } else {
+                    var opt = document.createElement('option');
+                    //alert('temppp');
+                    opt.innerHTML = "---None---";
+                    opt.value = "---None---";
+                    sel.appendChild(opt);
+                    tdimgholder.html("<i class='fa fa-plus-square-o fa-add-blue' id='save_nwbsize'  onclick =Alert_bsize.render('dialogbox_addsize','bsize_dialogoverlay','Alert_bsize',this) title='Add New' ></i>");
+                }
+
+                // tdboothsize_field1.html("<input type='text' id='txt' style='width:auto;display:none;' value='"+tdboothsize_field1.html()+"'/>");
+
+
+                $(".btnSalvar_bsz").bind("click", Save_bsz);
+                $(".btnEditar_bsz").bind("click", Editar_bsz);
+
+            };
+
+
+            <!------------->
+            function Save_bsz() {
+                $(".btnEditar_bsz").unbind("click", Editar_bsz);
+                var par = $(this).parent().parent(); //tr
+                var parid = $(this).parent().parent().index();
+                var tdboothsize_field1 = par.children("td:nth-child(7)");
+
+                var tdimgholder = par.children("td:nth-child(8)");
+                var sel = document.getElementById('selectList' + parid);
+                //alert(sel.id);
+                var selectid = '#' + sel.id + ' option:selected';
+                //alert(selectid);
+                //added to send to backend start
+
+                var new_bsize = $(selectid).text();
+                //alert(new_bsize);
+                // alert(tdboothsize_field1.children("input[type=text]").val());
+
+                //var row_tid = par.children("td:nth-child(2)").text();
+                var row_tid=par[0].id;
+                //alert(row_tid);
+
+                save_boothsize(new_bsize, row_tid);
+                //added to send to backend end
+
+                tdboothsize_field1.html($(selectid).text());
+
+                tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_bsz' title='Edit' >&nbsp;</i>");
+
+                $(".btnEditar_bsz").bind("click", Editar_bsz);
+
+            };
+
+            <!------------------>
+
+            $(".btnEditar_bsz").bind("click", Editar_bsz);
+            /******** END inline editing for boothsize*****/
+            
+            /************inline editing for bootharea***********/
+            /***********/
+            function Editar_barea() {
+                $(".btnSalvar_barea").unbind("click", Save_barea);
+                $(".btnEditar_barea").unbind("click", Editar_barea);
+                var par = $(this).parent().parent(); //tr
+                var tdbootharea_field = par.children("td:nth-child(9)");
+
+                var tdimgholder = par.children("td:nth-child(10)");
+
+                tdbootharea_field.html("<input type='text' id='' value='" + tdbootharea_field.html() + "'/>");
+
+                tdimgholder.html("<i class='fa fa-save  fa-save20px btnSalvar_barea' title='Save' >&nbsp;</i> ");
+
+               $(".btnSalvar_barea").bind("click", Save_barea);
+               $(".btnEditar_barea").bind("click", Editar_barea);
+
+            };
+            /***********/
+            function Save_barea() {
+
+                $(".btnEditar_barea").unbind("click", Editar_barea);
+                var par = jk3(this).parent().parent(); //tr
+
+                var tdbootharea_field = par.children("td:nth-child(9)");
+
+                var tdimgholder = par.children("td:nth-child(10)");
+                ///////////////////////
+
+                //added to send to backend start
+                var new_bArea = tdbootharea_field.children("input[type=text]").val();
+
+
+               // var row_tid2 = par.children("td:nth-child(2)").text();
+
+                var row_tid2 = par[0].id;
+                save_boothArea(new_bArea, row_tid2);
+                //added to send to backend end
+                //////////////////////
+
+                tdbootharea_field.html(tdbootharea_field.children("input[type=text]").val());
+
+                tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_barea' title='Edit' >&nbsp;</i>");
+
+                $(".btnEditar_barea").bind("click", Editar_barea);
+
+            };
+
+            /***********/
+
+            $(".btnEditar_barea").bind("click", Editar_barea);
+            /*************end inline editing for bootharea******/
+             /********inline editing for room***********/
+        var jk3 = jQuery.noConflict();
+        jk3(function() {
+            /***********/
+            function Editar_broom() {
+                jk3(".btnSalvar_broom").unbind("click", Save_broom);
+                jk3(".btnEditar_broom").unbind("click", Editar_broom);
+                var par = jk3(this).parent().parent(); //tr
+                var tdboothroom_field = par.children("td:nth-child(11)");
+
+                var tdimgholder = par.children("td:nth-child(12)");
+
+                tdboothroom_field.html("<input type='text' id='' value='" + tdboothroom_field.html() + "'/>");
+
+                tdimgholder.html("<i class='fa fa-save  fa-save20px btnSalvar_broom' title='Save' >&nbsp;</i> ");
+
+                jk3(".btnSalvar_broom").bind("click", Save_broom);
+                jk3(".btnEditar_broom").bind("click", Editar_broom);
+
+            };
+            /***********/
+            function Save_broom() {
+                jk3(".btnEditar_broom").unbind("click", Editar_broom);
+                var par = jk3(this).parent().parent(); //tr
+                var tdboothroom_field = par.children("td:nth-child(11)");
+
+                var tdimgholder = par.children("td:nth-child(12)");
+                ////////////////////
+                //added to send to backend start
+                var new_bRoom = tdboothroom_field.children("input[type=text]").val();
+
+                //var row_tid3 = par.children("td:nth-child(2)").text();
+                var row_tid3 = par[0].id;
+
+                save_boothRoom(new_bRoom, row_tid3);
+                //added to send to backend end
+
+                ///////////////////
+
+                tdboothroom_field.html(tdboothroom_field.children("input[type=text]").val());
+
+                tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_broom' title='Edit' >&nbsp;</i>");
+
+                jk3(".btnEditar_broom").bind("click", Editar_broom);
+
+            };
+
+            /***********/
+
+            jk3(".btnEditar_broom").bind("click", Editar_broom);
+        });
+        /********end of inline editing for room***********/
+
+
+    }
+         
+                        });   
+                    
+ Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_BoothsCon.dynamicboothsize}',
+            '{!selectedeventid}',
+           function(resultst, event){
+                 myresultlist=resultst;
+            //alert(resultst);
+           },{escape: false});
+           
+           
+   Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_BoothsCon.dynamicboothnumbers}',
+            '{!selectedeventid}',
+           function(resultstnumber, event){
+                // myresultlist=resultst;
+                 mynummyresultlist=resultstnumber;
+            //alert(mynummyresultlist);
+           },{escape: false});        
+           
+           
+                    });
+   
+                
+         //  loadbooths();
+        
+    </script>
+    <!--------------//savecallbackfunction------------->
+    <!----------------end of form Popup script----------------------------->
+
+    <!------------common js libraries component------------>
+
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+ 
+    <!-----/*********************//Java Script Section*******************/-->
+    <script type="text/javascript">
+    
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+
+        /*************function calling for tab toggle showhide**************/
+        $("#tab1clk").click(function() {
+            //alert("1");
+            showpackage("tab1topstats", "tab2topstats");
+            showdiv('print_export_cont');
+        })
+        $("#tab2clk").click(function() {
+                // alert("2");
+
+                showpackage("tab2topstats", "tab1topstats");
+                hidediv('print_export_cont');
+            })
+            /***************************/
+    </script>
+    <script>
+   function clospnl(){
+   
+    $('.TabbedPanels').hide();
+   }
+    function editMethodaction(editID){
+  // $('.popuppanel').show();
+    $('.TabbedPanels').hide();
+    $('.TabbedPanelsdf').hide();
+    
+  //  editID=editID1;
+    
+ 
+  Editexpform(editID);
+    
+    }
+    
+    </script>
+    <!---- Component & function to Convert to Rich Text ------------------>
+    
+    <!---- #Component & function to Convert to Rich Text ------------------>
+     
+      </apex:form>
+    <apex:outputPanel id="t">
+    <apex:form >
+      <!--<apex:include pageName="BLN_boothsrender" rendered="true"/>  -->
+       <div class='popuppanel'>
+            <apex:outputPanel id="editpopup"> 
+            
+               <div class="createform" style=" margin-top:20px;">
+                    <div class="clear"></div>
+                    <div class="shadow-div" style=" margin-top:0px;">
+                        <p class="padding-5px bg-font left">Edit Exhibitor</p>
+                        <div class="clear"></div>
+                        <!--close of black-title-->
+                        <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+                            <!----------->
+                            <div class="form-content-div" style=" padding:0px;">
+                                <div class="formbox" style=" ">
+
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Company Name:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+
+                                            <apex:inputField value="{!boothedit.Ticket_id__r.tkt_profile__r.TKT_Company__c}" id="cmdiddd"/>
+
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Visibility:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+
+                                            <apex:inputField value="{!boothedit.Visibility__c}" styleClass="selectlist"/>
+
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Booth Number:</label>
+
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!boothedit.Booth_Number__c}" id="bnum" />
+                                            <!-- onchange="existcheck(this.oldvalue,this.value)"-->
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Booth Area:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!boothedit.Booth_Area__c}" />
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Room:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+
+                                            <apex:inputField value="{!boothedit.BLN_Room__r.Name}" id="room" onkeyup="roomchange()" onchange="roomchange()" styleClass="roomval" />
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <apex:inputHidden value="{!newroomval}" id="newrmval" />
+                                    <script>
+                                        function loaddefaultroom() {
+                                            if (null != '{!boothedit.BLN_Room__r.Name}') {
+                                                $('[id$=newrmval]').val('{!boothedit.BLN_Room__r.Name}');
+                                            }
+                                        };
+
+                                        function roomchange() {
+                                           // var newroom = $('[id$=room]').val();
+                                            var newroom =$('.roomval').val();
+                                            // alert('newroom '+newroom );
+                                            $('[id$=newrmval]').val(newroom);
+                                        }
+                                    </script>
+                                    <!--close formelem_box--->
+
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Company Logo :</label>
+                                        </div>
+                                        <!---close of formlabel--->
+                                        <div class="formelement-ryt textleft">
+                                            <!------->
+                                            <div class="dropzone" >
+    <i title="Remove Image" class="clr_dropzone fa fa-times" onclick="RemoveCompanyLogo1()" style="display:none;"></i>
+                    
+                                                <div>
+ <apex:image url="/servlet/servlet.ImageServer?id={!boothedit.Ticket_id__r.tkt_profile__r.Company_Logo__c}&oid={!$Organization.Id}" style="width: 180px;" /> 
+
+                        </div>
+                    <input type="file" id = "comimage1" title=" "  onchange="checkCompanyLogo1()" accept="image/png,image/jpeg" />
+                     
+                                            </div>
+                                            
+                                            <!---------->
+
+                                        </div>
+                                        <!---close of formelement-ryt---->
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+
+
+
+
+
+                                    <!-------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Facebook ID:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!boothedit.Ticket_id__r.tkt_profile__r.FaceBookId__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!-------->
+                                    <div class="formelem_boxsmall" style="margin-bottom: 0px;">
+                                        <div class="formlabel-left textright">
+                                            <label>LinkedIn ID:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!boothedit.Ticket_id__r.tkt_profile__r.LinkedInId__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Twitter ID:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!boothedit.Ticket_id__r.tkt_profile__r.TwitterId__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Blogger:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!boothedit.Ticket_id__r.tkt_profile__r.Blogger__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Blog URL:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!boothedit.Ticket_id__r.tkt_profile__r.Blog_URL__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+
+
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Website URL:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!boothedit.Ticket_id__r.tkt_profile__r.Company_Website_URL__c}" />
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <div> </div>
+
+
+                                    <div class="formelem_boxsmall">
+                                     
+                                        <div class="formlabel-left textright">
+                                            <label> Attachment:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                       
+                                    <input type="file" id="attlogo"  onchange="checkfile()" multiple="true" accept="application/pdf"> {!attName}</input> <!-- onchange="checkfile()"--><!--{!attName}-->
+                                    
+                    <apex:outputpanel id="attpanel">
+                    <apex:repeat value="{!attlist}" var="attachment">
+                     <apex:actionRegion >
+                    <a href="{!$Label.siteurl}/servlet/servlet.FileDownload?file={!attachment.Id}" target="_blank"  style="color:black">{!attachment.Name}</a>&nbsp; 
+                    </apex:actionRegion>
+                                                 <apex:actionRegion >
+                                                       <!-- <apex:commandlink value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete" rerender="t,dddd" onclick=" delalrt('{!attachment.Id}','{!attachment.Name}');" >&nbsp; -->
+                                                        <input type="button" id='attalert' value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete" onclick=" delalrt('{!attachment.Id}','{!attachment.Name}',this);"/>
+                                                      <!-- <apex:commandlink value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete" rerender="t,dddd" onclick=" delalrt('{!attachment.Id}','{!attachment.Name}');" >&nbsp; -->
+                                                      <!-- </apex:commandLink> -->
+                                                     </apex:actionRegion>
+                    </apex:repeat>
+                    </apex:outputpanel>
+                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                    <apex:inputHidden id="speakervideohidden" value="{!boothedit.Ticket_id__r.tkt_profile__r.Video__c}" />
+                      <div class="formelem_boxsmall">
+                       <div class="formlabel-left textright">
+                    <label> <i title="youtube" class="fa  fa-youtube-square fa-social-20x" style="color:#cc181e;"></i>&nbsp;Video&nbsp;:</label>
+                  </div>
+                  <!---close of formlabel--->
+                   <div class="formelement-ryt textleft">
+                    <input class="framelinkval" type="text" id="iframevideotext"/>
+                    <i class="fa fa-save  fa-save20px ytsave_btn " title="Save">&nbsp;</i> </div>
+                  <!---close of formelement-ryt----> 
+                  <!-----End of Youtube Embed Link-------> 
+                  <!--------> 
+                </div>
+                
+                <!---close of formelem_box---> 
+                <!----------------------------------------------------->
+                <div class="clear"></div>
+                <div class="ytwraper">
+                  <p class="bg-font" >Youtube Links</p>
+                </div>
+                <div class="clear"></div>
+                    
+                <!-----eventdescription----->
+                <style>
+                .tinyeditor{width:90%;}
+                </style>
+                <div class="formelem_boxsmall" style="width:100%;">
+                                        <div class="formlabel-left textright" style="padding-top:10px;width: 21%">
+                                            <label>Company Description:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft" style="padding-top:10px;    width:78%;">
+
+                                            <apex:InputHidden value="{!boothedit.Ticket_id__r.tkt_profile__r.Company_Description__c}" id="Salesidhidden" />
+                                            <input type='text' class="tnedt" id="Salesid" value="{!boothedit.Ticket_id__r.tkt_profile__r.Company_Description__c}" style="width:100%; height:75px; margin-bottom: -35px; margin-left:1%;" />
+                                            <!-- <apex:inputField value="{!boothedit.Ticket_id__r.tkt_profile__r.Company_Description__c}"/>-->
+
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->   
+
+                                </div>
+                                <!--close of form-->
+                            </div>
+                            <!--close of form-content-div---->
+                        </div>
+                        <!--close of form-embed-div----->
+
+
+
+                    <apex:actionRegion >
+                        <div style="margin-top:20px; text-align:center;">
+                            <!---<apex:commandButton value="Save" action="{!SavePopup}" styleClass="button-a blue" onclick="return true;"/>--->
+                            <input type="button" value="Save" class="button-a blue" onclick="savefn(contents,contentsimagename,contentsatt,contentsattname,iframelink.toString())" /> &nbsp;&nbsp;&nbsp;
+                            <apex:commandButton value="Cancel" action="{!closePopup}" styleClass="button-a dark-blue" />
+                        </div>
+                        </apex:actionRegion>
+                    </div>
+                    <!---close of shadow-div----->
+
+                </div>
+
+<!-- <apex:actionRegion id="area51"> -->
+                <apex:actionFunction action="{!SavePopup}" name="saveactfn" status="AjaxLoader" reRender="" >
+
+               <apex:param name="exbPic" value="" assignTo="{!exbPic}"/>
+                <apex:param name="exbImageName" value="" assignTo="{!exbImageName}"/>
+                 <apex:param name="AttData" value="" assignTo="{!AttData}"/>
+      <apex:param name="AttName" value="" assignTo="{!AttName}"/>
+      <apex:param name="iframelinkexp" value="" />
+            <apex:param name="IsUploadComLogo" value="" assignTo="{!IsUploadComLogo}"/>
+      
+      </apex:actionFunction>
+       <apex:actionFunction name="delattachment" action="{!delattachment}" reRender="attpanel" status="AjaxLoader" immediate="true">
+                             <apex:param value="" name="deletedId" />   
+                   </apex:actionFunction>
+                   
+                   </apex:outputpanel>
+                   </div>
+     <!-- </apex:actionRegion> -->
+                <!-----------------------Start Save function for Booth------------------------->
+                
+               
+                 <!-----------------------sponsorship Edit Popup start------------------------->
+            <apex:outputPanel id="editsppopup" rendered="{!editspPopUp}">
+            
+            
+
+                <div class="createform" style=" margin-top:20px;">
+                    <div class="clear"></div>
+                    <div class="shadow-div" style=" margin-top:0px;">
+                        <p class="padding-5px bg-font left">Edit Details</p>
+                        <div class="clear"></div>
+                        <!--close of black-title-->
+                        <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+                            <!----------->
+                            <div class="form-content-div" style=" padding:0px;">
+                                <div class="formbox" style=" ">
+
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Company Name:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+
+                                            <apex:inputField value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.TKT_Company__c}" />
+
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Visibility:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+
+                                            <apex:inputField value="{!sponsorEdit.Visibility__c}" styleClass="selectlist"/>
+
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Company Logo:</label>
+                                        </div>
+                                        <!---close of formlabel--->
+                                        <div class="formelement-ryt textleft">
+                                          <div class="dropzone" >
+    <i title="Remove Image" class="clr_dropzone fa fa-times" onclick="RemoveCompanyLogo2()" style="display:none;"></i>
+
+                                                <div>
+                         <apex:image url="/servlet/servlet.ImageServer?id={!sponsorEdit.Ticket_id__r.tkt_profile__r.Company_Logo__c}&oid={!$Organization.Id}" style="width: 180px;" /> 
+
+
+                        </div>
+                    <input type="file" id = "comimage2" onchange="checkCompanyLogo2()" accept="image/png,image/jpeg" />
+
+                                            </div>
+
+                                        </div>
+                                        <!---close of formelement-ryt---->
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+
+                                    <!-------->
+                                    <div class="formelem_boxsmall">
+                          <div class="formlabel-left textright">
+                            <label>Sponsorship Category:</label>
+                          </div>
+                                        <div class="formelement-ryt textleft" style="margin-top: 8px;">
+                                            <apex:outputField value="{!sponsorEdit.Sponsorship_Category__c}" id="spcat" style="margin-left: 8px;"/>
+                          </div>
+                          
+                           <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+
+                                    <!-------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Logo Size:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!sponsorEdit.Logo_Size__c}" id="logosize" onfocus="sendOldVal(this.value)" onchange="validatesize(this)" required="true" styleclass="selectlist"/>
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+
+                                    <!-------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Facebook ID:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.FaceBookId__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!-------->
+                                    <div class="formelem_boxsmall" style="margin-bottom: 0px;">
+                                        <div class="formlabel-left textright">
+                                            <label>LinkedIn ID:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.LinkedInId__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Twitter ID:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.TwitterId__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Blogger:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.Blogger__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Blog URL:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.Blog_URL__c}" />
+                                        </div>
+
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+                                    <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright">
+                                            <label>Website URL:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                                            <apex:inputField value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.Company_Website_URL__c}" />
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <div> </div>
+
+                                   
+                                    <!-------------------atttt------------------------------------------------------->
+                                    <apex:inputHidden id="speakervideohiddenspon" value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.Video__c}" />
+                                     <div class="formelem_boxsmall">
+                                      <apex:actionRegion >
+                                        <div class="formlabel-left textright" style="padding-top:10px">
+                                           <label> Attachment:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft" id="myiddv">
+                                             <input type="file" id="attlogospom"  onchange="checkfilespon()" multiple="true" accept="application/pdf"> {!AttNamespon}</input> <!-- onchange="checkfile()"--><!--{!attName}-->
+                                             <apex:outputpanel id="attpanelspon">
+                                            <apex:repeat value="{!attlistspon}" var="attachment">
+                                            
+                                            <a href="{!$Label.siteurl}/servlet/servlet.FileDownload?file={!attachment.Id}" target="_blank"  style="color:black">{!attachment.Name}</a>&nbsp; 
+                                                 <!-- </apex:actionRegion>
+                                                 <apex:actionRegion > -->
+                                                      
+                                                       <input type="button" id="spattnamm" value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete" onclick=" delalrtsp('{!attachment.Id}','{!attachment.Name}',this);"/> 
+                                                     <!-- <apex:commandlink id="spattnamm" value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete" rerender="attpanelspon" onclick=" delalrtsp('{!attachment.Id}','{!attachment.Name},this');">&nbsp;
+                                                     
+                                                      </apex:commandLink>  -->
+                                                    </apex:repeat>
+                                                    </apex:outputpanel>
+
+                                </div>
+                                </apex:actionRegion>
+                                <!--close of form-->
+                                <div class="clear"></div>
+                                </div>
+                                    
+                                    <!-------------------------end attttt---------------------------------------------->
+                                  
+                                       <div class="formelem_boxsmall">
+                                        <div class="formlabel-left textright" style="padding-top:10px">
+                                            <label> <i title="twitter" class="fa  fa-youtube-square fa-social-20x" style="color:#cc181e;"></i>&nbsp;Video&nbsp;:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft">
+                    <input class="framelinkvalspo" type="text" id="iframevideotextspon"/>
+                    <i class="fa fa-save  fa-save20px ytsave_btnspo " title="Save">&nbsp;</i> </div>
+
+                                </div>
+                                <!--close of form-->
+                                <div class="clear"></div>
+                                </div>
+                                
+                <div class="ytwrapersp">
+                  <p class="bg-font" >Youtube Links</p>
+                </div>
+                                    <!--------------------------videoend--------------->
+
+                               <!-- </div>-->
+                               <div class="formelem_boxsmall"  style="width:100%;">
+                                        <div class="formlabel-left textright" style="padding-top:10px;width:21%;">
+                                            <label>Company Description:</label>
+                                        </div>
+                                        <div class="formelement-ryt textleft" style="width:78%;">
+                                            <apex:InputHidden value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.Company_Description__c}" id="Salesidhidden1" />
+                                            <input type='text' class="tnedtspn" id="Salesid1" value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.Company_Description__c}" style="width:100%; height:75px; margin-bottom: -35px; margin-left:1%;" />
+
+                                            <!--  <apex:inputField value="{!sponsorEdit.Ticket_id__r.tkt_profile__r.Company_Description__c}"/> -->
+
+                                </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <!--close formelem_box--->
+                                    <!--------->
+                                <!--close of form-->
+                            </div>
+                            <!--close of form-content-div---->
+                        </div>
+                        <!--close of form-embed-div----->
+
+                        <div style="margin-top:20px; text-align:center;">
+                            <!--  <apex:commandButton value="Save" action="{!SavespPopup}" styleClass="button-a blue"/>11&nbsp;-->
+                            <input type="button" value="Save" class="button-a blue" onclick="savefnn(contents,contentsimagename,contentsattspon,contentsattnamespon,iframelinkspo)" /> &nbsp;&nbsp;
+                            <apex:commandButton value="Cancel" action="{!closePopup}" styleClass="button-a dark-blue" onclick="window.location.reload(true);" />
+                        </div>
+                    </div>
+                    <!---close of shadow-div----->
+
+                </div>
+                <apex:actionFunction action="{!SavespPopup}" name="saveactfnn" status="AjaxLoader"  reRender="cm">
+                <apex:param name="spPic" value="" assignTo="{!spPic}"/>
+                <apex:param name="spImageName" value="" assignTo="{!spImageName}"/>
+                <apex:param name="AttDataspon" value="" assignTo="{!AttDataspon}"/>
+                  <apex:param name="AttNamespon" value="" assignTo="{!AttNamespon}"/>
+                   <apex:param name="iframelinksponst" value=" "/>
+                                     <apex:param name="IsUploadComLogo" value="" assignTo="{!IsUploadComLogo}"/>
+                <!--close of leadsform----->
+                </apex:actionFunction>
+                 <apex:actionFunction name="delattachmentsp" action="{!delattachmentsp}"  reRender="attpanelspon" status="AjaxLoader" > <!-- location.reload(); -->
+                             <apex:param value="" name="deletedIdsp" />   
+                   </apex:actionFunction>
+               
+            </apex:outputPanel>
+            <!-----------------------Edit Popup end------------------------->
+            <!-----------------------Start Save function for Sponsor------------------------->
+           
+            <script>
+                function savefnn(contents,contentsimagename,contentsattspon,contentsattnamespon,iframelinkspo) {
+                    // alert(iframelinkspo);
+                   
+               // var cdissp=  $('.tinyeditor iframe').contents().find('body').html();
+               var cdissp=  $('.tnedtspn').siblings().contents().find('body').html(); 
+                //alert(cdissp);
+                   
+                    jQuery('[id$=Salesidhidden1]').val(cdissp);
+                   
+
+                  saveactfnn(contents,contentsimagename,contentsattspon,contentsattnamespon,iframelinkspo, IsUploadComLogo);
+
+                }
+            </script>
+            <!-----------------------End Save function for Sponsor------------------------->
+            <!-----------------------End Save function for Sponsor------------------------->
+       
+    <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/jquery.js')}">
+    </script>
+    
+   
+                
+                <script>
+                var at_sz='{!attlist.size}';
+            function savefn(contents,contentsimagename,contentsatt,contentsattname,iframelink){
+                  
+                   
+            if('{!attlist.size}' == ''){
+        at_sz=0;
+        }
+       
+                   
+                 var cdis=  $('.tnedt').siblings().contents().find('body').html(); 
+              
+                     
+                       // alert('html'+Salesid.html());
+                      jQuery('[id$=Salesidhidden]').val(cdis);
+                       // alert('ip hidden'+jQuery('[id$=Salesidhidden]').val());
+                        //document.getElementById("pg:j_id8:commoncomponent:fm:Salesidhidden").value=Salesid.html();
+        saveactfn(contents,contentsimagename,contentsatt,contentsattname,iframelink, IsUploadComLogo);
+            }
+            </script>
+                <!-----------------------End Save function for Booth------------------------->
+                <!--close of leadsform----->
+           
+ 
+</apex:form>
+<c:BLN_Tinyeditor ></c:BLN_Tinyeditor>
+ 
+    <script>
+        Richtextconverter('Salesid');
+        Richtextconverter('Salesid1');
+    </script>
+   
+    <script>
+    var spatname='';
+    var attexpname='';
+     var contentsatt='';
+         var contentsattname='';
+         var contentsattspon='';
+         var contentsattnamespon='';
+         function checkfile()
+         {
+            var oFReader = new FileReader();
+          var f = document.getElementById("attlogo").files[0];
+          var fo = document.getElementById("attlogo").value;
+          var fopdf=fo.toLowerCase();
+          var ext = fopdf.split('.').pop();
+          
+          var filesize= f.size;
+          if(ext=="pdf"){
+            if(filesize > 5248000){
+             document.getElementById("attlogo").value = null;
+             Alert.render('Attachment size cannot be greater than 5MB!','Alert','Ok');
+             return false;
+            }
+          contentsattname=f.name;
+
+           if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+      contentsatt= e.target.result.split(',')[1];
+    
+     
+      
+                 
+      }
+      r.readAsDataURL(f);
+     
+    } else { 
+     Alert.render('Failed to load file','Alert','Ok');
+     
+    }
+}else{
+document.getElementById("attlogo").value = null;
+
+Alert.render('Attachments Should be in PDF Format','Alert','Ok');
+return false;
+         }
+         }
+         function delalrt(inputrec,inputname,clkbtn){
+          var sFileExtension = inputname.split('.')[inputname.split('.').length - 1];
+          var a = inputname.replace('.'+sFileExtension, '');
+         // var x =  confirm('Are you sure you want to delete ' + a + '?');
+        attexpname=inputrec;
+        Alertconfirm.render('Are you sure,Do you want to Delete ?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+         
+         // if(x){
+         //  delattachment(attexpname);
+              //alert('at_sz before '+at_sz);
+             // at_sz=at_sz-1;
+             // del=true;
+              //alert('at_sz after '+at_sz);
+           // } else{
+            // } 
+             
+          } 
+          
+          
+          
+          //
+          function delalrtsp(inputrec,inputname,clkbtn){
+          var sFileExtension = inputname.split('.')[inputname.split('.').length - 1];
+          var a = inputname.replace('.'+sFileExtension, '');
+          spatname=inputrec;
+         // var x =  confirm('Are you sure you want to delete ' + a + '?');
+         
+         Alertconfirm.render('Are you sure,Do you want to Delete ?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+         /* if(x){
+             delattachmentsp(spatname);
+              //alert('at_sz before '+at_sz);
+              at_sz=at_sz-1;
+              del=true;
+              //alert('at_sz after '+at_sz);
+            } else{
+             } */
+          }
+          
+          //function calling for appending youtube iframe link  
+          var jq = jQuery.noConflict();
+          var iframelink=[];
+          
+          
+          if('{!boothedit.Ticket_id__r.tkt_profile__r.Video__c}'!=''&&'{!boothedit.Ticket_id__r.tkt_profile__r.Video__c}'!=undefined){
+ var st='{!boothedit.Ticket_id__r.tkt_profile__r.Video__c}';
+ var res = st.split(",");
+ for(i=0;i<res.length;i++)
+ {
+ 
+ iframelink.push(res[i]);
+       var box=jq("<div class='ytbox'></div>")//creating parent div
+        var delimg=jq("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+        var iframebox=jq("<div class='iframebox'></div>");
+        
+                jq(".ytwraper").css("display","block");
+                jq(box).append(delimg);
+                
+                jq(iframebox).append(res[i]);
+                jq(box).append(iframebox);
+                jq(".ytwraper").append(box);
+                jq(".framelinkval").val("");//clearing the embedlink textbox
+ }
+
+ }
+
+var jqp = jQuery.noConflict();
+  jqp(function() {
+         console.log('gbgg');
+     ///function calling for delete youtube box 
+    jqp(document.body).off('click', '.crossicon').on('click', '.crossicon' ,function(evt){
+    //alert("enter");
+          
+          console.log(this);
+           jqp(this).each(function() {
+            var current_index=jqp(this).parent().index();
+            console.log("Currentbox Index" + jqp(this).parent().index());
+            
+            iframelink.splice(current_index-1,1);//removing the deleted link from the array..
+            console.log("Updated Array Size ---" + iframelink.length);
+            console.log("Updated Array Link ---" + iframelink);
+           jqp(this).parent().remove();//deleting the box
+           console.log('tttttt');
+            if(iframelink.length==0){
+                $(".ytwraper").css("display","none");//youtube wrapper with youtube heading will vanish
+                }      
+       
+     
+           })
+ 
+    });
+//function calling for appending youtube iframe link    
+    jqp(".ytsave_btn").click(function(){
+         //alert('test');
+        var iframeval=jqp(".framelinkval").val();//capturing user embed link
+        var box=jqp("<div class='ytbox'></div>")//creating parent div
+        var delimg=jqp("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+        var iframebox=jqp("<div class='iframebox'></div>");
+        var ytregex=iframeval.match(/(<iframe.+?<\/iframe>)/g);
+        //condition for shouldnot equal to null and match the regex of iframe
+        if(iframeval!="" && ytregex){
+            //alert("has");
+                jqp(".ytwraper").css("display","block");
+                jqp(box).append(delimg);
+                
+                jqp(iframebox).append(iframeval);
+                iframelink.push(iframeval);
+                jqp(box).append(iframebox);
+                jqp(".ytwraper").append(box);
+                jqp(".framelinkval").val("");//clearing the embedlink textbox
+            } 
+            
+        else{
+            //alert("Shouldnot Null And Provide Embed Format");
+            Alert.render('Please Provide a Correct Youtube Embed Format' ,'Alert !','ok');
+            jqp(".framelinkval").val("");
+            }   
+        //alert("Array Size ---" + iframelink.length);
+        // alert("Array List---" + iframelink.join(","));
+          try{
+           
+            $("[id$='speakervideohidden']").val(iframelink.toString());
+           }catch(e){}
+                
+                 
+        })
+        });
+   
+  
+        // Sponsors attatchement script start----
+   function checkfilespon()
+         {
+            var oFReader = new FileReader();
+          
+           var ff = document.getElementById("attlogospom").files[0];
+          var ffletyp = document.getElementById("attlogospom").value;
+          var ffpdf=ffletyp.toLowerCase();
+          var filesize= ff.size;
+           var extsp = ffpdf.split('.').pop();
+          if(extsp=="pdf"){
+            if(filesize > 5248000){
+             document.getElementById("attlogospom").value = null;
+             Alert.render('Attachment size cannot be greater than 5MB!','Alert','Ok');
+             return false;
+            }
+          contentsattnamespon=ff.name;
+
+           if (ff) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+      contentsattspon= e.target.result.split(',')[1];
+    
+     
+      
+                 
+      }
+      r.readAsDataURL(ff);
+     
+    } else { 
+       Alert.render('Failed to load file','Alert','Ok');
+    }
+}else{
+
+document.getElementById("attlogospom").value = null;
+
+Alert.render('Attachments Should be in PDF Format','Alert','Ok');
+return false;
+}
+         }
+        
+        //video code start
+        
+        var jq1 = jQuery.noConflict();
+          var iframelinkspo=[];
+          if('{!sponsorEdit.Ticket_id__r.tkt_profile__r.Video__c}'!=''&&'{!sponsorEdit.Ticket_id__r.tkt_profile__r.Video__c}'!=undefined){
+ var st='{!sponsorEdit.Ticket_id__r.tkt_profile__r.Video__c}';
+ var res = st.split(",");
+ for(i=0;i<res.length;i++)
+ {
+ 
+ iframelinkspo.push(res[i]);
+       var box=jq1("<div class='ytboxsp'></div>")//creating parent div
+        var delimg=jq("<img class='crossiconsp' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+        var iframebox=jq("<div class='iframebox'></div>");
+        
+                jq1(".ytwrapersp").css("display","block");
+                jq1(box).append(delimg);
+                
+                jq1(iframebox).append(res[i]);
+                jq1(box).append(iframebox);
+                jq1(".ytwrapersp").append(box);
+                jq1(".framelinkvalspo").val("");//clearing the embedlink textbox
+ }
+ }
+
+//var jq1 = jQuery.noConflict();
+
+jqp(document.body).off('click', '.crossiconsp').on('click', '.crossiconsp' ,function(e){
+         console.log("enter");
+          
+          console.log(this);
+           jq1(this).each(function() {
+            var current_index=jq1(this).parent().index();
+            console.log("Currentbox Index" + jqp(this).parent().index());
+            
+            iframelinkspo.splice(current_index-1,1);//removing the deleted link from the array..
+            console.log("Updated Array Size ---" + iframelinkspo.length);
+            console.log("Updated Array Link ---" + iframelinkspo);
+           jq1(this).parent().remove();//deleting the box
+           console.log('tttttt');
+            if(iframelinkspo.length==0){
+                $(".ytwrapersp").css("display","none");//youtube wrapper with youtube heading will vanish
+                }      
+       
+     
+           })
+ 
+    });
+
+
+//function calling for appending youtube iframe link    
+    jq1(".ytsave_btnspo").click(function(){
+        // alert('test');
+        var iframevalspo=jq1(".framelinkvalspo").val();//capturing user embed link
+        var box=jq1("<div class='ytboxsp'></div>")//creating parent div
+        var delimg=jq1("<img class='crossiconsp' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+        var iframebox=jq1("<div class='iframebox'></div>");
+        var ytregex=iframevalspo.match(/(<iframe.+?<\/iframe>)/g);
+        //condition for shouldnot equal to null and match the regex of iframe
+        if(iframevalspo!="" && ytregex){
+            //alert("has");
+                jq1(".ytwrapersp").css("display","block");
+                jq1(box).append(delimg);
+                
+                jq1(iframebox).append(iframevalspo);
+                iframelinkspo.push(iframevalspo);
+                jq(box).append(iframebox);
+                jq(".ytwrapersp").append(box);
+                jq(".framelinkvalspo").val("");//clearing the embedlink textbox
+            } 
+            
+        else{
+            //alert("Shouldnot Null And Provide Embed Format");
+            Alert.render('Please Provide a Correct Youtube Embed Format' ,'Alert !','ok');
+            jq(".iframevalspo").val("");
+            }   
+        
+          try{
+           
+            $("[id$='speakervideohiddenspon']").val(iframelinkspo.toString());
+           }catch(e){}
+                
+                 
+        })
+      
+    </script>
+    
+   
+    <!----------Dropzone js for uploading image-------------> 
+<script>
+var contents='';
+var contentsimagename='';
+var IsUploadComLogo  = false;
+
+    
+ 
+  
+ function RemoveCompanyLogo1(){
+         IsUploadComLogo = true;
+         }
+  
+         function RemoveCompanyLogo2(){
+         IsUploadComLogo= true;
+         }
+function checkCompanyLogo1()
+        {
+    var oFReader = new FileReader();
+    var f = document.getElementById("comimage1").files[0];
+    var filesize= f.size;
+            if(filesize > 241664){
+    document.getElementById("comimage1").value = null;
+    window.alert("Company logo size cannot be greater than 200kb!");
+             return false;
+            }
+if (f) {
+    var r = new FileReader();
+    r.onload = function(e) { 
+        contents = e.target.result.split(',')[1];
+        IsUploadComLogo = true;
+        contentsimagename=f.name;
+    }
+    r.readAsDataURL(f);
+    }
+    else{ 
+        alert("Failed to load company logo");
+    }
+}
+        
+function checkCompanyLogo2()
+        {
+    var oFReader = new FileReader();
+    var f = document.getElementById("comimage2").files[0];
+    var filesize= f.size;
+    if(filesize > 241664){
+    document.getElementById("comimage2").value = null;
+    window.alert("Company logo size cannot be greater than 200kb!");
+    return false;
+}
+if (f) {
+    var r = new FileReader();
+    r.onload = function(e) { 
+            contents = e.target.result.split(',')[1];
+        IsUploadComLogo = true;
+        contentsimagename=f.name;
+        alert(contentsimagename);
+    }
+    r.readAsDataURL(f);
+    }
+    else{ 
+        alert("Failed to load company logo");
+    }
+    }
+    
+     /****************function calling back on click of confirmation box save for Cancel Order *****************/
+        
+        
+        function callback(clkbtn, okbtnn) {
+            //alert("okbtn action" + clkbtn.id);
+           console.log(clkbtn.id);
+           if(clkbtn.id =='attalert'){
+          // alert(attexpname);
+           delattachment(attexpname);
+           }else if(clkbtn.id =='spattnamm'){
+           //alert('ra'+spatname);
+           delattachmentsp(spatname);
+           }
+        else if(clkbtn.id =='ftab' ){
+            boothNum();
+           }else if(clkbtn.id.substr(clkbtn.id.length - 8) != 'logosize'){
+              // alert('gbhhhhhhhhhhh');
+               save_sponscat(new_sc, spid);
+                
+                tdsponscat_field1.html(jk4(selectid).text());
+           }
+           
+           
+        }
+
+        function callbackcancel(clkbtn, cnclbtnn) {
+            //alert("cnclbtnn" + clkbtn.id + cnclbtnn);
+            if(clkbtn.id =='ftab' ){
+             
+           tdbadgeno_field1.html(oldVal);
+           location.reload();
+            }else if(clkbtn.id.substr(clkbtn.id.length - 8) == 'logosize'){
+                //alert('oldvl'+oldvl);
+                $('[id$=logosize]').val(oldvl);
+            }else{
+                tdsponscat_field.html(old_sc);
+
+            }
+        }
+
+    
+    </script>
+    
+    
+      </apex:outputPanel>
+    
+    </c:ed_basictemplate>
+</apex:page>

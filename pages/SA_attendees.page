@@ -1,0 +1,524 @@
+<apex:page controller="SA_AttendeesController" standardStylesheets="false" showHeader="false" >
+
+
+
+<script>
+function confirmdel(){
+var r = confirm(' Would you like to delete !');
+if(r==true){
+    return true;}
+    else{
+    return false;
+    }
+}
+</script>
+
+<head>
+    <title>Scan Attendee</title>
+</head>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References Start ------------------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/fullcalendar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.login, 'login/css/screen.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.login, 'login/css/osx.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/popup.css')}"/>
+
+<script type="text/javascript" src="{!URLFOR($Resource.nwdatatable, 'nwdatatable/js/jquery.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.nwdatatable, 'nwdatatable/js/jquery.dataTables.js')}"></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.nwdatatable, 'nwdatatable/css/jquery.dataTables.css')}"/> 
+  <script type="text/javascript" language="javascript" class="init">
+
+$(document).ready(function() {
+    $('#example').dataTable( {
+        "pagingType": "full_numbers",
+        /**default orderid in asc sorting**/
+         "order": [[ 1, "asc" ]],
+          "aLengthMenu": [
+        [25, 50, 100, 200,500,1000,-1],
+        [25, 50, 100, 200,500,1000,"All"]
+    ],
+    "iDisplayLength": 25,
+        /**sorting coloumn disable**/
+        "aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] },
+     
+   ]
+        
+    } );
+} );
+
+
+function getallselectedcheckboxforprint()
+{
+var s='';
+ $("input:checkbox[class=chkattendee]:checked").each(function () {
+            
+            s=s+"'"+$(this).val()+"',"
+        });
+        if(s!='')
+        s= s.substring(0, s.length - 1);
+       PrinterTypes(s);
+}
+
+
+function getallselectedcheckboxforexport()
+{
+var s='';
+ $("input:checkbox[class=chkattendee]:checked").each(function () {
+            
+            s=s+"'"+$(this).val()+"',"
+        });
+        if(s!='')
+        s= s.substring(0, s.length - 1);
+       ExportIntoCSV(s);
+}
+
+function setallselectedcheckbox(obj)
+{
+
+if(obj.checked==true){
+ $("input:checkbox[class=chkattendee]").each(function () {
+           $(this).prop("checked", true);
+        });}
+        else
+        {
+         $("input:checkbox[class=chkattendee]").each(function () {
+           $(this).prop("checked", false);
+        });
+        }
+}
+
+
+    </script>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions.js')}"/>
+
+<!---<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fullcalendar.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.jplayer.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/ttw-video-player-min.js')}"></script>
+--->
+
+
+
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+<!---
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.dataTables.min.js')}"/>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/validation.js')}"/>
+
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions.js')}"/>
+--->
+<!-------------------------------------------- Styles, Javascript and Jquery References End ------------------------------------------------->
+<apex:form id="AS_EventsForm">
+<apex:actionfunction name="PrinterTypes" action="{!PrinterTypes}" rerender="printpanel">
+<apex:param name="evatids" value=""/>
+</apex:actionfunction>
+<apex:actionfunction name="ExportIntoCSV" action="{!ExportIntoCSV}" rerender="exportpanel">
+<apex:param name="evatids" value=""/>
+</apex:actionfunction>
+
+<script type="text/javascript">
+    function checkAll(cb,cbid)
+    {
+    var inputElem = document.getElementsByTagName("input");                    
+    for(var i=0; i<inputElem.length; i++)
+    {            
+    if(inputElem[i].id.indexOf(cbid)!=-1)
+    {                                       
+    inputElem[i].checked = cb.checked;
+    }
+    }
+    }
+    
+    
+    </script>
+   
+    
+<div id="header">
+        <div id="logo">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+        </apex:outputLink>
+        </div><!--close of logo-->
+    </div><!--close of header--->
+    
+    
+    <div  id="ribbon"></div><!--close of ribbon-->
+    <header>
+        <div id="centered-head" class="res" style="width:96.8%;"> 
+        <nav>
+            <ul>
+                <li id="login"> <span id="login-trigger"> <span id="login-triggers"> <span id="user-panel-check"></span> <span id="user-panel-title ">My Account</span> </span> </span>
+                    <div id="login-content">
+                        <ul>
+                            <li><apex:outputLink value="/apex/SA_ManageProfile"><apex:image value="{!$Resource.Manage_Profile}" width="15px" height="15px"/><span class="editprofile icon">Manage Profile</span></apex:outputLink></li>
+                            <li><apex:outputLink value="/apex/SA_Resetpassword"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon">Reset Password</span></apex:outputLink></li>
+                            
+                            <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="account-name">
+            <p><span class="welcome">Welcome, </span><strong>{!$User.Firstname}&nbsp;{!$User.Lastname}</strong></p>
+                <div class="account-separator"></div>
+        </div>
+        <div class="account-name"></div>
+        <div class="account-name" style="float:left;valign:middle;align:left;">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image value="{!$Resource.HomeIcon}" height="40" width="40"/>
+        </apex:outputLink></div>
+        <!-- Navigation end--> 
+        </div>
+    </header>
+<section id="middle" style=" border:0px #000000 solid;width:96.8%;" class="res">
+  <div id="container-main">
+    <div id="container" style="border:0px #000000 solid">
+      <div id="content">
+        <div class="speedbar" style=" border:0px #FF0000 solid">
+                    <div class="speedbar-nav">Scan Attendee ›› Attendees</div>
+                    <div style="float:right;padding-right:10px;">Selected Event: <b>{!SelectedEvent.Ev_Title__c}</b></div>
+                    <!--close of speedbar-nav-->
+         </div>
+       
+         
+
+        <!--Statistic-->
+
+        <div style="float:right;valign:middle;padding:10px;" >
+              <apex:outputText rendered="{!SelectAttendee}" value="Select atleast one Attendee !" style="font-weight:28px;color:red;margin-right:60px;"/>
+         
+         
+             <apex:commandButton rendered="{!AND(AttendeesList, NOT(isPastEvent))}" value="Print Badges" onclick="getallselectedcheckboxforprint();return false;" styleclass="button-a blue" style="margin-right:10px;"/>
+         
+              <apex:commandButton rendered="{!AttendeesList}" value="Export" onclick="getallselectedcheckboxforexport();return false;" styleclass="button-a blue"/>
+        </div>
+       
+        <div class="grid-1" style="margin-top:50px;">
+
+          
+          <div class="title-grid"><apex:outputText rendered="{!AttendeesList}">Attendees</apex:outputText></div>
+          <div class="content-gird">
+          
+           <apex:outputPanel id="AttTable" rendered="{!AttendeesList}">
+            <div class="dataTables_wrapper" id="example_wrapper">
+      
+    
+       
+       
+        
+         
+        
+              
+              <table class="display" id="example">
+                <thead>
+                  <tr><!--  class="dataTables_scroll" -->
+                    <th rowspan="1" colspan="1" style="width: 5%;">
+             <!---     <input type="checkbox" value="a089000000Mg123456" class="chkattendee"  onclick="getselvalues(this);"  ></input>
+                  -->
+                   <input type="checkbox" onclick="setallselectedcheckbox(this)" />
+                    </th>
+                    <th class="th_title sorting" rowspan="1" colspan="1" style="width:8%;">Action</th>
+                    <th class="th_status sorting" rowspan="1" colspan="1" style="width: 15%;">Name</th>
+                    <th class="th_date sorting" rowspan="1" colspan="1" style="width: 15%;">Email</th>
+                    <th class="th_author sorting" rowspan="1" colspan="1" style="width: 18%;">Phone</th>
+                    <!--<th class="th_chexbox sorting" rowspan="1" colspan="1" style="width: 10%;">Ticket Type </th>
+                    <th class="th_chexbox sorting" rowspan="1" colspan="1" style="width: 10%;">Created Date </th>
+                    <th class="th_chexbox sorting" rowspan="1" colspan="1" style="width: 10%;">Modified Date </th>-->
+                  </tr>
+                </thead>
+                <tbody>
+                  <apex:repeat value="{!AttendeeInnerList}" var="AttList">
+                  <apex:repeat value="{!AttList}" var="Attendee">
+                  <tr class="item odd">
+                    <td class="">
+                      <input type="checkbox" value="{!Attendee.EAMData.id}"  class="chkattendee"   ></input>
+
+                  <!--<apex:inputField value="{!Attendee.EAMData.checkbox_dataTable__c}" id="checkedone" onclick="selectAll(this,'all')" />-->
+                    </td>
+                    <td class="subject">
+                    <apex:outputLink value="/apex/SA_AddAttendee?id={!Attendee.EAMData.AS_id__r.id}&eam={!Attendee.EAMData.id}" title="Edit">
+                    <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/edit-1.png')}"/>
+                    </apex:outputLink>
+                    <span>
+                        <apex:commandLink action="{!deleteAttendee}" onclick="return confirmdel();" rendered="{!Attendee.isFreeAttendee}">
+                            <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/remove.png')}"/>
+                                <apex:param value="{!Attendee.EAMData.id}" name="AttendeeIdParam"/>
+                        </apex:commandLink>
+                    </span></td>
+                    <td>{!Attendee.EAMData.AS_id__r.AS_FirstName__c} {!Attendee.EAMData.AS_id__r.AS_LastName__c}</td>
+                    <td>{!Attendee.EAMData.AS_id__r.AS_Email__c}</td>
+                    <td class="name">{!Attendee.EAMData.AS_id__r.AS_WorkPhone__c}</td>
+                   <!-- <td class="action">Full Conf</td>
+                    <td class="name">01/03/2014</td>
+                    <td class="action">02/04/2014</td> -->
+                  </tr>
+                  </apex:repeat>
+                  </apex:repeat>
+                
+                </tbody>
+              </table>
+               </div>
+               </apex:outputPanel>
+             <!--  
+             <apex:outputPanel rendered="{!SelectPrinterType}">
+              
+                 <table width="100%" border="0">
+                      
+                       <tr>
+                       <td colspan="2" align="right" style="padding-top:10px;">
+                            <b>Select Label</b>
+                       </td>
+                       <td  colspan="2"  align="center" style="padding-top:10px;">
+                          
+                         <apex:selectList value="{!SelectedPrinter}" multiselect="false" size="1">                 
+                            <apex:selectOptions value="{!PrinterOptions}">
+                            </apex:selectOptions>
+                        </apex:selectList>
+                       </td></tr>
+                       
+                       <tr>
+                       <td colspan="2" align="right" style="padding-top:10px;">
+                            <b>Select Logo Option</b>
+                       </td>
+                       <td  colspan="2" align="center" style="padding-top:10px;">   
+                         <apex:selectList value="{!SelectedLogoOption}" multiselect="false" size="1" style="width:240px;">                 
+                            <apex:selectOptions value="{!LogoOptions}">
+                            </apex:selectOptions>
+                        </apex:selectList>
+                       </td></tr>
+                     
+                      <tr> 
+                      <td colspan="2" align="right" style="padding-top:10px;">
+                           
+                       </td>
+                          <td align="center" style="padding-top:10px;">
+                              <apex:commandLink value="Print Badge" action="{!PrintBadges}" style="margin-right:10px;height: 20px;padding-top: 5px" styleclass="button-a blue" target="_blank" />
+        
+                      </td>  </tr>
+                     </table>  
+                    
+            
+            </apex:outPutPanel>
+              -->
+              
+      <apex:outputpanel id="exportpanel"> 
+      <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!SelectExport}" />
+       
+    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!SelectExport}" style="width:50%;height:220px;" >
+    <div style="float:right;position: absolute;top:1px;right:-2px;">
+            <apex:commandButton value="Close" action="{!ClosePopup}" image="{!$Resource.PopUpClose}" title="Close" style="width:26px;height:26px; color:#000000;font-size:16; font-weight:bold;" immediate="true"/>
+        </div>
+        <br/><br/>
+        <div style="height:280px;text-align:center">
+        <b>Note: It is recommended to export maximum 1000 records at a time</b><br/><br/>
+    <apex:commandLink value="Export" action="{!ExportBadges}" styleclass="button-a blue"  style="color:#FFFFFF;"/>
+    </div>
+    </apex:outputpanel>
+    
+      </apex:outputpanel>           
+              
+              
+     <apex:outputpanel id="printpanel">        
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!SelectPrinterType}" id="Popup2"/>
+    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!SelectPrinterType}" style="width:50%;height:220px;" id="guestPopup">
+    
+        <div style="float:right;position: absolute;top:1px;right:-2px;">
+            <apex:commandButton value="Close" action="{!ClosePopup}" image="{!$Resource.PopUpClose}" title="Close" style="width:26px;height:26px; color:#000000;font-size:16; font-weight:bold;" immediate="true"/>
+        </div>
+        
+        <div style="height:280px;">
+        
+        <!--close of addevent-->
+        
+        <div>
+        
+        <div class="grid-1" style="text-align:left">
+        <div class="title-grid">Select Desired Template</div>
+        <div class="content-gird">
+        <div class="form" style="margin-top:5px;">
+        
+        <table width="100%" border="0">
+        <tr>
+            <td colspan="2" align="right" style="padding-top:10px;">
+                <b>Select Label</b>
+            </td>
+            <td  colspan="2"  align="left" style="padding-top:10px;padding-left:10px;">
+                <apex:selectList value="{!SelectedPrinter}" multiselect="false" size="1" style="width:240px;">                 
+                    <apex:selectOptions value="{!PrinterOptions}">
+                    </apex:selectOptions>
+                </apex:selectList>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="2" align="right" style="padding-top:10px;">
+            <b>Select Logo Option</b>
+        </td>
+        <td  colspan="2" align="left" style="padding-top:10px;padding-left:10px;">   
+            <apex:selectList value="{!SelectedLogoOption}" multiselect="false" size="1" style="width:240px;">                 
+                <apex:selectOptions value="{!LogoOptions}">
+                </apex:selectOptions>
+            </apex:selectList>
+        </td></tr>
+        
+        <tr> 
+            <td align="center" valign="middle" style="padding-top:10px;" colspan="3">
+                <apex:commandLink value="Print Badge" action="{!PrintBadges}" styleclass="button-a blue" target="_blank" style="color:#FFFFFF;"/>
+            </td>
+        </tr>
+        
+        </table>  
+                    
+        <div class="clear"> </div>
+        </div>  
+        
+        <div class="clear"> </div>
+        </div>
+        </div>
+
+        </div><!--close of wrapper--> 
+        </div>
+    </apex:outputPanel>  
+</apex:outputpanel>
+     
+    
+           
+            <div class="clear"> </div>
+          </div>
+        </div>
+     </div>
+      <!-- #content--> 
+    </div>
+
+      <aside class="sideLeft">
+        <span class="categories">Categories</span>
+        <ul class="menu">
+            <li class="expand"><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events" styleClass="active"><span class="four-prong icon">Event Information</span></apex:outputLink>
+                <ul class="acitem" style="display: block;">
+                    <li><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events1"><span class="home icon">Dashboard</span></apex:outputLink></li>
+                    <li class="expand"><apex:commandLink action="/apex/SA_Attendees" style="background-color:#5B7585;"><span class="four-prong icon">Attendees</span><apex:outputText rendered="{!NOT(isPastEvent)}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                        <apex:outputText rendered="{!NOT(isPastEvent)}">
+                            <ul class="acitem" style="display: none;">
+    
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_AddAttendee"><span class="attendee icon">Add Attendee</span></apex:outputLink></li>
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_ImportAttendees"><span class="importattendee icon">Import Attendee</span></apex:outputLink></li>
+    
+                            </ul>
+                    </apex:outputText>  
+                    </li> 
+                    <li class="expand"><apex:commandLink action="/apex/SA_Reports"><span class="four-prong icon">Reports</span><span class="num">6</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Ticket Sales</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Item Sales</span></apex:outputLink></li>                            
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Orders</span></apex:outputLink></li>                                                                               
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Refunds</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in Status</span></apex:outputLink></li>                        
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in History</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+           <li><apex:outputLink value="/apex/SA_Tickets"><span class="four-prong icon">Event Settings</span></apex:outputLink>
+                <ul class="acitem" style="display: none;">
+
+                    <li><apex:commandLink action="/apex/SA_Tickets"><span class="four-prong icon">Tickets</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style="padding-left:15px"><apex:outputLink value="/apex/SA_Tickets"><span class="cal icon">Add Ticket</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportTickets"><span class="conversations icon">Import Tickets</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+
+                            <li><apex:commandLink action="/apex/SA_Items"><span class="four-prong icon">Items</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Items"><span class="additem icon">Add Item</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportItems"><span class="importitem icon">Import Items</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+                    <!--
+                    <li><apex:commandLink action="/apex/SA_PromoCodes"><span class="four-prong icon">Promo Codes</span><span class="num">1</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_PromoCodes"><span class="addpromocode icon">Add Promo Code</span></apex:outputLink></li>    
+                        </ul> 
+                    </li
+                    -->
+                    <apex:outputText rendered="{!NOT(isEventAdminStaffUser)}">                        
+                    <li><apex:commandLink action="/apex/SA_AddUsers"><span class="four-prong icon">Event Staff</span> <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"> <span class="num">1</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_AddUsers"><span class="addpromocode icon">Add Event Staff</span></apex:outputLink></li>    
+                        </ul> 
+                    </apex:outputText>    
+                    </li>
+                   </apex:outputText>    
+                </ul>
+            </li>
+        </ul>
+        </aside>
+        
+
+    </div>
+    
+  <!-- #sideLeft --> 
+  <!-- #container main-->
+
+  <footer>
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Scan Attendee </p>
+      </div>
+    </div>
+  </footer>
+  
+</section>
+<!-- #middle-->
+</apex:form> 
+
+<div class="clear"></div>
+
+</apex:page>

@@ -1,0 +1,1021 @@
+<apex:page controller="BL_registerAttendee" showHeader="false">
+
+
+<!------------------------------------------------MAP------------------------------------------------>
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3.5&sensor=true"></script>
+    <!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
+    <script type="text/javascript"> 
+    
+    $(document).ready(function() {
+    
+      var myOptions = {
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: false
+      }
+    
+      var map;
+      var marker;
+    
+      var geocoder = new google.maps.Geocoder();
+      var address = "{!event.EV_HistingAddr1__c}, " + "{!event.AS_HostingAddr2__c}, " + "{!event.AS_HostingCity__c}, " + "{!event.EV_HostingCountryNew__c}";
+    
+      var infowindow = new google.maps.InfoWindow({
+        content: "<b>{event.EV_HistingAddr1__c}</b><br>{!event.EV_HistingAddr1__c}<br>{!event.AS_HostingAddr2__c}, {!event.AS_HostingCity__c}<br>{!event.EV_HostingCountryNew__c}"
+      });
+    
+      geocoder.geocode( { address: address}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK && results.length) {
+          if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+    
+            //create map
+            map = new google.maps.Map(document.getElementById("map"), myOptions);
+    
+            //center map
+            map.setCenter(results[0].geometry.location);
+    
+            //create marker
+            marker = new google.maps.Marker({
+                position: results[0].geometry.location,
+                map: map,
+                title: "{!event.EV_HostingCountry__c}"
+            });
+    
+            //add listeners
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(map,marker);
+            });
+            google.maps.event.addListener(infowindow, 'closeclick', function() {
+              map.setCenter(marker.getPosition()); 
+            });
+    
+          }
+    
+        } else {
+          $('#map').css({'height' : '15px'});
+          $('#map').html("");
+          resizeIframe();
+        }
+      });
+    
+      function resizeIframe() {
+        var me = window.name;
+        if (me) {
+          var iframes = parent.document.getElementsByName(me);
+          if (iframes && iframes.length == 1) {
+            height = document.body.offsetHeight;
+            iframes[0].style.height = height + "px";
+          }
+        }
+      }
+    
+    });
+    </script>
+    
+    <style>
+    #maphead{background-color:#eaeaea; height:25px; padding-top:5px; border:1px solid #CCCCCC; padding-left:15px;-webkit-border-radius: 15px 15px 0px 0px;-moz-border-radius: 15px 15px 0px 0px;border-radius: 15px 15px 0px 0px;
+     background: #ffffff; /* Old browsers */
+background: -moz-linear-gradient(top, #ffffff 0%, #f1f1f1 50%, #e1e1e1 51%, #f6f6f6 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(50%,#f1f1f1), color-stop(51%,#e1e1e1), color-stop(100%,#f6f6f6)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #ffffff 0%,#f1f1f1 50%,#e1e1e1 51%,#f6f6f6 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #ffffff 0%,#f1f1f1 50%,#e1e1e1 51%,#f6f6f6 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, #ffffff 0%,#f1f1f1 50%,#e1e1e1 51%,#f6f6f6 100%); /* IE10+ */
+background: linear-gradient(to bottom, #ffffff 0%,#f1f1f1 50%,#e1e1e1 51%,#f6f6f6 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f6f6f6',GradientType=0 ); /* IE6-9 */
+     }
+#map {
+  font-family: Arial;
+  font-size:12px;
+  line-height:normal !important;
+  height:250px;
+  background:transparent;
+}
+.bordered{
+border: solid #ccc 1px;
+-moz-border-radius: 6px;
+-webkit-border-radius: 6px;
+border-radius: 6px;
+-webkit-box-shadow: 0 1px 1px #ccc;
+-moz-box-shadow: 0 1px 1px #ccc;
+box-shadow: 0 1px 1px #ccc;
+margin:0px auto;
+border-bottom: 1px solid #ccc;
+}
+.bordered1 {
+border: solid #ccc 1px;
+-moz-border-radius: 4px;
+-webkit-border-radius: 4px;
+border-radius: 4px;
+-webkit-box-shadow: 0 1px 1px #ccc;
+-moz-box-shadow: 0 1px 1px #ccc;
+box-shadow: 0 1px 1px #ccc;
+margin:0px auto;
+-webkit-box-shadow: 7px 7px 5px #CCCCCC;
+-moz-box-shadow: 7px 7px 5px #CCCCCC;
+box-shadow: 7px 7px 5px #CCCCCC;
+margin-bottom:10px;
+margin-top:10px;
+}
+
+
+
+.bordered tr:hover {
+
+-o-transition: all 0.1s ease-in-out;
+-webkit-transition: all 0.1s ease-in-out;
+-moz-transition: all 0.1s ease-in-out;
+-ms-transition: all 0.1s ease-in-out;
+transition: all 0.1s ease-in-out;
+}
+.bordered1 tr:hover {
+background: #fbf8e9;
+-o-transition: all 0.1s ease-in-out;
+-webkit-transition: all 0.1s ease-in-out;
+-moz-transition: all 0.1s ease-in-out;
+-ms-transition: all 0.1s ease-in-out;
+transition: all 0.1s ease-in-out;
+}
+
+
+.bordered td, .bordered th {
+border-left: 1px solid #ccc;
+border-top: 1px solid #ccc;
+padding: 5px;
+text-align: left;
+border-collapse:collapse;
+height:20px;
+}
+
+.bordered1 th {
+border-left: 1px solid #ccc;
+border-top: 1px solid #ccc;
+padding: 5px;
+text-align: left;
+border-collapse:collapse;
+
+}
+
+
+
+
+
+
+
+.bordered th {
+background-color: #dce9f9;
+background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
+background-image: -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+background-image: -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+background-image: -o-linear-gradient(top, #ebf3fc, #dce9f9);
+background-image: linear-gradient(top, #ebf3fc, #dce9f9);
+-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+-moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+border-top: none;
+text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+.bordered1 th1 {
+background-color: #CCCCCC;
+/* background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+background-image: -webkit-linear-gradient(top, #cccccc, #f3f3f3);
+background-image: -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+background-image: -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+background-image: -o-linear-gradient(top, #ebf3fc, #dce9f9);
+background-image: linear-gradient(top, #ebf3fc, #dce9f9);
+-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+-moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+border-top: none;
+text-shadow: 0 1px 0 rgba(255,255,255,.5); */
+}
+
+body{ font-family:Arial, Helvetica, sans-serif; font-size:12px;}
+
+
+.bordered td:first-child, .bordered th:first-child {
+border-left: none;
+}
+.bordered1 td:first-child, .bordered1 th:first-child {
+border-left: 1px solid #ccc;
+}
+
+
+
+
+
+.bordered td:first-child, .bordered th:first-child {
+border-left: 0px solid #ccc;
+border-right: 0px solid #ccc;
+}
+.bordered1 td:first-child, .bordered1 th:first-child {
+border-left: 0px solid #ccc;
+border-right:0px solid #ccc;
+border-bottom:0px;
+}
+
+
+
+
+
+.bordered th:first-child {
+-moz-border-radius: 6px 0 0 0;
+-webkit-border-radius: 6px 0 0 0;
+border-radius: 6px 0 0 0;
+
+}
+.bordered1 th:first-child {
+-moz-border-radius: 6px 0 0 0;
+-webkit-border-radius: 6px 0 0 0;
+border-radius: 6px 0 0 0;
+
+
+}
+
+
+
+
+
+
+
+
+.bordered th:last-child {
+-moz-border-radius: 0 6px 0 0;
+-webkit-border-radius: 0 6px 0 0;
+border-radius: 0 6px 0 0;
+}
+.bordered1 th:last-child {
+-moz-border-radius: 0 6px 0 0;
+-webkit-border-radius: 0 6px 0 0;
+border-radius: 0 6px 0 0;
+}
+
+
+
+
+
+
+
+.bordered th:only-child{
+-moz-border-radius: 6px 6px 0 0;
+-webkit-border-radius: 6px 6px 0 0;
+border-radius: 6px 6px 0 0;
+}
+.bordered1 th:only-child{
+-moz-border-radius: 6px 6px 0 0;
+-webkit-border-radius: 6px 6px 0 0;
+border-radius: 6px 6px 0 0;
+}
+
+
+
+
+
+.bordered tr:last-child td:first-child {
+-moz-border-radius: 0 0 0 0px;
+-webkit-border-radius: 0 0 0 0px;
+border-radius: 0 0 0 0px;
+}
+.bordered1 tr:last-child td:first-child {
+-moz-border-radius: 0 0 0 6px;
+-webkit-border-radius: 0 0 0 6px;
+border-radius: 0 0 0 6px;
+}
+
+
+
+
+
+
+
+.bordered tr:last-child td:last-child {
+-moz-border-radius: 0 0 0px 0;
+-webkit-border-radius: 0 0 0px 0;
+border-radius: 0 0 0px 0;
+}
+.bordered1 tr:last-child td:last-child {
+-moz-border-radius: 0 0 6px 0;
+-webkit-border-radius: 0 0 6px 0;
+border-radius: 0 0 6px 0;
+}
+
+
+
+.bordered11 { border: solid #ccc 1px;
+-moz-border-radius: 4px;
+-webkit-border-radius: 4px;
+border-radius: 4px;
+-webkit-box-shadow: 0 1px 1px #ccc;
+-moz-box-shadow: 0 1px 1px #ccc;
+box-shadow: 0 1px 1px #ccc;
+margin:0px auto;
+-webkit-box-shadow: 7px 7px 5px #CCCCCC;
+-moz-box-shadow: 7px 7px 5px #CCCCCC;
+box-shadow: 7px 7px 5px #CCCCCC;
+margin-bottom:10px;
+margin-top:10px;
+</style>
+
+
+
+
+
+<!--------------------------END MAP----------------------------------------------------------------------->
+  
+ <apex:stylesheet value="{!URLFOR($Resource.Attendee_Portal_SelfRegistration_CSS,"AttendeeArrowCSSBradcom.css")}"/>
+ 
+ <apex:includeScript value="{!$Resource.GE_ES_JQueryFile}"  />
+<script>
+$(document).ready(function() {
+  
+  $(".spanCls").click(function(){
+ var s=$(this).attr('id');
+ s= "#" + s.replace('SpanCol','tr1');
+ $(s).toggle();
+});
+ });
+</script>
+
+
+ 
+ 
+ 
+ <style>
+    
+                 
+   .borders {
+   border:1px solid #72ade7;
+  
+   font-size:12px;
+   }              
+    .borders th {height:30px; padding-left:15px; color:#FFFFFF;
+   background: #f6f8f9; /* Old browsers */
+background: -moz-linear-gradient(top,  #f6f8f9 0%, #e5ebee 50%, #d7dee3 51%, #f5f7f9 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f6f8f9), color-stop(50%,#e5ebee), color-stop(51%,#d7dee3), color-stop(100%,#f5f7f9)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #f6f8f9 0%,#e5ebee 50%,#d7dee3 51%,#f5f7f9 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #f6f8f9 0%,#e5ebee 50%,#d7dee3 51%,#f5f7f9 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #f6f8f9 0%,#e5ebee 50%,#d7dee3 51%,#f5f7f9 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #f6f8f9 0%,#e5ebee 50%,#d7dee3 51%,#f5f7f9 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f8f9', endColorstr='#f5f7f9',GradientType=0 ); /* IE6-9 */
+
+
+     border-bottom:1px solid #CCCCCC;
+    }             
+    .borders tr {
+     border-bottom:1px solid #818181;
+    }
+       
+    .borders td {
+     border-bottom:1px solid #CCCCCC;
+     padding:8px;
+    }
+    
+    .rich-tabpanel-content  {
+      background-color: #FFFFFF;
+      border:1px solid #FF0000;
+    }
+    
+  <!---------------------------- STYLES FOR TABS In POPUP-------------------------------->
+div.tabs > div {
+padding: 0px;
+margin-top: 0px;
+
+text-align: center;
+-moz-border-radius: 0px;
+border-radius: 0px;
+border-image: initial;
+}
+.rich-tabpanel-content, .contentClass, .rich-tabhdr-side-cell,  
+
+.rich-tab-bottom-line {border:none}
+
+.rich-tabhdr-side-border{width:0px; border:none; background-image:none}
+
+.rich-tabhdr-side-border{border-left:0px}
+.tabNavbtn {
+            padding: 3px 5px;
+            background-color: #FFFFFF;
+            color: #000;
+            text-decoration: none;
+            padding-left:25px;
+            padding-right:25px;
+            margin-left:15px;
+            
+            -moz-border-radius: 1em 4em 1em 4em;
+border-radius: 1em 4em 1em 4em;
+margin:0px auto;
+            
+        }
+.tabs{
+            padding: 3px 5px;
+            background-color: #cccccc;
+            font-size:13px;
+            color: #000;
+            text-decoration: none;
+            padding-left:25px;
+            padding-right:25px;
+            margin-left:15px; 
+            border:none;background-image:none;
+            
+            margin:0px auto;
+            
+        }
+.tabs_table td{padding:5px 0px; color:#000000; }    
+.tabs_table td input,textarea,file{width:350px;}   
+.oplabl{width:200px;color:#000000;}
+
+            
+    .inactiveTab {  padding: 3px 5px;
+            background-color: #cccccc;
+            font-size:13px;
+            color: #000;
+            text-decoration: none;
+            padding-left:25px;
+            padding-right:25px;
+            margin-left:15px; 
+            border:none;background-image:none;
+            -moz-border-radius: 1em 4em 1em 4em;
+            border-radius: 1em 4em 1em 4em;
+            margin:0px auto;}
+            
+     .activeTab {padding: 3px 5px;
+            background-color: #3ea0dd;
+            font-size:13px;
+            color: #FFFFFF;
+            text-decoration: none;
+            padding-left:25px;
+            padding-right:25px;
+            margin-left:15px; 
+            border:none;background-image:none;
+           
+            margin:0px auto;}
+            
+      .disableTab {  padding: 3px 5px;
+            background-color: #cccccc;
+            color: #000;
+            text-decoration: none;
+            padding-left:25px;
+            padding-right:25px;
+            margin-left:15px; 
+            border:none;background-image:none;
+            -moz-border-radius: 1em 4em 1em 4em;
+            border-radius: 1em 4em 1em 4em;
+            margin:0px auto;}            
+            
+    .contentClass{background-color: #FFFFFF;}
+<!---->                  
+</style>
+ <style>
+.button {
+    color:#FFFFFF;
+    font:1.5em Futura, ‘Century Gothic’, AppleGothic, sans-serif;
+    padding:4px;
+    background:url(overlay.png) repeat-x center #54b5f1;
+    background-color:rgba(84,181,241,1);
+    border:1px solid #ffcc00;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    border-radius:10px;
+    border-bottom:1px solid #9f9f9f;
+    -moz-box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
+    -webkit-box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
+    cursor:pointer;
+    margin-top:15px;
+}
+.gradiant {
+    background: -moz-linear-gradient(top, #EFEFEF, #BBBBBB);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EFEFEF), to(#BBBBBB));
+}
+#header1 {
+    height:auto;
+    background-color:#60A4EB;
+    background: #0096c9; /* Old browsers */
+background: -moz-linear-gradient(top, #0096c9 0%, #00689b 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0096c9), color-stop(100%,#00689b)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #0096c9 0%,#00689b 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #0096c9 0%,#00689b 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, #0096c9 0%,#00689b 100%); /* IE10+ */
+background: linear-gradient(to bottom, #0096c9 0%,#00689b 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0096c9', endColorstr='#00689b',GradientType=0 ); /* IE6-9 */
+    width:100%;
+    border:0px solid #996699;
+    border-bottom:1px solid #996699;
+    position:relative;
+    clear:both;
+    margin:0px auto;
+    -webkit-box-shadow:
+ 0 0 2px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, .2), 0 3px 0 #fff, 0 4px 0 rgba(0, 0, 0, .2), 0 6px 0 #fff, 0 7px 0 rgba(0, 0, 0, .2);
+    -moz-box-shadow:
+ 0 0 2px rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0,   0,   0,   .1), 3px 3px 0 rgba(255, 255, 255, 1), 4px 4px 0 rgba(0,   0,   0,   .1), 6px 6px 0 rgba(255, 255, 255, 1), 7px 7px 0 rgba(0,   0,   0,   .1);
+    box-shadow:
+ 0 0 2px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, .2), 0 3px 0 #fff, 0 4px 0 rgba(0, 0, 0, .2), 0 6px 0 #fff, 0 7px 0 rgba(0, 0, 0, .2);
+}
+#headleft {
+    padding-left:25px;
+    padding-top:8px;
+    width:25%;
+    border:0px solid #996699;
+}
+#headright {
+    float:right;
+    width:64%;
+    text-align:right;
+    border:0px solid #996699;
+    position:absolute;
+    top:5px;
+    right:0;
+    padding-right:30px;
+}
+#headright ul {
+    list-style:none;
+    display:inline;
+    font-size:16px;
+}
+#headright ul li {
+    display:inline;
+    color:#FFFFFF;
+}
+#headright ul li a {
+    text-decoration:none;
+}
+#footer {
+    height:25px;
+    background-color:#f2f2f2;
+    width:100%;
+    border:0px solid #FF0000;
+    border-top:1px solid #CCCCCC;
+    position:relative;
+    clear:both;
+    margin:0px auto;
+    margin-bottom:0px;
+    background-color:#414141
+}
+hr {
+    border: 0;
+    width:95%;
+    background-color: #CCCCCC;
+    height: 1px;
+}
+.awesome {
+    background-color:#2486c3;
+    color:#FFFFFF;
+    padding:5px;
+    font-weight:normal;
+    border:0px;
+    cursor:pointer;
+    font-size:13px;
+    background: -moz-linear-gradient(top, #2a81b8, #3298d8);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2a81b8), to(#3298d8));
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.awesome:hover {
+    background-color:#2486c3;
+    color:#FFFFFF;
+    padding:5px;
+    font-weight:normal;
+    border:0px;
+    cursor:pointer;
+    font-size:13px;
+    background: -moz-linear-gradient(top, #3298d8, #2a81b8);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3298d8), to(#2a81b8));
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+</style>
+<!-------------------------------------------HEADER------------------------------------->
+   <div id="header1">
+      
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="line-height:35px;">
+      <tr> 
+        <td width="102"> <apex:image url="/servlet/servlet.ImageServer?id={!event.EV_EventLogo__c}&oid={!$Organization.Id}" height="100px" width="150px" style="padding:6px;" rendered="{!if(event.EV_EventLogo__c!=null,true,false)}"/> </td>
+        <td width="838" align="left" valign="middle">
+        <table cellpadding="0" cellspacing="0" width="80%" border="0" style="color:#000; padding:10px; font-size:12px;" align="right">
+          <tr>
+            <td bgcolor="" align="left"><h2 style="margin:0px 0px 5px 0px ; padding:0px; line-height:22px;  height:22px; font-family:Georgia, 'Times New Roman', Times, serif;font-size:25px;color:#ffffff;  ">{!event.EV_Title__c}</h2></td>
+          </tr>
+          <tr>
+            <td align="left" style="color:#FFFFFF; height:22px;" valign="middle">
+            <b>Date  Time:&nbsp;</b> <apex:outputText value="{0,date,MM/dd/yyyy}"> 
+            <apex:param value="{!event.EV_StartDate__c}" /> </apex:outputText> &nbsp; {!event.StartTime__c}&nbsp;
+             <B>TO </B> &nbsp;<apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!event.EV_EndDate__c}" /> </apex:outputText> &nbsp; {!event.EV_EndTime__c}
+              </td>
+          </tr>
+        </table>
+        
+        
+        <div id="headright">
+        <ul style="list-style:none; display:inline;color:#ffffff">
+          <li><a href="http://boothleads.com/" class="link" style="color:#FFFFFF;font-size:15px">Home</a>
+          |
+         <a href="http://boothleads.boothleads.cs11.force.com/" class="link" style="color:#FFFFFF;font-size:15px">Create Event</a>
+          |
+         <a href="https://boothleads.boothleads.cs11.force.com/bl_Attendee_Registration" class="link" style="color:#FFFFFF;font-size:15px">Find Event</a></li>
+        </ul>
+      </div>
+        
+       
+        
+        
+        
+        
+        </td>
+      </tr>
+    </table>
+    
+    
+    
+    
+    
+    
+    
+      
+      </div>
+<br />
+<!------------------------------------------------HEADER END-------------------------------->
+<table cellpadding="0" cellspacing="0" border="0" style="margin:0px auto; width:98%; border:1px solid #CCCCCC; padding:5px;-webkit-border-radius: 15px 0px 15px 0px;-moz-border-radius: 15px 0px 15px 0px;border-radius: 15px 0px 15px 0px;"><tr style="width:100%;"><td style="width:60%;">
+ <apex:tabPanel switchType="client" id="maintab"  selectedTab="{!selectedTab}" activeTabClass="activeTab awesome" tabClass="tabs" inactiveTabClass="inactiveTab" width="98%" style="border:0px solid red;margin:0px auto;">
+   <apex:tab label="Signup" id="eduinfo" disabled="{!istab0disabled}" style="padding-left:-40px;border:0px solid #FF0000;" >
+     <apex:form id="frm">
+     
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="bordered">
+<tr>
+<th width="10%">Ticket Logo</th>
+<th width="20%">Item Name</th>
+<th width="12%">Ticket Type</th>
+<th width="12%">Price</th>
+<th width="12%">Sales End </th>
+<th width="20%">Status</th>
+<th width="14%">Quantity</th>
+</tr>
+
+<tr>
+<td colspan="7" align="center" valign="top">
+<apex:repeat value="{!inn}" var="r">
+
+
+<table width="98%" border="0" cellspacing="0" cellpadding="0" class="bordered1">
+
+<tr style="background-color:#CCCCCC;color:#00ae98;">
+
+<td width="9%" rowspan="3" bgcolor="#FFFFFF" valign="top">
+
+<apex:image url="/servlet/servlet.ImageServer?id={!r.tt.Ticket_Image_URL__c}&oid={!$Organization.Id}" height="30px" width="30px" rendered="{!if(r.tt.Ticket_Image_URL__c!=null,true,false)}"/>
+
+
+</td>
+<td width="21%"><b> {!r.tt.TT_Name__c}</b><br />
+             
+             <span id="{!r.tt.id}SpanCol" class="spanCls">
+               <a id="{!r.tt.id}downarrow"  href="" style="text-decoration:none;color:blue;cursor:pointer">More info </a>
+             </span></td>
+
+
+
+
+
+<td width="13%">  {!r.tt.TT_TicketType__c} </td>
+
+<td width="12%">  <b>$ <apex:outputPanel rendered="{!NOT(if((r.tt.TT_TicketType__c=='Donation'),true,false))}">
+             {!r.tt.TT_Amount__c}
+             </apex:outputPanel> </b> 
+           <apex:inputText value="{!r.donationValue}" style="width:60px;"   rendered="{!if((r.tt.TT_TicketType__c=='Donation'),true,false)}">
+                <apex:actionSupport event="onkeyup" action="{!onchangeAct}" reRender="outpanel"/>           
+             </apex:inputText>
+ </td>
+
+<td width="12%"><apex:outputText value="{0,date,MMM dd,yyyy}"> <apex:param value="{!r.tt.Sales_End_Date__c }" />  </apex:outputText>  </td>
+
+<td width="21%" style="color:#00ae98;"><apex:outputPanel rendered="{!if((r.tt.TT_Sold__c)==(r.tt.TT_Available__c),false,true)}" style="color:Green;">  <b>Available - {!r.tt.Available__c}</b></apex:outputPanel>
+            <apex:outputPanel style="color:red;" rendered="{!NOT(if((r.tt.TT_Sold__c)==(r.tt.TT_Available__c),false,true))}">  <b>Sold out</b></apex:outputPanel>
+           </td>
+<td width="13%" align="center" style="text-align:center;">
+
+<apex:selectList value="{!r.quantity}" multiselect="false" size="1" rendered="{!if((r.tt.TT_Sold__c)==(r.tt.TT_Available__c)||(r.tt.TT_TicketType__c=='Donation'),false,true)}">
+              <apex:selectOptions value="{!r.opt}" />
+            <apex:actionSupport action="{!onchangeAct}" event="onchange" reRender="outpanel"/>
+         </apex:selectList>
+         
+      
+          </td>
+</tr>
+
+ <tr  style="border-bottom:0px;"><td colspan="6" style="border-bottom:0px;padding:0px;position:relative; z-index:1000;">
+        <div  id="{!r.tt.id}tr1" style="border-bottom:1px solid #CCCCCC;display:none;width:100%;background-color:#d4ecf5;line-height:18px;" > 
+         <span style="margin-left:5px;"> {!r.tt.description__c}</span>
+       </div>
+             
+             
+       </td></tr>
+</table></apex:repeat>
+</td>
+</tr>
+
+
+
+
+</table>
+     
+     
+  
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     <!--
+     <table style="width:100%;margin:0px auto;" class="borders" cellpadding="0" cellspacing="0">
+    
+    
+     <tr><th width="40%" style=";color:#025589;font-weight:bold;border-right:2px solid #FFFFFF;border-bottom:1px solid #72ade7;"> 
+         Item Name</th>
+         
+          <th width="20%" style="color:#025589;font-weight:bold;border-right:2px solid #FFFFFF;border-bottom:1px solid #72ade7;"> 
+         Ticket Type</th> 
+         
+          <th width="15%" style="color:#025589;font-weight:bold;border-right:2px solid #FFFFFF;border-bottom:1px solid #72ade7;"> 
+          Price</th> 
+         
+           <th width="15%" style="color:#025589;font-weight:bold;border-right:2px solid #FFFFFF;border-bottom:1px solid #72ade7;"> 
+          Status</th> 
+         
+           <th width="10%" style="color:#025589;font-weight:bold;border-right:0px solid #FFFFFF;border-bottom:1px solid #72ade7;"> 
+           Quantity</th> 
+         </tr>
+         
+         
+           <apex:repeat value="{!inn}" var="r">
+            <tr><td style="font-size:12px;"> 
+             <b> {!r.tt.TT_Name__c}</b><br />
+             
+             <span id="{!r.tt.id}SpanCol" class="spanCls">
+               <a id="{!r.tt.id}downarrow"  href="" style="text-decoration:none;color:blue;cursor:pointer">More info </a>
+             </span>
+                   
+              </td>
+              
+                  <td style="font-size:12px;"> 
+              {!r.tt.TT_TicketType__c}
+              </td>
+                  
+                  
+                  <td style="font-size:12px;"> 
+             <b>$ <apex:outputPanel rendered="{!NOT(if((r.tt.TT_TicketType__c=='Donation'),true,false))}">
+             {!r.tt.TT_Amount__c}
+             </apex:outputPanel> </b> 
+             <apex:inputText value="{!r.donationValue}" style="width:60px;"   rendered="{!if((r.tt.TT_TicketType__c=='Donation'),true,false)}">
+                <apex:actionSupport event="onkeyup" action="{!onchangeAct}" reRender="outpanel"/>           
+             </apex:inputText> 
+              </td>
+              
+              
+              <td style="font-size:12px;"> 
+           <apex:outputPanel rendered="{!if((r.tt.TT_Sold__c)==(r.tt.TT_Available__c),false,true)}" style="color:Green;">  <b>Available - {!r.tt.Available__c}</b></apex:outputPanel>
+            <apex:outputPanel style="color:red;" rendered="{!NOT(if((r.tt.TT_Sold__c)==(r.tt.TT_Available__c),false,true))}">  <b>Sold out</b></apex:outputPanel>
+           </td>
+              
+                    
+              
+              <td align="center">
+               <apex:selectList value="{!r.quantity}" multiselect="false" size="1" rendered="{!if((r.tt.TT_Sold__c)==(r.tt.TT_Available__c)||(r.tt.TT_TicketType__c=='Donation'),false,true)}">
+              <apex:selectOptions value="{!r.opt}" />
+            <apex:actionSupport action="{!onchangeAct}" event="onchange" reRender="outpanel"/>
+         </apex:selectList> <br />
+       
+        </td> </tr>
+        
+        <tr  style="border-bottom:0px;"><td colspan="5" style="border-bottom:0px;padding:0px;">
+        <div  id="{!r.tt.id}tr1" style="border-bottom:1px solid #CCCCCC;display:none;width:100%;background-color:#d4ecf5;line-height:18px;" > 
+          {!r.tt.description__c}
+       </div>
+             
+             
+       </td></tr>
+        
+        
+       </apex:repeat> 
+         
+       </table> 
+       -->
+       
+       <table style="width:100%; margin:0px auto;-webkit-border-radius: 0px 0px 0px 15px;-moz-border-radius: 0px 0px 0px 15px;border-radius: 0px 0px 0px 15px;" cellspacing="0" cellpadding="0" border="0">
+          <tr style="height:45px;font-size:12px;" >
+            <td align="right" width="40%">&nbsp;</td>
+            <td align="right" width="20%">&nbsp;</td>
+            <td align="right" width="15%">&nbsp;</td>
+            <td style="border:none;background-color:#c1e1ee;font-weight:bold;padding-left:10px;-webkit-border-radius: 0px 0px 0px 15px;-moz-border-radius: 0px 0px 0px 15px;border-radius: 0px 0px 0px 15px;" width="15%"> Grand Total:</td>
+            <td style="border:none;background-color:#c1e1ee;font-weight:bold;padding-left:10px; text-align:left;" width="10%"><apex:outputPanel id="outpanel" > &#36;
+            {!TotalAmount} 
+           </apex:outputPanel></td>
+          </tr>
+        
+          <tr style="height:45px;">
+            <td align="right">&nbsp;</td>
+             <td align="right">&nbsp;</td>
+            <td align="right">&nbsp;</td>
+             
+            <td align="right" colspan="2">
+            <apex:commandButton value="NEXT" styleClass="awesome "  action="{!enabletab1}" rerender="maintab,linksbool" style="padding:8px;"/></td>
+          </tr>
+       </table>
+       
+     </apex:form>
+   </apex:tab>     
+ 
+ 
+    <apex:tab label="Payment & Billing" title="name2" id="eduinfo1" style="background-color:#FFFFFF" disabled="{!istab1disabled}">
+     <apex:form >
+    
+    <!--  <b style="color:blue;">You are going to Pay : {!grandTotal}</b> <br /><br />-->
+    
+         <apex:repeat value="{!seccls}" var="rt">
+          <b>{!rt.name.TT_Name__c}-</b> ${!rt.totalPrice} 
+          
+          <table cellpadding="0" cellspacing="0" border="0" class="bordered" width="100%" style="margin:0px auto;">
+          <tr><th> First Name<font style=" color:#FF0000;font-size:13px;">*</font></th>
+           <th>Last Name<font style=" color:#FF0000;font-size:13px;">*</font></th> 
+           <th> Email<font style=" color:#FF0000;font-size:13px;">*</font></th> 
+           <th>Company<font style=" color:#FF0000;font-size:13px;">*</font></th> 
+           <th>Phone<font style=" color:#FF0000;font-size:13px;">*</font></th> </tr>
+          
+           <apex:repeat value="{!rt.dom}" var="de"> 
+           <tr><td>
+              <apex:inputField value="{!de.First_Name__c}" />
+              </td>
+              
+              <td>
+              <apex:inputField value="{!de.Last_Name__c}"/>
+              </td>
+              
+              <td>
+              <apex:inputField value="{!de.Email__c}"/>
+              </td>
+                     
+               <td>
+              <apex:inputField value="{!de.Company__c}"/>
+              </td>
+              
+               <td>
+              <apex:inputField value="{!de.Phone__c}"/>
+              </td>
+              
+              
+              
+              </tr>
+              
+           </apex:repeat> 
+          
+         </table><br />
+         </apex:repeat>
+     
+     
+     <apex:outputPanel rendered="{!displayPayment}">
+     
+     <table width="98%" border="0" cellspacing="4" cellpadding="0">
+  <tr>
+    <td width="34%" height="30" align="left"  valign="middle" colspan="3" style="color:#489cdf;padding-left:180px;"><h1 style="font-size:16px; ">Pay with Credit Card</h1> </td>
+   
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">Country :</td>
+    <td height="30">  <input type="text" style="width:186px; font-size:16px; padding:5px;" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">Credit Card Number :</td>
+    <td height="30">
+        <apex:inputText value="{!cardNo}" style="width:186px; font-size:16px; padding:5px;" />
+        
+        </td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">payment Type :</td>
+    <td height="30"><input type="image" src="https://c.cs11.content.force.com/servlet/servlet.ImageServer?id=015Z00000009nh4&oid=00DZ0000000pGvZ&lastMod=1369053212000" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">Expiry Date :</td>
+    <td height="30"><apex:inputText value="{!exmo}" style="width:60px;font-size:16px; padding:5px;" /> / <apex:inputText value="{!exye}" style="width:60px;font-size:16px; padding:5px;" />
+    &nbsp;&nbsp;&nbsp;</td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle"> CVV :</td>
+    <td height="30"><apex:inputText value="{!cvv}" style="width:60px;font-size:16px; padding:5px;" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">First name :</td>
+    <td height="30"><apex:inputText value="{!FirstName}" style="width:186px; font-size:16px; padding:5px;" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  
+  <tr>
+    <td height="30" align="right" valign="middle">Last Name :</td>
+    <td height="30"><apex:inputText value="{!LastName}" style="width:186px; font-size:16px; padding:5px;" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">Billing Address Line1 :</td>
+    <td height="30"><input type="text" style="width:186px; font-size:16px; padding:5px;" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">Billing Address Line2 :</td>
+    <td height="30"><input type="text" style="width:186px; font-size:16px; padding:5px;" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">City :</td>
+    <td height="30"><input type="text" style="width:186px; font-size:16px; padding:5px;" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">State :</td>
+    <td height="30"><apex:inputText value="{!state}" style="width:186px; font-size:16px; padding:5px;" /></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="30" align="right" valign="middle">&nbsp;</td>
+    <td height="30">&nbsp;</td>
+    <td height="30">&nbsp;</td>
+  </tr>
+</table>
+     
+     </apex:outputPanel>
+     
+     
+     
+     <div style="width:95%; float:right; border:0px solid #FF0000; text-align:right; margin:0px auto;"> 
+     <apex:commandButton value="Previous"  action="{!previous1}" rerender="maintab"  styleClass="awesome" style="padding:8px;" immediate="true"/> &nbsp;&nbsp;&nbsp;&nbsp;
+    <!--  <apex:commandButton image="https://c.cs11.content.force.com/servlet/servlet.ImageServer?id=015Z00000009luz&oid=00DZ0000000pGvZ&lastMod=1367326540000"   action="{!Pay}" /> 
+      <apex:commandButton image="https://c.cs11.content.force.com/servlet/servlet.ImageServer?id=015Z00000009lv4&oid=00DZ0000000pGvZ&lastMod=1367326594000"   action="{!Pay}" /> 
+    --> 
+   
+    <apex:commandButton value="Pay"  action="{!Pay}" style="padding:8px;" styleClass="awesome" /> </div>
+     
+       
+     </apex:form>
+   </apex:tab> 
+ 
+
+
+     <!-- <apex:tab label="name3" title="name3" id="eduinfo2" style="background-color:#FFFFFF" disabled="{!istab2disabled}">
+     <apex:form >
+      <Apex:commandButton value="Pay"  action="{!Pay}" /> 
+     <Apex:commandButton value="NEXT"  action="{!enabletab3}" rerender="maintab"/> 
+        <Apex:commandButton value="PREVIOUS"  action="{!previous2}" rerender="maintab"/> 
+     </apex:form>
+   </apex:tab> -->
+
+   <!--<apex:tab label="name4" title="name4" id="eduinfo3"  style="background-color:#FFFFFF" disabled="{!istab3disabled}">
+     <apex:form >
+      <Apex:commandButton value="Pay"  action="{!Pay}" /> 
+       <Apex:commandButton value="NEXT"  action="{!enabletab4}" rerender="maintab"/>  
+     </apex:form>
+   </apex:tab> -->
+
+
+
+
+ </apex:tabPanel>  </td>
+ 
+ <td style="width:20%;" border="2" valign="top"><br />
+     <div id="maphead">
+         <h3>
+         <font color="#BE5F5B" style="padding:5px; font-size:16px;"> Event Location</font>
+         </h3>
+     </div>
+ <div id="map" style=" border:1px solid #CCCCCC;"></div>
+ <div style="width:100%; border:1px solid #CCCCCC; background-color:#eaeaea; text-align:center; font-size:16px; line-height:30px; -webkit-border-radius: 0px 0px 15px 15px;-moz-border-radius: 0px 0px 15px 15px;border-radius: 0px 0px 15px 15px;">
+ 
+ <font style="color:#A52A2A"><b>{!event.EV_HistingAddr1__c},</b></font><br/>
+ <font style="color:    #800000"><b>{!event.AS_HostingCity__c}</b></font><br/>
+ <font style="color:#6B8E23"><b>{!event.EV_HostingCountryNew__c}</b></font><br/>
+ 
+ 
+     
+     
+     
+     
+ </div>
+ </td></tr></table>
+
+
+
+  
+</apex:page>

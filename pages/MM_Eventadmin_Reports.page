@@ -1,0 +1,1648 @@
+<apex:page controller="MM_EventAdmin_ReportsCon" showHeader="false" standardStylesheets="true" action="{!CheckUser}">
+
+<!------------Jquery----------------------->
+<style type="text/css" media="screen">
+/*
+             * Override styles needed due to the mix of three different CSS sources! For proper examples
+             * please see the themes example in the 'Examples' section of this site
+             */
+
+.dataTables_info {
+    padding-top: 0;
+}
+.dataTables_paginate {
+    padding-top: 0;
+}
+.css_right {
+    float: right;
+}
+#example_wrapper .fg-toolbar {
+    font-size: 0.8em
+}
+#theme_links span {
+    float: left;
+    padding: 2px 10px;
+}
+#example_wrapper {
+    -webkit-box-shadow: 2px 2px 6px #666;
+    box-shadow: 2px 2px 6px #666;
+    border-radius: 5px;
+}
+#example tbody {
+    border-left: 1px solid #AAA;
+    border-right: 1px solid #AAA;
+}
+#example thead th:first-child {
+    border-left: 1px solid #AAA;
+}
+#example thead th:last-child {
+    border-right: 1px solid #AAA;
+}
+</style>
+
+<script type="text/javascript">
+
+            function fnFeaturesInit ()
+            {
+                /* Not particularly modular this - but does nicely :-) */
+                $('ul.limit_length>li').each( function(i) {
+                    if ( i > 10 ) {
+                        this.style.display = 'none';
+                    }
+                } );
+                
+                $('ul.limit_length').append( '<li class="css_link">Show more<\/li>' );
+                $('ul.limit_length li.css_link').click( function () {
+                    $('ul.limit_length li').each( function(i) {
+                        if ( i > 5 ) {
+                            this.style.display = 'list-item';
+                        }
+                    } );
+                    $('ul.limit_length li.css_link').css( 'display', 'none' );
+                } );
+            }
+            
+           $(document).ready( function() {
+                fnFeaturesInit();
+                $('#example').dataTable( {
+                   "bJQueryUI": true,
+                    "sPaginationType": "full_numbers"
+                } );
+                
+                  $('#example1').dataTable( {
+                  "bJQueryUI": true,
+                    "sPaginationType": "full_numbers",
+                    "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    "iDisplayLength" : 10,
+                    "aaSorting": [[ 3, "desc" ]]
+                         
+               } );
+                    
+                  $('#example2').dataTable( {       
+                      "bJQueryUI": true,        
+                        "sPaginationType": "full_numbers",      
+                        "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],      
+                        "iDisplayLength" : 10,      
+                        "aaSorting": [[ 5, "desc" ]]        
+                                
+                                
+                                    
+                   } );     
+                   $('#example3').dataTable( {      
+                      "bJQueryUI": true,        
+                        "sPaginationType": "full_numbers",      
+                        "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],      
+                        "iDisplayLength" : 10,      
+                        "aaSorting": [[ 4, "desc" ]]        
+                                
+                                
+                         } );  
+                     $('#example4').dataTable( {      
+                      "bJQueryUI": true,        
+                        "sPaginationType": "full_numbers",      
+                        "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],      
+                        "iDisplayLength" : 10,      
+                        "aaSorting": []        
+                                
+                                
+                         } );           
+                
+               /* SyntaxHighlighter.config.clipboardSwf = 'media/javascript/syntax/clipboard.swf';
+                SyntaxHighlighter.all(); */
+            } ); 
+        </script>
+        
+<!-------------------End Jquery---------------------->
+<!-----------------------------------FOR POPUP --------------------------------------------------->
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/jquery.akordeon.css")}"/>
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/reveal.css")}"/>
+ 
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.akordeon.js")}"/>
+ <style>
+ .eventtable{text-align:left;color:#FF0000;padding-left:3px;border-right:0px solid #CCCCCC;}
+
+ .eventselect{text-align:left;padding-left:3px;border-right:0px solid #CCCCCC;}
+ </style>
+ <script language="JavaScript" type="text/javascript">
+function CloseAndRefresh(){
+window.opener.location.href="/{!$CurrentPage.parameters.id}";
+      window.top.close();
+    
+  }
+</script>
+ <script type="text/javascript">
+ function confirmassign()
+    {
+    
+    var r=confirm("Do you want to confirm the appointment for this Prime Contractor?");
+   
+   // if(r==true){
+    //alert('Your appointment is confirmed.');
+    
+    
+    //}
+     return r;
+    }
+    </script>
+<script type="text/javascript">
+    $(document).ready(function () {
+      /*  $('#buttons').akordeon();
+        $('#button-less').akordeon({ buttons: false, toggle: true, itemsOrder: [2, 0, 1] }); */
+    });
+    $(document).ready(function() {
+
+    //Default Action
+    $(".tab_content").hide(); //Hide all content
+    $("ul.tabs li:first").addClass("active").show(); //Activate first tab
+    $(".tab_content:first").show(); //Show first tab content
+    
+    //On Click Event
+    $("ul.tabs li").click(function() {
+        $("ul.tabs li").removeClass("active"); //Remove any "active" class
+        $(this).addClass("active"); //Add "active" class to selected tab
+        $(".tab_content").hide(); //Hide all tab content
+        var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
+        $(activeTab).fadeIn(); //Fade in the active content
+        return false;
+    });
+
+});
+</script>
+    
+<!------------------------------------------------------------------------------------------------------->
+<script type="text/javascript" >
+$(document).ready(function()
+{
+$(".account").click(function()
+{
+var X=$(this).attr('id');
+
+if(X==1)
+{
+$(".submenu").hide();
+$(this).attr('id', '0');    
+}
+else
+{
+
+$(".submenu").show();
+$(this).attr('id', '1');
+}
+    
+});
+
+//Mouseup textarea false
+$(".submenu").mouseup(function()
+{
+return false
+});
+$(".account").mouseup(function()
+{
+return false
+});
+
+
+//Textarea without editing.
+$(document).mouseup(function()
+{
+$(".submenu").hide();
+$(".account").attr('id', '');
+});
+    
+});
+    
+    </script>
+<style>
+    
+.btn {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 5px; /*optional*/
+    color: #aaa;
+    font-size: .875em;
+}
+
+.pagination {
+    margin:0px auto;
+    color:#414141;
+      padding: 3px;
+    margin-bottom: 3px;
+}
+
+.page {
+    display: inline-block;
+    padding: 0px 9px;
+    margin-right: 4px;
+    border-radius: 3px;
+    border: solid 1px #c0c0c0;
+    background: #e9e9e9;
+    box-shadow: inset 0px 1px 0px rgba(255,255,255, .8), 0px 1px 3px rgba(0,0,0, .1);
+    font-size: .875em;
+    font-weight: bold;
+    text-decoration: none;
+   color:#414141;
+    text-shadow: 0px 1px 0px rgba(255,255,255, 1);
+}
+
+.page:hover, .page.gradient:hover {
+    background: #fefefe;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FEFEFE), to(#f0f0f0));
+    background: -moz-linear-gradient(0% 0% 270deg,#FEFEFE, #f0f0f0);
+}
+
+.page.active {
+    border: none;
+    background: #616161;
+    box-shadow: inset 0px 0px 8px rgba(0,0,0, .5), 0px 1px 0px rgba(255,255,255, .8);
+    color: #f0f0f0;
+    text-shadow: 0px 0px 3px rgba(0,0,0, .5);
+}
+
+.page.gradient {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f8f8f8), to(#e9e9e9));
+    background: -moz-linear-gradient(0% 0% 270deg,#f8f8f8, #e9e9e9);
+}
+
+.pagination.dark {
+    background: #414449;
+    color: #feffff;
+}
+
+.page.dark {
+    border: solid 1px #32373b;
+    background: #3e4347;
+    box-shadow: inset 0px 1px 1px rgba(255,255,255, .1), 0px 1px 3px rgba(0,0,0, .1);
+    color: #feffff;
+    text-shadow: 0px 1px 0px rgba(0,0,0, .5);
+}
+
+.page.dark:hover, .page.dark.gradient:hover {
+    background: #3d4f5d;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#547085), to(#3d4f5d));
+    background: -moz-linear-gradient(0% 0% 270deg,#547085, #3d4f5d);
+}
+
+.page.dark.active {
+    border: none;
+    background: #2f3237;
+    box-shadow: inset 0px 0px 8px rgba(0,0,0, .5), 0px 1px 0px rgba(255,255,255, .1);
+}
+
+.page.dark.gradient {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#565b5f), to(#3e4347));
+    background: -moz-linear-gradient(0% 0% 270deg,#565b5f, #3e4347);
+}
+</style>
+ <style>
+
+
+.listcls:hover
+{
+background-color: #BCE6E6;
+color: #09F;
+}
+
+
+</style>
+
+  
+<!--topblock start-->
+    <div id="topblock"> 
+    <div id="logo"></div>
+    <div id="topblockright" style="position:absolute; top:0px; right:0px;">
+    <table width="98%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+        <td align="right"><div style="padding-right:20px;">Hello {!$User.Firstname}&nbsp;{!$User.Lastname}</div></td>        
+        <td style="width:195px;"><div class="dropdown">
+            <a class="account" ><span>Settings</span></a>
+            <div class="submenu" style="display: none;">
+            <apex:form >
+            <ul class="root">
+                
+                <li><apex:outputLink value="/apex/MM_Profile" ><span>View/Edit Profile</span> </apex:outputLink></li>
+                <li style="list-style: none;margin: 0; padding: 0;"><apex:outputLink value="/apex/MM_Changepassword?urlreturn=MM_Eventadmin_attendeesDirectory" ><span>Change Password</span> </apex:outputLink></li>
+                <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}">{!$Label.site.logout}</apex:commandLink></li>
+            </ul>
+            </apex:form>
+            </div>
+            </div>
+        </td>
+        </tr>
+         <tr><td align="center" colspan="2" >
+         <!--<apex:outputLink value="http://boothleads.force.com/MatchMaking/apex/BL_EA_Reports?id={!eventSelected }" ><span style="color:#0F87BA;"><u>Switch to BoothLeads</u></span></apex:outputLink>-->
+          <apex:form style="align:center;">  <apex:selectList value="{!selectedapp}" multiselect="false" size="1" onchange="return move();" style="border-radius:10px;width:150px;" styleClass="listcls" >
+                                  <apex:selectOptions value="{!apps}">
+                                  </apex:selectOptions>
+                                 </apex:selectList></apex:form>
+         </td></tr>
+        
+    </table>
+    </div>
+    </div>   
+<!--topblock end-->
+
+
+<!--menublock start-->
+        <div id="menublock">
+            <div id='cssmenu' style="width:100%;">
+                  <ul>
+                       
+                       <li><apex:outputLink value="/apex/Matchleads_eventsPage" ><span>Events</span></apex:outputLink></li>
+                        <li ><apex:outputLink value="/apex/MM_Eventadmin_schedule" ><span>Schedule</span></apex:outputLink></li>
+                         <li ><apex:outputLink value="/apex/MM_Eventadmin_ExhibitorsDirectory" ><span>{!exhibitoralias }</span></apex:outputLink></li>
+                          <apex:outputPanel rendered="{!IF($User.Username =='mcmillen@hartford.edu',true,false )}">
+                          <li><apex:outputLink value="/apex/bl_eventadmin_corporatestaff" ><span>Prime Partners</span></apex:outputLink></li>
+                        </apex:outputPanel>
+                         <li ><apex:outputLink value="/apex/MM_Eventadmin_AttendeesDirectory" ><span>{!attendeealias}</span></apex:outputLink></li>
+                        <apex:outputPanel rendered="{!IF($User.Username =='mcmillen@hartford.edu',true,false )}">
+                          <li><apex:outputLink value="/apex/MM_eventadmin_SponsorsDirectory" ><span>Resource Partner Directory</span></apex:outputLink></li>
+                         </apex:outputPanel>
+                         <li class="active"><apex:outputLink value="/apex/MM_EventAdmin_Reports" ><span>Reports</span></apex:outputLink></li>
+                 
+  </ul>
+            </div>
+        </div>
+        
+<!--menublock end-->   <!-- <li><apex:outputLink value="/apex/MM_Eventadmin_Dashboard" ><span>Dashboard</span> </apex:outputLink></li>-->  
+ 
+<!--headdingbar start-->
+<apex:form >
+ <div id="headdingbar" style="padding-top:1px;width:98.5%;">
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+   <td height="30" style="text-align:left;padding-left:10px;">Event :&nbsp;<b><apex:outputText value="{!attach.EV_Title__c}" style="font-weight:bold;"/></b></td>
+               
+                <td height="30" align="left" style=" padding-top:5px;padding-left:10px;"> 
+                    Event Type :&nbsp;<b><apex:outputText value="{!attach.MatchMaking_Type__c}" style="font-weight:bold;"></apex:outputText></b> 
+                  
+                </td>
+    
+     <td style="text-align:right;"> <apex:commandButton action="{!exhibitorschedules}" value="Print {!exhibitoralias} Schedules"/> &nbsp; </td>
+    <td style="text-align:right; width:180px;">
+     <apex:commandButton action="{!attendeeschedules}" value="Print {!attendeealias} Schedules"/> 
+
+    
+    </td>
+   
+   
+  </tr>
+</table> 
+     </div>
+  <!-- 
+    <div style="float:left;">
+    <td style="width:60px; text-align:left;">Events :</td>
+    <td style="text-align:left;">
+        <apex:selectList value="{!eventSelected}" multiselect="false" size="1" style="width:300px;">
+            <apex:selectOptions value="{!items}"/>
+            <apex:actionSupport action="{!getevents}" event="onchange" status="AjaxLoader"/>
+        </apex:selectList>   
+    </td>
+    </div>
+    
+    -->
+    <!--- <div style="float:right;">
+      <apex:commandButton action="{!exhibitorschedules}" value="Print Prime Contractor Schedules"/> &nbsp;
+      <apex:commandButton action="{!attendeeschedules}" value="Print Small Business Schedules"/> &nbsp;
+     </div> --->
+<!--headdingbar end-->
+<!-- container start -->
+    <div id="bigcontainer" style="border:0px;">
+    <div style="min-height:500px; margin-top:15px;width:100%;">
+        <table border="0" cellspacing="0" cellpadding="0" class="table">
+            <tr>
+                <th width="40%" style="padding-left:5px;">Report Name</th>
+                <th width="60%">Report Description</th>
+            </tr>
+             <!--<tr>
+                <td width="40%" align="left" style="padding-left:5px;">
+                <apex:outputLink Value="/apex/BL_TransactionDetails?id={!eventSelected}" styleClass="big-link viewprofile">Payment Details</apex:outputLink></td>
+                <td width="60%">It consists of all Payment details of this event.<br/></td>
+            </tr>-->
+           
+            
+            <tr>
+                <td width="40%" align="left" style="padding-left:5px;"><apex:commandLink action="{!totalmatches}" value="Total Appointments Made" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all the accepted appointments made in this Event.<br/></td>
+            </tr>
+            <tr>
+                <td width="40%" align="left">
+                    <apex:commandLink action="{!pendingappointments}" value="Pending Appointments" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all the pending appointments in this Event.<br/></td>
+            </tr> 
+            <!-- <tr>
+                <td width="10%" align="left"><a href="#"><apex:image value="{!$Resource.Qrcode_edit}"/></a></td>
+                <td width="30%" align="left"><apex:commandLink action="{!MBEschedules}" value="Small Business Schedules" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all Small Business Schedules of the selected event.<br/></td>
+            </tr> -->
+            <tr>
+                <td width="40%" align="left" style="padding-left:5px;"><apex:commandLink action="{!missedappointments}" value="Missed Appointments" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all the missed appointments in this Event.<br/></td>
+            </tr>                  
+             <tr>
+                <td width="40%" align="left" style="padding-left:5px;"><apex:commandLink action="{!cancelledappointments}" value="Cancelled/Rejected Appointments" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all the cancelled, rejected and rescheduled appointments in this Event.<br/></td>
+            </tr>
+            <tr>
+                <td width="40%" align="left" style="padding-left:5px;"><apex:commandLink action="{!PercentUtilizationChart}" value="Appointment Chart" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">Pie chart showing the comparison of overall appointments status in this Event.<br/></td>
+            </tr>
+            <!--<tr>
+                <td width="40%" align="left"><apex:commandLink action="{!Openappointments}" value="Open Appointments" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all the Open appointments of Prime Contractors in this Event.<br/></td>
+            </tr>-->  
+            
+            <tr>
+                <td width="40%" align="left"><apex:commandLink action="{!boothadminslist}" value="Table List" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of tables list of {!exhibitoralias} participating in this Event.<br/></td>
+            </tr>
+             <tr>
+                <td width="40%" align="left"><apex:commandLink action="{!appointmentsByTime}" value="Appointments by Time" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of tables list of appointments at that time in this Event.<br/></td>
+            </tr>
+             <tr>
+                <td width="40%" align="left"><apex:commandLink action="{!appointmentsByTime2}" value="Appointments by Group" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all the lists of appointments in this Event.<br/></td>
+            </tr>
+            <tr>
+
+                <td width="40%" align="left"><apex:commandLink action="{!exhibitorscheduleswithprofilesbycompany}" value="{!exhibitoralias} Schedules along with Profiles order by Company" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all the Schedules along with Profiles of this Event.<br/></td>
+            </tr>
+           <!-- <tr>
+
+                <td width="40%" align="left"><apex:commandLink action="{!exhibitorscheduleswithprofilesbyTableNo}" value="Corporate Schedules along with Profiles order by TableNo" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all the Schedules along with Profiles of this Event.<br/></td>
+            </tr>-->
+            <tr>
+                <td width="40%" align="left"><apex:commandLink action="{!signups}" value="{!attendeealias} Signups"  styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all total {!attendeealias} Signup's for the Event<br/></td>
+            </tr>
+            <tr>
+                <td width="40%" align="left"><apex:commandLink action="{!signupscorp}"  value="{!exhibitoralias} Signups" styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of all total {!exhibitoralias} Signup's for the Event<br/></td>
+            </tr>
+            <!-- <tr>
+                <td width="40%" align="left"><apex:commandLink action="{!smallschedulescount}" value="Count of Appointments"  styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of count of Appointments of each {!attendeealias} for the Event<br/></td>
+            </tr> -->
+            <tr>
+                <td width="40%" align="left"><apex:commandLink action="{!smallschedulescount}" value="Count of Appointments by {!attendeealias}"  styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of count of Appointments of each {!attendeealias} for the Event<br/></td>
+            </tr>
+            <tr>
+                <td width="40%" align="left"><apex:commandLink action="{!corpschedulescount}" value="Count of Appointments by {!exhibitoralias}"  styleClass="big-link viewprofile"></apex:commandLink></td>
+                <td width="60%">It consists of count of Appointments of each {!exhibitoralias} for the Event<br/></td>
+            </tr>
+            
+            <tr>
+
+                <td width="40%" align="left"><apex:commandLink action="/apex/matchLeadsschedules" value="Sign up Sheet for {!exhibitoralias}" styleClass="big-link viewprofile" target="_blank"></apex:commandLink></td>
+                <td width="60%">It consists of all the Schedules of {!exhibitoralias} for the Event.<br/></td>
+            </tr>
+             <tr>
+
+                <td width="40%" align="left"><apex:commandLink action="/apex/matches_by_industry_report" value="Matches by industry" styleClass="big-link viewprofile" target="_blank"></apex:commandLink></td>
+                <td width="60%">It consists of selected Event Schedules and matches by industry data of the Event.<br/></td>
+            </tr> 
+            <tr>
+            <td width="40%" align="left"><apex:commandLink action="/apex/SurveyQuestionreport" value="SurveyQuestions Report" styleClass="big-link viewprofile" target="_blank"></apex:commandLink></td>
+                <td width="60%">It consists of all the survey answers provided by MBE's and Corporates.<br/></td>
+       </tr>
+        </table>
+    </div>
+    </div>
+<!-- container end -->
+</apex:form>
+<!------------------------------------------- Cancelled/Rejected Attendees Report Start -------------------------------------------------->
+<apex:form id="report1">
+    <apex:outputPanel >
+    
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewreport1}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!viewreport1}">  
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td >
+    <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">{!reporttitle}</h3></div>
+    <div style="float:right;">
+       <apex:commandButton action="{!exportschedule}" value="Export" />
+      <apex:commandButton action="{!printschedule}" value="Print" immediate="true"/>
+      <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/>
+      </div>
+      </td>
+  </tr>
+</table>
+
+<body id="index" class="grid_2_3">
+        <div id="fw_container"> 
+         
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                    <tr role="row">
+                        <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias}</strong></td>
+                          <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Contact Name</strong></td>
+                          <!-- <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Email</strong></td> -->
+                          <!--<td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Mobile </strong></td> -->
+                          <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias}</strong></td>
+                          <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Contact Name</strong></td>
+                          <!-- <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Email</strong></td> -->
+                          <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Mobile</strong></td>    
+                          <td width="12%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Appointment Time</strong></td>
+                          <td width="12%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Cancelled Date</strong></td>
+                          <td width="8%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Table #</strong></td>
+                    </tr> 
+                    
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all">
+                  <apex:repeat value="{!totalattendeelist}" var="c">
+                  <!-- <apex:repeat value="{!p.listofattendees}" var="c">  --> 
+                    <tr class="gradeA odd">
+                    <td height="35" width="15%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.listofattendees.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}"></apex:outputText></td>
+      <td height="35" width="15%" style="padding-left:5px;border-bottom:1px solid #CCCCCC;">
+          <apex:outputText value="{!c.listofattendees.MM_To_UPE__r.Attendee_Summary__r.AS_FirstName__c} {!c.listofattendees.MM_To_UPE__r.Attendee_Summary__r.AS_LastName__c}" styleClass="{!IF( c.listofattendees.Owner.userName == c.listofattendees.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c,'eventtable','eventselect')}"/>
+      </td>
+    <!--  <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value="{!c.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c}"></apex:outputText></td> -->
+      <!--<td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}"></apex:outputText></td> -->
+      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.listofattendees.MM_To_EAM__r.AS_id__r.AS_Company__c}"></apex:outputText></td>
+      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;">
+          <apex:outputText value="{!c.listofattendees.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!c.listofattendees.MM_To_EAM__r.AS_id__r.AS_LastName__c}" styleClass="{!IF(c.listofattendees.Owner.username  == c.listofattendees.MM_To_EAM__r.AS_id__r.AS_Email__c,'eventtable','eventselect')}"/>
+      </td>
+    <!--  <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value="{!c.MM_To_EAM__r.AS_id__r.AS_Email__c}"></apex:outputText></td>  -->    
+      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.listofattendees.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}"></apex:outputText></td>
+      <td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.listofattendees.MM_slot_StartTime__c} - {!c.listofattendees.MM_Slot_End_Time__c}"></apex:outputText></td>  
+      <td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.ltmodified}"></apex:outputText></td>
+      <td height="35" width="8%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.listofattendees.MM_To_UPE__r.BT_id__r.MM_TableNo__c}"></apex:outputText></td>
+    </tr>
+    <!-- </apex:repeat> --> 
+    </apex:repeat>
+    </tbody>
+                </table>
+             
+                </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>
+      
+          
+        
+</body>
+
+                          
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form>
+<!------------------------------------------- Cancelled/Rejected Attendees Report End -------------------------------------------------->
+
+<!------------------------------------------------ Missed Attendees Report Start ------------------------------------------------------->
+<apex:form id="report4">
+    <apex:outputPanel >
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewreport4}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!viewreport4}" id="poprec">  
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td >
+    <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">{!reporttitle}</h3></div>
+    <div style="float:right;">
+       <apex:commandButton action="{!exportschedule}" value="Export" />
+      <apex:commandButton action="{!printschedule}" value="Print" immediate="true"/>
+      <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/>
+      </div>
+      </td>
+  </tr>
+</table>
+<body id="index" class="grid_2_3">
+        <div id="fw_container"> 
+         
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                    <tr role="row">
+                    <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias}</strong></td>
+                      <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Contact Name</strong></td>
+                      <!-- <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Email</strong></td> -->
+                      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Mobile </strong></td>
+                      <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias}</strong></td>
+                      <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Contact Name</strong></td>
+                      <!-- <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Email</strong></td> -->
+                      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Mobile</strong></td>    
+                      <td width="12%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Appointment Time</strong></td>
+                      <td width="12%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Missed Date</strong></td>
+                      <td width="8%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Table #</strong></td>
+                    </tr>
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all">
+                  <apex:repeat value="{!missedattendeelist}" var="p1">
+                  <apex:repeat value="{!p1.listofattendees1}" var="c1">
+                    <tr class="gradeA odd">
+                    <td height="35" width="15%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c1.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}"></apex:outputText></td>
+                      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;">
+                          <apex:outputText value="{!c1.MM_To_UPE__r.Attendee_Summary__r.AS_FirstName__c} {!c1.MM_To_UPE__r.Attendee_Summary__r.AS_LastName__c}" styleClass="{!IF( c1.Owner.userName == c1.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c,'eventtable','eventselect')}"/>
+                      </td>
+                    <!--  <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value="{!c1.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c}"></apex:outputText></td> -->
+                      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c1.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}"></apex:outputText></td>
+                      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c1.MM_To_EAM__r.AS_id__r.AS_Company__c}"></apex:outputText></td>
+                      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;">
+                          <apex:outputText value="{!c1.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!c1.MM_To_EAM__r.AS_id__r.AS_LastName__c}" styleClass="{!IF(c1.Owner.username  == c1.MM_To_EAM__r.AS_id__r.AS_Email__c ,'eventtable','eventselect')}"/>
+                      </td>
+                    <!--  <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value="{!c1.MM_To_EAM__r.AS_id__r.AS_Email__c}"></apex:outputText></td>  -->    
+                      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c1.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}"></apex:outputText></td>
+                      <td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c1.MM_slot_StartTime__c} - {!c1.MM_Slot_End_Time__c}"></apex:outputText></td>  
+                      <td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;">
+                        <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!c1.EV_id__r.EV_HostingTimeZone__c=='Eastern Time(USA)'}"><apex:param value="{!c1.LastModifiedDate-0.1666666666666667}"/></apex:outputText>
+                        <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!c1.EV_id__r.EV_HostingTimeZone__c=='Central Time(USA)'}"><apex:param value="{!c1.LastModifiedDate-0.2083333333333333}"/></apex:outputText>
+                        <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!c1.EV_id__r.EV_HostingTimeZone__c=='Mountain Time(USA)'}"><apex:param value="{!c1.LastModifiedDate-0.25}"/></apex:outputText>
+                        <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!c1.EV_id__r.EV_HostingTimeZone__c=='Pacific Time(USA)'}"><apex:param value="{!c1.LastModifiedDate-0.2916666666666667}"/></apex:outputText>
+                        <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!c1.EV_id__r.EV_HostingTimeZone__c=='Indian Standard Time(IST)'}"><apex:param value="{!c1.LastModifiedDate-0.2208333333333333}"/></apex:outputText>
+                        </td>
+                      <td height="35" width="8%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c1.MM_To_UPE__r.BT_id__r.MM_TableNo__c}"></apex:outputText></td>
+                    </tr>
+                    </apex:repeat>
+                    </apex:repeat>
+                  </tbody>
+                </table>
+                </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>
+</body>
+                    
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form>
+<!------------------------------------------------ Missed Attendees Report Start ------------------------------------------------------->
+
+<!------------------------------------------------ Percent Utilization Report Start ----------------------------------------------------->
+ <apex:form id="piechart">
+  <apex:outputPanel > 
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!piechartbool}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:700px;" rendered="{!piechartbool}">  
+  <table class="table" cellpadding="0" cellspacing="0" width="700px" height="520px">
+  <thead>
+    <tr height="35px">
+      <td colspan="8" class="pophead">
+      <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">{!reporttitle}</h3></div>
+      <div style="float:right;">
+      <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/></div>
+      </td> 
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+    <td height="470px" align="center">
+      <apex:chart data="{!pieData}" width="100%" height="400" colorSet="#2EB8E6,#19AC19,#E62E00,#E68A00,#663300,#0099FF">               
+          <apex:pieSeries dataField="totalmatchesvalue" labelField="utilization"> 
+               <apex:chartTips width="200"/>
+               <apex:chartLabel field="utilizationinfo" display="rotate"/>
+          </apex:pieSeries>
+          <apex:legend position="right"/>
+      </apex:chart> 
+    </td>
+    </tr>
+  </tbody>
+</table>
+
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form> 
+<!------------------------------------------------ Percent Utilization Report End ----------------------------------------------------->
+
+<!------------------------------------------------- Total Matches Made Report Start ---------------------------------------------------->
+<apex:form id="report3">
+    <apex:outputPanel >
+<!----------------Jquery--------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.jquery15, 'media/css/demo_page.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.jquery15, 'media/css/demo_table.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.jquery15, 'media/css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.jquery15, 'media/css/jquery.dataTables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.jquery15, 'media/css/jquery.dataTables_themeroller.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.jquery15, 'media/css/jquerytablesmoothness.css')}"/>
+<!--<apex:stylesheet value="{!URLFOR($Resource.jquery15, 'media/css/style.css')}"/>-->
+
+<script type="text/javascript" src="{!URLFOR($Resource.jquery15, 'media/js/jquery.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.jquery15, 'media/js/jquery.dataTables.min.js')}"></script>
+<!---------------- END Jquery--------------------------------->
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewreport3}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!viewreport3}">  
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td >
+    <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">{!reporttitle}</h3></div>
+    <div style="float:right;">
+       <apex:commandButton action="{!exportschedule}" value="Export" />
+      <apex:commandButton action="{!printschedule}" value="Print" immediate="true"/>
+      <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/>
+      </div>
+      </td>
+  </tr>
+</table>
+
+
+
+<body id="index" class="grid_2_3">
+        <div id="fw_container"> 
+         
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example4" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                    <tr role="row">
+                                
+                          <td width="13%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias}</strong></td>
+                          <td width="13%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Contact Name</strong></td>
+                         <!-- <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Email</strong></td> -->
+                          <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Mobile </strong></td>
+                          <td width="13%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias}</strong></td>
+                          <td width="13%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Contact Name</strong></td>
+                         <!--  <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Email</strong></td> -->
+                          <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Mobile</strong></td>    
+                          <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Appointment Time</strong></td>
+                          <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Appointment Date</strong></td>
+                          <td width="6%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Table #</strong></td>
+                    </tr> 
+                    
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all">
+                      <apex:repeat value="{!totalmatcheslist1000}" var="mat">
+                     <!-- <apex:repeat value="{!matTemp.schList}" var="mat"> -->
+                    <tr class="gradeA odd">
+                      <td height="35" width="13%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.schList.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}"></apex:outputText></td>
+                      <td height="35" width="13%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.schList.MM_To_UPE__r.Attendee_Summary__r.AS_FirstName__c} {!mat.schList.MM_To_UPE__r.Attendee_Summary__r.AS_LastName__c}"></apex:outputText></td>
+                      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.schList.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}"></apex:outputText></td>
+                      <td height="35" width="13%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.schList.MM_To_EAM__r.AS_id__r.AS_Company__c}"></apex:outputText></td>
+                      <td height="35" width="13%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.schList.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!mat.schList.MM_To_EAM__r.AS_id__r.AS_LastName__c}"/></td>
+                      <!-- <td height="35" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.MM_To_EAM__r.AS_id__r.AS_Email__c}"></apex:outputText></td>    --> 
+                      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.schList.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}"></apex:outputText></td>
+                      <td height="35" width="11%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.schList.MM_slot_StartTime__c} - {!mat.schList.MM_Slot_End_Time__c}"></apex:outputText></td>  
+                      <td height="35" width="11%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;">
+                      <apex:outputText value="{!mat.dt}" /></td>
+                      <td height="35" width="6%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.schList.MM_To_UPE__r.BT_id__r.MM_TableNo__c}"></apex:outputText></td>                    
+                      </tr>
+           <!--      </apex:repeat> -->
+                
+                 </apex:repeat>
+                  </tbody>
+                </table>
+             
+                </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>
+      
+          
+        
+</body>
+
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form>
+<!------------------------------------------------- Total Matches Made Report End ---------------------------------------------------->
+
+<apex:form >
+<apex:outputPanel rendered="{!assignalert}">
+    <script>
+        alert('Appointment have been confirmed!');
+    </script>
+    </apex:outputPanel>
+</apex:form>
+<!----------------------------------------------------Pending Appointments Report Start -------------------------------------------->
+<apex:form id="report2">
+    <apex:outputPanel rendered="{!emailalert}">
+    <script>
+        alert('Reminder mail(s) have been sent!');
+    </script>
+    </apex:outputPanel>
+    
+    <apex:outputPanel >
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewreport2}" /> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!viewreport2}" id="abc2">  
+
+  <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <tr><td>
+  <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <thead>
+    <tr height="35px">
+      <td colspan="11" class="pophead">
+      <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">{!reporttitle}</h3></div>
+      <div style="float:right;">
+      <apex:commandButton action="{!exportschedule}" value="Export" />
+      <apex:commandButton action="{!printpendingschedule}" value="Print" immediate="true"/>
+      <!--<apex:commandButton action="{!sendRemainderEmailtoAll}" value="Email All" immediate="true"/>-->
+      <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/></div>
+      </td> 
+    </tr>
+    <tr role="row">
+                    <td width="10%" height="35" bgcolor="#F3F3F3" style="width:10%;padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias}</strong></td>
+                      <td width="10%" height="35" bgcolor="#F3F3F3" style="width:10%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias} Contact</strong></td>
+                      <td width="10%" height="35" bgcolor="#F3F3F3" style="width:10%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias} #</strong></td>
+                      <td width="10%" height="35" bgcolor="#F3F3F3" style="width:10%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias}</strong></td>
+                      <td width="10%" height="35" bgcolor="#F3F3F3" style="width:10%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias} Contact</strong></td>
+                      <td width="10%" height="35" bgcolor="#F3F3F3" style="width:10%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias} #</strong></td>
+                      <td width="8%" height="35" bgcolor="#F3F3F3" style="width:8%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Appointment Time</strong></td>
+                      <td width="8%" height="35" bgcolor="#F3F3F3" style="width:8%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Table #</strong></td>
+                      <td width="8%" height="35" bgcolor="#F3F3F3" style="width:8%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Pending Since</strong></td>
+                      <td width="8%" height="35" bgcolor="#F3F3F3" style="width:8%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Assign</strong></td>     
+                      <td width="8%" height="35" bgcolor="#F3F3F3" style="width:8%;padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Email</strong></td>
+                    </tr>
+  </thead>
+  </table>
+  <div style=" height:500px; overflow:scroll;">
+  <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <apex:repeat value="{!pendingattendeelist}" var="p">
+     <tr>
+      <td height="35" style="width:10%;padding-left:4px;border-right:0px solid #CCCCCC;font-weight:bold; background-color:#eaeaea;"><apex:outputText value="{!p.dummyCompany}"></apex:outputText></td>
+      <td height="35" style="width:10%;padding-left:4px;border-right:0px solid #CCCCCC; background-color:#eaeaea;"><apex:outputText value="{!p.CorporateName}"></apex:outputText></td>
+      <td height="35" colspan="9" style="width:10%;padding-left:4px;border-right:0px solid #CCCCCC; background-color:#eaeaea;"><apex:outputText value="{!p.CorporateContact}"></apex:outputText></td>
+      <td height="35" colspan="9" style="width:10%;padding-left:4px;border-right:0px solid #CCCCCC; background-color:#eaeaea;">
+      <apex:commandLink value="Assign" style="color:#0000ff" styleClass="big-link viewprofile" action="{!changePendingStatus}">
+          <apex:param name="CorpEmail" value="{!p.CorporateEmail}" assignTo="{!CEmail}"/>
+      </apex:commandLink></td>
+    </tr>
+    <apex:repeat value="{!p.listofattendees}" var="c">
+    <tr style="border-top:1pt solid silver;">
+      <td height="35" style="width:10%;padding-left:4px;border-bottom:1px solid #CCCCCC;"></td>
+      <td height="35" style="width:10%;padding-left:3px;border-bottom:1px solid #CCCCCC;"></td>
+      <td height="35" style="width:10%;padding-left:3px;border-bottom:1px solid #CCCCCC;"></td>
+      <td height="35" style="width:10%;padding-left:8px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.MM_To_EAM__r.AS_id__r.AS_Company__c}"></apex:outputText></td>
+      <td height="35" style="width:10%;padding-left:8px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!c.MM_To_EAM__r.AS_id__r.AS_LastName__c}"></apex:outputText></td>
+      <td height="35" style="width:10%;padding-left:8px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}"></apex:outputText></td>
+      <td height="35" style="width:8%;padding-left:8px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.MM_slot_StartTime__c} - {!c.MM_Slot_End_Time__c}"></apex:outputText></td>  
+      <td height="35" style="width:8%;padding-left:8px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!c.MM_To_UPE__r.BT_id__r.MM_TableNo__c}"></apex:outputText></td>
+     <!-- <td height="35" style="width:8%;padding-left:8px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{0,date,MM/dd HH:MM a}" ><apex:param value="{!c.LastModifiedDate}"/></apex:outputText></td>   -->
+      <td height="35" style="width:8%;padding-left:8px;border-bottom:1px solid #CCCCCC;"><apex:outputField value="{!c.LastModifiedDate}"/></td>   
+      
+      <td height="35" style="width:8%;padding-left:8px;border-bottom:1px solid #CCCCCC;">
+      <apex:commandLink value="Assign" action="{!assignAppointment}" style="color:#0000ff" styleClass="big-link viewprofile" onclick="return confirmassign();" >
+          <apex:param name="mycheck" value="{!c.id}"/>
+      </apex:commandLink></td> 
+      <td height="35" style="width:8%;padding-left:8px;border-bottom:1px solid #CCCCCC;">
+      <apex:commandLink value="Send Email" action="{!sendRemainderEmail}" style="color:#0000ff" styleClass="big-link viewprofile" >
+          <apex:param name="mycheck" value="{!c.id}"/>
+      </apex:commandLink>
+      </td>      
+    </tr>
+   </apex:repeat> 
+   </apex:repeat> 
+  </tbody>
+</table>
+ </div> 
+</td></tr></table>
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form>
+<!---------------------------------------------------- Pending Appointments Report End -------------------------------------------->
+<!--------------------------------------- Open appointments-Start---------------------------------------->
+<apex:form id="pend2">
+
+<apex:outputPanel >
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewreportopen}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!viewreportopen}">  
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td >
+    <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">{!reporttitle}</h3></div>
+    <div style="float:right;">
+       <apex:commandButton value="Export" action="{!exportopen}"/>
+      <apex:commandLink target="_blank" action="{!printopen}"><apex:commandButton value="Print" action="{!printopen}" immediate="true"/></apex:commandLink>     
+      <apex:commandButton value="Close" image="{!$Resource.Close1}" immediate="true" action="{!cancel}"/></div>
+      
+      </td>
+  </tr>
+</table>
+<body id="index" class="grid_2_3">
+        <div id="fw_container"> 
+         
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                   <tr role="row">
+                    <td width="25%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-right:1px solid #CCCCCC;"><strong>{!exhibitoralias}</strong></td>
+                      <td width="25%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-right:1px solid #CCCCCC;"><strong>{!exhibitoralias} Contact</strong></td>
+                      <td width="20%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-right:1px solid #CCCCCC;"><strong>{!exhibitoralias} #</strong></td>
+                      <td width="30%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-right:1px solid #CCCCCC;"><strong>Open Slots#</strong></td>
+                  </tr>
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all">
+                  <apex:repeat value="{!openlist}" var="p">
+                    <tr class="gradeA odd">
+                    <td width="25%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;font-weight:bold;"><apex:outputText value="{!p.up.Attendee_Summary__r.AS_Company__c}"></apex:outputText></td>
+                      <td width="25%" height="35" style="padding-left:10px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!p.up.Attendee_Summary__r.AS_FirstName__c} {!p.up.Attendee_Summary__r.AS_LastName__c}"></apex:outputText></td>
+                      <td width="20%" height="35" style="padding-left:11px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!p.up.Attendee_Summary__r.AS_CellPhone__c}"></apex:outputText></td>
+                      <td width="30%" height="35" style="padding-left:13px;border-bottom:1px solid #CCCCCC;">
+                      <table class="table" cellpadding="0" cellspacing="0" width="100%">
+                      <apex:repeat value="{!p.openapp}" var="x">
+                      <tr>
+                       <td width="100%" height="20" style="padding-left:4px;border:1px solid #CCCCCC;font-weight:bold; background-color:#eaeaea;"><apex:outputText value="{!x}"></apex:outputText></td>&nbsp;
+                      </tr>
+                      </apex:repeat>
+                      </table>
+                      </td>
+                    </tr> 
+                   </apex:repeat> 
+                  </tbody>
+                </table>
+                 </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>     
+</body>
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form>
+<!--------------------------------------- Open appointments-END---------------------------------------->
+    <script>
+    function displayf1(){
+    displayf2();
+    }
+    
+    </script>
+<!--------------------------------------- table list start----------------------------------------->
+<apex:form id="boothslist">
+<apex:actionfunction name="displayf2" action="{!boothadminslist}" rerender="panel1" />
+<apex:outputPanel id="panel1">
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewreportboothslist}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:80%;" rendered="{!viewreportboothslist}">  
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td >
+    <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">{!reporttitle}</h3></div>
+    <div style="float:right;">
+
+    <!------modified by Deepthi----------->
+      Filter By:<apex:selectList id="filterInformation" value="{!selectedfilterInformation}" size="1" multiselect="false" onchange="displayf1();">
+                         <apex:selectOptions value="{!filterInformation}"> </apex:selectoptions>
+                      </apex:selectList>
+       <!------End of modified by Deepthi----------->
+      <apex:commandButton value="Export" action="{!exportboothslist}"/>
+      <apex:commandLink target="_blank" action="{!printboothslist}"><apex:commandButton value="Print" action="{!printboothslist}" immediate="true"/></apex:commandLink>      
+      <apex:commandButton value="Close" image="{!$Resource.Close1}" immediate="true" action="{!cancel}"/>
+    </div>
+      </td>
+     </tr>
+    </table>
+    <body id="index" class="grid_2_3">
+        <div id="fw_container"> 
+         
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example5" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                    <tr role="row">
+                    <td width="49%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-right:1px solid #CCCCCC;"><strong>{!exhibitoralias} Company</strong></td>
+                      <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-right:1px solid #CCCCCC;"><strong>Table No.</strong></td>
+                      <td width="36%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-right:1px solid #CCCCCC;"><strong>Location</strong></td>
+                     </tr>
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all">
+                  <apex:repeat value="{!boothslist}" var="p">
+                    <tr class="gradeA odd">
+                    <td width="49%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><apex:outputText value="{!p.Attendee_Summary__r.AS_Company__c}"></apex:outputText></td>
+                     <!-- <td width="30%" height="35" style="padding-left:11px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!p.Attendee_Summary__r.AS_FirstName__c} {!p.Attendee_Summary__r.AS_LastName__c}"></apex:outputText></td> -->
+                      <td width="15%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!p.BT_id__r.MM_TableNo__c}"></apex:outputText></td>
+                    <td width="36%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!p.BT_id__r.BT_Location__c}"></apex:outputText></td>
+                    </tr> 
+                    </apex:repeat>
+              </tbody>
+              </table>
+             
+                </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>      
+</body>
+</apex:outputpanel>
+<!------------Added by Deepthi------------>
+<script>
+$('#example5').dataTable( {
+   "bJQueryUI": true,
+    "sPaginationType": "full_numbers"
+} );
+</script>
+<!---------End of Added by Deepthi-------->
+</apex:outputpanel>
+</apex:form>
+<!--------------------------------------- table list end----------------------------------------->
+
+<!--------------------------------------- Schedules by time ----------------------------------------->
+
+<apex:form id="timeid">
+<apex:outputPanel >
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewScheduleByTimeList}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:80%;" rendered="{!viewScheduleByTimeList}">  
+   <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <tr><td>
+  <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <thead>
+    <tr height="35px">
+      <td colspan="10" class="pophead">
+      <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">Scheduled Appointments By Time</h3></div>
+      <div style="float:right;">
+      <apex:commandButton value="Export" action="{!exportScheduleTime}"/>
+       <apex:commandLink target="_blank" action="{!printscheduleTime}"><apex:commandButton value="Print" action="{!printscheduleTime}" immediate="true"/></apex:commandLink>     
+
+      <apex:commandButton value="Close" image="{!$Resource.Close1}" immediate="true" action="{!cancel}"/></div>
+      </td> 
+    </tr>
+    
+    <tr>
+   <td>
+   <apex:outputText rendered="{!ShowDatePicklist}"> 
+    <apex:outputLabel value="Select Date:" style="font-weight:bold;"/> 
+    <apex:selectList value="{!selectedEventDate}" multiselect="false" size="1">
+            <apex:selectOptions value="{!dateList}"/>
+            <apex:actionSupport event="onchange" action="{!timesList}"/>
+        </apex:selectList>
+        </apex:outputText>
+    </td>
+    <td>
+    <apex:outputLabel value="Select Time :" style="font-weight:bold;"/> 
+    <apex:selectList value="{!selectedTime}" multiselect="false" size="1">
+            <apex:selectOptions value="{!timeList}"/>
+            <apex:actionSupport event="onchange" action="{!scheduleRecords}"/>
+
+        </apex:selectList>
+        </td>
+    </tr>
+    <tr>      
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><strong>Name</strong></td>
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><strong>Company Name</strong></td>
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><strong>Status</strong></td>
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><strong>Date</strong></td>
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><strong>Time</strong></td>
+     </tr>
+    
+  </thead>
+    </table>
+ <div style="height:470px; overflow:scroll;">
+  <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+     
+   <apex:repeat value="{!byTimeInnerList}" var="sch">
+     
+     <tr>
+      <td height="35" style="font-weight:bold;padding-left:6px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!sch.timeSlotString}" style="color:#FF6600;"></apex:outputText></td>
+      </tr>
+     <tr>
+      </tr>
+      <apex:repeat value="{!sch.schedulesList}" var="es">
+      <apex:outputPanel rendered="{!IF(es.MM_Slot_Status__c= 'Accepted',True,False)}">
+      <tr>
+      <td width="10%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!es.MM_To_EAM__r.AS_id__r.AS_LastName__c}"></apex:outputText></td>
+      <td width="10%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_EAM__r.AS_id__r.AS_Company__c}"></apex:outputText></td>
+      <td width="10%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_Slot_Status__c}"></apex:outputText></td>
+                     
+                     
+      <td width="10%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><apex:outputText value="{0,date,dd/MM/yyyy}"> <apex:param value="{!es.MM_slot_Date__c}" /></apex:outputText>
+      </td>
+      <td width="10%" height="35" style="padding-left:6px;border-bottom:1px solid #CCCCCC;border-right:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_slot_StartTime__c}-{!es.MM_Slot_End_Time__c}"></apex:outputText></td>
+    </tr>
+     </apex:outputPanel> 
+    </apex:repeat>
+   </apex:repeat>
+  
+  
+  </tbody>
+</table>
+</div>
+</td></tr>
+</table>
+
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form>
+<!--------------------------------------- Schedules by time ----------------------------------------->
+<!-------------------------Appointments By Group**Unni**----------------->
+<apex:form id="groupid">
+<apex:outputPanel >
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewScheduleByTimeList2}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:80%;" rendered="{!viewScheduleByTimeList2}">  
+   <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <tr><td>
+  <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <thead>
+    <tr height="35px">
+      <td colspan="10" class="pophead">
+      <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">Total Appointments By Group</h3></div>
+      <div style="float:right;">
+      <apex:commandButton value="Export" action="{!exportScheduleGroup}"/>
+       <apex:commandLink target="_blank" action="{!printscheduleGroup}"><apex:commandButton value="Print" action="{!printscheduleGroup}" immediate="true"/></apex:commandLink>     
+      <apex:commandButton value="Close" image="{!$Resource.Close1}" immediate="true" action="{!cancel}"/></div>
+      </td> 
+    </tr>
+    <tr>      
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias}</strong></td>
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Contact Name</strong></td>
+     <!-- <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Email</strong></td> -->
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Mobile </strong></td>
+      <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias}</strong></td>
+      <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Contact Name</strong></td>
+     <!--  <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Email</strong></td> -->
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Mobile</strong></td>    
+      <td width="12%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Appointment Time</strong></td>
+      <td width="8%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Table #</strong></td>
+      <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>Status</strong></td>
+     </tr>
+  </thead>
+    </table>
+ <div style="height:470px; overflow:scroll;">
+  <table class="table" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+  
+  <apex:repeat value="{!byTimeInnerList2}" var="sch">
+     <tr>
+      <td height="40" style="font-weight:bold;padding-left:6px;border-bottom:1px solid #990000;"><apex:outputText value="{!sch.statusString} Appointments" style="color:#FF6600;"></apex:outputText></td>
+      </tr>
+      <apex:repeat value="{!sch.schedulesList2}" var="es">
+      <tr>      
+      <td height="35" width="10%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}"></apex:outputText></td>
+      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_UPE__r.Attendee_Summary__r.AS_FirstName__c} {!es.MM_To_UPE__r.Attendee_Summary__r.AS_LastName__c}"></apex:outputText></td>
+     <!-- <td height="35" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c}"></apex:outputText></td> -->
+      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}"></apex:outputText></td>
+      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_EAM__r.AS_id__r.AS_Company__c}"></apex:outputText></td>
+      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!es.MM_To_EAM__r.AS_id__r.AS_LastName__c}"/></td>
+     <!-- <td height="35" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!mat.MM_To_EAM__r.AS_id__r.AS_Email__c}"></apex:outputText></td>    --> 
+      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}"></apex:outputText></td>
+      <td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_slot_StartTime__c} - {!es.MM_Slot_End_Time__c}"></apex:outputText></td>  
+      <td height="35" width="8%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_To_UPE__r.BT_id__r.MM_TableNo__c}"></apex:outputText></td>
+    <td height="35" width="10%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!es.MM_Slot_Status__c}"></apex:outputText></td>
+    </tr> 
+    </apex:repeat>
+   </apex:repeat>
+  
+   
+  </tbody>
+</table>
+</div>
+</td></tr>
+</table>
+
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form>
+<!-------------------------Appointments By Group ENDS**Unni**----------------->
+<script>
+    function displayf5(){
+    displayf6();
+    }
+    
+    </script>
+<apex:form >
+<apex:actionfunction name="displayf6" action="{!signups}" rerender="panel3" />
+    <apex:outputPanel id="panel3">
+    
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!signupreport}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!signupreport}">  
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td >
+    <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">Report On {!attendeealias} Signups</h3></div>
+    <div style="width:40%;float:left;margin-left:1%;border:0px solid #F00;">
+    <table  border="0" style="width:100%;border-collapse:collapse; font-size:25px; color:#0c6;">
+    <tr>
+   <!-- <td style="text-align:right;font-size:25px;color:#09f;">Signed Up :</td>
+    <td style="text-align:center;font-size:35px;color:#09f;padding-top:6px;">{!MBESignups} </td>
+    <td style="text-align:right;font-size:25px;">NotSigned In:</td>
+    <td style="text-align:center;font-size:35px;padding-top:6px;">{!MBENotSignups}</td>-->
+     </tr>
+    </table>
+    
+    </div>
+    <div style="float:right;">
+      Filter By:<apex:selectList value="{!selectedmbesignupInformation}" size="1" multiselect="false" onchange="displayf5();">
+         <apex:selectOptions value="{!mbesignupInformation}"> </apex:selectoptions>
+      </apex:selectList>
+       <apex:commandButton action="{!exportignup}" value="Export" />
+      <apex:commandButton action="{!printsignup}" value="Print" immediate="true"/>
+      <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/>
+      </div>
+      </td>
+  </tr>
+</table>
+
+<body id="index" class="grid_2_3">
+        <div id="fw_container"> 
+         
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example7" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                    <tr role="row">
+                        <!--<td width="5%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>S.NO</strong></td>-->
+                          <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias} First Name</strong></td>
+                          <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias} Last Name</strong></td>
+                          <td width="20%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Email</strong></td> 
+                          <td width="14%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Company</strong></td>
+                          <td width="13%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Phone</strong></td>
+                          <td width="12%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>SignUp Status</strong></td>
+                          <!--<td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Registered Date</strong></td> -->
+                          <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong></strong></td> 
+                    </tr> 
+                    
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all">
+                   <apex:repeat value="{!eaminner}" var="ea">
+                 
+                    <tr class="gradeA odd">
+                    <!--<td height="35" width="15%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!e.i}"></apex:outputText></td>      -->
+                     <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value="{!ea.eam.AS_id__r.AS_FirstName__c}"></apex:outputText></td> 
+                     <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value=" {!ea.eam.AS_id__r.AS_LastName__c}"></apex:outputText></td> 
+                      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!ea.eam.AS_id__r.AS_Secondary_Email__c}"></apex:outputText></td>
+                      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!ea.eam.AS_id__r.AS_Company__c}"></apex:outputText></td>                      
+                      <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value="{!ea.eam.AS_id__r.AS_HomePhone__c}"></apex:outputText></td>   
+                      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!ea.b}"></apex:outputText></td>
+                      <!--<td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}"><apex:param value="{!upe.up.lastmodifiedDate}"/></apex:outputText></td> -->
+                     <td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;">
+                     <apex:outputPanel rendered="{!IF(ea.b= False,True,False)}">
+                     <apex:commandLink value="Send Reminder" action="{!sendemailmbe}">
+                     <apex:param name="emailid" value="{!ea.eam.id}" assignTo="{!email2}"/>
+                     </apex:commandLink>
+                     </apex:outputPanel>
+                     </td> 
+                     
+                     
+                     </tr>
+   
+    </apex:repeat>
+    </tbody>
+                </table>
+             
+                </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>
+      
+          
+        
+</body>
+
+                          
+</apex:outputpanel>
+<script>
+ $('#example7').dataTable( {      
+      "bJQueryUI": true,        
+        "sPaginationType": "full_numbers",      
+        "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],      
+        "iDisplayLength" : 10,      
+        "aaSorting": [[ 4, "desc" ]]        
+                
+                
+         } ); 
+</script>
+</apex:outputpanel>
+</apex:form>
+<!---------------count of schedules for each Small business---------------------->
+ <script>
+    function displayf7(){
+    displayf8();
+    }
+   
+    </script>
+<apex:form >
+<apex:actionfunction name="displayf8" action="{!smallschedulescount}" rerender="panel4" />
+<apex:outputPanel id="panel4"> 
+    
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!countofapp}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!countofapp}">  
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+        <td >
+            <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">Report On Count of Appointments by {!attendeealias}</h3></div>
+              <div style="float:right;">
+              Filter By:<apex:selectList value="{!selectedmbecountInformation}" size="1" multiselect="false" onchange="displayf7();">
+                         <apex:selectOptions value="{!mbecountInformation}"> </apex:selectoptions>
+                      </apex:selectList>
+
+              <apex:commandButton action="{!countappexpo}" value="Export" />
+              <apex:commandButton action="{!countappprint}" value="Print" />
+              <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/>
+              </div>
+       </td>
+      </tr>
+     </table>
+
+<body id="index" class="grid_2_3">
+        <div id="fw_container">          
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example8" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                    <tr role="row">
+                           
+                        <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias}</strong></td>
+                        <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias} Name</strong></td>
+                        <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!attendeealias} Email</strong></td>
+                        <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Number of Appointments</strong></td>                           
+                    </tr>                     
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all"> 
+                  <apex:repeat value="{!eamcountlist}" var="eamc">
+                   <tr class="gradeA odd">
+                       <td height="35" width="15%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!eamc.inneam.AS_id__r.AS_Company__c}" ></apex:outputText></td>
+                        <td height="35" width="15%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!eamc.inneam.AS_id__r.FullName__c}" ></apex:outputText></td>  
+                        <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!eamc.inneam.AS_id__r.AS_Email__c}" ></apex:outputText></td>
+                        <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!eamc.i}" ></apex:outputText></td>
+                   </tr>
+                   </apex:repeat>
+                 </tbody>
+                </table>             
+               </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>
+</body>
+
+                          
+</apex:outputpanel>
+<script>
+$('#example8').dataTable( {
+      "bJQueryUI": true,
+        "sPaginationType": "full_numbers",
+        "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "iDisplayLength" : 10,
+        "aaSorting": [[ 3, "desc" ]] 
+   } );
+</script>
+
+</apex:outputpanel>
+</apex:form>
+<!---------------count of schedules for each Small business end---------------------->
+<!---------------count of schedules for each corporate---------------------->
+<script>
+    function displayf9(){
+    displayf10();
+    }
+   
+    </script>
+<apex:form >
+<apex:actionfunction name="displayf10" action="{!corpschedulescount}" rerender="panel5" />
+<apex:outputPanel id="panel5">  
+   
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!crpcountofapp}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!crpcountofapp}">  
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+        <td >
+            <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">Report On Count of Appointments by {!exhibitoralias}</h3></div>
+              <div style="float:right;">
+              Filter By:<apex:selectList value="{!selectedcorpcountInformation}" size="1" multiselect="false" onchange="displayf9();">
+                         <apex:selectOptions value="{!corpcountInformation}"> </apex:selectoptions>
+                      </apex:selectList>
+
+              <apex:commandButton action="{!expcorpschedulescount}" value="Export" />
+              <apex:commandButton action="{!prntcorpschedulescount}" value="Print" />
+              <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/>
+              </div>
+       </td>
+      </tr>
+     </table>
+
+<body id="index" class="grid_2_3">
+        <div id="fw_container">          
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example9" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                    <tr role="row">
+                        <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias}</strong></td>
+                        <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias} Name</strong></td>
+                        <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias} Email</strong></td>
+                        <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Number of Appointments</strong></td>                           
+                    </tr>                     
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all"> 
+                  <apex:repeat value="{!crppcountlist }" var="upec">
+                   <tr class="gradeA odd">
+                       <td height="35" width="15%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!upec.up.Attendee_Summary__r.AS_Company__c}" ></apex:outputText></td> 
+                        <td height="35" width="15%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!upec.up.Attendee_Summary__r.FullName__c}" ></apex:outputText></td>  
+                        <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!upec.up.Attendee_Summary__r.AS_Email__c}" ></apex:outputText></td>
+                        <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!upec.i}" ></apex:outputText></td>
+                   </tr>
+                   </apex:repeat>
+                 </tbody>
+                </table>             
+               </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>
+</body>
+
+                          
+</apex:outputpanel>
+<script>
+$('#example9').dataTable( {       
+      "bJQueryUI": true,        
+        "sPaginationType": "full_numbers",      
+        "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],      
+        "iDisplayLength" : 10,      
+        "aaSorting": [[ 5, "desc" ]]        
+   } ); 
+   </script>
+
+</apex:outputpanel>
+</apex:form>
+<!---------------count of schedules for each corporate end---------------------->
+<!--------------------Corporates Signups--------------------------->
+<script>
+    function displayf3(){
+    displayf4();
+    }
+    
+    </script>
+
+<apex:form >
+<apex:actionfunction name="displayf4" action="{!signupscorp}" rerender="panel2" />
+    <apex:outputPanel id="panel2">
+    
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!corpsignupreport}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;" rendered="{!corpsignupreport}">  
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td >
+    <div style="float:left;"><h3 style="font-size:16px;padding-left:10px;">{!reporttitle}</h3></div>
+    <div style="width:40%;float:left;margin-left:1%;border:0px solid #F00;">
+    <table  border="0" style="width:100%;border-collapse:collapse; font-size:25px; color:#0c6;">
+    <tr>
+    <!--<td style="text-align:right;font-size:25px;color:#09f;">Signed Up :</td>
+    <td style="text-align:center;font-size:35px;color:#09f;padding-top:3px;">{!corpSignups} </td>
+    <td style="text-align:right;font-size:25px;">NotSigned In:</td>
+    <td style="text-align:center;font-size:35px;padding-top:3px;">{!corpNotSignups}</td>-->
+     </tr>
+    </table>
+    
+    </div>
+    <div style="float:right;">
+      Filter By:<apex:selectList value="{!selectedcorpsignupInformation}" size="1" multiselect="false" onchange="displayf3();">
+         <apex:selectOptions value="{!corpsignupInformation}"> </apex:selectoptions>
+      </apex:selectList>
+       <apex:commandButton action="{!exportcorps}" value="Export" />
+      <apex:commandButton action="{!printcorpsignup}" value="Print" immediate="true"/>
+      <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/>
+      </div>
+      </td>
+  </tr>
+</table>
+
+<body id="index" class="grid_2_3">
+        <div id="fw_container"> 
+         
+          <div id="fw_content">
+            <div class="css_clear css_spacing"></div>
+            <div class="full_width">
+              <div id="example_wrapper" class="dataTables_wrapper" role="grid">
+                <table cellpadding="0" cellspacing="0" border="0" class="display dataTable" id="example6" style="width:100%" aria-describedby="example_info">
+                  <thead>
+                    <tr role="row">
+                        <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><strong>S.NO</strong></td>
+                          <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>{!exhibitoralias} Name</strong></td>
+                          <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Email</strong></td> 
+                          <td width="10%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Company</strong></td>
+                          <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>Phone</strong></td>
+                          <td width="15%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><strong>SignUp Status</strong></td>
+                          <!--<td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong>Signup Date</strong></td> -->
+                          <td width="11%" height="35" bgcolor="#F3F3F3" style="padding-left:3px;border-right:1px solid #CCCCCC;"><strong></strong></td> 
+                    </tr> 
+                    
+                  </thead>
+                  <tbody role="alert" aria-live="polite" aria-relevant="all">
+                  <apex:repeat value="{!corpupelist}" var="corpupe">
+                 
+                    <tr class="gradeA odd">
+                    <td height="35" width="15%" style="padding-left:4px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!corpupe.i}"></apex:outputText></td>      
+                     <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value="{!corpupe.up.User_id__r.Name}"></apex:outputText></td> 
+                      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!corpupe.up.User_id__r.Email}"></apex:outputText></td>
+                      <td height="35" width="15%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!corpupe.up.Attendee_Summary__r.AS_Company__c}"></apex:outputText></td>                      
+                      <td height="35" style="padding-left:3px;border-right:1px solid #CCCCCC;"><apex:outputText value="{!corpupe.up.User_id__r.Companyphone__c}"></apex:outputText></td>   
+                      <td height="35" width="10%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;"><apex:outputText value="{!corpupe.up.User_id__r.isSignup__c}"></apex:outputText></td>
+                      <!--<td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;">
+                       <apex:outputPanel rendered="{!IF(corpupe.up.User_id__r.isSignup__c= True,True,False)}">
+                      <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}"><apex:param value="{!corpupe.up.lastmodifiedDate}"/></apex:outputText>
+                      </apex:outputPanel>
+                      </td>  -->
+                     <td height="35" width="12%" style="padding-left:3px;border-bottom:1px solid #CCCCCC;">
+                     <apex:outputPanel rendered="{!IF(corpupe.up.User_id__r.isSignup__c= False,True,False)}">
+                     <apex:commandLink value="Send Reminder" action="{!sendemail}">
+                     <apex:param name="emailid" value="{!corpupe.up.id}" assignTo="{!email}"/>
+                     </apex:commandLink>
+                     </apex:outputPanel>
+                     </td>
+                     </tr>
+   
+    </apex:repeat>
+    </tbody>
+                </table>
+             
+                </div> 
+              </div>
+            </div>
+            <div class="css_clear"></div>
+            <div class="css_spacing"></div>
+            <div class="css_clear"></div>
+            <div class="css_clear"></div>
+          </div>
+          <div id="fw_footer">
+            <div class="css_center"></div>
+          </div>
+      
+          
+        
+</body>
+
+                          
+</apex:outputpanel>
+<script>
+$('#example6').dataTable( {       
+      "bJQueryUI": true,        
+        "sPaginationType": "full_numbers",      
+        "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],      
+        "iDisplayLength" : 10,      
+        "aaSorting": [[ 5, "desc" ]]        
+   } ); 
+   </script>
+</apex:outputpanel>
+</apex:form>
+
+<!--------------------Corporates Signups end--------------------------->
+
+<!--footer start-->
+    <div id="footer">
+      © GlobalNest LLC. All Rights Reserved 
+    </div>
+<!--footer end-->
+</apex:page>

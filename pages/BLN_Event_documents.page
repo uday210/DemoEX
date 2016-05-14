@@ -1,0 +1,346 @@
+<apex:page controller="BLN_event_documentsCon" showHeader="false" standardStylesheets="false" id="theid">
+<!-- .................... common styles component ............ -->
+<c:ed_commonstyles ></c:ed_commonstyles>
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />  
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/style-button.css')}" />
+   <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+<style>
+.title-grid > span{ display:none !important;}
+.del {
+    background-image: url(/Eventdex/resource/1447690950000/createevents/createevents/images/removerow.png );
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 30px;
+    height: 30px;
+    background-color: #DDD;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-left: 35%;
+}
+</style>  
+ <!-- <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="comp"> -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"/>
+ <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="comp">
+ 
+ <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ Body ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+ <apex:form id="theform"> 
+  <apex:outputPanel rendered="{!displaytablebool}" id="panel1">
+    <script type="text/javascript">
+      var deleteAgendaId='';
+      function deleteasm(delagenda,clkbtn){
+        deleteAgendaId=delagenda;
+        Alertconfirm.render('Are you sure,Do you want to Delete?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+      }
+      function callback(clkbtn , okbtnn){
+       derec(deleteAgendaId);
+     }  
+ </script>
+ 
+     <apex:actionFunction action="{!onchAct}" name="onchg" reRender="theform">
+        <apex:param value="" name="globalStr"/>
+     </apex:actionFunction> 
+     <apex:actionFunction action="{!deleteRec}" name="derec" reRender="theform,panel1">
+        <apex:param value="" name="delId"/>
+     </apex:actionFunction>
+    
+      <div class="grid-1"  >
+           <div  style="border:0px solid red;">
+              <table style="width:100%;"> 
+                <tr><td style="width:50%;float:left;">
+                <apex:selectList value="{!fileType}" size="1" Styleclass="selectlist  levelclass" style="width:100%" onchange="onchg(this.value);">
+                 <apex:selectOptions value="{!items}"/>
+              </apex:selectList>
+             </td><td style="width:50%;flot:right;">
+                <apex:commandButton action="{!AddDocument}"  value="Add file" reRender="theform,panel2"  Styleclass="togglebtn right margin-5px"/>
+            </td></tr></table>
+         </div>
+                
+       <div class="content-gird-selectevents" style=""/>
+        <table class="display dynamic" id="tickettable" style="width:100%; margin:0px auto;"> 
+            <thead>
+              <tr>
+                <th width="15%" style="padding:3px 0px 3px 7px; text-indent:5px;margin-left:5px;">Label</th>
+                <th width="30%" style="padding:3px 0px 3px 2px;text-indent:5px;">Image</th>
+                <td width="30%" style="padding:3px 0px 3px 2px;text-indent:5px;font-weight:bold;color:#333;">
+                   <apex:outputPanel rendered="{!if(fileType=='Location',true,false)}">Address</apex:outputPanel>
+                  <apex:outputPanel rendered="{!if(fileType=='Location',false,true)}">  URL/Attachment</apex:outputPanel>
+                </td>
+                <th width="10%"> <!--<a class="add" title="Add new ticket" style="color:#807f7f; text-decoration:none;">-->
+                   Action
+                </th>
+              </tr>
+            </thead>
+             <tbody>
+             <apex:repeat value="{!AllDocuments}" var="dc">
+             <tr>
+             <td valign="top">{!dc.Name}</td>
+             <td>
+                <apex:image url="{!$Label.ImageUrl}?oid={!orgId}&id={!dc.Image__c}" rendered="{!IF(dc.Image__c!=null,true,false)}" style="width:100px; height:50px;"/>
+             </td>
+              <td valign="top">
+               <apex:outputPanel rendered="{!IF(fileType=='Document',true,false)}">
+                 <apex:outputPanel rendered="{!IF(dc.Url__c!=null,true,false)}"> 
+                  <a href="{!dc.Url__c}" target="_blank"> {!dc.Url__c}</a>
+                </apex:outputPanel>
+                 <apex:outputPanel rendered="{!IF(dc.Url__c!=null,false,true)}">
+                  <apex:repeat value="{!dc.Attachments}" var="dcL">
+                    <a href="{!$Label.Doc_Url}{!dcL.id}" target="_blank"> {!dcL.Name}</a>&nbsp;
+                     <apex:commandlink value="x" styleClass="attdelcl" onclick="if(!confirm('Are you sure you want to delete?')){return};"  style="text-decoration:none;color:Red" title="Delete" rerender="theform" action="{!deleteDoc}" >
+                      <apex:param value="{!dcL.id}" name="docId"/>
+                     </apex:commandLink>&nbsp;
+                    <br />
+                   </apex:repeat>
+                </apex:outputPanel>
+              </apex:outputPanel>
+              <apex:outputPanel rendered="{!IF(fileType=='Document',false,true)}">
+                <a href="http://maps.google.com/?q={!dc.Address__c}" target="_blank">{!dc.Address__c}</a>
+              </apex:outputPanel>              
+              </td>
+             <td valign="top">
+              <apex:commandLink action="{!editDocument}" reRender="theform,panel2">
+               <i class=" fa fa-pencil fa-edit20px  btnEditar" title="Edit"></i>
+                 <apex:param value="{!dc.id}" name="eventDocEdit"/>
+              </apex:commandLink>&nbsp;&nbsp;
+               <i class="fa fa-trash-o fa-delete20px btnExcluir " onclick="deleteasm('{!dc.id}',this);" title="Delete"></i>  
+             </td>
+             </tr>
+             </apex:repeat>
+             </tbody>
+           </table>
+  </div>
+ </apex:outputPanel> 
+ <!-- .................................................................................. Second Tab Start .......................................................... -->
+  <apex:outputPanel rendered="{!NOT(displaytablebool)}" id="panel2">
+    <script>
+     var filesBodys = new Array();
+     var filesNames = new Array();
+     var filesTypes = new Array();
+     
+     function Save(obj,id){
+        var file = obj;
+        var maxFileSize;
+       //code for adding image files
+       if(id=='imageAtt')
+       {
+       
+        
+          maxFileSize = 4408677;
+        
+         // alert(file.files[0].size);
+         if(file.files.length>0){
+         for(var rt=0;rt<file.files.length;rt++){
+          var selectedFile = file.files[rt];
+          if(selectedFile.size <= maxFileSize){
+            if(file.id.indexOf("imageAtt")>-1){ 
+              checkticketlogo(selectedFile,"imgbodyId");
+             } 
+            else{
+              checkticketlogo(selectedFile,"filebodyId");
+             } 
+           }else{
+             var flsize = Math.floor(maxFileSize/1000);
+             alert("File must be under "+flsize +" KB in size.  Your file is too large.  Please try again.");
+             return false;
+          }
+         } 
+        } 
+       
+       }
+       else if(id=='docAtt')
+       {
+       //code for pdf files
+       maxFileSize = 4408677;
+       
+         if(file.files.length>0){
+         for(var rt=0;rt<file.files.length;rt++){
+          var selectedFile = file.files[rt];
+           //var fo = document.getElementById("docAtt").value; 
+           //var ext = fo.split('.').pop();
+        // alert(selectedFile.type);
+          if(selectedFile.type=='application/pdf'){
+          if(selectedFile.size <= maxFileSize){
+              checkticketlogo(selectedFile,"filebodyId");
+             
+           }else{
+             var flsize = Math.floor(maxFileSize/1000);
+             alert("File must be under "+flsize +" KB in size.  Your file is too large.  Please try again.");
+             return false;
+          }
+          }
+          else{
+          document.getElementById("docAtt").value=null;
+          alert('Document must be in pdf Format');
+          }
+         } 
+        } 
+       }
+      }
+     
+     function checkticketlogo(currentfile,hiddenId){
+      var oFReader = new FileReader(); 
+         oFReader.readAsBinaryString(currentfile); 
+         oFReader.onload = function(e) {
+           var base64value = window.btoa(e.target.result); 
+           var inputHiddenIdcons = 'theid:comp:commoncomponent:theform:'+hiddenId;
+           if(hiddenId=='imgbodyId'){
+             document.getElementById(inputHiddenIdcons).value=base64value;
+             var fNames= inputHiddenIdcons+'Name';
+             document.getElementById(fNames).value=currentfile.name; 
+           }else{
+               filesNames.push(currentfile.name);
+               filesTypes.push(currentfile.type);
+               filesBodys.push(base64value);
+           }
+         }
+     }
+       
+  function saveApexValues(){
+     if(document.getElementById('theid:comp:commoncomponent:theform:docName').value==""){
+       alert('Name is required ');
+       return false;
+     }else{
+        saveact(JSON.stringify(filesBodys),JSON.stringify(filesNames),JSON.stringify(filesTypes));
+       return true;
+    }
+  }  
+  
+  function validateattachment(id){
+  
+  fname=id;
+  var extension = fname.split('.').pop(); 
+  var extlowercase=extension.toLowerCase();
+  if(extension != 'pdf'){
+  alert('Document Should be in PDF Format')
+  }
+  
+  }   
+    </script> 
+      
+      <apex:actionFunction action="{!onChangeAct}" name="onchangeac" reRender="addFid,docFid,theform">
+        <apex:param value="" name="selectedStr"/>
+      </apex:actionFunction>
+      <apex:actionFunction action="{!saveMethod}" name="saveact" reRender="theform" status="AjaxLoader">
+        <apex:param value="" name="bvs"/>
+        <apex:param value="" name="fns"/>
+        <apex:param value="" name="fts"/>
+      </apex:actionFunction>
+      
+      <apex:inputHidden value="{!imageName}" id="imgbodyIdName"/>
+       <apex:inputHidden value="{!imageBody}" id="imgbodyId"/>
+      
+      <div id="addsurvey"  >
+        <div style=" width:100%; height:48px;">
+        </div><!--close of content-grid-->
+          <div class="form" style="width:70%; margin:0px auto;   border:0px solid #000;  ">
+               <!-- ........................... Fields Display Start .................................. --> 
+                <div class="requiredInput">
+                   <div class="requiredBlock"></div>   
+                    <div class="elem">
+                       <label>Type: </label>  
+                        <div class="indent" style="margin-left:120px;">
+                          <apex:selectList value="{!eventDoc.Type__c}" size="1" style="outline:none;width:74%;" Styleclass="selectlist  levelclass" onchange="onchangeac(this.value);"> 
+                             <apex:selectOption itemValue="Location" itemLabel="Location"/>
+                             <apex:selectOption itemValue="Document" itemLabel="Document"/>
+                         </apex:selectList>
+                         <!--<apex:inputField value="{!eventDoc.Type__c}" style="outline:none;width:74%;" Styleclass="selectlist  levelclass" onchange="onchangeac(this.value);"/>                          
+                         -->
+                       </div>
+                     </div> 
+                   </div>
+                  <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                      <div class="elem">
+                      <label>Display Label: </label><label id="mandatory">*</label>   
+                      <div class="indent" style="margin-left:120px;">
+                         <apex:inputField value="{!eventDoc.Name}" styleClass="medium" id="docName" />
+                      </div>
+                     </div>
+                    </div>  
+                  
+                    <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                      <div class="elem">
+                      <label>Display Label Image: </label>  
+                      <div class="indent" style="margin-left:120px;">
+                         <input type="file" id="imageAtt" onchange="Save(this,id)"  accept="image/jpeg,image/png" />
+                      </div>
+                     </div>
+                    </div>
+                    
+                   <apex:outputPanel rendered="{!displayType}" id="docFid"> 
+                     <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                      <div class="elem">
+                      <label>Document URL: </label>  
+                       <div class="indent" style="margin-left:120px;">
+                         <apex:inputField value="{!eventDoc.Url__c}" id="atturl" onblur="validateattachment(value)"/>
+                      </div>
+                     </div>
+                    </div> 
+                    
+                     <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                         <div class="elem">
+                            <div class="indent" style="margin-left:120px;">
+                          <span style="color:#7ebdd9 ;font-weight:bold;">OR</span>
+                      </div>
+                         </div> 
+                      </div>
+                    
+                    <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                      <div class="elem">
+                      <label>UploadfFile: </label>  
+                       <div class="indent" style="margin-left:120px;">
+                        <input type="file" id="docAtt" onchange="Save(this,id)" multiple="multiple" accept="application/pdf" />
+                         <!--<apex:outputPanel id="theReg">  
+                          <apex:repeat value="{!eventDoc.Attachments}" var="dcL">
+                            <a href="" target="_blank"> {!dcL.Name}</a>&nbsp;
+                             <apex:commandlink value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete" rerender="theform,panel2" action="{!deleteDoc}" >
+                              <apex:param value="{!dcL.id}" name="docId"/>
+                             </apex:commandLink>&nbsp;
+                            <br />
+                           </apex:repeat>
+                         </apex:outputPanel>-->
+                      </div>
+                     </div>
+                    </div>  
+                   </apex:outputPanel>
+                    <apex:outputPanel rendered="{!NOT(displayType)}" id="addFid"> 
+                     <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                      <div class="elem">
+                      <label>Address : </label>  
+                       <div class="indent" style="margin-left:120px;">
+                         <apex:inputField value="{!eventDoc.Address__c}" style="width: 70%"/>
+                      </div>
+                     </div>
+                    </div> 
+                  </apex:outputPanel>  
+            <div class="clear"> </div>
+             <div class="indent" style="margin-top:20px;text-align:right;">
+             <!-- <a onclick="saveApexValues();" class="button-a blue" status="AjaxLoader">Save</a>-->
+               <button class="button-a blue" onclick="saveApexValues();return false;" status="AjaxLoader">Save</button>  
+             <!-- <apex:commandButton value="Save" onclick="saveApexValues();" styleclass="button-a blue" status="AjaxLoader" />--> &nbsp;
+             <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" styleclass="button-a dark-blue" reRender="theform" status="AjaxLoader"/>
+            </div>
+               
+           <div class="clear"></div>
+         </div></div> 
+  </apex:outputPanel> 
+ </apex:form> 
+  <!-- ~~~~~~~~~~~~~~~~~~ Body End ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+ </c:ed_basictemplate>
+  <!-- ..................... common js libraries component .................... -->
+  <c:ed_commonjs ></c:ed_commonjs>
+  <c:ed_popupbox ></c:ed_popupbox>
+  <script>
+    /*******creating instances for calling popups*******/
+var Alert_track = new Custom_formPopup(); //Area popup
+var Alert_room = new Custom_formPopup(); //room popup
+var Alert_speaker = new Custom_formPopup(); //speaker popup 
+var Alert_role = new Custom_formPopup(); //size popup   
+    /***************/   
+</script> 
+</apex:page>

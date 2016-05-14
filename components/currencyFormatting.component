@@ -1,0 +1,84 @@
+<apex:component >
+     <script>
+         function rightJustificationOrders(currency)
+         {
+             //alert(currency);
+             $(".amount").each(function(){
+                 var x= $(this).html();
+                 x=x.replace(/,/g , "");
+                 x=parseFloat(x);
+                 x=x.toFixed(2);
+                 if(currency=='Rs')
+                 {
+                     x=indianFormat(x);
+                 }
+                 if(currency=='$')
+                 {
+                     x=USFormat(x);
+                 }
+                 if(x!='NaN')
+                 $(this).html(x);
+                 $(this).css({"text-align":"right","font-size":"14px","padding-right":"10px"});
+             });
+         }
+         function rightJustificationOrders2(currency)
+         {         
+             jQuery(".percent").each(function(){
+                var val=jQuery(this).html();
+                val=val.trim();
+                var len=val.length;
+                if(val.substring(0, 1)==currency || val.substring(0, 2)==currency)
+                {
+                    var temp=val.substr(currency.length);
+                    temp=temp.trim();
+                    temp=parseFloat(temp);
+                    temp=temp.toFixed(2);
+                    
+                    //alert(temp);
+                    if(currency=='Rs')
+                    {
+                       temp=indianFormat(temp);
+                    }
+                    if(currency=='$')
+                    {
+                       temp=USFormat(temp);
+                    }
+                    temp=currency+' '+temp;
+                    jQuery(this).html(temp).css({"text-align":"right","font-size":"14px","padding-right":"10px"});
+                }
+                if(val.substring(len-1,len)=="%")
+                {
+                    var temp=val.substr(0,len-1); 
+                    //alert(temp);
+                    temp=temp.trim();
+                    temp=parseFloat(temp);
+                    temp=temp.toFixed(2);
+                    temp=temp+' %';
+                    //alert(temp);
+                    jQuery(this).html(temp).css({"text-align":"right"});
+                }
+             });    
+         }
+         function indianFormat(number)
+         {
+             number=number.toString();
+             var afterPoint = '';
+             if(number.indexOf('.') > 0)
+             afterPoint = number.substring(number.indexOf('.'),number.length);
+             number= Math.floor(number);
+             number=number.toString();
+             var lastThree = number.substring(number.length-3);
+             var otherNumbers = number.substring(0,number.length-3);
+             if(otherNumbers != '')
+             lastThree = ',' + lastThree;
+             var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+             //alert(res);
+             return res;
+         }
+         function USFormat(number)
+         {
+             number=number.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+             return number;
+         }
+     </script>
+</apex:component>

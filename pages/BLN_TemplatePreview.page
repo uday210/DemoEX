@@ -1,0 +1,333 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="BLN_RegistrationnewCon3" >
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+ <apex:stylesheet value="{!URLFOR($Resource.reg1, 'reg1/css/font-awesome.min.css')}"/>
+   <!-- Bootstrap -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-reg.css')}"/>
+  <!----ed-speaker-----css------>
+ <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-speaker.css')}"/>
+ <!-- Responsive -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/reg_responsive.css')}"/>
+  
+  <!--Chosen -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/chosen.css')}"/>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js"></script>
+
+  
+  <style>
+.tohide{ display:none;}
+.welcome_msg{ display:none;}
+.tohide1{ display:none;}
+.form-group .control-label {
+    text-align:right !important;
+}
+.ytwrapper{ display:none;}
+.ytbox { 
+position:relative;
+    border:1px solid  #ddd;
+    width:30%; 
+    height:180px;
+    margin-top:10px;
+    /*display:inline-block;*/
+
+    margin-right:1%;
+    margin-left:1%;
+    border-radius:3px;
+    padding:4px;
+
+}
+
+.ytbox .crossicon { position:absolute; right:-17px; top:-17px; width:30px;   cursor:pointer;}
+
+.iframebox iframe{ width:100%  !important; height:100% !important;}
+
+.iframebox{background-color:#FAFAFA; width:100%; height:100%}
+
+   
+
+</style>
+
+<!--speaker section css----->
+<!---end of speaker section css---->
+
+
+  <apex:form >
+ <div id='main_structure'></div>
+ </apex:form>
+  
+  
+  <!---separate pages----->
+ <body style="" >
+  <!----ajax  loader component--->
+    <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!----end ajax  loader component---> 
+  
+  
+           <div id="eventheaderpage" style="display:none">
+                  <apex:include pageName="BLN_EventheaderPage" />
+         </div>
+         <div id="eventorganiserdetailsPage" style="display:none">
+                  <apex:include pageName="BLN_organiserdetailsPage"/>
+         </div>
+         <div id="eventtimerPage" style="display:none">
+           <apex:include pageName="BLN_EventTimer" />
+            
+         </div>
+         <div id="eventspeakerpage" style="display:none">
+                  <apex:include pageName="BLN_Speaker_Include" />
+         </div>
+          <div id="eventsponcerpage" style="display:none">
+                  <apex:include pageName="BLN_Sponsor_Include" />
+         </div>
+       
+          <div id="tktsectionpagee" style="display:none">
+         <apex:include pageName="BLN_TicketSectionpage" />
+         </div>
+         <div id="sociallinkspage" style="display:none">
+         <apex:include pageName="BLN_SocaillinksPage" />
+         </div>
+         <div id="agendapage" style="display:none">
+         <apex:include pageName="BLN_EventAgendapageInclude" />
+         </div>
+         
+     <!--use this code to display event time and address--->
+          <div id='eventstartdate' style='display:none'>
+             <c:EV_FormatDt date_Timevalue="{!registrationEvent.Start_Date__c}" t_Zone="{!registrationEvent.Time_Zone__c}" t_format="MMM dd',' yyyy" ></c:EV_FormatDt>
+           </div>
+           <div id='eventenddate' style='display:none'>
+             <c:EV_FormatDt date_Timevalue="{!registrationEvent.End_Date__c}" t_Zone="{!registrationEvent.Time_Zone__c}" t_format="MMM dd',' yyyy"></c:EV_FormatDt>
+           </div>
+         
+          <div id='eventaddress' style='display:none'>
+                <apex:outputText value="{!registrationEvent.Street1__c}"></apex:outputText>
+                <apex:outputText rendered="{!IF(registrationEvent.Street2__c!=null && registrationEvent.Street2__c!='',true,false)}">
+                  <apex:outputPanel rendered="{!If(registrationEvent.Street1__c!=null && registrationEvent.Street1__c!='',true,false)}"> </apex:outputPanel>
+                  {!registrationEvent.Street2__c}
+                   </apex:outputText>
+          </div>
+                                
+              
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+                
+   <div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.5";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>                             
+                                 
+    
+           <!-------end of dummy structure-------->
+   </body>        
+           
+         
+         
+         <!----ticket section related  script------->
+          <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery-1.9.1.js')}"> </script>
+  <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/bootstrap.min.js')}"> </script>
+
+
+  <script>
+      
+          
+$(document).ready(function(){
+
+var x = location.hash;
+var res = x.substring(1,x.length); 
+
+
+
+ Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_RegistrationnewCon3.getMaingridforpreview}','{!selectedevent}',res,
+               function(result, event){
+          console.log(result)
+//result.Data__c
+$("[id$='main_structure']").html( result.Data__c);
+
+          $("[id$='Event_Header']").html( $("[id$='eventheaderpage']").html());
+          $("[id$='eventheaderpage']").remove();
+         
+         
+          $("[id$='Organiser_Details']").html( $("[id$='eventorganiserdetailsPage']").html());
+          $("[id$='eventorganiserdetailsPage']").remove();
+          
+          $("[id$='TimerWidget']").html( $("[id$='eventtimerPage']").html());
+          $("[id$='eventtimerPage']").remove();
+           
+          $("[id$='SpeakerWidget']").html( $("[id$='eventspeakerpage']").html());
+          $("[id$='eventspeakerpage']").remove();
+        
+          $("[id$='SponcerWidget']").html( $("[id$='eventsponcerpage']").html());
+          $("[id$='eventsponcerpage']").remove();
+        
+        
+          $("[id$='TicketSection']").html( $("[id$='tktsectionpagee']").html());
+          $("[id$='tktsectionpagee']").remove();
+          
+         
+          
+          $("[id$='Sociallinks']").html( $("[id$='sociallinkspage']").html());
+          $("[id$='sociallinkspage']").remove();
+          
+          
+          $("[id$='Event_Agenda']").html( $("[id$='agendapage']").html());
+          $("[id$='agendapage']").remove();
+          
+    
+          
+            },{escape: false});   
+
+
+});    
+          
+         </script>
+
+  
+   
+ 
+      
+   
+    
+       <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.min.js')}"> </script>
+  <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script>
+   <script type="text/javascript">
+  
+  var evsdate = $("[id$='eventstartdate']").html();
+  var evedate = $("[id$='eventenddate']").html();
+  var eveaddr = $("[id$='eventaddress']").html();
+ 
+ 
+ 
+  //remote action to append individual widgets html into main grid
+      Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_RegistrationnewCon3.getIndividualwidgets}','{!selectedevent}','{!template.id}', function(result, event){
+            for(var i=0;i<result.length;i++){
+              //event timer replace with  data
+              if(result[i].Template_Name__c=="TimerWidget")
+              {
+            // alert(result[i].HTML__c);
+              $('#eventtimerdiv').html(result[i].HTML__c);
+              $('#daysleft').html(' <span class="">{!TEXT(FLOOR(EventDaysRemainingDT- now()))} <span>Days</span></span><span class="">{!TEXT(ROUND(MOD((EventDaysRemainingDT- NOW())*24,24),0))}<span>Hrs</span></span><span class="">{!TEXT(ROUND(MOD((EventDaysRemainingDT- NOW())*1440,60),0))}<span>Mins</span></span>');
+         // alert(evsdate);
+              $('.startdate').html(evsdate+' - ');
+               $('.enddate').html(evedate);
+                $('#sdate').html(evsdate);
+               $('#edate').html(evedate);
+               $('#eveloc').html('<li>'+eveaddr+'</li>');
+             <!---->
+             
+            }
+              else if(result[i].Template_Name__c=='Contact_Organiser'){
+              $('#'+result[i].Template_Name__c).html(result[i].HTML__c);
+              
+              }
+            }
+            },{escape: false});
+  
+ </script>
+       
+         
+       
+           <script>
+           
+function conatctorganiser()
+{
+//alert('hello');
+var fn = $("[id$='fname']").val();
+var ln = $("[id$='lname']").val();
+var em = $("[id$='email']").val();
+var comm = $("[id$='comment']").val();
+//alert(fn);
+//alert(ln);
+//alert(em);
+
+   Visualforce.remoting.Manager.invokeAction('BLN_RegistrationnewCon3.contactOrganiser','{!ee.Organizer_Email__c}',fn,ln,em,comm, 
+   function(result, event){
+  if(result=='success')
+  {
+  //$('#myorgModal').modal('hide');
+  $("#myorgModal").hide();
+   $(".modal-backdrop").removeClass(' modal-backdrop fade in');
+  }        
+  //        alert(result)
+            });
+}
+
+</script>
+
+<!--google map code----->
+<script>
+$(document).ready(function() {
+ 
+ eventMap();
+ });
+function eventMap() {
+    
+  var myOptions = {
+    zoom: 15,    
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    mapTypeControl: false
+  }
+
+  var map;
+  var marker;
+
+  var geocoder = new google.maps.Geocoder();
+ var address = '{!registrationEvent.Street1__c}'+", " + '{!registrationEvent.Street2__c}';
+  // var address = "hitech city, " +"Madhapur , " + "Hyderabad , " + "India";
+
+  geocoder.geocode( { address: address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK && results.length) {
+      if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+
+        //create map
+        map = new google.maps.Map(document.getElementById("map1"), myOptions);
+
+        //center map
+        map.setCenter(results[0].geometry.location);
+
+        //create marker
+        marker = new google.maps.Marker({
+            position: results[0].geometry.location,
+            map: map,
+           
+        });
+
+        //add listeners
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(map,marker);
+        });
+   
+      }
+
+    } else {
+      $('#map1').css({'height' : '15px'});
+      $('#map1').html("");
+     
+    }
+  });
+
+  }
+</script>
+<!--end of google map code--->
+
+
+<apex:outputText escape="false" value="{!templatescript}"/>
+<style>
+@media (max-width: 433px)
+.slider-text h1 {
+    margin-top: 30px;
+    font-size: 16px;
+}
+
+#OrganiserDetailsdiv
+{
+
+padding-top: 30px;
+}
+</style>
+         
+</apex:page>

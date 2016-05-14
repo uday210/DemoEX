@@ -1,0 +1,795 @@
+<apex:page id="EventsPage" standardStylesheets="true" showHeader="false" sidebar="false" StandardController="Event__c" Extensions="SA_manageeventsController" action="{!checkUserId}">
+
+<head>
+    <title>Scan Attendee</title>
+</head>
+
+<script>
+
+function validatePhone(){
+
+}
+function ValidateForm()
+{
+    var title=document.getElementById('{!$Component.EventsPage:CreateForm:etitle}');
+    var sdate=document.getElementById('{!$Component.EventsPage:CreateForm:SD:Link:startId}');
+    var edate=document.getElementById('{!$Component.EventsPage:CreateForm:ED:Link:endId}');
+    var stime=document.getElementById('{!$Component.EventsPage:CreateForm:ASTime}');    
+    var etime=document.getElementById('{!$Component.EventsPage:CreateForm:AETime}'); 
+    var zip=document.getElementById('{!$Component.EventsPage:CreateForm:zipCode}');   
+    var phn=document.getElementById('{!$Component.EventsPage:CreateForm:phone}');          
+                     
+    if(title.value == "" ) {
+        alert('Please Enter Title');
+        return false;
+    }
+    
+    if(sdate.value == "" ) {
+        alert('Please Enter Start Date');
+        return false;
+    }
+    
+    if(edate.value == "" ) {
+        alert('Please Enter End Date');
+        return false;
+    }
+    
+    if(stime.value == "" ) {
+        alert('Please Enter Start Time');
+        return false;
+    }
+    
+    if(etime.value == "" ) {
+        alert('Please Enter End Time');
+        return false;
+    }   
+    
+     if(phn.value != ""){
+       if( validatePhoneNumber(phn.value)== false){
+           alert('Please provide valid 10 digit phone number');
+           phn.focus();
+           return false;
+       }
+    
+    } 
+    
+     if(zip.value != "" ) {
+         if(zip.value.length != 5 || isNaN(zip.value)){
+             alert('Please Enter Valid Zip Code');
+             zip.focus();
+             return false;
+         }
+       
+    }
+    
+}
+
+function validatePhoneNumber(elementValue){  
+            var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
+            return phoneNumberPattern.test(elementValue);  
+        }
+</script>
+
+<script>
+function confirmdel(){
+var r = confirm(' Would you like to delete the event?');
+    if(r==true){
+        return true;}
+    else{
+        return false;
+    }
+}
+</script>
+
+<apex:form id="EventsForm">
+<html>
+
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>   
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/popup.css')}"/>    
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+    
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions.js')}"/>
+    
+    
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+
+
+.pophead{background-color:#54b5f1;z-index: 50; width:100%;color:#414141;font-size:15px; text-align:left;font-weight:normal; padding-left:15px;background: #f9f9f9; /* Old browsers */
+background: -moz-linear-gradient(top, #f9f9f9 0%, #f1f1f1 40%, #e4e4e4 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f9f9f9), color-stop(40%,#f1f1f1), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #f9f9f9 0%,#f1f1f1 40%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #f9f9f9 0%,#f1f1f1 40%,#e4e4e4 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top, #f9f9f9 0%,#f1f1f1 40%,#e4e4e4 100%); /* IE10+ */background: linear-gradient(to bottom, #f9f9f9 0%,#f1f1f1 40%,#e4e4e4 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#e4e4e4',GradientType=0 ); /* IE6-9 */}
+<!---z-index: 10003;--->
+
+.custPopup{color:#000000;background-color:#f6f6f6;position: absolute;top:10px;left:0px;right:0px;z-index: 75;width:70%;height: auto; margin:0 auto;-moz-border-radius-bottomleft:6px; -webkit-border-bottom-left-radius:6px; 
+    -moz-border-radius-bottomright:6px; -webkit-border-bottom-right-radius:6px; border-radius:0 0 6px 6px; -moz-box-shadow:0 0 64px #000; -webkit-box-shadow:0 0 64px #000; box-shadow:0 0 64px #000;font: 12px/24px "Lucida Grande",Arial,sans-serif;
+    //background-color:#eee; color:#000;  padding-bottom:4px; width:600px; margin-top:0px; 
+-moz-border-radius-bottomleft:6px; -webkit-border-bottom-left-radius:6px; -moz-border-radius-bottomright:6px;-webkit-border-bottom-right-radius:6px; border-radius:6px 0 6px 6px; -moz-box-shadow:6px 0 64px #000; -webkit-box-shadow:0 0 64px #000; box-shadow:0 0 64px #000; padding:0px; height:75%;}
+        
+.popupBackground{background-color:#000000; Opacity:0.50;  width: 100%;height:100%;position: absolute;left:0px;top:0px; z-index: 50; } 
+        
+.btn{background-image:none;}
+ table{border:0px;} 
+ 
+table td{border:0px;}   
+.rightcontent{border:0px}
+
+.datepicker{
+    z-index:99999;
+}
+
+</style>
+
+
+<div id="header">
+    <div id="logo">
+        <apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+    </div><!--close of logo-->
+</div><!--close of header--->
+
+<div  id="ribbon"></div><!--close of ribbon-->
+
+<header>
+  <div id="centered-head" class="res" style="margin-bottom:0%; padding-bottom:0px;"> 
+
+    <nav>
+      <ul>
+        <li id="login" style="margin-left:0px;"> <span id="login-trigger"> <span id="login-triggers"> <span id="user-panel-check"></span> <span id="user-panel-title ">My Account</span> </span> </span>
+          <div id="login-content">
+            <ul>
+              <li style="line:height:0px;margin-left:0px;padding-left:5px;"><apex:outputLink value="/apex/SA_ManageProfile" style="padding-left:1px;line:height:0px;"><apex:image value="{!$Resource.Manage_Profile}" width="15px" height="15px"/><span class="editprofile icon">Manage Profile</span></apex:outputLink></li>
+              <li style="width:100px:height:10px;margin-left:0px;padding-left:5px;"><apex:outputLink value="/apex/SA_ResetPassword" style="padding-left:0px;line:height:1px;"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon" style="padding-left:0px;font-size:12px;">Reset Password</span></apex:outputLink></li>
+              <li style="width:100px:height:10px;margin-left:0px;padding-left:5px;"><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" style="padding-left:0px;"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </nav>
+    <div class="account-name">
+      <p><span class="welcome">Welcome,</span> <strong>{!$User.FirstName} {!$User.LastName}</strong></p>
+      <div class="account-separator"></div>
+    </div>
+    <div class="account-name"> </div>
+
+  </div>
+</header>
+
+<body style="background-color:#b8cdeb;"> 
+<div style="margin-top:-37px; margin-bottom:9px; text-align:right; margin-left:2%;border:0px Solid Red;width:70%;float:left;">
+   <table width="100%" border="0" align="center" >
+        <tr>              
+          <!--  <apex:outputPanel rendered="{!IF(listOfEvents.size > 0, TRUE, FALSE)}"> -->
+            <td align="left" width="50%" valign="top" style="font-size:18px;font-weight:bold;color:#FFF;padding-left:50px;"> 
+                <marquee behavior="alternate" scrollamount="2">Click on '<apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/setting.png')}" width="20" height="20" />' icon, to manage your event!</marquee>
+            </td>
+          <!--  </apex:outputPanel> -->
+        </tr>
+    </table>  
+</div> 
+
+<div style="margin-top:-37px; margin-bottom:9px; text-align:right; margin-right:2%;border:0px Solid Red;width:20%;float:right;">
+    <apex:commandButton rendered="{!NOT(isEventAdminStaffUser)}" value="Create Event" title="Create Event" action="{!CreateEvent}" styleclass="button-a blue" style="width:100%; font-size:18px;color:#FFFFFF;"></apex:commandButton>
+</div> 
+    
+
+<section id="middle" style=" border:0px #000000 solid;margin-top:0%;" class="res">
+    <div id="container" style="border:0px #000000 solid;  background-color:#FFF; margin-top:0px;">
+    <div id="content" style="padding:0px; margin-bottom:8px;">
+    <div class="speedbar" style=" border:0px #FF0000 solid; margin-right:0px; ">
+      <div class="speedbar-nav">Scan Attendee ›› Events</div>
+      <!--close of speedbar-nav--> 
+      
+    </div>
+    <!--reveal pop up-----> 
+    
+    <script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.reveal.js')}"/>
+
+    <div class="grid-1" style="padding-top:0px; margin-top:8px; width:98.8%; margin-left:0.6%;  ">
+        
+        <div class="content-gird" style="padding:0px; background-image: url({!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/background_top.png')})">
+    
+             <div class="container">
+              <h1>&nbsp;</h1>
+              <div id="ca-container" class="ca-container" style="margin-bottom:-10px;">
+                <div class="ca-wrapper">
+               
+        
+
+              <apex:repeat value="{!EventDetailsInnerList}" var="Event">
+
+              <!--1st item event admin-------->
+              <div class="ca-item">
+                 
+                  <div class="ca-item-main">
+                    <div class="ca-icon">   
+                        <apex:image value="/servlet/servlet.ImageServer?id={!Event.UPEData.EV_id__r.EV_EventLogo__c}&oid={!$Organization.Id}" width="280" height="180" rendered="{!IF(Event.UPEData.EV_id__r.EV_EventLogo__c!=NULL,true,false)}"/>
+                        <apex:image value="{!$Resource.NoEventLogo}" width="280" height="180" rendered="{!IF(Event.UPEData.EV_id__r.EV_EventLogo__c=NULL,true,false)}"/>
+                    </div>
+                    <br/>
+                    <h3>{!Event.UPEData.EV_id__r.EV_Title__c}</h3>
+                    <table cellspacing="0" cellpadding="0" width="100%" height="50px" >
+                        <tr>
+                            <td>       
+                            <b>
+                                    <apex:outputText value="{0,date,MMMM d, YYYY}"> 
+                                        <apex:param value="{!Event.UPEData.EV_id__r.EV_StartDate__c}"/>
+                                    </apex:outputText> &nbsp;{!Event.UPEData.EV_id__r.StartTime__c} &nbsp; - &nbsp;
+                                    <apex:outputText value="{0,date,MMMM d, YYYY}" rendered="{!NOT(Event.isOneDayEvent)}"> 
+                                        <apex:param value="{!Event.UPEData.EV_id__r.EV_EndDate__c}"/>
+                                    </apex:outputText> &nbsp;{!Event.UPEData.EV_id__r.EV_EndTime__c}
+                               
+                            </b>      
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                            <b>{!Event.UPEData.EV_id__r.EV_HostingLocation__c}</b>
+                            </td>
+                        </tr>
+                       <tr>
+                            <td align="left">  
+                                <apex:commandLink title="Manage Event" action="{!ManageEvent}" style=" text-decoration:none;margin-left:10px;">
+                                    <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/setting.png')}" width="20" height="20" />                                
+                                    <apex:param value="{!Event.UPEData.EV_id__r.id}" name="EventName"/>      
+                                </apex:commandLink> 
+                                <apex:commandLink rendered="{!IF(Event.UPEData.Profile_id__r.PR_Name__c == 'EventAdmin Staff', FALSE, TRUE)}" title="Edit Event" action="{!ShowEventDetails}" style=" text-decoration:none; margin-left:10px;">                           
+                                    <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/edit-1.png')}" width="20" height="20" />                                 
+                                    <apex:param value="{!Event.UPEData.EV_id__r.id}" name="EventName"/>
+                                </apex:commandLink> 
+                                <apex:outputPanel rendered="{!Event.isDeleteAvailable}">
+                                    <apex:commandLink title="Delete Event" action="{!DeleteEvent}" style=" text-decoration:none; margin-left:10px;" onclick="return confirmdel('{!Event.UPEData.EV_id__r.id}');">                           
+                                        <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/remove.png')}" width="20" height="20" />                                 
+                                        <apex:param value="{!Event.UPEData.EV_id__r.id}" name="EventName"/>
+                                    </apex:commandLink> 
+                                </apex:outputPanel> 
+                            </td>
+                        </tr>   
+                    </table>  
+                    <a href="#" style="color:#fff" class="ca-more">Event Info...</a>       
+                </div>
+           
+                
+                
+            <div class="ca-content-wrapper" style='z-index:1;'>
+                <div class="ca-content"> 
+                <apex:outputLink styleclass="ca-close">close</apex:outputLink>
+                        
+                <table width="100%" border="0"  cellspacing="5px"  style="font-size:12px;font-family: Helvetica, Arial, sans-serif; text-indent:5px; color:#000; border-collapse:collapse;">
+                <tr>
+                        <td colspan="5"> 
+                          <div style="width:100%;text-align:left; background:url({!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/background-header.png')}) no-repeat; height:100px;">
+                            <table width="100%" border="1">
+                              <tr>
+                                <td style="padding:10px;"><h1 style=" margin-top:5px;font:AdobeHeitiStd; color:#09C;">             
+                                    <label >Buyers:<span style="color:#fff; font-size:25px; margin-left:5px;">{!Event.AttendeeCount}</span></label>
+                                  </h1>
+                                  </td>
+                                <td><h1 style=" margin-top:5px;font:AdobeHeitiStd; color:#09C;">
+                                    <label >Tickets Sold:<span style="color:#fff; font-size:25px; margin-left:5px;">{!Event.TicketSold}</span></label>
+                                  </h1>
+                                 </td>
+                                <td rowspan="2"><h1 style=" margin-top:5px;font:AdobeHeitiStd; color:#09C;">
+                                    <label >Revenue:<span style="color:#fff; font-size:25px;  margin-left:5px;">
+                                       <apex:outputText value="{0,number,$ ###,##0.00}">
+                                          <apex:param value="{!Event.RevenueGenerated}"/>
+                                        </apex:outputText> </span></label>
+                                  </h1></td>
+                                  </tr>
+                                  
+                                    <tr>
+                                <td style="padding:10px;" >
+                                  <h1 style=" margin-top:10px;font:AdobeHeitiStd; color:#09C;">
+                                    <label >Check Ins:<span style="color:#fff; font-size:25px; margin-:25px; margin-left:5px;">{!Event.CheckinsCount}</span></label>
+                                  </h1></td>
+                                <td>
+                                  <h1 style=" margin-top:10px;font:AdobeHeitiStd; color:#09C;">
+                                    <label >Items Sold:<span style="color:#fff; font-size:25px; margin-left:5px;">{!Event.ItemsSold}</span></label>
+                                  </h1></td>
+                                
+                                  </tr>
+                                  
+                            </table>
+                          </div>
+                 </td>
+                 </tr>
+                
+                <tr style="border-top: #D8D8D8 1px solid; margin-top:5px;">
+                                <td height="30px" width="20%"><label>Phone:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_HostingPhone__c}</label></td>
+                                <td height="30px" width="20%"><label>Hosting Address 2:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.AS_HostingAddr2__c}</label></td>
+                               
+                                </tr>
+                            
+                            <tr>
+                                <td height="30px" width="20%"><label>Website:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_WebsiteURL__c}</label></td>
+                                <td height="30px" width="20%"><label>Hosting Time Zone:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_HostingTimeZone__c}</label></td>
+                           
+                                </tr>
+                            <tr>
+                                <td height="30px" width="20%"><label>Business Category:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.Primary__c}</label></td>
+                                <td height="30px" width="20%"><label>City:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.AS_HostingCity__c}</label></td>
+                                
+                            </tr>
+                            <tr>
+                                <td height="30px" width="20%"><label>Sales Tax :</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.Sales_Tax__c}%</label></td>
+                                <td height="30px" width="20%"><label>State:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_HostingStateNew__c}</label></td>
+                           </tr>
+                                
+                           <tr>
+                             </tr>                           
+                           <tr>
+                                <td height="30px" width="20%"><label>Hosting Organization:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_HostingOrgName__c}</label></td>
+                                <td height="30px" width="20%"><label>Country:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_HostingCountryNew__c}</label></td>
+                           </tr>
+                           <tr>
+                               <td width="20%"><label>Hosting Time Zone:</label></td>
+                               <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_HostingTimeZone__c}</label></td>
+                               <td height="30px" width="20%"><label>Zip code:</label></td>
+                                <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_HostingZipcode__c}</label></td>
+                          </tr>
+                           <tr>
+                               <td height="30px" width="20%"><label>Hosting Address 1:</label></td>
+                               <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_HistingAddr1__c}</label></td>
+                          <td height="30px" width="20%"><label>Event Description:</label></td>
+                               <td align="left" width="30%"><label>{!Event.UPEData.EV_id__r.EV_Description__c}</label></td>
+                           
+                           </tr>                      
+
+                        </table>      
+                </div> <!--close of ca-content------------------>
+                </div><!--close of ca -content-wrapper---------------->
+                 
+                
+            </div><!--close of ca-item-------------------->
+              </apex:repeat>   
+              <!--end of ist item-->
+                
+  
+                 <apex:outputPanel rendered="{!IF(listOfEvents.size ==0, TRUE, FALSE)}">
+                     <table height="100%" width="100%">
+                         <tr>
+                             <td valign="middle" align="center" style="text-align:center;margin-left:50%" width="100%">
+                                 <apex:outputText value="Create an Event to get started !" style="font-size:32px;color:#ffffff;text-align:center;align:center;"/>            
+                             </td>
+                         </tr>
+                     </table>
+                </apex:outputPanel>
+                
+            </div><!-- #ca-wrapper-->
+        <!------------------------------------- Total Events Slider Block End  ----------------------------------------------> 
+        </div>
+    </div><!-- #ca-conatiner-->
+    </div><!-- #container-->
+    </div>
+    <script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.easing.1.3.js')}"/>
+    <script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.contentcarousel.js')}"/>
+
+    <script type="text/javascript">
+        $('#ca-container').contentcarousel();
+    </script>
+    
+    <div class="clear"></div>
+
+      </div>
+      <!-- #container-->
+      
+      </div>
+     
+      <!-- #sideLeft --> 
+      <!-- #container main-->
+      <br/>
+      <footer style="width:100%;padding:0">
+        <div class="info-footer" style="margin:0px;" >
+          <div id="left">
+            <p>Copyright © 2014  Global Nest.</p>
+          </div>
+          <div id="right">
+            <p>Scan Attendee</p>
+          </div>
+        </div>
+        
+      </footer>
+      
+   </section>     
+    <!-- #middle-->
+    <script>
+        function SentToServer(EventName){   
+        }
+    </script>
+    
+    <apex:actionFunction name="SentToServer" action="{!ShowEventDetails}" reRender="jsvalues">
+        <apex:param name="EventName" value="" />
+    </apex:actionFunction> 
+    
+    <div class="clear"></div>
+</body>
+</html>
+
+
+
+
+<style>
+    .activeTab {background-color: #AF161B; color:white; font-size:14px;font-family: Helvetica, Arial, sans-serif; text-indent:5px; background-image:none}
+    .inactiveTab { background-color: #DEDCDC; color:black; font-size:14px;font-family: Helvetica, Arial, sans-serif; text-indent:5px; background-image:none}
+</style>
+
+</apex:form>
+<!------------------------------------------------------------- Add/Edit Event Start --------------------------------------------------------->
+<apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!EventPopUp}" id="popup1"/>
+<apex:outputPanel styleClass="custPopup" layout="block" rendered="{!EventPopUp}" style="width:80%;height:630px;overflow:auto;padding-bottom:20px;" id="Popup2">
+<apex:pagemessages />
+    <div style="float:right;top:1px;">
+    <apex:form >
+        <apex:commandButton action="{!Cancel}" value="Close" image="{!$Resource.PopUpClose}" title="Close" style="width:26px;height:26px; border:0px;" immediate="true"/>
+    </apex:form>
+    </div>
+    
+    <div style="height:280px;">
+    
+    <div>
+    
+    <div class="grid-1" style="text-align:left">
+
+    <apex:tabPanel switchType="client" selectedTab="{!selectedTab}" id="TabPanel">
+        <apex:tab label="Event Details" name="Event Details" id="tabOne" disabled="{!istab1disabled}" styleClass="{!IF(selectedTab='Event Details','activeTab','inactiveTab')}">
+        <apex:form id="CreateForm">
+        <!-- <div class="title-grid">Create Event</div> -->
+        <div class="content-gird">
+        <div class="form">
+        <div id="left-form" style="width:49%; padding-bottom:5px; margin-top:5px;  border:0px #000000 solid; float:left">
+        <div class="elem">
+            <label>Title: </label><label id="mandatory">*</label>
+            <div class="indent">
+                <apex:inputField Styleclass="medium" value="{!CreateEvent.EV_Title__c}" id="etitle"/>                    
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>Hosting Time Zone: </label>
+            <div class="indent">
+                <apex:inputField styleclass="chzn-select medium-select select"  value="{!CreateEvent.EV_HostingTimeZone__c }" style="width:77%;height:30px;"/>  
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>Start Date:</label><label id="mandatory">*</label>
+            <div class="indent">
+                <div style="float:left; width:40%;">
+                <c:RemoveLink id="SD">
+                    <apex:inputField Styleclass="medium" value="{!CreateEvent.EV_StartDate__c}" style="width:100px;" id="startId"/>
+                </c:RemoveLink>
+                </div>
+                <div style="float:left; width:40%;"> 
+                    <apex:inputField value="{!CreateEvent.StartTime__c}" id="ASTime" style="width:90%;height:30px;" styleclass="chzn-select medium-select select"/>
+                </div>
+            </div>
+        </div>
+    
+        <div class="elem">
+            <label>End Date:</label><label id="mandatory">*</label>
+            <div class="indent">
+                <div style="float:left; width:40%;">
+                    <c:RemoveLink id="ED">
+                    <apex:inputField Styleclass="medium" value="{!CreateEvent.EV_EndDate__c}" style="width:100px;" id="endId"/></c:RemoveLink>
+                </div> 
+                <div style="float:left; width:40%;"> 
+                    <apex:inputField value="{!CreateEvent.EV_EndTime__c}" id="AETime" style="width:90%;height:30px;" styleclass="chzn-select medium-select select"/>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="elem">
+            <label>Phone Number: </label>
+            <div class="indent">
+                <apex:inputtext value="{!CreateEvent.EV_HostingPhone__c}" styleClass="medium" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"  id="phone" />
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>Website:</label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.EV_WebsiteURL__c}" id="Website"  styleClass="medium"/>
+            </div>
+        </div>  
+        
+        <div class="elem">
+            <label>Business Category:</label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.Primary__c}" id="Primary"  styleClass="chzn-select medium-select select" style="width:77%;height:30px;"/>
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>Sales Tax :</label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.Sales_Tax__c}" styleClass="chzn-select medium-select select" style="width:20%;height:30px;"/>%
+            </div>
+        </div>
+        
+         <div class="elem">
+            <label>Service Fee :</label>
+            <div class="indent">                
+                 <apex:selectRadio layout="lineDirection" value="{!CreateEvent.Fee_Type__c}">
+                     <apex:selectOptions value="{!FeeTypes}"/>
+                 </apex:selectRadio>
+            </div>
+        </div>
+        
+       
+        <div class="elem">
+            <label>Event Logo:</label>
+            <div class="indent">
+                
+                <apex:image url="/servlet/servlet.FileDownload?file={!CreateEvent.EV_EventLogo__c}" height="80px" width="80px"  rendered="{!IF(CreateEvent.EV_EventLogo__c != NULL,true,false)}"/>
+                <apex:image value="{!$Resource.NoEventLogo}" width="80px" height="80px" rendered="{!IF(CreateEvent.EV_EventLogo__c=NULL,true,false)}" style="float:left;"/>
+                   
+                
+                <apex:inputFile value="{!Logo}" filename="{!LogoName}" style="width:215px;" Styleclass="filename"/>
+                <div class="uploader black">
+                    <apex:inputFile value="{!Logo}" filename="{!LogoName}" style="width:215px;"/>
+                </div>
+            </div>
+        </div>
+    </div><!--close of left-form-->
+    
+    
+    <div class="right-form"  style=" width:49%; padding-bottom:5px; margin-top:5px;  border:0px #000000 solid; float:right">
+        <div class="elem">
+            <label>Hosting Organization: </label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.EV_HostingOrgName__c}" id="Org" styleClass="medium"/>
+            </div>
+        </div>
+    
+        <div class="elem">
+            <label>Hosting Location: </label>
+            <div class="indent">
+                <apex:inputtext value="{!CreateEvent.EV_HostingLocation__c}" id="Location" styleClass="medium"   />
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>Hosting Address 1: </label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.EV_HistingAddr1__c}" id="Add1" styleClass="medium"/>
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>Hosting Address 2: </label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.AS_HostingAddr2__c}" id="Add2" styleClass="medium"/>
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>City: </label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.AS_HostingCity__c}" id="City" styleClass="medium"/>
+            </div>
+        </div>
+
+        <div class="elem">
+            <label>Country:</label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.EV_HostingCountryNew__c}" id="Country" styleclass="chzn-select medium-select select" style="width:77%;height:30px;"/> 
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>State:</label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.EV_HostingStateNew__c}" id="State" styleclass="chzn-select medium-select select" style="width:77%;height:30px;"/> 
+            </div>
+        </div>
+        
+         <div class="elem">
+            <label>Zip Code :</label>
+            <div class="indent">
+                <apex:inputField value="{!CreateEvent.EV_HostingZipcode__c}" id="zipCode" styleClass="medium"/> 
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>Event Description:</label>
+            <div class="indent"> 
+                <apex:inputTextarea value="{!CreateEvent.EV_Description__c}" id="description"  styleClass="medium" style="width:75%" rows="4"/> 
+            </div>
+        </div>
+        
+       
+        <br/>
+        <div class="indent"  style="float:right;">
+            <apex:commandButton value="Next" action="{!SaveEvent}" Styleclass="button-a blue" onclick="return ValidateForm();"/>&nbsp;&nbsp;
+           <!-- <apex:commandButton value="Cancel" action="{!Cancel}" Styleclass="button-a dark-blue" style="color:#FFFFFF;"/> -->
+        </div>
+        </div><!--close of right-form-->
+
+        <div class="clear"></div>
+        </div>  
+        <div class="clear"></div>
+        </div>
+        </apex:form>
+        </apex:tab>
+        
+        <apex:tab label="Sessions" name="Sessions" id="tabTwo" disabled="{!istab2disabled}" styleClass="{!IF(selectedTab='Sessions','activeTab','inactiveTab')}">
+            <apex:form >
+                <!-- <div class="title-grid">Create Event</div> -->
+                <div class="content-gird">
+                    <div class="form">
+                        <div id="left-form" style=" width:98%; padding-bottom:5px; margin-top:5px;  border:0px #000000 solid; float:left;">
+                        <!--
+                        
+                        <style>
+                            .chzn-container-multi .chzn-choices{
+                                height:auto;
+                                background-color:#FFFFFF;
+                                background-image:none;
+                            }
+                        </style>
+                        
+                        <div class="elem">
+                            <label>Session Date :</label><label id="mandatory">*</label>
+                            <div class="indent">
+                                <apex:selectList value="{!SelectedDates}" styleClass="chzn-select medium-select select" multiselect="false">
+                                    <apex:selectOptions value="{!EventDate}" />
+                                </apex:selectList>
+                            </div>
+                        </div>
+                        
+                        <div class="elem">
+                            <label>Session Name :</label><label id="mandatory">*</label>
+                            <div class="indent">
+                                <apex:inputField value="{!MDays.Session_Name__c}" id="Name" styleClass="medium" style="width:50%"/> 
+                            </div>
+                        </div>
+                        
+                        <div class="elem">
+                            <label>Start Time :</label><label id="mandatory">*</label>
+                            <div class="indent">
+                                <apex:inputField value="{!MDays.Start_time__c}" id="Starttime" styleClass="chzn-select medium-select select" style="width:50%"/> 
+                            </div>
+                        </div>
+                        
+                        <div class="elem">
+                            <label>End Time :</label><label id="mandatory">*</label>
+                            <div class="indent">
+                                <apex:inputField value="{!MDays.End_Time__c}" id="EndTime" styleClass="chzn-select medium-select select" style="width:50%"/> 
+                            </div>
+                        </div>
+                         -->
+            <apex:outputPanel id="bottom">             
+            <table class="display">
+                <thead>
+                    <tr>
+                        <th width="20%" class="th_status">Session Date</th>
+                        <th width="45%" class="th_author">Session Name</th>
+                        <th width="15%" class="th_author">Start Time</th>
+                        <th width="15%" class="th_author">End Time</th>
+                        <th width="5%" class="th_author">
+                            <apex:commandLink action="{!addingMultipleSessions}" title="Add Session" style="padding-left:5px;text-align:left;vertical-align:top;" reRender="bottom">
+                                <apex:image value="{!$Resource.AddspeakerIcon}" width="18px" height="18px" style="float:left;vertical-align:top;"/>
+                            </apex:commandLink>
+                        </th>
+                    </tr>
+                </thead>
+                  
+                  
+                <apex:variable var="rowNum" value="{!0}"/> 
+                <apex:repeat value="{!AddMSessions}" var="AddMS" id="repeatId">
+                    <tr class="item">
+                        <td style="width:20%;">
+                            <apex:selectList value="{!AddMS.SelectedDate}"  size="1" multiselect="false" style="overflow:none;">
+                               <apex:selectOptions value="{!EventDate}"/>   
+                           </apex:selectList>
+                        </td> 
+                        <td class="name" style="width:45%;"><apex:inputField value="{!AddMS.MDaysObj.Session_Name__c}" styleclass="medium" id="SessionName" ></apex:inputField></td>
+                        <td class="name" style="width:15%;"><apex:inputField value="{!AddMS.MDaysObj.Start_time__c}" styleclass="medium" id="StartTime" ></apex:inputField></td>
+                        <td class="name" style="width:15%;"><apex:inputField value="{!AddMS.MDaysObj.End_Time__c}" styleclass="medium" id="EndTime" ></apex:inputField></td>
+                        
+                        <td class="name" style="width:5%;">
+                            <apex:commandLink immediate="true" style="font-size:10px; font-weight:bold; text-align:center;color:red;" rendered="{!rowNum>0}" action="{!DeleteSessions}" rerender="bottom">                                
+                                <apex:param value="{!rowNum}" name="index" />
+                                <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/remove.png')}" width="20px" height="20px" style="float:left;vertical-align:top;"/>
+                            </apex:commandLink>
+                            <apex:variable var="rowNum" value="{!rowNum+1}"/>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+            </apex:outputPanel>              
+                         
+            <br/>
+            <div class="indent" style="float:right;">
+                <apex:commandButton value="Previous" action="{!previous}" Styleclass="button-a blue"/>&nbsp;&nbsp;
+                <apex:commandButton value="Save" action="{!SaveSessions}" Styleclass="button-a blue"/>
+               <!-- <apex:commandButton value="Cancel" action="{!Cancel}" Styleclass="button-a dark-blue" style="color:#FFFFFF;"/> -->
+            </div>
+                        </div>
+                    </div>
+                <div class="clear"></div>
+                </div>  
+            </apex:form>
+        </apex:tab>
+        
+        <!--
+        <apex:tab label="Sales Tax" name="Sales Tax" id="tabThree" disabled="{!istab3disabled}" styleClass="{!IF(selectedTab='Sales Tax','activeTab','inactiveTab')}">
+            <apex:form >
+                <div class="content-gird">
+                    <div class="form">
+                        <div id="left-form" style=" width:98%; padding-bottom:5px; margin-top:5px;  border:0px #000000 solid; float:left;">
+                        
+            <apex:outputPanel id="bottom"> 
+            
+            <div class="elem">
+            <label>Enter Sales Tax:</label>
+            <div class="indent">
+                       <apex:inputText value="{!updateEvent.Sales_Tax__c} " style="width:40px;"/>%
+            </div>
+        </div>            
+            
+            </apex:outputPanel>              
+                         
+            <br/>
+            <div class="indent" style="float:right;">
+                <apex:commandButton value="Previous" action="{!previousSessions}" Styleclass="button-a blue"/>&nbsp;&nbsp;
+                <apex:commandButton value="Save" action="{!SaveSalesTax}" Styleclass="button-a blue"/>
+            </div>
+                        </div>
+                    </div>
+                <div class="clear"></div>
+                </div>  
+            </apex:form>
+        </apex:tab>
+        
+        -->
+    </apex:tabPanel>
+
+    
+    </div>
+    </div><!--close of wrapper--> 
+    </div>
+</apex:outputPanel>
+
+<!------------------------------------------------------------- Add/Edit Event End ------------------------------------------------------------->
+
+
+</apex:page>

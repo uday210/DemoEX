@@ -1,0 +1,289 @@
+<apex:page standardController="BLN_Event__c" extensions="BLN_ReUse_EventsEditCon" showHeader="false"  standardStylesheets="false">
+<!------------------------------------
+Page reusability:
+This Page contains all the codes related to ADD/DEL buttons in ticket/package
+
+Used in Modules:BLN_TicketsNew(Manage Tickets),BLN_EventNew(Create&edit event).
+
+
+
+--------------------->
+  
+ <!-----------dynamic Add or delete rows----------------->
+ <!----- begin : css for custom alert ------->
+<style type="text/css">
+    #alert_dialogoverlay_new{
+    display:none;opacity:.5;position:fixed;
+    top:0px;left:0px;background-color: #000;
+    width:100%; z-index:99999999999999999999;
+    }
+    #alert_dialogbox_new{ display:none; position:fixed; border-radius:6px;
+      width:550px; z-index:999999999999999999991; padding:3px;
+      -webkit-box-shadow: 0 5px 15px rgba(0,0,0,.5); box-shadow: 0 5px 15px rgba(0,0,0,.5);
+      background-color: #fff;-webkit-background-clip: padding-box; 
+      background-clip: padding-box;border: 1px solid rgba(0,0,0,.2);outline: 0;
+     }
+    #alert_dialogbox_new > div  { margin:0px;}
+    #alert_dialogboxhead_new{font-size:20px; padding:10px; color:#333;  background-color:#ffffff;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;  min-height: 16.43px;padding: 10px;
+    border-bottom: 1px solid #e5e5e5;  border-top-left-radius: 4px;border-top-right-radius: 4px;}
+    #alert_dialogboxbody_new{   background:#fff; padding:20px 12px; color:#333;  line-height: 1.42857143;
+    font-size:14px; font-weight:300;  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;}
+    #alert_dialogboxfoot_new{background-color: #f5f5f5;
+    width:100%; text-align:center;padding:5px 0px;border-top: 1px solid #e5e5e5;}
+    .button-a {padding:0px 10px;outline:none;}      
+    .button-a, .button-a span {display:inline-block;height:30px;
+    border:0;color:#FFF;-webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;
+    text-decoration:none;cursor:pointer;font-size:13px;text-align:center;}          
+    .button-a span {padding-top:7px;}
+    .button-a:hover {-moz-opacity: 0.9;-khtml-opacity: 0.9;opacity: 0.9;
+      filter:progid:DXImageTransform.Microsoft.Alpha(opacity=90);
+      text-decoration:none;}        
+    .button-a.blue {background-color:#337AB7;border:1px solid #438ac2;} 
+    </style>
+<!----- end : css for custom alert ------->
+<!----- begin : script for custom alert ------->
+<script type="text/javascript">
+    function CustomAlertNew(){
+        this.render =function(dialog,dialoghead,okbtntxt){
+        var winW = window.innerWidth;
+        var winH = window.innerHeight;
+        var dialogoverlay =document.getElementById('alert_dialogoverlay_new');
+        var dialogbox = document.getElementById('alert_dialogbox_new');
+        dialogoverlay.style.display="block";
+        dialogoverlay.style.height = winH +"px";
+        dialogbox.style.left=(winW/2) -(550*.5)+"px";
+        dialogbox.style.top="200px";
+        dialogbox.style.display="block";
+        document.getElementById('alert_dialogboxhead_new') .innerHTML=dialoghead;   
+        document.getElementById('alert_dialogboxbody_new') .innerHTML=dialog;
+        document.getElementById('alert_dialogboxfoot_new') .innerHTML ='<input type="button" class="button-a blue" value='+okbtntxt+' onclick="AlertNew.ok()" />';
+    /******/
+    this.ok = function(){
+        document.getElementById('alert_dialogbox_new').style.display ="none";
+                document.getElementById('alert_dialogoverlay_new').style.display ="none";
+             return true;
+        }
+        /******/
+
+    }
+    }
+                                        
+    var AlertNew = new CustomAlertNew(); 
+    </script>
+        <!----- end : script for custom alert ------->
+        <div id="alert_dialogoverlay_new"></div>
+        <!--close of dialogoverlay-->
+        <div id="alert_dialogbox_new">
+            <div id="alert_dialogboxhead_new"></div>
+            <!--close of dialoghead-->
+            <div id="alert_dialogboxbody_new"></div>
+            <!--close of alertdialogbody-->
+            <div id="alert_dialogboxfoot_new"></div>
+            <!--close of alertdialogboxfoot-->
+        </div>
+    <script type="text/javascript">
+            $(document).ready(function(){       
+         
+            $('.del').live('click',function(){
+               
+               
+              
+           for(var j=0;j<ticketlist.length;j++)
+           {
+           
+           if(ticketlist[j].trowid==($(this).parent().parent().index()+1)){
+           var delflag=0;
+           for(delindex=0;delindex<ticketlist[j].ticketcount;delindex++)
+           {
+               
+               if(ticketlist[j].grouptickets[delindex].availabletickets==='')
+               continue;
+               if(ticketlist[j].grouptickets[delindex].availabletickets!=Number(ticketlist[j].grouptickets[delindex].qty))
+               delflag=1;
+           }
+           if(delflag==0){
+           var r = confirm("Are you sure you want to delete?");
+if (r == true) {
+try{ShowLoader();}catch(e){}
+   Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.deleteItemPool}',
+            ticketlist[j].poolid,
+           function(result, event){
+          if (event.status){
+          ticketlist=[]; 
+           for(var loopi=0;loopi<60;loopi++)
+{
+ticketlist.push({poolid:"",tname:"",tpaytype:"",tqty:"",tprice:"",tvisib:"",tdesc:"",ticketedsession:"",tcketlogo:"",tbdglabel:"",tbadgable:"",trowid:"",grouptickets:[],ticketcount:"",tags:[],subpackagegroup:[],ispackage:"",itemtype:"",taxrateflag:"",tebudprcflag:""});
+}
+$(this).parent().parent().remove(); 
+         mask1();
+         
+           }
+           try{
+           HideLoader();
+           }catch(e){}
+           });
+          //ticketlist.splice(j, 1);
+          //ticketlist.push({poolid:"",tname:"",tpaytype:"",tqty:"",tprice:"",tvisib:"",tdesc:"",ticketedsession:"",tcketlogo:"",tbdglabel:"",tbadgable:"",trowid:"",grouptickets:[],ticketcount:"",tags:[],subpackagegroup:[],ispackage:"",itemtype:"",taxrateflag:"",tebudprcflag:""});
+            
+          
+            
+}        
+            
+            }
+            else
+            {
+               //alert('Sold ticket/package cannot be deleted.');
+               AlertNew.render('Sold ticket/package cannot be deleted.' ,'Alert!','ok');
+            }
+          break;
+            }
+           
+           }
+                
+                
+                        
+                });
+               
+                $('.add').live('click',function(){
+                 setTicketDirtyFlag();   
+                    var appendTxt = "<tr><td><img src='{!$Resource.DragButton}'  style='margin-left:-5px;margin-right:5px;'/><input type='text' id='one' class='tickfield' name='input_box_one[]' /></td> <td><SELECT class=' selectlist ' NAME=\"Animal\"><apex:repeat value="{!paymentSelectOptions}" var="paytype"><option value='{!paytype.value}'>{!paytype.label}</option></apex:repeat></SELECT></td><td><input type='text' name='input_box_two[]' class='tickfield'/></td><td><input type='text' id='three' name='input_box_three[]' class='tickfield'/></td><td ><a onClick='Alert3.render(this.parentNode.parentNode.rowIndex,this.parentNode.parentNode.children[0].children[1].value,this.parentNode.parentNode.children[1].children[0].value,this.parentNode.parentNode.children[2].children[0].value,this.parentNode.parentNode.children[3].children[0].value)' title='Add More Info'><div id='nwmoreinfodiv' style='margin-right:32%;'><img src='{!URLFOR($Resource.createevents,'createevents/images/addmore.png')}' width='25px' height='25px'/></div></a></td> <td><input type='button' class='del' value='' /></td></tr>";
+                    $(".dynamic tbody").append(appendTxt); 
+                     //drag and drop on click of add new row
+                    var tableappend=document.getElementById("tickettable");
+                    var tableDnD1 = new TableDnD();
+                    tableDnD1.init(tableappend);
+                    Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getbadgeinfo}',
+            $("#itemtype option:first").val(),
+            $('#tickettable tr:last').index(),
+           function(result, event){
+           ticketlist[result.arrindex].tbadgable=result.badgable;
+           
+           if(result.badgable!='B - Badge')
+                            {
+                                ticketlist[result.arrindex].tbdglabel="";
+                                
+                             }
+                           else{
+                           
+                             ticketlist[result.arrindex].tbdglabel=result.badgelabel;
+                             
+                         }
+             });         
+                });        
+            }
+            );
+        </script>
+        <!-- <td><img id='addtag-img' onclick='Alert.render()' src='images/tag.png'   title='Add Tag'/></td>-->
+<!-----------end of dynamic table js---------------------->
+
+<!-----------dynamic Add or delete rows for package----------------->
+
+<script type="text/javascript">
+var deladdonid='',addonrowindex='';
+var lineitemaddcount=0;
+            $(document).ready(function(){       
+                
+               $('.del1').live('click',function(){
+                
+                    try{
+                    if(ticketlist[parentrowindex-1].subpackagegroup[$(this).parent().parent().index()].addonid!=''){
+                    if(document.getElementById('packagetable').rows.length<=2)
+                     {
+                    AlertNew.render('Package should have at least one Line Item','Alert!','ok');
+                    return;
+                     }
+                     }
+                    if(ticketlist[parentrowindex-1].subpackagegroup[$(this).parent().parent().index()].addonid!='')
+                    deladdonid=deladdonid+ticketlist[parentrowindex-1].subpackagegroup[$(this).parent().parent().index()].addonid+',';
+                    addonrowindex=addonrowindex+$(this).parent().parent().index()+',';
+                    }catch(e){}
+                    
+                    
+                   
+                    $(this).parent().parent().remove();
+                    
+                        
+                });
+                
+                $('.add1').live('click',function(){
+                  lineitemaddcount=1;
+                  
+                    add1();
+                    var table = document.getElementById("packagetable");
+             var row = table.rows[$(".dynamic2 tr:last").index()+1];
+
+
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getbadgeinfo}',
+            row.cells[2].children[0].value,
+            1,
+           function(result, event){
+           
+           
+           if(result.badgable!='B - Badge')
+                            {
+                                row.cells[5].children[0].value="";
+                                row.cells[5].children[0].disabled="disabled";
+                             }
+                           else{
+                             row.cells[5].children[0].disabled=false;
+                             row.cells[5].children[0].value=result.badgelabel;
+                         }
+             });           
+                });        
+            });
+        </script>
+        <apex:outputpanel id="adddeletelineblock">
+<script type="text/javascript">
+        function add1(){
+                    
+                    var appendTxt = "<tr><td><input type='text' id='one' class='pkglineitmfield' name='input_box_one[]' /></td> <td><input type='text' class='pkglineitmfield' id='three' name='input_box_three[]' /></td><td><select class='selectlist'  style='outline:none;' onchange='checkbadgelabeledit(this);'><optgroup label='Tickets'><apex:repeat value="{!individualTicketsSelectOptions}" var="indittype"><option value='{!indittype.value}'>{!indittype.label}</option></apex:repeat></optgroup><optgroup label='Eventdex Products'><apex:repeat value="{!BLPRODTicketsSelectOptions}" var="indittype"><option value='{!indittype.value}'>{!indittype.label}</option></apex:repeat></optgroup><optgroup label='Add On Items'><apex:repeat value="{!itemtypesaddon}" var="indittype"><option value='{!indittype.value}'>{!indittype.label}</option></apex:repeat></optgroup></select></td><td><div id='pkgtagsdiv' onclick='Alert6.render(this.parentNode.parentNode.rowIndex)'><img src={!URLFOR($Resource.createevents,'createevents/images/addtags.png')} width='25px' height='25px'></div></td><td><input type='checkbox' checked=true  onchange='enablepkitembadgelabel(this);'   style='width: 85%;' /></td><td><input type='text' id='one'   name='input_box_one[]' style='width: 85%;' /></td><td><input type='button' class='del1' value='' /></td></tr>";
+                    $(".dynamic2 tbody").append(appendTxt);            
+                }
+        </script>
+        </apex:outputpanel>
+<!-----------end of dynamic table js---------------------->
+
+
+
+
+
+<!-----------dynamic Add or delete rows for package in moreinfo popup----------------->
+<script type="text/javascript">
+            $(document).ready(function(){       
+                
+                $('.del3').live('click',function(){
+                    $(this).parent().parent().remove();
+                        
+                });
+                
+               $('.add3').live('click',function(){
+                   
+                    var appendTxt = "<tr><td><input type='text' id='one' name='input_box_one[]' /></td> <td><input type='text' style='width:75%' class='datetimepickers' class='small'/></td><td><input type='text' style='width:75%' class='datetimepickers' class='small'/></td><td><input type='text' id='three' name='input_box_three[]' /></td><td> <input type='text' id='three' name='input_box_three[]'/></td> <td><input type='button' class='del3' value='' /></td></tr>";
+                    $(".dynamic4 tr:last").after(appendTxt);            
+                });       
+            });
+        </script>
+<!-----------end of dynamic table js---------------------->
+  <!-----------dynamic Add or delete rows for ticket in moreinfo popup----------------->
+<script type="text/javascript">
+            $(document).ready(function(){       
+                
+                $('.del2').live('click',function(){
+                    $(this).parent().parent().remove();
+                        
+                });
+                
+                $('.add2').live('click',function(){
+                    $(this).val('');
+                    $(this).attr('class','del2');
+                    var appendTxt = "<tr><td><input type='text' id='one' name='input_box_one[]' /></td> <td><input type='text' style='width:75%' class='datepicker' class='small'/></td><td><input type='text' style='width:75%' class='datepicker' class='small'/></td><td><input type='text' id='three' name='input_box_three[]' /><td><input type='text' id='three' name='input_box_three[]' /></td><td><input type='text' id='three' name='input_box_three[]' /></td></td><td><input type='text' id='three' name='input_box_three[]' /></td>  <td><input type='button' class='add2' value='' /></td></tr>";
+                    $(".dynamic3 tr:last").after(appendTxt);            
+                });        
+            });
+        </script>
+<!-----------end of dynamic table js---------------------->
+</apex:page>

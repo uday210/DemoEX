@@ -1,0 +1,625 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_SurveyByQuestionTabReportCon" action="{!hideEventsTab}" readOnly="true" id="page">
+      <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!---------------------------------------------->
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+    <!------------//common styles component---------->
+    <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />   
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-surveyquest-report.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" />
+    <!-----------//datatable stylescss------------->
+    <style>
+        button.ColVis_Button {margin-top:-32px !important;}
+        .subtable tbody tr  td:last-child { border-right:0px !important;}   
+        .subtable tbody tr:last-child  td{ border-bottom:0px !important; } 
+        .formelem_boxfull .form_quest input[type="text"]{ margin-left:7px;} 
+        .surveybyatt_tbl tbody tr td .grpheader {background-color:#D2E8FB !important;}
+    </style>
+    <script>
+    $(document).ready(function() {
+    try{
+    questionsGridLoad();
+    }catch(e){}
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+     
+    });
+
+</script>
+    <!-----------//datatable stylescss------------->
+    <apex:form id="myForm">
+     <apex:actionfunction action="{!questionsGrid}" name="questionsGridLoad" rerender="statrender" status="AjaxLoader" />
+    <!-------------------------tmplate print & Export Code Start--------------------------->
+         <div class="datatable-wrapper">
+            <!---start of tab1 topstats1--->
+            <div id="tab1topstats">
+               <!-------------------------print and export button-------------------------------------------->
+               <div class="print_export_cont" style=" text-align:right; margin-bottom:0px; margin-top:5px; margin-right:.4%;">
+                 
+                  <!----------response export button tab1------->
+                  <span id="response1" style="display:none;">
+                      <apex:outputText rendered="{!answerList.size<1000}">
+                          <input type="button" class="datatables_btn" onclick="exportSurveyByQuestionlist();return false;" value="Export Current View"/>
+                      </apex:outputText>
+                      
+                      <apex:outputText rendered="{!answerList.size>1000}">
+                          <input type="button" class="datatables_btn" onclick="continueToBatch('sendToMail')" value="Export Current View"/>
+                      </apex:outputText> 
+                  </span>
+                  <!----------------->
+                  <apex:outputText rendered="{!utotalListTemp<1000}">
+                      <input type="button" class="datatables_btn" onclick="surveyByQuestionTabExportTemp2();return false;" value="Export"/>
+                  </apex:outputText>
+                  <apex:outputText rendered="{!utotalListTemp>1000}">
+                      <input type="button" class="datatables_btn" onclick="continueQuestionToBatch('sendQuestionToMail');" value="Export"/>
+                  </apex:outputText>  
+                  </div>
+               </div>
+            
+            </div>
+               <!--------------------------//end of print and export button---------------------------------->
+            <!--close of tab1 topstats--->
+            
+         <!--close of datatable-wrapper-->
+         <!-------------------------end template print & Export Code Start--------------------------->
+         
+         
+    
+    
+    <!-------------------------tmplate Code Start--------------------------->
+    <!-----------startoftabs----------------------------> 
+        <div class="TabbedPanelsContentGroup" style="padding-top:5px;" > 
+            <!--------------------start of ist tab------------------>
+            <div class="TabbedPanelsContent" style="padding-top:0px;" id="ftabb">
+                <!------------------>
+                <div class="datatable-wrapper" style="margin-top:0px;">
+                    <!---start of parenttbl box----->      
+                    
+                    <!--------------> 
+                    <div id="tablemenubar" style="">                    
+                    </div>
+                    <apex:outputPanel id="fsttab"> <!-- first tab panel -->                        
+                        <apex:outputPanel rendered="{!NOT(showItemDetails)}" id="ItemListPanel" >                        
+                            <table id="example" class="display">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40%"> Questions</th>
+                                        <th>Answer Type</th>
+                                        <th style="">Question Level</th>
+                                        <!-- <th width="25%;">Ticket Name</th> -->
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                 <!-----Repeat tr (Render only if Event Level) ------>
+                                   <apex:repeat value="{!answedItemQuestionList}" var="que">
+                                    <tr>
+                                       <td >
+                                          <apex:commandLink value="{!que.question__r.Question_Text__c}" action="{!showSurveyInfoForQuestion}" onClick="sendingQuestionID('{!que.question__r.id}');document.getElementById('response1').style.display='' " styleClass="a_underline blue_anchor" status="AjaxLoader"  reRender="fsttab">
+                                             <apex:param value="{!que.question__r.id}" name="questionID"/> 
+                                          </apex:commandLink>
+                                       </td>
+                                         
+                                       <td>
+                                          {!que.question__r.Answer_Type__c}
+                                       </td>
+                                        
+                                       <apex:outputText rendered="{!que.Question_Level__c=='Event Level'}">
+                                          <td class="eventlvl_bg">Event Level </td>
+                                       </apex:outputText>
+                                       <apex:outputText rendered="{!que.Question_Level__c=='Ticket Level'}">
+                                          <td class="tktlvl_bg"> Ticket Level </td>
+                                       </apex:outputText>
+                                        
+                                      <!-- <apex:outputText rendered="{!que.Question_Level__c=='Event Level'}">
+                                          <td>&nbsp; </td>
+                                       </apex:outputText>
+                                       <apex:outputText rendered="{!que.Question_Level__c=='Ticket Level'}">
+                                          <td class="tktlvltd_grp">
+                                            
+                                             <table class="display tktlvltd_grptbl hideRow" width="100%">
+                                                <tbody>
+                                                      
+                                                   <apex:variable value="" var="ticName"/>
+                                                   <apex:variable value="" var="tickid"/>
+                                                   <apex:variable value="{!0}" var="number"/>
+                                                  <apex:repeat value="{!ticketlist}" var="tt">
+                                                      <apex:repeat value="{!tt.user_answers__r}" var="usrans" >
+                                                         
+                                                         <apex:outputText rendered="{!(usrans.item_question__r.question__r.id==que.question__r.id && usrans.item_question__r.Question_Level__c=='Ticket Level')}">
+                                                            <apex:outputText rendered="{!(!Contains(tickid,usrans.ticket__r.item_pool__r.Item_Pool_Name__c))}">
+                                                               <tr style="display:{!IF(usrans.item_question__r.Question_Level__c=='Ticket Level','','none')}">
+                                                                  <td>
+                                                                     <p>
+                                                                        <apex:variable value="{!(tickid+usrans.ticket__r.item_pool__r.Item_Pool_Name__c)}" var="tickid"/>
+                                                                        <apex:variable value="{!number+1}" var="number"/>
+                                                                         
+                                                                        <span class="labeltitles">{!number}. &nbsp;</span>
+                                                                        {!usrans.ticket__r.item_pool__r.Item_Pool_Name__c}
+                                                                        <apex:outputText rendered="{!usrans.ticket__r.item_Type__r.name=='Package'}">
+                                                                           <span class="labeltitles">({!usrans.ticket__r.item__r.item_pool__r.Item_Pool_Name__c})</span>
+                                                                        </apex:outputText>
+                                                                        <br/>
+                                                                     </p>
+                                                                  </td>
+                                                               </tr>
+                                                            </apex:outputText>
+                                                         </apex:outputText>
+                                                        
+                                                      </apex:repeat>
+                                                   </apex:repeat>
+                                                </tbody>
+                                             </table>
+                                          </td>
+                                       </apex:outputText>-->
+                                       
+                                    </tr>
+                                 </apex:repeat> 
+
+                                </tbody>
+                            </table>
+                            
+                        </apex:outputpanel> 
+                        <apex:outputPanel id="ItemPanel" style="top-stats;display:{!IF(showItemDetails=true,'','none')}">
+                        <div class="top-stats">
+                              <!------------------------->
+                              <div id="statsul_box" class="statsul_box left" style="width:60%;" >
+                                 <ul>
+                                    <!---->
+                                    <li class="labeltitles">Total Count :</li>
+                                    <li class="labeloutput">
+                                       {!totalQueWiseCountEvent}
+                                    </li>
+                                    <!----->
+                                    <!---->
+                                    <li class="labeltitles">Response Count :</li>
+                                    <li class="labeloutput">
+                                       <apex:variable value="{!0}" var="respCountQueWise"/> 
+                                       <apex:variable value="{!responseSurveyByQuestion}" var="respCountQueWise"/>
+                                       {!respCountQueWise}                  
+                                    </li>
+                                    <!----->
+                                    <li class="labeltitles">Response % :</li>
+                                    <li class="labeloutput">
+                                       <apex:outputText value="{0, Number, #0.00}">
+                                          <apex:param value="{!(respCountQueWise*100/totalQueWiseCountEvent)}"/>
+                                       </apex:outputText>
+                                    </li>
+                                    <!------>
+                                    <li class="labeltitles">Skips Count :</li>
+                                    <li class="labeloutput">
+                                       {!(totalQueWiseCountEvent-respCountQueWise)}
+                                    </li>
+                                    <!------>
+                                    <li class="labeltitles">Skips % :</li>
+                                    <li class="labeloutput">
+                                       <apex:outputText value="{0, Number, #0.00}">
+                                          <apex:param value="{!((totalQueWiseCountEvent-respCountQueWise)*100/totalQueWiseCountEvent)}" />
+                                       </apex:outputText>
+                                    </li>
+                                 </ul>
+                                 <!--close of right-->
+                              </div>
+                              <!---close of statsul_box---->    
+                              <!---->
+                              <div class="right">
+                                 <ul style="list-style:none; height:0px;">
+                                    <!---->
+                                    <li class="labeltitles" style="display:inline;">
+                                       <input id="summaryresponse" type="radio" name="response" checked="checked" onclick="showpackage('summaryresp_box' ,'detailresp_box');showdiv('statsul_box');hidediv('statsul_boxEmpty');" />
+                                       <label for="summaryresponse">View Summary Response</label>
+                                    </li>
+                                    <!----->
+                                    <li class="labeltitles" style="display:inline;">
+                                       <input id="detailresponse" type="radio" name="response" onclick="showpackage('detailresp_box' ,'summaryresp_box');hidediv('statsul_box');showdiv('statsul_boxEmpty');questionClick('{!questionID}');calldtone();" />
+                                       <label for="detailresponse">View Detail Response</label>
+                                    </li>
+                                    <!------>
+                                 </ul>
+                              </div>
+                              <!------------->        
+                              <div class="clear"></div>
+                              <!--close of clear-->  
+                              <!---------->
+                              <div>
+                                 <!---->
+                                 <p class="padding-5px">
+                                 <div id="statsul_boxEmpty" style="width:60%;display:none" >
+                                    <ul>
+                                       <li style="color:white;">
+                                          <apex:inputHidden value="{!queName}"/>
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 <!--<span class="labeltitles a_underline" onclick="document.getElementById('ftabb').style.display='' "> Survey By Question</span>-->
+                                 <span>
+                                    <apex:commandLink styleClass="labeltitles a_underline" style="color:#247DBA; cursor:pointer; margin-right:.5%; text-decoration:underline;" value="Survey By Question" onclick="backsurveybyquestion();" action="{!backtoSurveyByQue}" status="AjaxLoader" reRender="fsttab" />
+                                 </span>
+                                 <span class=" strong_700" style="font-size:14px;"> ›› {!queName}</span>
+                                 </p>
+                                 <!----> 
+                              </div>
+                              <!-----------> 
+                           </div>
+                           <!------//end of top stats----->  
+                           <div id="summaryresp_box" >
+                              <apex:outputText rendered="{!(answerOption== 'Text' || answerOption== 'Paragraph text')}">
+                                 <br/><br/>
+                                 <b>
+                                    <i>
+                                       <font size="4" color="#AAACAA">
+                                          <center>
+                                             No Summary Responses for Text and Paragraph Answer Type Questions !!
+                                          </center>
+                                       </font>
+                                    </i>
+                                 </b>
+                              </apex:outputText>
+                              <apex:outputText rendered="{!(answerOption!= 'Text' && answerOption!= 'Paragraph text')}" >
+                                 <table class="example2 display hideRow" width="100%" id="checkboxid">
+                                    <!-------> 
+                                    <thead>
+                                       <tr>
+                                          <th>Answer</th>
+                                          <th>Response Count</th>
+                                          <th style="">Response Percentage (%)</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                         <apex:repeat value="{!responsesInnerListForQuestions}" var="queSummry">
+                                          <tr>
+                                             <td style="width:60%;">{!queSummry.answerType}  </td>
+                                             
+                                             <td>  {!queSummry.answerCount}  </td>
+                                             <td>
+                                                 <apex:outputText value="{0, Number, #0.00}">
+                                                   <apex:param value="{!(queSummry.answerCount*100/respCountQueWise)}"/>
+                                                </apex:outputText> 
+                                             </td>
+                                          </tr>
+                                       </apex:repeat> 
+                                    </tbody>
+                                 </table>
+                                 <script>
+                                 callfunc();
+                                 </script>
+                              </apex:outputText>
+                              <!-------->
+                           </div>
+                           <!---close of viewsummary responsebox----->
+                           
+                            <!--------start of view detail response----->  
+                           <div id="detailresp_box" style="display:none;">
+                            <!-- ----------------search box for survey by Question resposnse tab start------------------ -->
+                            <!--<div id="example_filter" align="right"><label>Search:<input type="text" id="searchKeySBQ" class="" aria-controls="example9" onkeyup="table1.draw();" style="width:20%;margin-bottom:5px;"/></label></div>-->
+                            <!-- ---------------search box for survey by Question resposnse tab end---------------------- -->
+                              <table class="example2 display hideRow" width="100%" id="example9" >
+                                 <!-------> 
+                                <thead> 
+                                    <tr> 
+                                        <th style="width:20%;border-bottom:0px;">Name</th> 
+                                        <th style="width:30%;border-bottom:0px;">Email</th>
+                                        <th style="width:20%;border-bottom:0px;">Ticket Name</th>
+                                        <th style="width:20%;border-bottom:0px;">Order Id</th>
+                                        <th style="width:20%;border-bottom:0px;">Ticket Id</th>
+                                        <th style="width:40%;border-bottom:0px;border-right:0px;">Answer</th>                                      
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    <!--- first record (repeat start)--->
+                                 
+                                 </tbody>
+                              </table>
+                           </div>
+                           <!---close of view detail responsebox----->  
+                           
+                        </apex:outputpanel>
+                    </apex:outputpanel> 
+                </div>
+            </div>
+        </div><!--close of TabbedPanelsContentGroup-->
+
+     <apex:inputHidden value="{!questionID}" id="questionID"/> 
+     <apex:inputHidden value="{!searchByQueId}" id="searchByQueId"/>  
+    <!---------------------->
+ <!------------------------------------------------------------->        
+ <apex:actionFunction name="showSurveyInfoForQuestion" action="{!showSurveyInfoForQuestion}" rerender="hhhhhh">
+ </apex:actionFunction>
+ <apex:actionFunction action="{!backtoSurveyByQue}" name="backtoSurveyByQue1" reRender="fsttab" status="AjaxLoader"/>
+ <apex:actionFunction action="{!surveyByQuestionTabExport}" name="surveyByQuestionTabExportTemp" reRender="bbbb"/>
+ 
+ <apex:actionFunction action="{!exportResponses}"
+            name="surveyByQuestionExportAction" ReRender="cccc" status="ajaxLoader"> 
+            <apex:param value="" name="questionID" />
+            <apex:param value="" name="search" />
+         </apex:actionFunction>
+<apex:inputHidden value="{!myQuestionId}" id="myQuestionId"/>
+ 
+</apex:form>
+ <c:ed_popupbox ></c:ed_popupbox>  
+     
+         <script>
+         
+         function continueToBatch(clkbtn)
+         {
+             Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+         }
+         
+         function callback(clkbtn , okbtnn){
+             if(clkbtn =='sendToMail')
+             {
+                 exportSurveyByQuestionlist();
+             }
+             
+        }
+        function callbackcancel(clkbtn,cnclbtnn)
+        {
+            if(clkbtn =='sendToMail')
+             {
+                 //alert('cancel');
+             }
+             
+        }
+        
+         function continueQuestionToBatch(clkbtn)
+         {
+             Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+         }
+         
+         function callback(clkbtn , okbtnn){
+             if(clkbtn =='sendQuestionToMail')
+             {
+                 surveyByQuestionTabExportTemp2();
+             }
+             
+        }
+        function callbackcancel(clkbtn,cnclbtnn)
+        {
+            if(clkbtn =='sendQuestionToMail')
+             {
+                 //alert('cancel');
+             }
+             
+        }
+          </script>
+          
+          <script>
+          function surveyByQuestionTabExportTemp2(){
+             surveyByQuestionTabExportTemp1();
+         }
+         function surveyByQuestionTabExportTemp1(){
+             surveyByQuestionTabExportTemp();
+         }
+          </script>
+
+   
+<script>
+var qsid='';
+function sendingQuestionID(iqId){
+       
+         qsid=iqId;
+         
+          $("[id$='myQuestionId']").val(iqId);  
+         
+         
+         }
+function questionClick(qid){
+           
+    $("[id$='questionID']").val(qid);
+    showSurveyInfoForQuestion();
+}
+
+function exportSurveyByQuestionlist(){
+          constructstrByQue();
+          } 
+      
+      function constructstrByQue(){
+      var search= $("[id$='example9_filter']").find('input').val(); 
+          surveyByQuestionExportAction(qsid,search);                         
+      }
+      
+          
+</script> 
+ 
+<!-------------//end of basic template component------------------------>
+  <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+
+    <script type="text/javascript" class="init">
+  
+   
+    var rowindex=0;
+    var table;
+    var table1;
+    
+var j = jQuery.noConflict();
+j(document).ready(function() {
+var tname='';
+} );
+ j(document).ready(function() {
+    j('#example').DataTable( {
+         "paging": true,
+          "pagingType": "full_numbers",
+         
+        "order": [[ 0, "asc" ]],
+        "bSort": false,
+       
+         
+    } );
+} );
+ j(document).ready(function() {
+  
+    j('#checkboxid').DataTable( {
+         "paging": true,
+          "pagingType": "full_numbers",
+         
+        "order": [[ 0, "asc" ]],
+        "bSort": false,
+       
+         
+    } );
+} );
+function callfunc(){
+j(document).ready(function() {
+ 
+    j('#checkboxid').DataTable( {
+         "paging": true,
+          "pagingType": "full_numbers",
+         
+        "order": [[ 0, "asc" ]],
+        "bSort": false,
+       
+         
+    } );
+} );
+
+}
+
+var table1='';
+function calldtone(){
+
+                    
+                    j(document).ready(function() {                                    
+                    table1=j('#example9').dataTable( { 
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": "/apex/BLN_SurveyByQuestionTab_Helper_Page",
+        
+    "fnServerData" : function ( sSource, aoData, fnCallback ) {
+    
+    console.log(aoData[2].value[0].dir);
+    console.log(aoData[2].value[0].column);
+    console.log(aoData[5].value.value);
+    console.log(aoData);
+                        
+    aoData.push({ "name": "searchKeySBQ", "value":aoData[5].value.value});/*  $("[id$='searchKeySBQ']").val() */
+    aoData.push({"name": "questionID", "value": $("[id$='questionID']").val()}); 
+    aoData.push({"name": "myQuestionId", "value": $("[id$='myQuestionId']").val()});
+    //if(true){
+    aoData.push({"name": "roworder", "value":aoData[2].value[0].dir});
+    aoData.push({"name": "rownumber", "value":aoData[2].value[0].column}); 
+    //}
+    $.ajax( {
+    "dataType": 'json',
+    "type": "GET",
+    "url": '{!$Page.BLN_SurveyByQuestionTab_Helper_Page}',
+    "data": aoData,
+    "success": fnCallback,
+    "error": function (e) {
+    console.log(e);
+    }
+    } );
+    
+    },
+                        "columns": [
+                            {
+                               data:   "usrans",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.tkt_profile__r.First_Name__c+' '+data.Ticket__r.tkt_profile__r.Last_Name__c;
+                                    }
+                                     
+                                },
+                                
+                        
+                            {
+                               data:   "usrans",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.tkt_profile__r.Email__c;
+                                    }
+                                     
+                                },  
+                                
+                           {
+                               data:   "usrans",
+                                    render: function ( data, type, row ) {  
+                                        if(data.Item_Question__r.Event__c!=undefined){
+                                            return 'Event Level';
+                                        }else if(data.Item_Question__r.Item__c!=undefined){
+                                            return data.Item_Question__r.Item__r.item_name__c;
+                                        }else if(data.Item_Question__r.Item_Pool__c!=undefined){
+                                            return data.Item_Question__r.Item_Pool__r.Item_Pool_Name__c;    
+                                        }                    
+                                    }
+                                },
+                                
+                       
+                            {
+                               data:   "usrans",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.Order__r.Name;
+                                    }
+                                     
+                                },
+                                
+                          
+                            {
+                               data:   "usrans",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.Name;
+                                    }
+                                     
+                                }, 
+                              
+                              
+                                
+                                {
+                               data:   "usrans",                                   
+                                    render: function ( data, type, row ) {                                                                     
+                                        //if(data.Item_Question__r.Question__r.Answer_Type__c!='Checkboxes'){
+                                            //return data.UAnswer_Text_Update__c;
+                                        //}else{ 
+                                            return data.UAnswer_Text_Update__c; 
+                                        //}              
+                                    }
+                                }      
+                        ]
+                    } );
+                } );
+                    
+            }
+            
+
+ function backsurveybyquestion(){
+    var backque=document.getElementById('response1').style.display='none';
+    var detailque='{!showItemDetails}';
+    if(detailque==true){
+        backtoSurveyByQue1();
+    }
+}
+
+
+</script>
+ 
+
+ <!------------common js libraries component----------->
+   <c:ed_commonjs ></c:ed_commonjs>
+   <!------------//common js libraries component------------>   
+ <script type="text/javascript">
+      var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+      /*************function calling for tab toggle showhide**************/   
+       $("#tab1clk").click(function(){
+          
+           showpackage("tab1topstats","tab2topstats");
+           hidediv("tab3topstats");
+       })
+       $("#tab2clk").click(function(){
+           
+       
+       showpackage("tab2topstats","tab1topstats");
+       hidediv("tab3topstats");
+       })
+       
+        $("#tab3clk").click(function(){
+         
+       
+       showpackage("tab3topstats","tab1topstats");
+       hidediv("tab2topstats");
+       
+       })
+      /***************************/   
+   </script>
+   
+      </c:ed_basictemplate>
+</apex:page>

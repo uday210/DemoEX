@@ -1,0 +1,429 @@
+<apex:page controller="BLN_SignUpCon" cache="false" showHeader="false" standardStylesheets="false" id="thepage" >
+
+<!---<apex:includeScript value="{!URLFOR($Resource.edsr_master,"edsr_root/js/jquery-1.9.1.js")}"/>--->
+ <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.min.js')}"> </script>
+<apex:stylesheet value="{!URLFOR($Resource.newsignup, 'newsignup/css/bootstrap.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.newsignup, 'newsignup/css/custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.newsignup, 'newsignup/css/font-awesome.css')}"/>
+
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}" />
+<apex:stylesheet value="{!URLFOR($Resource.customAlertForRegPage_resourse, 'customAlertForRegPage.css')}"/> 
+ <c:ed_popupbox ></c:ed_popupbox>    
+<!------------------------------------------------------ Validations Start ----------------------------------------------------------->
+    <script>
+    function validate(){
+
+    
+        // first name validation
+        var fn = document.getElementById('thepage:AS_SignUpForm1:FirstName').value;
+        if(fn!=""){
+        }
+        else{
+           //alert('Please Enter First Name');
+            Alert.render('Please Enter First Name' ,'Alert','ok');
+            return false;
+        }
+        
+         
+        
+        // lastName valiation 
+        var ln = document.getElementById('thepage:AS_SignUpForm1:LastName').value;
+        if(ln!=""){
+        }else{
+        //alert('Please Enter Last Name');
+        Alert.render('Please Enter Last Name' ,'Alert!','ok');
+        return false;
+        }
+        
+       
+        
+        var em=  document.getElementById('thepage:AS_SignUpForm1:ASUserEmail').value;  
+        if(em== ""){
+        //alert('Please Enter EmailId');
+        Alert.render('Please Enter EmailId' ,'Alert!','ok'); 
+        return false;
+        }else{
+           if(em != "" ){
+          var boo = validateEmail(em);
+            if(boo ==false){
+           // alert('1');
+               return false
+            } 
+         }
+        
+        }
+        
+        //var cname= document.getElementById('thepage:AS_SignUpForm1:CompanyName').value;  
+         var pass=  document.getElementById('thepage:AS_SignUpForm1:password').value;  
+        if(pass==""){
+            //alert('Please Enter Password');
+            Alert.render('Please Enter Password' ,'Alert!','ok');
+            return false;
+        }
+    
+        var remember = document.getElementById('remember');
+  if (remember.checked){
+    
+  }else{
+    //alert("Please accept Terms and Conditions and Privacy Policy and then click Signup");
+    Alert.render('Please accept Terms and Conditions and Privacy Policy and then click Signup' ,'Alert!','ok');
+    return false;
+  }
+  sessionStorage["loginhit"]="true";
+       //return true; 
+    }   
+    
+   
+    function validateEmail(var1){
+        var x= var1;
+        var atpos=x.indexOf("@");
+        var dotpos=x.lastIndexOf(".");
+        if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length){
+            //alert("Please enter a valid Email ID");
+            Alert.render('Please enter a valid Email ID' ,'Alert!','ok');
+            return false;
+        }
+    }
+    
+    function validatelogin(){
+        var em1=  $("[id$='usermail']").val();   
+        if(em1== ""){
+           // alert('Please Enter EmailId');
+           Alert.render('Please Enter EmailId' ,'Alert!','ok'); 
+            return false;
+        }
+        
+        if(x != "" ){
+            var boo = validateEmail(em1);
+            if(boo ==false){
+                return false;
+            } 
+        }
+        sessionStorage["loginhit"]="true";
+      return true;
+        
+    }
+   </script>  
+<!------------------------------------------------------ Validations End ----------------------------------------------------------->
+    
+<!-- for place holder start --->   
+<script>
+    $(function(){
+        $('.placeholder').each(function(index, elem){
+            $(elem).prop('placeholder',$(elem).prop('title'));
+        });
+    });
+</script>
+<!-- for place holder end --->  
+
+<!------------------------------------------------------------- Pop Up Form End ------------------------------------------------------------------>
+<apex:form id="AS_SignUpForm1" forceSSL="true">
+
+
+<!-- header start -->
+<header id="header"> 
+  <!--<span id="logo"></span>-->
+  
+  <div id="logo-group"> <span id="logo"> 
+  <a href="http://www.eventdex.com/" target="blank" > 
+  <img src="{!URLFOR($Resource.newsignup, 'newsignup/images/eventdex-logo.png')}" alt="SmartAdmin" />
+  </a>
+  </span> 
+   
+    <!-- END AJAX-DROPDOWN --> 
+  </div>  
+  <span id="extr-page-header-space" style="margin-top: 25px;">
+  
+   <table class="form-inline"><tr>
+    <td>
+    <div class="form-group">
+      <!--<input type="email" class="form-control" id="exampleInputEmail2" placeholder="Enter email"/>-->
+      <apex:inputText id="usermail" html-placeholder="Enter email" value="{!loginName}" styleclass="form-control"/>
+    </div>&nbsp;
+    </td>
+    <td>
+    <div class="form-group">
+      <!--<input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password"/>-->
+      <apex:inputSecret title="password*" id="lpass" value="{!loginPassword}" styleclass="form-control" html-placeholder="Password"/>
+    </div>
+    
+    </td>
+    <td>
+    
+     <apex:commandButton value="Login" styleclass="btn btn-danger" action="{!login}" onclick="return validatelogin();" style="margin-left:3px;height:30px;" />
+    </td>
+    </tr></table>
+    <div style=" margin-right:158px;">
+        <font style="text-align:left;">
+            <a href="{!$Label.SiteURL}/BLN_ForgotPassword" style="color:#67a8c8; font-size:12px; text-decoration:underline;">Forgot Password?</a>
+        </font>
+    </div>
+    
+  
+  </span> 
+
+  </header>
+
+<!-- header end -->
+
+<div class="clearfix"></div>
+<!-- page intro start -->
+<div class="page-intro" style="margin-top: 0px;">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-12">
+        <h2> Welcome to Eventdex<font style="font-size:18px; color:#FFF;"> - Mobile First Platform for your Events</font> </h2>
+        </div>
+    </div>
+  </div>
+</div>
+<!-- page intro end -->
+<div class="clearfix"></div>
+<!--<div style="margin-top:50px;"></div>--> 
+<!-- body container start -->
+<div class="container" id="main">
+  <div class="row">
+    <div class="col-lg-12"> 
+      
+      <!-- left pannel start -->
+      <div class="col-lg-4 col-xs-offset-1 text-center" > 
+          <img src="{!URLFOR($Resource.newsignup, 'newsignup/images/login-image-for-portal.jpg')}" /><br/>
+       <!--- <p style="color:848688;">Eventdex is a Mobile, Social, <br />
+          and Analytical Platform for Event Management</p> --->
+      </div>
+      <!-- left panner end --> 
+      
+      <!-- right pannel start -->
+      <div class="col-lg-5 col-xs-offset-1 " >
+        <div class="col-lg-11 form-box wow fadeInUp animated" style="visibility: visible; animation-name: fadeInUp; background-color:#f1f1f2;">
+          <div class="form-top">
+            <div class="form-top-left text-center">
+              <h3 style="margin-top:10px; margin-bottom:0px; padding:0px;">Sign Up for <span style="color:#67a8c8;">FREE</span></h3>
+            </div>
+           
+          </div>
+          
+
+<div class="row">
+    <div class="col-xs-12 col-sm-8 col-md-12">
+        
+             <apex:actionRegion >
+            <hr class="colorgraph"/>
+           
+          
+            <div class="row">
+             
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                
+                    <div class="form-group">
+                        <apex:inputText title="First Name*" html-placeholder="First Name*" value="{!ASFirstName}"  styleclass="form-control input-lg" id="FirstName"/>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="form-group">
+                        <apex:inputText title="Last Name*" value="{!ASLastName}" styleclass="form-control input-lg" id="LastName"  html-placeholder="Last Name*"/>
+                    </div>
+                </div>
+            </div>
+             
+            <div class="form-group">
+                <apex:inputText title="Company" value="{!ASCompanyName}" styleclass="form-control input-lg" id="CompanyName" html-placeholder="Company"/>
+            </div>
+            <div class="form-group">
+                <apex:inputText value="{!ASUserEmail}" styleclass="form-control input-lg" id="ASUserEmail" html-placeholder="Email Address*"/>
+                
+            </div>
+            
+            <div class="form-group">
+                <apex:inputSecret title="Password*" value="{!password}" id="password"  styleclass="form-control input-lg" html-placeholder="Password*"/>
+            </div>
+               
+            <div class="row" style="background-color:#966; color:#FFF;">
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-12">
+                    
+                        
+                     <input type="checkbox" name="t_and_c" id="t_and_c" class="hidden" value="1"/> 
+                    
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 text-center signupbox" style="font-size:11px;padding:15px;" >
+<input id="remember" type="checkbox" /> I have read and agree to the <a href="https://www.eventdex.com/terms-and-conditions" target="_blank" 
+style="color:#FFF; text-decoration:underline;">Terms and Conditions</a> and 
+<a href="https://www.eventdex.com/privacy-policy" target="_blank"  style="color:#FFF; text-decoration:underline;">Privacy Policy</a><br />
+                 
+               <!---   <apex:commandLink value="Signup" id="SaveAccount" action="{!BLS_SignUpUser}"  styleclass="btn btn-w-m btn-info newbtn btn btn-default"  /> --->
+      <apex:commandLink value="Signup" id="SaveAccount" action="{!BLS_SignUpUser}" onclick="return validate();" styleclass="btn btn-w-m btn-info newbtn btn btn-default"  /> 
+
+
+                </div>
+                
+            </div>
+            
+           
+           </apex:actionRegion>
+    
+    </div>
+    
+</div>
+
+<!-- Modal -->
+ <!-- /.modal -->
+</div>
+          
+          
+          
+            
+          </div>
+        </div>
+      </div>
+      <!-- right pannel end --> 
+      
+    
+</div>
+
+<br/>
+<div class="container">
+    <div class="row" style="border-top:1px solid #eaeaea;">
+   
+   
+        <div class="col-lg-12">
+        <hr />
+            <div class="col-lg-6 col-sm-12 col-xs-12 text-center" >
+            <div class="col-lg-12">
+
+
+                   <div class="col-lg-4 col-sm-12 text-right margintop25">
+                            <p class="margintop25"><strong></strong></p>
+                    </div>
+
+                
+                
+                
+                <div class="col-lg-3 col-sm-12 text-center">
+                <div>
+                <img src="{!URLFOR($Resource.newsignup, 'newsignup/images/iosqr-code.jpg')}" /></div>
+               </div>
+               
+                
+                <div class="col-lg-4 col-sm-12 text-center margintop25">
+                
+                <div><a href="https://itunes.apple.com/us/app/eventdex/id972608729?mt=8" target="_blank">
+                <img src="{!URLFOR($Resource.newsignup, 'newsignup/images/appstore.jpg')}" /></a>
+            </div>
+            </div>
+            </div>
+            
+            
+            </div>
+            
+            
+            <div class="col-lg-6 col-sm-12 col-xs-12 text-center" style="border-left:1px solid #eaeaea;">
+                <div class="col-lg-12">
+
+
+                    <div class="col-lg-4 col-sm-12 text-right margintop25">
+                            <p class="margintop25"><strong></strong></p>
+                    </div>
+
+
+                
+                
+                
+                <div class="col-lg-3 col-sm-12 text-center">
+                <div><img src="{!URLFOR($Resource.newsignup, 'newsignup/images/android-qr-code.jpg')}" /></div>  
+                </div>
+                
+                <div class="col-lg-4 col-sm-12 text-center margintop25">  
+                <div><a href="https://play.google.com/store/apps/details?id=com.eventdex" target="_blank"><img src="{!URLFOR($Resource.newsignup, 'newsignup/images/googleplay.jpg')}" /></a></div>
+                </div>
+                
+                
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<apex:outputPanel rendered="{!forDisplayError}">
+             <script>
+               //alert('{!error}');
+               Alert.render('{!error}','Alert','ok');
+             </script>
+           </apex:outputPanel>
+</apex:form>
+  
+<!------------------------------------------------------------ Apex Form End -------------------------------------------------------->
+<!-- body container end --> 
+
+
+
+<apex:form >
+<apex:outputPanel rendered="{!Successbool}">
+             <script>
+             $( document ).ready( function() {
+      // Draw all slots
+      $("#myModal").modal("show");
+      return false;
+    });
+           
+             </script>
+ </apex:outputPanel>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                       <div class="modal-header">
+                                           <!--- <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>---->
+                                        <p class="modal-title" id="myModalLabel">Sign Up Successful</p> 
+                                        </div> 
+                                        <div class="modal-body">
+                                            <p>Your signup for Eventdex application is successful.</p>
+                                             
+                                        </div>
+                                        <div class="modal-footer">
+                                            <!---<button type="button" class="btn btn-sm btn-dark" data-dismiss="modal">CANCEL</button>--->
+                                           
+                                    <apex:commandLink value="OK"  action="{!signUpLogin}"  styleclass="btn btn-sm btn-default"/>
+                                  
+                                    
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+<!-- modal box end -->
+
+<!------------------------------------------------------------- Pop Up Form End ------------------------------------------------------------------>
+
+</apex:form>
+
+<!------------------------------------------------------------- Pop Up Form Start ------------------------------------------------------------------>
+
+<!---<apex:includeScript value="{!URLFOR($Resource.newsignup,"newsignup/js/bootstrap.js")}"/> --->
+<script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery-1.9.1.js')}"> </script>
+  <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/bootstrap.min.js')}"> </script>
+<!---<apex:includeScript value="{!URLFOR($Resource.newsignup,"newsignup/js/npm.js")}"/>---->
+
+<script>
+
+//for redirecting to userevent if session is active
+var logoutinternally= sessionStorage.getItem('logoutinternally');
+var loginhit= sessionStorage.getItem('loginhit');
+
+if(logoutinternally!='true'&&loginhit!='true'){
+ sessionStorage.setItem("logoutinternally","true");
+ window.location.href='{!$Label.siteurl}/apex/BLN_UserEvents';
+ 
+ }
+ else
+ {
+  sessionStorage['logoutinternally']='false'; 
+ }
+ 
+  
+ 
+</script>
+
+
+
+</apex:page>

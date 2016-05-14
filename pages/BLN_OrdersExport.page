@@ -1,0 +1,109 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_ReportsCon"   action="{!exportselected}" contentType="application/vnd.ms-excel#ExportOrder.xls"><apex:pageBlock > 
+
+    <apex:variable var="OrderNumber" value="{!0}"/> 
+             
+            
+            <table border="1" cellpadding="0" cellspacing="0">
+            
+                <tr>
+                    <th>S.No </th> 
+                    <th>Order Id</th>
+                    <th>Amount Paid</th>
+                    <th>Ordered By</th>
+                    <th>Email</th>
+                    <th>Ordered Date</th>
+                    <th>Promo Code</th>
+                    <th>Payment Type</th>
+                    <th>Payment Status</th>                     
+                     <th>Transaction Key</th> 
+                     <th>Attendee Name</th> 
+                     <th>Email Id</th>
+                     <th>Company</th> 
+                     <th>Ticket</th> 
+                     <th>Status</th>  
+                     <th>Price({!currencySymbol})</th> 
+
+                </tr>
+                
+              
+                <apex:repeat value="{!exportOrders1}" var="order">
+                <apex:variable var="AttendeeNumber" value="{!0}"/>
+                <apex:variable var="shwpackg" value=""/>
+                <apex:variable var="shwpackgord" value=""/>
+                                <apex:repeat value="{!order.Tickets__r}" var="attendee">
+                    <tr style="display:{!if(attendee.item_type__r.name=='Package'&&attendee.Parent_ID__c=='','none','')}">
+                        <td>
+                            <apex:variable var="OrderNumber" value="{!OrderNumber+1}"/>  
+                            {!OrderNumber}.
+                        </td>
+                        
+                        <td> {!order.Name}</td>
+                        <td ><apex:outputText value="{!order.Amount_Paid__c}" rendered="{!!Contains(shwpackgord,order.Name)}"/></td>
+                        <td>{!order.BLN_TKT_profile__r.First_Name__c} {!order.BLN_TKT_profile__r.Last_Name__c}</td> 
+                        <td>{!order.BLN_TKT_profile__r.Email__c}</td> 
+                        <td> 
+                         <apex:outputText value="{0,date,M/d/yyyy hh:mm a}">
+                                <apex:param value="{!order.CreatedDate}"/>
+                            </apex:outputText>
+                       <!--<c:MFSI_FormatDateTime date_Timevalue="{!order.createdDate}"/>-->  
+                        <!--<apex:outputText value="{0,date,M/d/yyyy hh:mm a}">
+                                <apex:param value="{!order.CreatedDate}"/>
+                            </apex:outputText> -->
+                        </td>
+                        <td> 
+                        <apex:variable value="{!0}" var="promoCount"/>
+                        <apex:repeat value="{!order.Order_Items__r}" var="OrderTic">
+                        <apex:variable value="{!promoCount+1}" var="promoCount" rendered="{!OrderTic.Promotion__r.Promo_Code__c!=Null}"/>
+                        <apex:outputText value="{!OrderTic.Promotion__r.Promo_Code__c}" rendered="{!(OrderTic.Promotion__r.Promo_Code__c!=Null && promoCount==1)}"/>
+                        
+                        </apex:repeat>
+                        </td>
+                        <td> 
+                        <apex:repeat value="{!order.Payments__r}" var="payment">
+                                {!payment.Payment_Mode__c}
+                            </apex:repeat> 
+                        </td>
+                        <td> {!order.Order_Status__c}  </td> 
+                                    <td>
+                        <apex:repeat value="{!order.Payments__r}" var="payment">
+                        <apex:outputText rendered="{!payment.Payment_Mode__c == 'Credit Card'}">
+                            {!payment.Payment_Ref_Number__c}
+                        </apex:outputText>
+                            </apex:repeat> 
+                                    </td>
+                                    <td >{!attendee.Tkt_profile__r.First_Name__c} {!attendee.Tkt_profile__r.Last_Name__c}</td>
+                                    <td>{!attendee.Tkt_profile__r.Email__c}</td> 
+                                    <td>{!attendee.tkt_profile__r.TKT_Company__c}</td>
+                                    <td>
+                                        <apex:outputText value="{!attendee.Item_Pool__r.Item_Pool_Name__c}"/><br/>
+                                         <font size="1"><apex:outputText rendered="{!(attendee.Item_Pool__r.Item_Pool_Name__c!=attendee.Item__r.item_name__c)}">({!attendee.Item__r.item_name__c})</apex:outputText></font>
+                                    </td>
+                        <td>{!attendee.Ticket_Status__c}</td>
+                        <!--<td>
+                                       <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c == NULL), TRUE, FALSE)}" value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Item_Fee__c/ attendee.Order_Item__r.Item_Quantity__c)}"/>
+                                        <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c == NULL, attendee.Order_Item__r.Item_Discount__c != NULL), TRUE, FALSE)}" value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Item_Discount__c/ attendee.Order_Item__r.Item_Quantity__c)}"/>                                    
+                                        <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c != NULL), TRUE, FALSE)}" value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Item_Fee__c/ attendee.Order_Item__r.Item_Quantity__c)+(attendee.Order_Item__r.Item_Discount__c/ attendee.Order_Item__r.Item_Quantity__c)}"/> 
+                         </td>-->
+ <!-- In Ticket Case -->                                                    
+            
+
+    <!-- In Package Case -->  
+                                              <td> <apex:outputText value="{!order.Amount_Paid__c+order.Order_Discount__c}" rendered="{!!Contains(shwpackgord,order.Name)}"/>   </td>       
+                                                     <!--   <td width="9.6%" style="border: 0px;">    -->
+                                                              
+            
+            
+        
+                      <apex:variable var="shwpackgord" value="{!order.Name}"/>
+                    </tr>
+                      
+                   </apex:repeat> 
+                </apex:repeat> 
+            
+            
+            </table> 
+            
+                   
+  </apex:pageblock>
+  
+</apex:page>

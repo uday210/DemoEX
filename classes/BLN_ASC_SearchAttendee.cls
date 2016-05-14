@@ -1,0 +1,57 @@
+@RestResource(urlMapping='/BLN_ASC_SearchAttendee/*')
+/***********************************************************************************************
+*   Service Name : BLN_ASC_ScannedTickets
+*   Date            : 26/12/2014
+*   Author          : Arindam Sarkar
+*   Purpose         : This class is for getting all tickets,payment,order items based on order id
+*   Reused class    : BLN_ASC_Checkin,BLN_Mytickets_BAL
+************************************************************************************************/
+  
+
+    global with sharing class BLN_ASC_SearchAttendee{
+    global static BLN_Mytickets_BAL ordersList {get ; set ;}
+    global static BLN_ASC_Checkin.TotalList  TL {get ; set ;}
+    
+    
+    @HttpPost  
+    global static BLN_ASC_Checkin.TotalList doPost(){
+        RestRequest req = RestContext.request;  
+        String search_string = req.params.get('search_string');
+        String userId = req.params.get('User_id');
+
+        RestResponse response = RestContext.response; 
+        List<BLN_ASC_Checkin.maincontainer> Mc = new List<BLN_ASC_Checkin.maincontainer> ();
+   TL = new BLN_ASC_Checkin.TotalList ();
+   //ord = new Ordersonly ();
+    string eventid = req.params.get('Event_id');
+   
+    String tics = '';
+    ordersList = new BLN_Mytickets_BAL();
+    Map<id,string> mapdemo  = new Map<id,string>();
+    ordersList.searchstring=search_string;
+    
+   LIST<BLN_Mytickets_BAL.inncls>  inlists = ordersList.userTickets(userId,eventid,'BLN_ASC_SearchAttendee','');
+   
+    for(BLN_Mytickets_BAL.inncls cls : inlists){
+         BLN_ASC_Checkin.maincontainer nemain= new BLN_ASC_Checkin.maincontainer();
+         nemain.orderInn =cls.orderInn;
+         nemain.dt=cls.dt;
+         nemain.ticketsInn =cls.ticketsInn ;
+         nemain.cancelledTickets=cls.cancelledTickets;
+          nemain.paymentInn=cls.paymentInn;
+         nemain.orderItemInn =cls.orderItemInn ;
+         nemain.orderPrice= cls.orderPrice;
+         Mc.add(nemain);
+    }
+    
+    
+     
+     
+     TL.TotalLists= Mc;
+     TL.isorder=ordersList.isorder;//to check from mobile wheteher it is a orderqrcode or badgeqrcode
+      return TL;
+      }
+    
+      
+      
+      }

@@ -1,0 +1,928 @@
+<apex:component controller="BLN_RegComponentController">
+<apex:attribute name="ThePageControler" type="BLN_RegistrationnewCon3" description="The main page controller" assignTo="{!ThePageController}"/>  
+
+
+  <script type="text/javascript" src="{!URLFOR($Resource.createevents, 'createevents/js/jquery-1.9.1.js')}"></script> 
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+  <apex:stylesheet value="{!URLFOR($Resource.MyTickets, 'css/chosen.css')}"/> 
+<script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/chosen.jquery.min.js')}"></script>
+<style>
+.chzn-container-multi .chzn-choices {
+  background-color: #fff;
+  -webkit-border-radius: 3px;
+  -moz-border-radius   : 3px;
+  border-radius        : 3px;
+ background:none;
+  border:1px solid #e3e3e3;
+  display: block;
+  overflow: hidden;
+  position: relative;
+  height:auto;
+  line-height: 26px;
+  color:#575757;
+  text-decoration: none;
+  z-index:9;
+}
+</style>
+
+ 
+  
+  <apex:outputtext escape="false" id="hiddendivbuyer" />
+  <script>
+ var s="{!JSENCODE(ThePageControler.bt.HTML__c)}";
+var htmlallfieldnamesbuyer=[];
+   
+document.getElementById('{!$Component.hiddendivbuyer}').innerHTML = s;
+  
+
+
+$("[id$='hiddendivbuyer']").find('input, textarea, select').each(function(i, field) {
+
+if(field.name!=''&&field.name!=undefined&&field.type!='button')
+    htmlallfieldnamesbuyer.push(field.name);
+    
+});
+$("[id$='hiddendivbuyer']").remove();
+</script>
+
+
+<script>
+//buyer array
+var buyerinfo=[];
+
+for(i=0;i<1;i++)
+{
+ buyerinfo.push({});
+}
+//attendee array
+var attendeeinfo=[];
+var tsize='{!ThePageControler.TicketList.size}';
+for(i=0;i<tsize;i++)
+{
+ attendeeinfo.push({});
+}
+
+//populating picklist values from DB
+ var prefixlist='';
+ function getPrefixes(name,i)
+         {
+            if(prefixlist==''){
+             Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_RegComponentController.getPrefixes}',
+            function(result, event){
+            var opt;
+            console.log(result);
+            var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            for (j = 0; j < x.length; j++) {
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+           $.each(result, function (i, vals) {
+           
+             opt = document.createElement('option');
+             opt.value = vals;
+             opt.innerHTML = vals;
+             prefixlist+=vals+'^^';
+             x[j].add(opt);
+             });
+             }
+                   
+            }, 
+            {escape: true}
+        );
+        }
+        else
+        {
+          var templist=prefixlist.splice('^^');
+          var opt;
+          var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            for (j = 0; j < x.length; j++) {
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+          for(i=0;i<templist.length-1;i++)
+          {
+            opt = document.createElement('option');
+             opt.value = vals;
+             opt.innerHTML = vals;
+              x[j].add(opt);
+          }
+          }
+        }
+        }
+        
+        var suffixlist='';
+   function getSuffixes(name,i)
+         {
+             if(suffixlist==''){
+             Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_RegComponentController.getSuffixes}',
+            function(result, event){
+            var opt;
+            console.log(result);
+             var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            
+            for (j = 0; j < x.length; j++) {
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+           $.each(result, function (i, vals) {
+          
+           
+             opt = document.createElement('option');
+             opt.value = vals;
+             opt.innerHTML = vals;
+             suffixlist+=vals+'^^';
+             x[j].add(opt);
+             });
+              }     
+            }, 
+            {escape: true}
+        );
+        }
+        else
+        {
+          var templist=suffixlist.splice('^^');
+          var opt;
+          var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            for (j = 0; j < x.length; j++) {
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+          for(i=0;i<templist.length-1;i++)
+          {
+            opt = document.createElement('option');
+             opt.value = vals;
+             opt.innerHTML = vals;
+              x[j].add(opt);
+          }
+          }
+        }
+        }    
+        
+     var primarycatlist='';
+ function getPrimaryBusinessCategory(name,i)
+         {
+            if(prefixlist==''){
+             Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_RegComponentController.getPrimaryBusinessCategory}',
+            function(result, event){
+            var opt;
+            console.log(result);
+            var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            for (j = 0; j < x.length; j++) {
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+           $.each(result, function (i, vals) {
+           
+             opt = document.createElement('option');
+             opt.value = vals;
+             opt.innerHTML = vals;
+             primarycatlist+=vals+'^^';
+             x[j].add(opt);
+             });
+             }
+                   
+            }, 
+            {escape: true}
+        );
+        }
+        else
+        {
+          var templist=primarycatlist.splice('^^');
+          var opt;
+          var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            for (j = 0; j < x.length; j++) {
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+          for(i=0;i<templist.length-1;i++)
+          {
+            opt = document.createElement('option');
+             opt.value = vals;
+             opt.innerHTML = vals;
+              x[j].add(opt);
+          }
+          }
+        }
+        }
+        var secondarycatlist='';
+ function getSecondaryBusinessCategory(name,i)
+         {
+            if(prefixlist==''){
+             Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_RegComponentController.getSecondaryBusinessCategory}',
+            function(result, event){
+            var opt;
+            console.log(result);
+            var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            for (j = 0; j < x.length; j++) {
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+           $.each(result, function (i, vals) {
+           
+             opt = document.createElement('option');
+             opt.value = vals;
+             opt.innerHTML = vals;
+             secondarycatlist+=vals+'^^';
+             x[j].add(opt);
+             });
+             }
+                   
+            }, 
+            {escape: true}
+        );
+        }
+        else
+        {
+          var templist=secondarycatlist.splice('^^');
+          var opt;
+          var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            for (j = 0; j < x.length; j++) {
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+          for(i=0;i<templist.length-1;i++)
+          {
+            opt = document.createElement('option');
+             opt.value = vals;
+             opt.innerHTML = vals;
+              x[j].add(opt);
+          }
+          }
+        }
+        }   
+        
+   function getCountry(name,i,statename)
+         {
+            
+             
+            var opt;
+           
+             var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            
+            for (j = 0; j < x.length; j++) {
+            x[j].options.length = 0;
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+           <apex:repeat value="{!ThePageControler.countryOptions}" var="cnt">
+          
+           
+             opt = document.createElement('option');
+             opt.value = "{!cnt.value}";
+             opt.innerHTML = "{!cnt.label}";
+             x[j].add(opt);
+              
+            </apex:repeat>   
+              }    
+             
+$('[name="'+name+'"]').eq(i).change({i: i,statename:statename},getstatebasedoncountryvalue);
+
+    
+        } 
+        
+       function getstatebasedoncountryvalue(e){
+     Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_RegComponentController.statesBasedOnCountry}',
+            e.target.value,
+            function(result, event){
+            var x=$('[name="'+e.data.statename+'"]').eq(e.data.i);
+            var j;
+            x[0].options.length = 0;
+            var opt;
+             opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[0].add(opt);
+             $.each(result, function (i, vals) {
+            opt = document.createElement('option');
+             opt.value = vals.Id;
+             opt.innerHTML = vals.Short_Name__c+'-'+vals.Long_Name__c;
+             x[0].add(opt);
+             });
+       
+            }, 
+            {escape: true}
+        );
+      }
+   
+        
+        
+        function getStates(name,i)
+         {
+            
+             
+            var opt;
+           
+             var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            
+            for (j = 0; j < x.length; j++) {
+            x[j].options.length = 0;
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+           <apex:repeat value="{!ThePageControler.stateOptions}" var="cnt">
+          
+           
+             opt = document.createElement('option');
+             opt.value = "{!cnt.value}";
+             opt.innerHTML = "{!cnt.label}";
+             x[j].add(opt);
+            </apex:repeat>   
+              }     
+       
+        }  
+        
+        function getDiversityType(name,i)
+         {
+            
+             
+           var bsid=$('[name="'+name+'"]').eq(i).attr("id");
+            var bsname=$('[name="'+name+'"]').eq(i).attr("name"); 
+            var opt;
+           $('[name="'+name+'"]').eq(i).addClass("chzn-select");
+           var sid=$('[name="'+name+'"]').eq(i).attr("id").replace(/\s+/g, i)+i;
+            var sname=$('[name="'+name+'"]').eq(i).attr("name").replace(/\s+/g,i)+i;
+            $('[name="'+name+'"]').eq(i).attr("id",$('[name="'+name+'"]').eq(i).attr("id").replace(/\s+/g, i)+i);
+            $('[name="'+name+'"]').eq(i).attr("name",$('[name="'+name+'"]').eq(i).attr("name").replace(/\s+/g, i)+i);
+           
+             var x=$('[name="'+sname+'"]').eq(0);
+            var j;
+            
+            for (j = 0; j < x.length; j++) {
+            x[j].options.length = 0;
+            
+           <apex:repeat value="{!ThePageControler.diversityList}" var="list">
+          
+           
+             opt = document.createElement('option');
+             opt.value = "{!list.id}";
+             opt.innerHTML = "{!JSENCODE(list.Name)}";
+             x[j].add(opt);
+            </apex:repeat> 
+              }     
+              $('[name="'+sname+'"]').attr("multiple","multiple");     
+      $('[name="'+sname+'"]').eq(0).chosen();
+              $('[name="'+sname+'"]').eq(0).val('').trigger("liszt:updated");
+             $('[name="'+sname+'"]').eq(0).attr("id",bsid);
+            $('[name="'+sname+'"]').eq(0).attr("name",bsname);
+        }  
+        
+        function getCommodities(name,i)
+         {
+            
+             
+            var bsid=$('[name="'+name+'"]').eq(i).attr("id");
+            var bsname=$('[name="'+name+'"]').eq(i).attr("name"); 
+            var opt;
+             $('[name="'+name+'"]').eq(i).addClass("chzn-select");
+           var sid=$('[name="'+name+'"]').eq(i).attr("id").replace(/\s+/g, i)+i;
+            var sname=$('[name="'+name+'"]').eq(i).attr("name").replace(/\s+/g, i)+i;
+            $('[name="'+name+'"]').eq(i).attr("id",$('[name="'+name+'"]').eq(i).attr("id").replace(/\s+/g, i)+i);
+            $('[name="'+name+'"]').eq(i).attr("name",$('[name="'+name+'"]').eq(i).attr("name").replace(/\s+/g, i)+i);
+           
+             var x=$('[name="'+sname+'"]').eq(0);
+            var j;
+            
+            for (j = 0; j < x.length; j++) {
+            x[j].options.length = 0;
+            
+           <apex:repeat value="{!ThePageControler.buyerTicketInn.CommoditiesList}" var="list">
+          
+           
+             opt = document.createElement('option');
+             opt.value = "{!list.id}";
+             opt.innerHTML = "{!JSENCODE(list.Description__c)}";
+             x[j].add(opt);
+            </apex:repeat> 
+              }     
+              $('[name="'+sname+'"]').attr("multiple","multiple");      
+      $('[name="'+sname+'"]').eq(0).chosen();
+              $('[name="'+sname+'"]').eq(0).val('').trigger("liszt:updated");
+             $('[name="'+sname+'"]').eq(0).attr("id",bsid);
+            $('[name="'+sname+'"]').eq(0).attr("name",bsname);
+        }  
+       
+        function getNaicsCodes(name,i)
+         {
+          var bsid=$('[name="'+name+'"]').eq(i).attr("id");
+            var bsname=$('[name="'+name+'"]').eq(i).attr("name"); 
+            var opt;
+            $('[name="'+name+'"]').eq(i).addClass("chzn-select");
+           var sid=$('[name="'+name+'"]').eq(i).attr("id").replace(/\s+/g, i)+i;
+            var sname=$('[name="'+name+'"]').eq(i).attr("name").replace(/\s+/g, i)+i;
+            $('[name="'+name+'"]').eq(i).attr("id",$('[name="'+name+'"]').eq(i).attr("id").replace(/\s+/g, i)+i);
+            $('[name="'+name+'"]').eq(i).attr("name",$('[name="'+name+'"]').eq(i).attr("name").replace(/\s+/g, i)+i);
+            var x=$('[name="'+sname+'"]').eq(0);
+            var j;
+            
+            for (j = 0; j < x.length; j++) {
+            x[j].options.length = 0;
+            
+           <apex:repeat value="{!ThePageControler.listOfnaicscodes}" var="Lists" >
+           <apex:repeat value="{!Lists}" var="list">
+          
+           
+             opt = document.createElement('option');
+             opt.value = "{!list.id}";
+             opt.innerHTML = "{!list.Name}"+" "+"{!JSENCODE(list.Description__c)}";
+             x[j].add(opt);
+            </apex:repeat> 
+            </apex:repeat>  
+              }     
+              $('[name="'+sname+'"]').attr("multiple","multiple"); 
+              $('[name="'+sname+'"]').eq(0).chosen();
+              $('[name="'+sname+'"]').eq(0).val('').trigger("liszt:updated");
+       
+              $('[name="'+sname+'"]').eq(0).attr("id",bsid);
+            $('[name="'+sname+'"]').eq(0).attr("name",bsname);
+           
+             
+            
+        }  
+        
+        function getGender(name,i)
+         {
+            
+             
+            var opt;
+           
+             var x=$('[name="'+name+'"]').eq(i);
+            var j;
+            
+            for (j = 0; j < x.length; j++) {
+            x[j].options.length = 0;
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '--None--';
+             x[j].add(opt);
+           opt = document.createElement('option');
+             opt.value = "Male";
+             opt.innerHTML = "Male";
+             x[j].add(opt);
+             opt = document.createElement('option');
+             opt.value = "Female";
+             opt.innerHTML = "Female";
+             x[j].add(opt);
+              }     
+       
+        } 
+        
+        function imageload(name,i)
+{
+var fileInput = $('[name="'+name+'"]').eq(i);
+            var j;
+            
+            for (j = 0; j < fileInput.length; j++) {
+    fileInput[j].addEventListener('change', function(e) {
+   
+      var input = event.target;
+      var f = input.files[0];
+      var target = $( event.target );
+     
+      if(f!=undefined){
+      var r = new FileReader();
+       r.onload = (function(f) {
+                return function(e) {
+                    var contents = e.target.result.split(',')[1];
+                    target.after( "<input type='text' name='speakerimagedata' style='display:none' value='"+contents+"'/>" );
+                   target.after( "<span style='display:none'>"+f.name+"</span>" );
+                   
+                   
+                };
+            })(f);
+       r.readAsDataURL(f);
+       }
+       
+    }); 
+    }
+} 
+
+function attachmentload(name,i)
+{
+var fileInput = $('[name="'+name+'"]').eq(i);
+            var j;
+            
+            for (j = 0; j < fileInput.length; j++) {
+    fileInput[j].addEventListener('change', function(e) {
+   
+      var input = event.target;
+      var f = input.files[0];
+      var target = $( event.target );
+     
+      if(f!=undefined){
+      var r = new FileReader();
+       r.onload = (function(f) {
+                return function(e) {
+                    var contents = e.target.result.split(',')[1];
+                   target.after( "<input type='text' style='display:none' name='speakerattachmentdata' value='"+contents+"'/>" );
+                   target.after( "<div style='display:none'>"+f.name+"</div>" );
+                   
+                   
+                   
+                };
+            })(f);
+       r.readAsDataURL(f);
+       }
+       
+    }); 
+    }
+}  
+
+
+function companylogoload(name,i)
+{
+var fileInput = $('[name="'+name+'"]').eq(i);
+            var j;
+            
+            for (j = 0; j < fileInput.length; j++) {
+    fileInput[j].addEventListener('change', function(e) {
+   
+      var input = event.target;
+      var f = input.files[0];
+      var target = $( event.target );
+     
+      if(f!=undefined){
+      var r = new FileReader();
+       r.onload = (function(f) {
+                return function(e) {
+                    var contents = e.target.result.split(',')[1];
+                    target.after( "<input type='text' style='display:none' name='companylogodata' value='"+contents+"'/>" );
+                   
+                   target.after( "<span style='display:none'>"+f.name+"</span>" );                   
+                };
+            })(f);
+       r.readAsDataURL(f);
+       }
+       
+    }); 
+    }
+}        
+</script>
+<apex:outputtext escape="false" id="htmldivbuyer" />
+<script>
+ //excluding fields from form
+ function excludefieldsforBuyer(tindex)
+ {
+
+   
+   var includedhtmlfieldname='';
+   var fieldMapBuyer = {};
+   
+   //Variable Start
+         var individualpanels= [];//store ids for individual sections like speaker,workinfo,NAICS codes etc
+         var fieldrequired ={}; //store field name and required boolean as key vale pain ex: {Image:false}
+         var fieldnames={};  //store default field name and custom field name as key value pai ex:{firstname: firstnamenew}
+         var sectionnames={};//store default section name and custom section name as key value pai ex:{Basic Information:Basic Details}
+   //Variable End
+   
+   <apex:repeat value="{!ThePageControler.buyerfieldmapstring}" var="itemlistbuyer">
+   var mergedata='{!itemlistbuyer}';
+   var arrsplit=mergedata.split("^^");
+   fieldMapBuyer[arrsplit[0]] = arrsplit[1];
+   
+   </apex:repeat>
+  
+   console.log(fieldMapBuyer );
+   if(fieldMapBuyer ['First Name']!='null'&&fieldMapBuyer ['First Name']!=undefined){
+   }
+   else
+   {
+     for(t=0;t<htmlallfieldnamesbuyer.length;t++)
+     {
+       fieldMapBuyer[htmlallfieldnamesbuyer[t]] = htmlallfieldnamesbuyer[t]; 
+     }
+     //alert('No Mapping field found for Buyer');
+   }
+   
+   <apex:repeat value="{!ThePageControler.buyerTicketInn.settingsForbuyer}" var="rsbuyer">
+              try{
+               if('{!rsbuyer.Group_Label__c}' != '')
+               sectionnames['{!rsbuyer.Group_Name__c}']='{!rsbuyer.Group_Label__c}';
+               fieldrequired['{!rsbuyer.Defaullt_Label__c}']='{!rsbuyer.Required__c}';
+               fieldnames['{!rsbuyer.Defaullt_Label__c}'] = '{!rsbuyer.Label_Name__c}';
+               individualpanels.push('{!rsbuyer.Group_Name__c}');
+               }catch(e){}
+   //loading the picklist
+   if("{!rsbuyer.Defaullt_Label__c}"=='Prefix')
+   {
+      getPrefixes(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+   
+   if("{!rsbuyer.Defaullt_Label__c}"=='Suffix')
+   {
+     getSuffixes(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+     }
+     
+     if("{!rsbuyer.Defaullt_Label__c}"=='NAICS Codes')
+   {
+   getNaicsCodes(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rsbuyer.Defaullt_Label__c}"=='Gender')
+   {
+   getGender(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+    if("{!rsbuyer.Defaullt_Label__c}"=='Primary Business Category')
+   {
+      getPrimaryBusinessCategory(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rsbuyer.Defaullt_Label__c}"=='Secondary Business Category')
+   {
+      getSecondaryBusinessCategory(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   } 
+    if("{!rsbuyer.Defaullt_Label__c}"=='Diversity Type')
+   {
+      getDiversityType(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+   
+   if("{!rsbuyer.Defaullt_Label__c}"=='Commodities')
+   {
+   getCommodities(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rsbuyer.Defaullt_Label__c}"=='Image')
+   {
+   imageload(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rsbuyer.Defaullt_Label__c}"=='Attachment')
+   {
+   attachmentload(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rsbuyer.Defaullt_Label__c}"=='Company Logo')
+   {
+   companylogoload(fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rsbuyer.Defaullt_Label__c}"=='Biography')
+   {
+      
+      var textbox = $(document.createElement('textarea'));
+      textbox.attr("name",$('[name="'+fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(tindex).attr("name"));
+    textbox.attr("id",$('[name="'+fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(tindex).attr("id"));
+    textbox.attr("style",$('[name="'+fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(tindex).attr("style"));
+    $('[name="'+fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(tindex).replaceWith(textbox);
+    $('[name="'+fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(tindex).addClass("mceEditor");
+   }
+   //
+     if("{!rsbuyer.Defaullt_Label__c}"=='Work Address')
+     {
+       sectionnames['Work Address']='{!rsbuyer.Label_Name__c}';
+       individualpanels.push('Work Address');   
+       includedhtmlfieldname+=fieldMapBuyer ['WorkAddress1']+fieldMapBuyer ['WorkAddress2']+fieldMapBuyer ['WorkCity']+fieldMapBuyer ['WorkState']+fieldMapBuyer ['WorkCountry']+fieldMapBuyer ['WorkZipCode'];
+       getCountry(fieldMapBuyer ["WorkCountry"],tindex,fieldMapBuyer ["WorkState"]); 
+       getStates(fieldMapBuyer ["WorkState"],tindex); 
+       
+     }
+     else if("{!rsbuyer.Defaullt_Label__c}"=='Home Address')
+     {
+        sectionnames['Home Address']='{!rsbuyer.Label_Name__c}';
+        individualpanels.push('Home Address');
+       includedhtmlfieldname+=fieldMapBuyer ['HomeAddress1']+fieldMapBuyer ['HomeAddress2']+fieldMapBuyer ['HomeCity']+fieldMapBuyer ['HomeState']+fieldMapBuyer ['HomeCountry']+fieldMapBuyer ['HomeZipCode']; 
+       getCountry(fieldMapBuyer ["HomeCountry"],tindex,fieldMapBuyer ["HomeState"]); 
+       getStates(fieldMapBuyer ["HomeState"],tindex); 
+     }
+     else if("{!rsbuyer.Defaullt_Label__c}"=='Billing Address')
+     {
+       sectionnames['Billing Address']='{!rsbuyer.Label_Name__c}';
+       individualpanels.push('Billing Address');
+      includedhtmlfieldname+=fieldMapBuyer ['BillingAddress1']+fieldMapBuyer ['BillingAddress2']+fieldMapBuyer ['BillingCity']+fieldMapBuyer ['BillingState']+fieldMapBuyer ['BillingCountry']+fieldMapBuyer ['BillingZipCode']; 
+       getCountry(fieldMapBuyer ["BillingCountry"],tindex,fieldMapBuyer ["BillingState"]);
+       getStates(fieldMapBuyer ["BillingState"],tindex);  
+     }
+     else
+     includedhtmlfieldname+=fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"]; 
+     console.log('work address');
+     console.log(fieldrequired['Work Address']);
+     
+     if(fieldrequired['Work Address']=='true')
+            {
+            fieldrequired['WorkAddress1']='true';
+          //  fieldrequired['WorkAddress2']='true';
+            fieldrequired['WorkCity']='true';
+            fieldrequired['WorkState']='true';
+            fieldrequired['WorkCountry']='true';
+            fieldrequired['WorkZipCode']='true';
+            
+            }
+             if(fieldrequired['Home Address']=='true')
+            {
+            fieldrequired['HomeAddress1']='true';
+          //  fieldrequired['HomeAddress2']='true';
+            fieldrequired['HomeCity']='true';
+            fieldrequired['HomeState']='true';
+            fieldrequired['HomeCountry']='true';
+            fieldrequired['HomeZipCode']='true';
+            
+            }
+             if(fieldrequired['Billing Address']=='true')
+            {
+            fieldrequired['BillingAddress1']='true';
+          //  fieldrequired['BillingAddress2']='true';
+            fieldrequired['BillingCity']='true';
+            fieldrequired['BillingState']='true';
+            fieldrequired['BillingCountry']='true';
+            fieldrequired['BillingZipCode']='true';
+            
+            
+            }
+   
+   //set it required when its true
+   /*if('{!rsbuyer.Required__c}'=='true'){
+   if("{!rsbuyer.Defaullt_Label__c}"=='Work Address')
+     {
+     $('[name="'+fieldMapBuyer ["WorkAddress1"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["WorkAddress2"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["WorkCity"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["WorkState"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["WorkCountry"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["WorkZipCode"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+         }
+     else if("{!rsbuyer.Defaullt_Label__c}"=='Home Address')
+     {
+       $('[name="'+fieldMapBuyer ["HomeAddress1"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["HomeAddress2"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["HomeCity"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["HomeState"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["HomeCountry"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["HomeZipCode"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     }
+     else if("{!rsbuyer.Defaullt_Label__c}"=='Billing Address')
+     {
+        $('[name="'+fieldMapBuyer ["BillingAddress1"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["BillingAddress2"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["BillingCity"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["BillingState"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["BillingCountry"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMapBuyer ["BillingZipCode"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     }
+     else
+   $('[name="'+fieldMapBuyer ["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+      
+   }*/
+   
+   </apex:repeat>
+   
+   for(l=0;l<htmlallfieldnamesbuyer.length;l++)
+   {
+    if(includedhtmlfieldname.indexOf(htmlallfieldnamesbuyer[l])==-1)
+    {
+   // alert('--------- '+htmlallfieldnamesbuyer[l]);
+      $('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).hide();
+       if(htmlallfieldnamesbuyer[l] == 'Image' ||  htmlallfieldnamesbuyer[l] == 'Company Logo'){
+                            $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().parent().parent().parent().find("label").hide();
+                            $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().parent().parent().parent().find("label").parent().hide();
+                            }
+   if($('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().parent().find("label").length==1){
+   $('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().parent().find("label").hide();
+   $('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().parent().find("label").parent().hide();
+   }
+   $('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().hide();
+    $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().find("span").eq(1).removeClass('mandatory');
+               
+    $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).removeClass('required');
+               
+    }
+    else
+    {
+    //logic for mandatory fields 
+            //add mandatory Class Dynamically
+                $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().find("span").eq(0).html(fieldnames[htmlallfieldnamesbuyer[l]]);
+   
+                if(fieldrequired[htmlallfieldnamesbuyer[l]]=="false"||fieldrequired[htmlallfieldnamesbuyer[l]]==undefined||fieldrequired[htmlallfieldnamesbuyer[l]]=="")   
+                { 
+                
+
+                 if(htmlallfieldnamesbuyer[l] != 'Image' && htmlallfieldnamesbuyer[l] != 'Company Logo'){
+                $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().find("span").eq(1).hide();
+                $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().find("span").eq(1).removeClass('mandatory');
+                $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).removeClass('required').parent().parent().addClass('inSection');
+                    }else{
+                    
+     //                alert('if else');
+     //                      alert('====> '+htmlallfieldnamesbuyer[l]);
+                        $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().parent().parent().find("span").eq(1).hide();
+                $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().parent().parent().find("span").eq(1).removeClass('mandatory');
+                $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).removeClass('required').parent().parent().addClass('inSection');
+                    
+                    }
+                }
+                else{
+                          if(htmlallfieldnamesbuyer[l] != 'Image' && htmlallfieldnamesbuyer[l] != 'Company Logo'){
+                       
+                  $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().find("span").eq(1).addClass('mandatory');
+                  $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).addClass('required').parent().parent().addClass('inSection');
+              
+                  try{
+                 $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().find("span").eq(1).show();
+            }catch(e){}
+            }else{
+           
+                  $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().parent().parent().find("span").eq(1).addClass('mandatory');
+                  $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).addClass('required').parent().parent().addClass('inSection');
+                 
+                  try{
+                $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().parent().parent().find("span").eq(1).show();
+            }catch(e){}
+            
+            }
+                }
+    
+   // alert('>>>>> '+htmlallfieldnamesbuyer[l]);
+      $('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).show();
+   if($('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().parent().find("label").length==1){
+   $('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().parent().find("label").show();
+   $('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().parent().find("label").parent().show();
+   }
+   
+   //new code for image and company log
+           if(htmlallfieldnamesbuyer[l] == 'Image' || htmlallfieldnamesbuyer[l] == 'Company Logo'){
+          
+      $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().parent().parent().show();
+                       
+      $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().parent().parent().find("label").show();
+                  $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).addClass('required');
+              
+                  try{
+                 $("[id$='BuyerTemplate']").find('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(0).parent().parent().find("span").eq(1).show();
+                     
+                    }catch(e){}
+                    }
+   
+   
+   $('[name="'+htmlallfieldnamesbuyer[l]+'"]').eq(tindex).parent().show();
+    }
+   }
+   
+   
+   $("[id$='BuyerTemplate']").find('.panel-default').each(function(i) {
+   
+//alert();
+var show = false;
+$(this).find('.form-group').each(function(j){
+//alert(i);
+
+console.log($(this));
+if($(this).attr('style')==undefined){
+
+}
+});
+               if( individualpanels.indexOf($(this)[0].id) == -1 && !$(this).hasClass('newsection'))
+               {
+                   $("[id$='BuyerTemplate']").find('[id="'+$(this)[0].id+'"]').hide();
+               }
+               else
+               {
+               var sectionelementslength = $("[id$='BuyerTemplate']").find('[id="'+$(this)[0].id+'"]').find('.inSection');
+            
+            if(sectionelementslength.length !=  0)
+                   $("[id$='BuyerTemplate']").find('[id="'+$(this)[0].id+'"]').show();
+               else
+                   $("[id$='BuyerTemplate']").find('[id="'+$(this)[0].id+'"]').hide();
+               
+         
+            
+                   if(sectionnames[$(this)[0].id] != undefined)
+                    $("[id$='BuyerTemplate']").find('[id="'+$(this)[0].id+'"]').find('.panel-title').html(sectionnames[$(this)[0].id]);
+   
+               }
+                });  
+  
+  
+ }
+ </script>
+ <script>
+ var s="{!JSENCODE(ThePageControler.bt.HTML__c)}";
+
+ var str='';
+ 
+for(i=0;i<1;i++)
+ {
+ str+=s;
+ }  
+document.getElementById('{!$Component.htmldivbuyer}').innerHTML = str;
+  
+</script>
+  
+</apex:component>

@@ -1,0 +1,4410 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="custombagdecon" id="stylepage">
+ <apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+ <style>
+  .fontSelected{
+    
+    color:#fb9700;
+    opacity:0.7;
+    font-weight:bold;   
+    
+    } 
+ .clnTbl{
+white-space:nowrap;
+background-color:#FFFFFF;
+ }
+ .delIcon{
+    float:right;
+    margin-right:5px;
+    width:20px; 
+    height:20px;
+    background:url(https://www.boothleads.com/badge_images/icons/cross-black.png) no-repeat scroll 0 0 ;
+    background-size:contain;      
+    }  
+    
+    .delIcon:hover{
+                outline:1px solid #000000;
+                } 
+                  
+     .sBdgName{
+    height:20px;
+    width:200px;  
+    font-family:verdana;
+    font-size:12px;
+    display:block;
+    word-wrap:break-word;     
+    overflow:hidden;
+    margin-left:5px;        
+    margin-bottom:10px;
+    text-align:center;  
+    float:left; 
+    }
+     .badgeElement {
+     overflow:hidden;
+    font-family:Times New Roman;
+     
+     } 
+     
+    .loaderBackground {
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#66EBEAE4, endColorstr=#66EBEAE4);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#66EBEAE4,endColorstr=#66EBEAE4)";
+    background: -webkit-linear-gradient(left top, rgba(204, 204, 204, 0), gray); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, rgba(204, 204, 204, 0), gray); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, rgba(204, 204, 204, 0), gray); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, rgba(204, 204, 204, 0), gray);
+    width:100%;
+    height:1000px;  
+    z-index:2499;
+    position:absolute;       
+    left:0px;
+    right:0px;
+}  
+#loaderImg{
+   
+    width:200px;  
+    height:200px;
+     margin-top:200px;
+}  
+.badgeLogo{
+   background:url({!$Resource.companylogoimage});
+ background-size:100% 100%;
+   
+}  
+div.upload {
+        padding:0;
+        position:absolute;
+        bottom:0px;
+        left:0px;
+    width: 87px;
+    height: 45px;
+    background-color:#06F;
+    opacity:0.7;  
+    color:#FFFFFF;
+    cursor:pointer; 
+    background: url(https://lh6.googleusercontent.com/-dqTIJRTqEAQ/UJaofTQm3hI/AAAAAAAABHo/w7ruR1SOIsA/s157/upload.png);
+}
+.sp-replacer {
+    background: none repeat scroll 0 0 #EEEEEE;
+    border: 1px solid #91765D;
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0;
+    overflow: hidden;
+    padding: 4px;
+    vertical-align: middle;
+    margin-top: 15px;
+    }
+
+div.upload input {
+    display: block !important;
+    width: 157px !important;
+    height: 57px !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    cursor:pointer; 
+}       
+  
+#popUpBackground {
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#66EBEAE4, endColorstr=#66EBEAE4);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#66EBEAE4,endColorstr=#66EBEAE4)";
+    background: -webkit-linear-gradient(left top, rgba(204, 204, 204, 0), gray); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, rgba(204, 204, 204, 0), gray); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, rgba(204, 204, 204, 0), gray); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, rgba(204, 204, 204, 0), gray);
+    width:100%;
+    height:1000px;  
+    z-index:2499;
+    position:absolute;       
+    left:0px;
+    top:0px;
+}  
+.template {
+margin-top:25px;
+} 
+.badgeElement {
+padding-left:1px;
+background-color:#FFFFFF;
+} 
+.badgeType{
+border-color:#D9E1E5 #D6DEE2 #C4CCD0;
+border-image: none;
+border-radius: 0 0 4px 4px;
+border-style: solid;
+border-width: 1px;
+opacity: 0.9;
+
+color:#3C4246;
+padding-top:20px;
+display:none;
+} 
+.badgeType:hover{
+color:#FFFFFF;
+background-color:#999999;
+}  
+.badgeTypeHeading{
+font-family: Verdana;
+font-size:20px;
+text-align:center;
+border-top:0px;
+
+}  
+.badgeTypeRadioBtn{
+margin-left:25px;
+margin-top:25px;
+font-size:inherit;
+font-family:verdana;
+} 
+.zebraBadgeSize{
+height:3in;
+width:3.75in;
+}  
+.brotherBadgeSize{
+height:2.4in;
+width:3.9in;
+}
+ </style>
+ 
+     
+<apex:form id="styleform">
+
+<script>
+
+
+</script>
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="/resources/demos/style.css" />
+<link rel="stylesheet" href="https://bgrins.github.io/spectrum/spectrum.css" />
+
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src="js/badge.js" type="text/javascript"></script>
+<script src="https://bgrins.github.io/spectrum/spectrum.js" type="text/javascript"></script>
+
+
+
+<apex:stylesheet value="{!URLFOR($Resource.badgetool,'css/jquery-ui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.badgetool,'css/styles.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.badgetool,'css/spectrum.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.badgetool,'js/jquery-1.9.1.js')}"/> 
+<apex:includeScript value="{!URLFOR($Resource.badgetool,'js/jquery-ui.js')}"/>
+
+<apex:includeScript value="{!URLFOR($Resource.badgetool,'js/spectrum.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.badgetool,'css/styles.css')}"/> 
+<apex:includeScript value="{!URLFOR($Resource.badgetool,'js/html2canvas.js')}"/>
+
+
+
+<title>BL Custom Badge Creation Tool</title>
+<body >
+<div id="container">
+<!------------------------------------------------------Header----------------------------------------------------------->
+<div class="titleBanner "><span class="btnStyle btnHome" > </span> BL - Custom Badge Creation Tool </div>
+<!-------------------------------------------Template component Start------------------------------------------------->
+<div id="background" style="height:1000px;">
+<div id="leftScroll" class="scrollbutton" style="display:none;"></div>
+<div id="rightScroll" class="scrollbutton" style="display:none;"></div>
+<div id="template_title" class="template_heading" >Choose a Theme to create your badge <span id="close" class="iconClose" style=""></span> </div>
+<div id="displayContainer" >
+<div id="template_holder" class="templateHolder" style="width:2800px;height:330px;padding-bottom:10px\9;">
+<div id="badge_template_1" class="_transparent template shdwRaised IEtransperent" style="padding:10px" >
+<div id="template_tagPassingHole2" class=" " style="width:0.5in ;height:.06in; border-radius:4px; margin: auto;
+border:rgba(102,102,102,1) 1px solid;"></div>
+<div id="template_bg" class="tmpl_bg" style="background-color:#ffffff;height:167px;">
+<div id="logo" class="template_badge_logo" style="background-image:url(https://www.boothleads.com/badge_images/company_logo.jpg
+);
+background-size:100% 100%;width:60px;height:35px;background-repeat:no-repeat;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+src='https://www.boothleads.com/badge_images/company_logo.jpg',
+sizingMethod='scale')\9;"></div>
+<div id="ticket" class="template_badge_ticket">Full Conference</div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="first_name" class="template_badge_fname">JOHN</div>
+<div id="last_name" class="template_badge_lname">Smith</div>
+<div id="qr_code" class="template_badge_qrcode"></div>
+<div id="company_name" class="template_badge_compName">Acme Corp</div>
+</div>
+<div class="templateName" >BL-Template-1</div>
+</div>
+<div id="badge_template_2" class="_transparent template shdwRaised" style="padding:10px" >
+<div id="template_tagPassingHole1" class=" " style="width:0.5in ;height:.06in; border-radius:4px; margin: auto;
+border:rgba(102,102,102,1) 1px solid"></div>
+<div id="template_bg" class="tmpl_bg" style="background-color:#ffffff;height: 167px;">
+<div id="logo" class="template_badge_logo" style="height:40px; width:40px; background-image:url(https://www.boothleads.com/badge_images/icons/logos/company_logo.png);
+background-size:cover;background-repeat:no-repeat;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+src='https://www.boothleads.com/badge_images/icons/logos/company_logo.png',
+sizingMethod='scale')\9;" ></div>
+<div id="ticket" class="template_badge_ticket">Reception only</div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="first_name" class="template_badge_fullname" style="width:180px;">JANE DOE</div>
+<div id="qr_code" class="template_badge_qrcode" style="margin-bottom:0px; "></div>
+<div id="company_name" class="template_badge_compName" style="margin-bottom:0px; ">Acme Corp</div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="attendee" class="template_badge_attendee">ATTENDEE</div>
+</div>
+<div class="templateName">BL-Template-2</div>
+</div>
+<div id="badge_template_3" class="_transparent template shdwRaised" style="padding:10px">
+<div id="template_tagPassingHole1" class=" " style="width:0.5in ;height:.06in; border-radius:4px; margin: auto;
+border:rgba(102,102,102,1) 1px solid"></div>
+<div id="template_bg" class="tmpl_bg" style="background-color:#ffffff;height:16">
+<div id="logo" class="template_badge_logo" style="height:60px; width:60px; background-image:url(https://www.boothleads.com/badge_images/icons/logos/company_logo.png);
+background-size:cover;background-repeat:no-repeat;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+src='https://www.boothleads.com/badge_images/icons/logos/company_logo.png',
+sizingMethod='scale')\9;" ></div>
+<div id="qr_code" class="template_badge_qrcode" style=" margin-top:5px; margin-right:10px; float:right "></div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="first_name" class="template_badge_fullname" style="width:180px;">JOHN SMITH</div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="company_name" class="template_badge_cmpName" style="margin-top:10px; text-align:center ">Acme Corp</div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="attendee" class="template_badge_attendee" style="margin-top:17px; background-color:#ff4c4c">EXHIBITOR</div>
+</div>
+<div class="templateName">BL-Template-3</div>
+</div>
+<div id="badge_template_4" class="_transparent template shdwRaised" style="padding:10px">
+<div id="template_tagPassingHole1" class=" " style="width:0.5in ;height:.06in; border-radius:4px; margin: auto;
+border:rgba(102,102,102,1) 1px solid"></div>
+<div id="template_bg" class="tmpl_bg" style="background-color:#ffffff;height: 167px;">
+<div id="logo" class="template_badge_logo" style="background-image:url(https://www.boothleads.com/badge_images/icons/logos/company_logo.png);
+background-size:100% 100%;width:60px;height:35px;background-repeat:no-repeat;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+src='https://www.boothleads.com/badge_images/icons/logos/company_logo.png',
+sizingMethod='scale')\9;"></div>
+<div id="ticket" class="template_badge_ticket">Full Conference</div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="first_name" class="template_badge_fname">JANE DOE</div>
+<div id="last_name" class="template_badge_lname">Managing Partner </div>
+<div id="qr_code" class="template_badge_qrcode"></div>
+<div id="company_name" class="template_badge_compName">Acme Corp</div>
+</div>
+<div class="templateName">BL-Template-4</div>
+</div>
+
+<!---------------------------------------------------Brother Templates------------------------------------------------------------------------>
+    <!---------------------------------------------Brother Template 1------------------------------------------------------------------------>
+<div id="brother_template_1" class="_transparent template shdwRaised" style="padding:10px;float:left">
+    <div id="template_tagPassingHole1" class=" " style="width:0.5in ;height:.06in; border-radius:4px; margin:auto;border:rgba(102,102,102,1) 1px solid"></div>
+    <div id="template_bg " class="tmpl_bg  brother_Template_bg" style="background-color:#ffffff;height:140px;margin-top:30px;">
+        <div id="qr_code" class="template_badge_qrcode" style="margin-top:10px;height:70px;width:70px;"></div>
+        <div id="company_name" class="template_badge_compName" style="font-family:Helvetica;font-size:18px; width:170px;">Global Nest Llc</div>
+        <div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+        <div id="first_name" class="template_badge_fname" style="margin-top:20px;font-family:Helvetica;font-size:30px;width:100%">John Smith</div>    
+    </div>
+    <div class="templateName" style="line-height:35px;">BL-Brother-Template-1</div>
+</div>
+
+<!---------------------------------------------Brother Template 2------------------------------------------------------------------------>
+<div id="brother_template_2" class="_transparent template shdwRaised" style="padding:10px;float:left;">
+      <div id="template_tagPassingHole1" class=" " style="width:0.5in ;height:.06in; border-radius:4px; margin:auto;border:rgba(102,102,102,1) 1px solid"></div>
+     <div id="wrapper" class="badge_wrapper" style="height:140px;width:280px;margin:0 auto;background-color:#ffffff;margin-top:20px;padding:10px; padding-top:5px;">
+          <div id="template_bg " class="tmpl_bg  brother_Template_bg" style="margin:0;background-color:#ffffff;height:130px;box-shadow:
+        0 0 5px black; border-radius: 4px;">
+              <div id="attendee" class="template_badge_attendee" style="height:50px;line-height:50px; background-color:#CCCCCC;font-size:40px;width:100%">EXHIBITOR</div>
+             <div id="first_name" class="template_badge_fname" style="height:50px;line-height:50px;font-family:Helvetica;font-size:35px;width:100%">Durga Mikkilineni</div>
+             <div id="company_name" class="template_badge_compName" style="margin-top:0;height:45px;line-height:45px;font-family:Helvetica;font-size:25px;text-align:center; width:100%;">Global Nest Llc</div>    
+         </div>
+     </div>
+     <div class="templateName" style="line-height:20px;">BL-Brother-Template-2</div>
+
+</div>
+
+
+<!---------------------------------------------Brother Template 3------------------------------------------------------------------------>
+<div id="brother_template_3" class="_transparent template shdwRaised" style="padding:10px;float:left">
+    <div id="template_tagPassingHole1" class=" " style="width:0.5in ;height:.06in; border-radius:4px; margin:auto;border:rgba(102,102,102,1) 1px solid"></div>
+    <div id="template_bg " class="tmpl_bg  brother_Template_bg" style="background-color:#ffffff;height:145px;margin-top:30px;">
+         <div id="first_name" class="template_badge_fname" style="height:25px;line-height:25px;font-family:Helvetica;font-size:30px;width:100%">John Smith</div>    
+     
+        <div id="company_name" class="template_badge_compName" style="height:25px;line-height:25px;font-family:Helvetica;font-size:25px; width:100%;">Global Nest Llc</div>
+        <div id="attendee" class="template_badge_attendee" style="font-family:Helvetica;font-size:20px;background-color:#ffffff;color:#000000;float:left;width:150px;margin-left:5px;">ATTENDEE</div>
+           <div id="qr_code" class="template_badge_qrcode" style="float:right;height:60px;width:60px;margin-right:5px;"></div>
+        <div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+       
+    </div>
+    <div class="templateName" style="line-height:25px;">BL-Brother-Template-3</div>
+</div>
+
+
+<!---------------------------------------------------Brother Templates End------------------------------------------------------------------------>
+<div id="badge_dymo" class="_transparent template shdwRaised" style="padding:10px">
+<div id="template_tagPassingHole1" class=" " style="width:0.5in ;height:.06in; border-radius:4px; margin: auto;
+border:rgba(102,102,102,1) 1px solid"></div>
+<div id="template_bg" class="tmpl_bg" style="background-color:#ffffff;height:16">
+<div id="logo" class="template_badge_logo" style="height:60px; width:60px; background-image:url(https://www.boothleads.com/badge_images/icons/logos/company_logo.png);
+background-size:cover;background-repeat:no-repeat;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+src='https://www.boothleads.com/badge_images/icons/logos/company_logo.png',
+sizingMethod='scale')\9;" ></div>
+<div id="qr_code" class="template_badge_qrcode" style=" margin-top:5px; margin-right:10px; float:right "></div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="first_name" class="template_badge_fullname" style="width:180px;">JOHN SMITH</div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="company_name" class="template_badge_cmpName" style="margin-top:10px; text-align:center ">Acme Corp</div>
+<div id="clear" class="template_badge_clear_div" style="clear:both" ></div>
+<div id="attendee" class="template_badge_attendee" style="margin-top:17px; background-color:#ff4c4c">EXHIBITOR</div>
+</div>
+<div class="templateName">BL-Dymo</div>
+</div>
+
+</div>
+</div>
+</div>
+<!-------------------------------------------------Template components End--------------------------------------------------->
+<!-------------------------------------------------------Loader  Starts------------------------------------------------------>
+  <div class="loaderBackground" style="display:none;text-align:center;">
+    <img src="https://www.boothleads.com/badge_images/icons/ajax_loader.gif" id="loaderImg"  alt="Loading...."    />
+  </div>
+  <!------------------------------------------------------Loader Ends---------------------------------------------------------->
+<!------------------------------------------------------- Content Start--------------------------------------------------------->
+
+<div id="content" style="min-width:1240px; max-width:1400px; overflow:auto;">
+
+<!-------------------------------------------------Left Content Start--------------------------------------------------------->
+<div id="leftContent">
+<div id="attendee" class="addAttendee">
+<div id="attendee_header" class="attendeeHeader" style="padding-left:58px;">Attendee<span class="iconUpDown"></span></div>
+<div id="attendee_Details" class="attendeeContent">
+<div id="firn" class="drgTbl">First Name</div>
+<div id="lstn" class="drgTbl">Last Name</div>
+<div id="fulln" class="drgTbl">Full Name</div>
+<div id="comn" class="drgTbl">Company Name</div>
+<div id="ticketn" class="drgTbl">Ticket Name</div>
+<div id="ticketCategory" class="drgTbl">Ticket Category</div>
+<div id="jobTitle" class="drgTbl">Job Title</div>
+<div id="citystate" class="drgTbl">City, State</div>
+<div id="state" class="drgTbl">State</div>
+<div id="city" class="drgTbl">City</div>
+<div id="stext" class="drgTbl">Static Text1</div>
+<div id="stext2" class="drgTbl">Static Text2</div>
+<div id="stext3" class="drgTbl">Static Text3</div>
+<div id="uniqNo" class="drgTbl">Scan Id</div>
+<div id="dline" class="drgTbl">_____________________________________________________</div>
+</div>
+<div id="clogo" class="drgTbl" style="text-align:left;padding:0 0 0 63px"><span class="iconUpDown iconPlus" style="left:157px;"></span>Event Logo</div>
+<div id="slogo" class="drgTbl" style="text-align:left;padding:0 0 0 63px;margin-top: 10px;height: 69px;line-height: 69px;color:black;background: url(https://www.boothleads.com/badge_images/icons/logos/1394210778_519673-179_Upload.png) no-repeat 4px 8px #f6f7f8;"><span class="iconUpDown iconPlus" style="left:157px;"></span>Image</div>
+<div id="qrcd" class="drgTbl" style="padding:0 0 0 50px">QR Code<span class="iconPlus" style="left:43px;"></span></div>
+<div id="btnNew" style="padding:0 0 0 93px;text-align:left" class="drgTbl">New<span class="iconPlus" style="left:82px;"></span></div>
+<div id="badgeTypeSelection" style="" class="badgeType">
+<div style="" class="badgeTypeHeading"> Select Printer Type </div>
+<table width="100%">
+<tr><td>
+<input  type="radio" autocomplete="off" name="badgeType" id="badgeTypeZebra" value="Zebra" style="" class="badgeTypeRadioBtn"   onclick="changeValue(this,'{!$Component.RadioButtonValue}');" /><span style="font-size:12px">3inX3.75in(ZEBRA/AVERY 6)</span></td>
+</tr><tr><td><input  type="radio" autocomplete="off" name="badgeType" id="badgeTypeBrother" value="Brother" style="" class="badgeTypeRadioBtn"  onclick="changeValue(this,'{!$Component.RadioButtonValue}');" /><span style="font-size:12px">2.4inX3.9in(BROTHER)</span></td></tr>
+<tr><td><input  type="radio" autocomplete="off" name="badgeType" id="badgeTypeAvery" value="Avery" style="" class="badgeTypeRadioBtn"  onclick="changeValue(this,'{!$Component.RadioButtonValue}');" /><span style="font-size:12px">2.33inX3.375in(AVERY 8)</span></td>
+</tr><tr><td><input  type="radio" autocomplete="off" name="badgeType" id="badgeTypeDymo" value="Dymo" style="" class="badgeTypeRadioBtn"  onclick="changeValue(this,'{!$Component.RadioButtonValue}');" /><span style="font-size:12px">2.44inX4.19in(DYMO)</span></td></tr>
+<tr><td><input  type="radio" autocomplete="off" name="badgeType" id="CustScanBadge" value="CustScanBadge" style="" class="badgeTypeRadioBtn"  onclick="changeValue(this,'{!$Component.RadioButtonValue}');" /><span style="font-size:12px">2.25inX3.5in(BROTHER)</span></td><td></td></tr>
+<tr><td><input  type="radio" autocomplete="off" name="badgeType" id="SwedenBadge" value="SwedenBadge" style="" class="badgeTypeRadioBtn"  onclick="changeValue(this,'{!$Component.RadioButtonValue}');" /><span style="font-size:12px">4.13inX5.82in</span></td><td></td></tr>
+</table>
+</div>
+
+<div id="currentAttendee" style="margin-top:10px;width:255px;display:block" class=" currentAttendee">
+<h2>Current Attendee</h2>
+<div id="attendees"> <a class="shinny-button random-shinny-button" href="javascript:">Shuffle</a>
+<div class="select shinny-button iconUpDown icon_Up_Down" >
+<select name="attendees" id="select_attendees" style="width:200px">
+<option value="JOHN SMITH|Acme Corp">JOHN SMITH</option>
+<option value="JANE DOE|Aramark">JANE DOE</option>
+<option value="NORIE FRANK|C.A.Spalding Co.">NORIE FRANK</option>
+<option value="EDWARD PARK|Champion Adjustment Co.">EDWARD PARK</option>
+<option value="LIL PAVONE|Hunt Corporate Services, Inc">LIL PAVONE</option>
+<option value="VINCENT PALLACI|Kushnick Pallaci PLLC">VINCENT PALLACI</option>
+</select>
+</div>
+</div>
+</div>
+<div class="table" style="display:block;margin-top:10px">
+<div class="icon-user" style=" float:left;width:60px;height:60px;" ></div>
+<div class="text" style=" height:60px; float:left;width:190px; " > <span class="name" style="display:block" >No Matching Attendee</span> <span class="company" style="display:block">Company</span> </div>
+</div>
+</div>
+<div>
+<h2 style="font-size: 20px;font-family:verdana">Select Module</h2>
+<input type="checkbox" name="module" value="Scan Attendee" /><b>Scan Attendee</b><br/>
+<input type="checkbox" name="module" value="Quick Registration" /><b>Quick Registration</b><br/>
+<input type="checkbox" name="module" value="Attendee Registration" id="defaultattregis"/><b>Attendee Registration</b><br/>
+</div>
+</div>
+<!---------------------------------------------------------Left Content Ends ---------------------------------------------------> 
+<!--------------------------------------------------------Right Content Starts------------------------------------------------->
+<div id="rightContainer" style="height:650px;">
+<div id="makeMeDroppableTblArea" class="shdwRaised _transparent" >
+<div id="tagPassingHole" class=" " style="width:1in ;height:0.1in; border-radius:5px;margin:auto;border:rgba(153,153,153,1) 1px solid"></div>
+<div id="editMenu" style="padding-top:10px;margin-top:15px;height:50px; background-color: #E4E6E7 ;text-align:center;font-size:32;color:#fff; display:block;border-radius:4px;">
+<div id="btEdit" title="Edit" class="btnStyle" style=" background-image:url(https://www.boothleads.com/badge_images/icons/edit_black.png); height:40px;float:left;margin:10px;margin-top:0px;text-aline:center;display:none;filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+src='https://www.boothleads.com/badge_images/icons/edit_black.png',
+sizingMethod='scale')\9;"> </div>
+<div id="btDel" class="btnStyle" title="Delete" style="float:right;background-image:url(https://www.boothleads.com/badge_images/icons/trash-black.png); height:40px;margin:10px;margin-top:0px;text-aline:center;display:none"></div>
+<div id="btUpdt" class="btnStyle" title="Save" style="background-image:url(https://www.boothleads.com/badge_images/icons/save_black.png); height:40px;width:40px;float:left;margin:10px;margin-top:0px;text-aline:center;display:none;
+progid:DXImageTransform.Microsoft.AlphaImageLoader(
+src='https://www.boothleads.com/badge_images/icons/save_black.png',
+sizingMethod='scale')\9;">
+<apex:commandButton value="Save" action="{!savedimensions}" styleclass="btnStyle" image="https://www.boothleads.com/badge_images/icons/save_black.png"  style="float:right;height:40px;margin:10px;margin-top:0px;text-aline:center;display:none" />
+
+</div>            
+
+<div id="btFont" class="btnStyle" style="margin-top:0px;background-image:url(https://www.boothleads.com/badge_images/icons/font-family-black.png); filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+src='(https://www.boothleads.com/font-family-black.png',
+sizingMethod='scale')\9;height:40px;float:left;
+cursor:hand;margin:10px 5px;display:none;margin-top:0px;">
+<ul id="fontMenu" class="shdwRaised fntChMenu " style="display:none">
+              <li class="fontMi">Arial</li>
+              <li class="fontMi">Arial Black</li>
+              <li class="fontMi">Arial Unicode MS</li>
+              <li class="fontMi">Bodoni</li>
+              <li class="fontMi">Open Sans</li>
+              <li class="fontMi">Helvetica</li>
+              <li class="fontMi">Georgia</li>      
+              <li class="fontMi">Times New Roman</li>
+               <li class="fontMi">Gadget</li>
+                <li class="fontMi">sans-serif</li>
+</ul>
+</div>
+<div id="btFntSize" class="btnStyle" style=" background-image:url(https://www.boothleads.com/badge_images/icons/font_size_black.png);height:40px;display:none;float:left;margin:10px 5px;margin-top:0px; " >
+
+<ul id="fntSMenu" class="shdwRaised fntChMenu" style="z-index:2100;display:none">
+              <li class="fontSizeMi">1</li>
+              <li class="fontSizeMi">2</li>
+              <li class="fontSizeMi">3</li>
+              <li class="fontSizeMi">4</li>
+              <li class="fontSizeMi">5</li>
+              <li class="fontSizeMi">6</li>
+              <li class="fontSizeMi">7</li>
+              <li class="fontSizeMi">8</li>
+              <li class="fontSizeMi">9</li>
+              <li class="fontSizeMi">10</li>
+              <li class="fontSizeMi">11</li>
+              <li class="fontSizeMi">12</li>
+              <li class="fontSizeMi">13</li>
+              <li class="fontSizeMi">14</li>
+              <li class="fontSizeMi">15</li>
+              <li class="fontSizeMi">16</li>
+              <li class="fontSizeMi">17</li>
+              <li class="fontSizeMi">18</li>
+              <li class="fontSizeMi">19</li>
+              <li class="fontSizeMi">20</li>
+              <li class="fontSizeMi">21</li>
+              <li class="fontSizeMi">22</li>
+              <li class="fontSizeMi">23</li>
+              <li class="fontSizeMi">24</li>
+              <li class="fontSizeMi">25</li>
+              <li class="fontSizeMi">26</li>
+              <li class="fontSizeMi">27</li>
+              <li class="fontSizeMi">28</li>
+              <li class="fontSizeMi">29</li>
+              <li class="fontSizeMi">30</li>
+              <li class="fontSizeMi">31</li>              
+              <li class="fontSizeMi">32</li>
+              <li class="fontSizeMi">33</li>
+              <li class="fontSizeMi">34</li>
+              <li class="fontSizeMi">35</li>
+              <li class="fontSizeMi">36</li>
+              <li class="fontSizeMi">37</li>
+              <li class="fontSizeMi">38</li>
+              <li class="fontSizeMi">39</li>  
+              <li class="fontSizeMi">40</li>
+              <li class="fontSizeMi">41</li>
+              <li class="fontSizeMi">42</li>
+</ul>
+</div>
+<!-----------------------Color picker -------------------------------->
+<input id="full" class="btnStyle" style="float:right;margin-top:20px;" />
+<!---------------------- Text Editing Options------------------------->
+<div id="btFntAlignLeft" class="btnStyle fontAlnMi" title="Left Align" style="text-align:center;background-image:url(https://www.boothleads.com/badge_images/text_align_left.png);
+height:40px;width:40px;float:left;margin-top:0px;margin-left:5px; display:none;"></div>
+<div id="btFntAlignCenter" class="btnStyle fontAlnMi"  title="Center Align" style="text-align:center;background-image:url(https://www.boothleads.com/badge_images/text_align_center.png);
+height:40px;width:40px;float:left;margin-top:0px;margin-left:5px; display:none"></div>
+<div id="btFntAlignRight" class="btnStyle fontAlnMi" title="Right Align" style="text-align:center;background-image:url(https://www.boothleads.com/badge_images/text_align_right.png);
+height:40px;width:40px;float:left;margin-top:0px;margin-left:5px;display:none"></div>
+<div id="btTxtTrnsfmUC" class="btnStyle txtTransformMi" title="Upper Case" style="text-align:center;background-image:url(https://www.boothleads.com/badge_images/icons/upper_case48x48.png);
+height:40px;width:40px;float:left;margin-top:0px;margin-left:30px; display:none"></div>
+<div id="btTxtTrnsfmCap" class="btnStyle txtTransformMi" title="Capitalize" style="text-align:center;background-image:url(https://www.boothleads.com/badge_images/icons/capitilize48x48.png);
+height:40px;width:40px;float:left;margin-top:0px;margin-left:5px;display:none"></div>
+<div id="btTxtTrnsfmLC" class="btnStyle txtTransformMi" title="Lower Case" style="text-align:center;background-image:url(https://www.boothleads.com/badge_images/icons/lower_case60x60.png);
+height:40px;width:40px;float:left;margin-top:0px;margin-left:5px; display:none"></div>
+</div>
+<!---------------------------Actual Badge Designing Stage---------------->
+<div id="bdgMarg" class="badgeMargin" style="width:3.75in;left:1.1in;margin:initial;padding:5px;"> </div>
+<!---------------------------Input for Badge Name ---------------------->
+<input type="text" class="badgeName" placeholder="Please Enter The Name Of Badge"/>
+</div>
+</div>
+<!--------------------------------------------Right Content Ends----------------------------------------------------->
+<div id="savedBadgeHolder" style="width:250px;min-height:5.4in;max-height:5.4in;float:left;border:1px solid #cccccc;float:left;overflow:auto;">
+<div id="savedBdgHolderTitle" >SAVED BADGES</div>
+<div id="savedBadgeHolderContent" style="width:250px;height:auto;">
+
+</div> 
+</div>
+
+</div>
+</div>
+<!----------------------------------------------------------------------Pop Up Component---------------------------------------------------------------->
+<div id="popUpBackground" style="display:none;">
+<div id="popUpContainer"  style='display:none;background-color:#ffffff; width:500px;position:absolute;z-index:10000;top:300px;left:350px;padding:5px;border:1px solid #cccccc;border-radius:5px;'>
+  <div style='border-radius:4px; line-height:60px; background-color:#cccccc;text-align:center;height:60px;font-family:verdana;font-size:22px;color:#ffffff;'>Please select an option to change color <span id='close' class='popUpCloseIcon'/> </div>
+  <div  id="popUpContent"  style='margin:0 auto;margin-top:50px;background-color:#ffffff;height:200px;'>
+    <div style="width:400px;margin:0 auto;font-family:verdana;"> 
+      <input  type="radio" autocomplete="off" name="selectColor" id="textColor" value="color" style="margin-left:50px;"/>
+      Text Color
+      <input  autocomplete="off" type="radio" name="selectColor" id="backgroundColor" value="background-color" style="margin-left:50px;"  />
+      Background Color </div>
+      
+    <div style="width:400px;margin:0 auto; margin-top:50px;"> 
+    <div class="select_options btnStyle " style="font-family:verdana;line-height:40px;font-size:24px;color:#FFFFFF;background:none;background-color:#CCCCCC; margin-left:50px;width:100px;height:40px;text-align:center;display:inline-block;border-radius:4px;">OK</div>
+    <div class="select_options btnStyle " id='popUpCancle' style="font-family:verdana;line-height:40px;font-size:24px;color:#FFFFFF;background:none;background-color:#CCCCCC;margin-left:100px;width:100px;height:40px;text-align:center;display:inline-block;border-radius:4px;">Cancel</div>
+    <div id="validationMsg" style="width:100%;height:50px;outline 2px solid #FF0000;display:none;font-size:30px;font-family:'Times New Roman', Times, serif"></div>  
+    </div>
+  </div>
+  
+</div>
+</div>
+<!-----------------------------------------------------------------------Pop Up Component Ends--------------------------------------------------------------->
+<div id="popUpBackgroundFontSizeAlert" style="widht:100%;height:1000px;display:none">
+<div id="popUpContainerFontSizeAlert"  style='display:none;background-color:#ffffff; width:400px;position:absolute;z-index:10000;top:300px;left:350px;padding:5px;border:1px solid #cccccc;border-radius:5px;'>
+  <div style='border-radius:4px; line-height:60px; background-color:#cccccc;text-align:center;height:60px;font-family:verdana;font-size:22px;color:#ffffff;'>Maximum Font Size Allowed <span id='close' class='popUpCloseIcon'/> </div>
+  <div  id="popUpContentFontSizeAlert"  style='text-align:center;line-height:200px;font-margin:0 auto;margin-top:50px;background-color:#ffffff;height:200px;'>
+  
+  </div>
+</div>
+</div>
+<!--------------------------------Dummy Span Container for testing the text Width--------------------->
+<span id="dummySpanContainer" style="display:none"></span>
+<!--------------------------------Dummy Div for holding the backend data------------------------------>
+<div id="dataofscreenshot" style="display:none;">
+<apex:repeat value="{!jsonstr}" var="x">
+<apex:outputText value="{!x}"/><br/><br/><br/>
+</apex:repeat>
+</div>
+
+<apex:outputpanel id="k">
+<script>
+
+var onss='{!onsiteselected}';
+
+function setonsite()
+{
+   
+ $('.imagecls').remove();     
+$(".sBdgName").each(function() {
+//alert('{!onsiteselected}');
+//alert('onss');
+//alert(onss);
+  if($(this).html()==onss)
+  $(this).after('<div class="imagecls" style="float:left"><img  src="{!$Resource.onsiteselected}"/></div>');
+});
+}
+</script>
+<div id="ShowselBadgedetails"  style="display:none;">
+ 
+
+<apex:outputText value="{!ShowBadge}"/> 
+
+</div>
+ <apex:inputHidden value="{!selectedBadgeValue}" id="RadioButtonValue" />
+
+ 
+ <script>
+        function changeValue(input, textid) {
+            document.getElementById(textid).value = input.value;
+          $('#defaultattregis').prop('checked',true); 
+        }
+        
+       
+    </script>
+    
+<!---------------------------------------------------------------SCRIPT STARTS--------------------------------------------------------------------->
+<script>
+function showData()
+{
+
+var str = $("#ShowselBadgedetails").text();    
+
+try{
+strArray =  str.split("***");
+
+ 
+var strToJsonObjArr=[];
+module= strArray[0];
+checkModuleButton();
+  console.log("Module >"+module );
+
+ badge_type = strArray[1];
+  console.log("Saved badge_type >"+badge_type ); 
+ if(badge_type=='SwedenBadge')
+ $("#bdgMarg").css("left","");
+ else
+ $("#bdgMarg").css("left","1.1in");
+ checkBadgeTypeRadioButton();
+ var thisJson =JSON.parse(strArray[2]); 
+ 
+ nameOfTheBadgeToEdit = thisJson.name;
+ $(".badgeName").val(nameOfTheBadgeToEdit); 
+ $("#bdgMarg").css("width",thisJson.width+"px");
+ $("#bdgMarg").css("height",+thisJson.height+"px");  
+  console.log("Name:"+thisJson.name+"width:"+thisJson .width+"Height>"+thisJson .height);
+ console.log("Name:"+nameOfTheBadgeToEdit +"Index:"+indexOfTheBadgeToEdit ); 
+ 
+// console.log(JSON.stringify(thisJson))
+for(var i=3;i<strArray.length;i++){ 
+    if(strArray[i] != null || strArray[i] != ""){
+         console.log("STR ARRAY>"+strArray[i])
+        var jsonobj = JSON.parse(strArray[i]);
+        strToJsonObjArr.push(jsonobj );
+       
+       // console.log('xxxxxxxxxxxxxxxxxxxxx>>'+strToJsonObjArr[i-1].id ); 
+            
+    }else{
+     strArray.pop();   
+    } 
+} 
+}catch(e){
+console.log(e);
+
+}
+$("#bdgMarg").empty(); 
+
+reCreateBadge(strToJsonObjArr);
+//console.log("Finished") 
+
+$(".loaderBackground").css("display","none")
+
+
+}
+//-------------------------------------------Clear Badge After Saving Updating and Deleting--------------------------------//
+function clearBadge(){
+$("#bdgMarg").empty();
+$('.badgeName').val("");
+$(".loaderBackground").css("display","none")
+module=''; 
+  checkModuleButton(); 
+//location.reload();
+// $('#background').css("display","none");
+ console.log("onUpdatecomplete");
+ $('#defaultattregis').prop('checked',true);
+  
+  document.getElementById('{!$Component.RadioButtonValue}').value = $("input[name='badgeType']:checked").val();  
+ setTimeout(function(){ /*$('.sBdgName:contains("Test")').append('<div>Hello</div>');*/
+setonsite();
+}, 5000); 
+}
+
+
+//------------------------------------------- Recreate A Saved Badge for Updating------------------------------------------------------------>
+function reCreateBadge(ElementsArr){  
+   
+        //console.log(badgeElementsDetailsObj.elementPropertiesArray.length)
+       // var elementsArray = badgeElementsDetailsObj.elementPropertiesArray;
+       
+       try{
+       var elementsArray =  ElementsArr;
+       $("#bdgMarg").empty(); 
+          // $(".badgeName").val(""); 
+       // console.log(elementsArray.length)    
+        for(var i=0;i<elementsArray.length;i++)  
+        {   
+           
+            badgeElement = $("<div class='badgeElement'></div>");       
+           // badgeElement.attr("contentEditable","true");
+            badgeElement.attr("id",elementsArray[i].id);
+            badgeElement.css("position","absolute");
+            
+            badgeElement.css("width",elementsArray[i].width+"px");
+            //badgeElement.css("height",elementsArray[i].height+"px");
+            badgeElement.css("line-height",elementsArray[i].height+"px");
+            badgeElement.css("top",elementsArray[i].positionTop+"px");
+            badgeElement.css("left",elementsArray[i].positionLeft+"px");
+            badgeElement.css("margin-top",elementsArray[i].marginTop);
+            badgeElement.css("margin-right",elementsArray[i].marginRight);
+            badgeElement.css("margin-bottom",elementsArray[i].marginBottom);
+            badgeElement.css("margin-left",elementsArray[i].marginLeft);
+            badgeElement.css("padding-top",elementsArray[i].paddingTop);
+            badgeElement.css("padding-right",elementsArray[i].paddingRight);
+            badgeElement.css("padding-bottom",elementsArray[i].paddingBottom);
+            badgeElement.css("padding-left",elementsArray[i].paddingLeft);
+            badgeElement.css("text-align",elementsArray[i].textAlign);
+            badgeElement.css("font-size",elementsArray[i].fontSize);  
+            badgeElement.css("font-family",elementsArray[i].fontFamily);   
+            badgeElement.css("text-transform",elementsArray[i].textTransform);
+            badgeElement.css("background-color",elementsArray[i].backgroundColor);  
+            badgeElement.css("color",elementsArray[i].textColor);  
+            badgeElement.css("opacity",elementsArray[i].opacity);  
+            badgeElement.css("background-size","100% 100%"); 
+            badgeElement.text(elementsArray[i].contentText);  
+         
+            selTblId =   badgeElement.attr("id"); 
+            //recreateLogoUrl = elementsArray[i].urlResult
+             badgeElement.css("white-space","nowrap");
+            
+             if(elementsArray[i].id == "badgeLogo" || elementsArray[i].id =="cclogo" ||  elementsArray[i].id =="clogo"||elementsArray[i].id == "Logo" )
+         {    
+          console.log("DDD"+elementsArray[i].urlResult)
+                 badgeElement.css("height",elementsArray[i].height+"px");        
+           
+             url_result=elementsArray[i].urlResult;
+             console.log(i+">>URL::>>"+url_result); 
+              $(badgeElement).css("background-image","url("+elementsArray[i].urlResult+")");
+                    $(badgeElement).css("background-repeat", "no-repeat");
+            $(badgeElement).css("background-size","100% 100%");   
+              var uploadHolder =$("<div class='upload' style='display:none;background-size:100% 100%'><input type='file' name='upload' onchange=\'readURL(this)\'/></div>");    
+        $(badgeElement).append(uploadHolder);
+        badgeElement.attr("contentEditable","false");
+             $(badgeElement).on("mouseover",function(){
+            
+              $(this).attr("contentEditable","false"); 
+                 var this_width =  $(this).css("width");
+                 var this_height =  $(this).css("height")/3;  
+                 
+                 $(this).children('div').css("display","block")
+                 uploadHolder.css("width",this_width);
+                  uploadHolder.css("height",this_height); 
+                 })
+                 
+                  $(badgeElement).on("mouseout",function(){
+                 $(this).children('div').css("display","none")})   
+                              
+          }  
+          if(elementsArray[i].id == "badgeLogof" )
+         {    
+          console.log("DDD"+elementsArray[i].urlResult)
+                 badgeElement.css("height",elementsArray[i].height+"px");        
+           
+             url_result=elementsArray[i].urlResult;
+             console.log(i+">>URL::>>"+url_result); 
+              $(badgeElement).css("background-image","url("+elementsArray[i].urlResult+")");
+                    $(badgeElement).css("background-repeat", "no-repeat");
+            $(badgeElement).css("background-size","100% 100%");   
+              var uploadHolder =$("<div class='upload' style='display:none;background-size:100% 100%'><input type='file' name='upload' onchange=\'readURLf(this)\'/></div>");    
+        $(badgeElement).append(uploadHolder);
+        badgeElement.attr("contentEditable","false");
+             $(badgeElement).on("mouseover",function(){
+            
+              $(this).attr("contentEditable","false"); 
+                 var this_width =  $(this).css("width");
+                 var this_height =  $(this).css("height")/3;  
+                 
+                 $(this).children('div').css("display","block")
+                 uploadHolder.css("width",this_width);
+                  uploadHolder.css("height",this_height); 
+                 })
+                 
+                  $(badgeElement).on("mouseout",function(){
+                 $(this).children('div').css("display","none")})   
+                              
+          } 
+          else  if(elementsArray[i].id=="badgeQrCode"||elementsArray[i].id =="cqrcd"||elementsArray[i].id =="qrcode" )            
+             {
+              badgeElement.css("height",elementsArray[i].height+"px");
+              badgeElement.css("background-image",elementsArray[i].qrUrlResult);     
+              $(badgeElement).css("background-color","#e6b8af");      
+               badgeElement.css("background-repeat","no-repeat");
+               QrUrl_Result=elementsArray[i].qrUrlResult;    
+               console.log("QR::>>"+QrUrl_Result)       
+             
+             } 
+         
+             $("#bdgMarg").append(badgeElement);   
+             
+                  badgeElement.on('click',function(){ 
+                  if($(this).attr("id") !="badgeLogo"&&$(this).attr("id") !="badgeLogof"&& $(this).attr("id") !="badgeQrCode"&& $(this).attr("id")!="cqrcd"&& $(this).attr("id")!="Logo" && $(this).attr("id")!="qrcode" && $(this).attr("id")!="cclogo")      
+                       $(this).attr("contentEditable","true");  
+              $(this).css("cursor","pointer");
+              if($(this).is('.ui-resizable'))
+              $(this).resizable("destroy");          
+              $(this).focus(); 
+              console.log("contenteEditable"+$(this).attr("contentEditable"));
+              if($(this).is(".ui-draggable")) 
+               $(this).draggable("destroy"); 
+           });
+            
+            badgeElement.on('click',function(event){
+            // $(this).focus(); 
+            event.stopPropagation()
+             if($(this).attr("id") !="badgeLogo"&&$(this).attr("id") !="badgeLogof"&& $(this).attr("id") !="badgeQrCode"&& $(this).attr("id")!="cqrcd"&& $(this).attr("id")!="Logo" && $(this).attr("id")!="qrcode" && $(this).attr("id")!="cclogo")      
+              
+              $(this).attr("contentEditable","true");
+            if($(this).attr("id") =="badgeCompanyName" || $(this).attr("id") =="ccomn" || $(this).attr("id") =="comn"){                             
+                            //shuffleCompName=elementsArray[i-1].contentText;
+                                //$(".company").text(shuffleCompName);  
+                                //console.log(shuffleCompName)   
+                                badgeElementOnClick($(this).attr("id"));
+                                }                           
+                                 else if($(this).attr("id") =="badgeFullName" || $(this).attr("id")=="cfulln" || $(this).attr("id")=="fulln"){    
+                                                 // shuffleName=elementsArray[i-1].contentText;                                                   
+                                                          
+                            badgeElementOnClick($(this).attr("id"));
+                            
+                            //$(".name").text(elementsArray[i-1].contentText || $(this).attr("id") =="badgeFirstName" || $(this).attr("id") =="badgeFirstName");       
+                                }
+                                else if($(this).attr("id") =="badgeFirstName" ||$(this).attr("id") =="cfirn" || $(this).attr("id") =="firn"){
+                                     // shuffleName +=elementsArray[i-1].contentText;
+                        
+                                badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="badgeLastName" || $(this).attr("id") =="clstn" || $(this).attr("id") =="lstn"){  
+                                 // shuffleName +=elementsArray[i-1].contentText;
+                                
+                               
+                                badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="badgeTicket" || $(this).attr("id") =="ticketn" || $(this).attr("id") =="cticketn"){    
+                                
+                               
+                        badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="badgeJobTitle" || $(this).attr("id") =="jobTitle" || $(this).attr("id") =="cjobTitle"){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="ccity" ){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="cstate" ){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="ccitystate" ){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="cstext" ){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="cstext2" ){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="cstext3" ){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="cuniqNo" ){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="cdline" ){
+                                        
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="badgeExhibitor" ){ 
+                                  
+                             
+                            badgeElementOnClick($(this).attr("id"));
+                                }
+                                else if($(this).attr("id") =="badgeAttendee" ){  
+                                      
+                                
+                            badgeElementOnClick($(this).attr("id"));
+                                }   
+                                 else if($(this).attr("id") =="cticketCategory")
+                                {
+                                   badgeElementOnClick($(this).attr("id"));
+                                } 
+                                else if($(this).attr("id") =="badgeLogo"||$(this).attr("id") =="badgeLogof" ){ 
+                                $(this).attr("contentEditable","false");
+                                console.log("Logo") 
+                                $(this).resizable({
+                           
+                            maxHeight: $("#bdgMarg").height()-20,  
+                            maxWidth: $("#bdgMarg").width()-10,
+                            minHeight:25,      
+                            minWidth: 50,
+                              })
+                                    badgeElement.attr("contentEditable","false");
+                                       badgeElement.css("background-size","100% 100%");
+                               
+                            badgeElementOnClick($(this).attr("id"));
+                              
+                               
+                                }  
+                                else if($(this).attr("id") =="badgeQrCode" || $(this).attr("id") =="qrcd" || $(this).attr("id") =="cqrcd"){   
+                                    var id= $(this).attr("id");   
+                                     $(this).attr("contentEditable","false"); 
+                                       badgeElement.css("background-size","100% 100%")
+                                        badgeElement.css("background-size","cover");
+                                        
+                               
+                            badgeElementOnClick($(this).attr("id"));
+                               
+                                }
+                                });    
+                                
+                                
+  $(badgeElement).draggable()     
+  .click(function() {
+  console.log("click")
+   $(this).css("cursor","pointer");
+   if($(this).attr("id") !="badgeLogo"&&$(this).attr("id") !="badgeLogof"&& $(this).attr("id") !="badgeQrCode"&& $(this).attr("id")!="cqrcd"&& $(this).attr("id")!="Logo" && $(this).attr("id")!="qrcode" && $(this).attr("id")!="cclogo")      
+              
+              $(this).attr("contentEditable","true");
+  
+   
+    $(this).draggable( {disabled: true});
+    
+}).dblclick(function(e){
+    console.log("dblclick")
+      $(this).attr("contentEditable","false");
+    $(this).draggable({ disabled: false,
+     containment:'#bdgMarg',
+     zIndex: 2500,
+     start:function(event){
+     event.stopPropagation();
+     $(this).css("border","2px dashed red")
+     },
+     stop:function(){
+      $(this).css("border","1px dashed #CCCCCC")
+     }
+     });
+     $(this).css("cursor","move");
+     
+});  
+
+ $(badgeElement).on("mouseover",function(){
+      $(this).css("cursor","pointer");
+   
+   if($(this).is(".ui-draggable"))
+         $(this).draggable("destroy"); 
+         
+     $(this).attr("contentEditable","false"); 
+      if($(this).attr("id") =="badgeLogo"||$(this).attr("id") =="badgeLogof"|| $(this).attr("id") =="badgeQrCode" || $(this).attr("id") =="qrcd" || $(this).attr("id") =="cqrcd" ){ 
+                                console.log("Logo") 
+                                $(this).resizable({
+                           // aspectRatio: true,
+                             autoHide:true ,
+                            maxHeight: $("#bdgMarg").height()-20,  
+                            maxWidth: $("#bdgMarg").width()-10,
+                            minHeight:125,      
+                            minWidth: 125,  
+                              })
+                              }
+    
+          $(this).resizable({
+           maxHeight: $("#bdgMarg").height()-20,  
+           maxWidth: $("#bdgMarg").width()-10,
+            minHeight:15,      
+            minWidth: 50,
+             autoHide:true , 
+          start:function(){
+           var width = parseInt( $(this).css("width"));
+           var height =  parseInt( $(this).css("height"));
+            elementArea = width*height;
+            // $(this).css("border","2px dashed red")
+          console.log("standard start resize" +elementArea )
+         
+          },
+           resize:function(){
+          onResizing($(this)) 
+          },  
+          stop:function(){
+                  $(this).focus();   
+                  selTblId = $(this).attr("id")
+                 onResizeStop(selTblId) 
+                  
+          }
+          }); 
+     
+     })                         
+        badgeElement.on('keydown',function(e){
+        //Preventing Enter Key
+        if(e.keyCode == '13' || e.keyCode == '13' )
+        {
+        e.preventDefault();
+        
+        }
+        else if(e.keyCode == '8' || e.keyCode == '46' || e.which=='46' || e.which=='8')
+                {
+                if(newFontSize<42)
+                    newFontSize++;
+                  //  $(this).css("font-size",newFontSize)   
+                
+                }
+        })                          
+     badgeElement.on('keyup',function(e){  
+     
+             console.log("keycode"+e.keycode+">>"+e.which) 
+             $(this).css("text-align","center")                  
+             var width = $(this).textWidth();
+             text_width = width;
+             var newFontSize = parseInt($(this).css("font-size"));
+             
+             //console.log("innerwidth"+$(this).innerWidth()+":Width:"+$(this).width())
+            if($(this).width() <= width+20 ){
+               if(newFontSize >2)       
+                newFontSize--;     
+                
+                $(this).css("font-size",newFontSize+"px");            
+               
+            }
+            else {
+                if(e.keyCode == '8' || e.keyCode == '46' || e.which=='46' || e.which=='8')
+                {
+                   if(newFontSize<42)
+                    newFontSize++;                
+                
+                }
+                $(this).css("font-size",newFontSize+"px") 
+             
+            }                 
+          });  
+           
+           
+         
+        }
+        }catch(e){console.log(e);} 
+        
+        
+        }
+
+
+//--------------------------------Global Variables---------------------------------------->
+var counter=0;
+var clientXpos;
+var clientYpos;
+var selTblId;
+var options = {}; 
+var nOfLayOuts =0;
+var tblLayOuts = new Array();
+var tblsPosStr = new Array();
+var tblLaoutNames = new Array();
+var selSchCell;
+var selSchFCell;
+var selCellIdl;
+var firnAdded = false;  
+var tblMenuHtml;
+var custom_Logo
+var shuffleCompName;
+var saved_BadgeHolder;
+var url_result;
+var QrUrl_Result;  
+var isLogoUploaded;
+var isQrUploaded;
+var saveCounter;
+var _dataUrlArr;
+var saved_BadgeHolder_content;
+var isDuplicated;
+var isUpdated;
+var printDoc;
+var scrollTop;
+var dataURL="";
+var savedBadgeDetailsArray = [];
+var savedBadge;
+ var strarray;
+ var J ;
+ var isBadgeClickedForEditing;
+ var validateNameCounter;
+ var nameOfTheBadgeToEdit;
+ var indexOfTheBadgeToEdit;
+ var strArray;
+ var original_color;
+ var text_width;
+ var text_height;
+ var elementArea;
+ var btnNewClickFlag = false;
+ var isFieldExist;
+ 
+ //------------------------------- creating a JSON Object for saving the badge-------------------------------//
+       function createObjectTosaveBadgeDetails(){
+          validatename();
+       //console.log('ddddddddddd'+isdup);
+        var elementPropertiesArray = [];      
+     $('#bdgMarg').children().each(function(){
+          
+                    if($(this).attr("id")!="badge_clear_one" && $(this).attr("id")!="badge_clear_two")
+                    {     
+                                
+                    var position =$(this).position();
+                    if($(this).attr("id") !="badgeLogo"&&$(this).attr("id") !="badgeLogof"&&$(this).attr("id") !="badgeQrCode"&& $(this).attr("id")!="cqrcd" &&$(this).attr("id")!="Logo" &&$(this).attr("id")!="qrcode" &&$(this).attr("id")!="cclogo"){       
+                    //////console.log($(this).css("font-size")+"<>"+$(this).css("font-family")+"<>"+$(this).css("text-align")) 
+                    var colorRGB = rgba2hex2rgb($(this).css("color")) 
+                    var bgColorRGB = rgba2hex2rgb($(this).css("background-color"))  
+                    console.log("rgbColor:"+colorRGB);
+                    console.log("rgbColor:"+bgColorRGB);               
+                    var JSONObject=  { 
+                        "id":$(this).attr("id") , 
+                        "height":$(this).height(),  
+                        "width":$(this).width(),
+                        "line-height":$(this).height(), 
+                        "position":$(this).css("position"),  
+                        "positionTop":Math.round(position.top),  
+                        "positionLeft":Math.round(position.left),
+                        "marginTop":$(this).css("margin-top"),
+                        "marginRight":$(this).css("margin-right"), 
+                        "marginBottom":$(this).css("margin-bottom"),
+                        "marginLeft":$(this).css("margin-left"), 
+                        "paddingTop":$(this).css("padding-top"), 
+                        "paddingRight":$(this).css("padding-right"),
+                        "paddingBottom":$(this).css("padding-bottom"),
+                        "paddingLeft":$(this).css("padding-left"),
+                        "textAlign":$(this).css("text-align"),                       
+                        "fontSize":$(this).css("font-size"),
+                        "fontFamily":$(this).css("font-family"),  
+                        "textTransform":$(this).css("text-transform"),   
+                        "contentText":$(this).text(),  
+                        "backgroundColor":bgColorRGB ,  
+                        "opacity":$(this).css("opacity"),
+                        "textColor":colorRGB,
+                        "white-space":$(this).css("white-space")      
+                                                   
+                        };                     
+                         
+                     i++;        
+                    elementPropertiesArray.push(JSONObject);
+                    
+                  }         
+                    
+        
+        else if($(this).attr("id") =="badgeLogo"||$(this).attr("id") =="badgeLogof"||$(this).attr("id") =="badgeQrCode"||$(this).attr("id")=="cqrcd"||$(this).attr("id")=="Logo" && $(this).attr("id")=="qrcode" && $(this).attr("id")=="cclogo")      
+        {  
+                       
+              var JSONObject=  {      
+                        "id":$(this).attr("id") , 
+                        "height":$(this).height(),  
+                        "width":$(this).width(),  
+                        "positionTop":Math.round(position.top),  
+                        "positionLeft":Math.round(position.left),
+                        "marginTop":$(this).css("margin-top"),
+                        "marginRight":$(this).css("margin-right"), 
+                        "marginBottom":$(this).css("margin-bottom"),
+                        "marginLeft":$(this).css("margin-left"), 
+                        "paddingTop":$(this).css("padding-top"), 
+                        "paddingRight":$(this).css("padding-right"),
+                        "paddingBottom":$(this).css("padding-bottom"),
+                        "paddingLeft":$(this).css("padding-left"),
+                        "qrUrlResult":QrUrl_Result                   
+                        }  
+                         if($(this).attr("id") =="badgeLogo"||$(this).attr("id") =="badgeLogof"||$(this).attr("id")=="Logo" ||  $(this).attr("id")=="cclogo")
+                         {
+                         JSONObject["urlResult"] = url_result; 
+                         console.log("Save::"+url_result)
+                         }
+                          
+                         i++;    
+                         
+                    elementPropertiesArray.push(JSONObject);    
+                    
+            } 
+            
+            
+        }         
+        
+                            
+                               
+    });
+    
+    var badgeDetailsObject = {  
+            "name":$('.badgeName').val(),         
+            "width":$('#bdgMarg').width(),      
+            "height":$('#bdgMarg').height(),
+            "backgroundColor":$('#bdgMarg').css("background-color"),
+            "savedImageDataUrl":_dataUrlArr[saveCounter]                    
+            } 
+    
+    bdgElementDetailsJSON={"badgeDetailsObject":badgeDetailsObject,
+                            "elementPropertiesArray":elementPropertiesArray};     
+                             console.log(""+$('.badgeName').val()+"<><>"+JSON.stringify(bdgElementDetailsJSON))   
+     console.log(';;;;;;;;;;;;;;; before if ;;;;;;;;;;;;;;;;;;;'+isBadgeClickedForEditing );
+      if(isBadgeClickedForEditing == false){ 
+        
+      if(J==0){
+       console.log('2222222222222222222222 before if 222222222222222'+isBadgeClickedForEditing+"J>>"+J );  
+       //Get Module values
+       var checkboxes = document.getElementsByName('module');
+       var vals = "";
+  
+      for (var i=0, n=checkboxes.length;i<n;i++) {
+         if (checkboxes[i].checked) 
+          {
+              vals += ";"+checkboxes[i].value;
+           }
+          }
+       if (vals) vals = vals.substring(1);
+       //end of module values
+       
+        //----------------------------------- Save a new Badge in DB -----------------------------------//
+       
+        SendToServer(JSON.stringify(bdgElementDetailsJSON),document.getElementById('stylepage:styleform:RadioButtonValue').value,vals);  
+       
+          }
+          }
+          else if( isBadgeClickedForEditing == true){        
+          
+          if(J==1){  
+          
+          for(var i =0;i<bdgElementDetailsJSON.elementPropertiesArray.length;i++)
+            console.log(JSON.stringify(bdgElementDetailsJSON).length+"<<>>"+ 'before if 33333333'+"<><>");
+            //Get Module values
+       var checkboxes = document.getElementsByName('module');
+       var vals = "";
+  
+      for (var i=0, n=checkboxes.length;i<n;i++) {
+         if (checkboxes[i].checked) 
+          {
+              vals += ";"+checkboxes[i].value;
+           }
+          }
+       if (vals) vals = vals.substring(1);
+       //end of module values
+            //----------------------------------- Updating an Existing Badge in DB -----------------------------------//
+              sendtoupdate(JSON.stringify(bdgElementDetailsJSON),document.getElementById('stylepage:styleform:RadioButtonValue').value,vals); 
+              isBadgeClickedForEditing = false;
+          
+          }
+          }
+     saveCounter++;   
+     
+     if(savedBadgeDetailsArray.length>0)    {      
+                        //console.log(""+$('.badgeName').val()+"<><>"+savedBadgeDetailsArray[0].bdgElementDetailsJSON.badgeDetailsObject.name)        
+            for(var i=0;i<savedBadgeDetailsArray.length;i++ ){
+                 
+                //console.log(""+$('.badgeName').val())     
+                if(savedBadgeDetailsArray[i].badgeDetailsObject.name!= $('.badgeName').val())   
+                {
+                    savedBadgeDetailsArray.push(bdgElementDetailsJSON);       
+                  console.log("IF<><>"+savedBadgeDetailsArray.length+"<>"+$('.badgeName').val()+"<><>"+savedBadgeDetailsArray[i].badgeDetailsObject.name)  
+                    
+                }
+                else        
+                {
+                
+                 savedBadgeDetailsArray.splice(i,1,bdgElementDetailsJSON);
+                  console.log(savedBadgeDetailsArray.length+"::Else"+$('.badgeName').val()+"<><>"+savedBadgeDetailsArray[i].badgeDetailsObject.name)  
+                }
+            }
+        }   
+        else
+        {    
+        savedBadgeDetailsArray.push(bdgElementDetailsJSON); 
+     
+        }
+ }
+ 
+ 
+ 
+ 
+ //----------------------------------------- Check the Badge Name to avoid Duplication----------------------------------------//
+ 
+function validatename(){
+
+console.log('================================'+isBadgeClickedForEditing);
+var BDname =  $(".badgeName").val();
+J=0; 
+console.log('vvvvvvvvvvvvvvvvvvvvv'+BDname  +'LLLLLLLLLLLLLLLL'+strarray.length);
+
+if(strarray && strarray.lenght>0)
+{
+ J=0; 
+console.log("JJJJ"+J)
+for(var i=0;i<strarray.length;i++ ){
+var jsonobj = JSON.parse(strarray[i]);
+console.log('================================'+jsonobj.name);
+if(jsonobj.name == BDname){
+console.log('name  already exists');
+J=1;   
+//return false;
+}else{
+//return true;
+}
+}
+}  
+
+                        for(var k=0;k<$("#savedBadgeHolderContent").children().length;k++)
+                            {
+                             var savedBdgNameText = $("#savedBadgeHolderContent").children('div').eq(k).children().eq(0).text();        
+                            if(savedBdgNameText == $(".badgeName").val())
+                                { 
+                                  if(k!=indexOfTheBadgeToEdit ){ 
+                                 
+                                  
+                                  alert("A Badge With Same Name Exist");
+                                   J=2;
+                                   console.log("J++++++"+J)
+                                   $(".loaderBackground").css("display","none");
+                                   break;
+                                }
+                                else{
+                                J=1;
+                                }
+  
+                                }
+                                 else {
+                                if(isBadgeClickedForEditing == true)
+                                J=1; 
+                                }
+
+                                                         
+                                                         
+                          } 
+
+} 
+ $(window).load(function() {   
+console.log("window load occurred!");
+
+
+});
+
+
+//---------------------------------------- Function to make controls Visible/Invisible -------------------------------//
+  function badgeElementOnClick(id){
+     
+  
+        selTblId= id;  
+         $("#"+selTblId).focus(); 
+        // highlightFont(selTblId); 
+         //addClassToFontSize(selTblId);   
+          // console.log(id)
+        $("#editMenu").css("visibility","visible")
+        $('#btEdit').show(); 
+        $('#btUpdt').show(); 
+        $('#btDel').show();    
+        $("#btFont").hide(); 
+        $("#btFntSize").hide();
+        $("#btFntAlign").hide();   
+        $("#btFntAlignLeft").hide();                
+        $("#btFntAlignCenter").hide();   
+        $("#btFntAlignRight").hide();     
+        $("#btTxtTrnsfmUC").hide();   
+        $("#btTxtTrnsfmLC").hide();     
+        $("#btTxtTrnsfmCap").hide();  
+        $(".sp-replacer").hide(); 
+    $('#bdgMarg').children().each(function(){
+        $(this).css("border","none");   
+     
+    });         
+     if(id=="badgeLogo"||id=="badgeLogof"||id =="badgeQrCode" || id=="cqrcd"|| id=="Logo" || id=="cqrcd"|| id=="cclogo")    
+    {
+       $('#btEdit').hide(); 
+    }     
+     
+    
+               
+     customBadgeElementOnClick(selTblId);      
+    }
+function customBadgeElementOnClick(_id){ 
+//conosole.log("custombadgeclick")       
+    clearBordersOfStage();
+     //highlightFont(selTblId);  
+    // addClassToFontSize(selTblId);   
+   $("#"+_id).focus();        
+    $("#"+_id).css("border","dashed #ccc 1.5px");  
+      selTblId=_id;  
+        
+    }
+  function clearBordersOfStage(){
+          $("#bdgMarg").children().each(function() {
+            $(this).css("border","none");  
+        });
+        //////console.log("clear")  
+          }
+          
+          function shuffleNames(name,arrayofFirstandLastName,companyName){  
+$("#bdgMarg").children().each(function() {
+            
+            if($(this).attr("id")=="badgeFullName" ||$(this).attr("id")=="cfulln")
+            {
+                $(this).text(shuffleName)
+                         
+            }  
+            
+            //if($(this).attr("id")=="badgeFirstName"){
+            // ////console.log(shuffleNameArr[0]) 
+            //}
+              if($(this).attr("id")=="badgeFirstName" || $(this).attr("id")== "badgeLastName" || $(this).attr("id")=="clstn" || $(this).attr("cfirn")){        
+                    
+                    var nameArr = name.split(" ");  
+                $("#badgeFirstName").text(nameArr[0]);               
+                    // ////console.log("Last Name"+$(this).attr("id"))
+                  
+                $("#badgeLastName").text(nameArr[1]); 
+                $("#cfirn").text(nameArr[0]);
+                $("#clstn").text(nameArr[1]);
+                 $(".name").text(name);  
+                }  
+                
+                if($(this).attr("id")=="ccomn" || $(this).attr("id") == "badgeCompanyName")
+                {
+                    //////console.log(name+"::"+companyName)
+                    $("#ccomn").text(companyName);
+                    $("#badgeCompanyName").text(companyName);  
+                }
+                
+            $(".name").text(name);
+            $(".company").text(companyName);    
+                
+              
+        });
+   }
+   
+   
+//--------------------------------------------------------Create Badge On Standard Template Clicked---------------------------------------------------//    
+function bagde_Template(templateId){  
+     $("#bdgMarg").css("width","3.75in");
+     $("#bdgMarg").css("height","3in");    
+     $("#bdgMarg").empty();  
+      $("#bdgMarg").css("border","0px");
+     $('.templateHolder').css("display","none");
+      $(".badgeName").val($("#"+templateId).children(".templateName").text()) 
+    
+     var badge_Logo =  $("<div class='badgeElement badgeLogo'style='background-color:#FFFFFF;position:absolute;top:5px;left:5px;margin:0; ' ></div>");    
+         badge_Logo.attr("id", "badgeLogo");
+         
+         $('.templateHolder').css("display","none");
+    
+     
+         var uploadHolder =$("<div class='upload' style='display:none;background-size:100% 100%'><input type='file' name='upload'       onchange=\'readURL(this)\'/></div>");    
+        badge_Logo.append(uploadHolder);
+         function removeThis(_this){
+             console.log($(_this).attr("id"))
+            
+             }
+             badge_Logo.on("mouseover",function(){
+                 var this_width =  $(this).css("width");
+                 var this_height =  $(this).css("height")/3;
+                 
+                 $(this).children('div').css("display","block")
+                 uploadHolder.css("width",this_width);
+                  uploadHolder.css("height",this_height); 
+                 })
+                 
+                  badge_Logo.on("mouseout",function(){
+                 $(this).children('div').css("display","none")})
+         
+            
+      
+            
+     var badge_Ticket =  $("<div class='badgeElement badgeTicketName' contentEditable='true'  style='background-color:#FFFFFF;height:40px;line-height:40px;white-space:nowrap;font-size:20px;position:absolute;top:25px;left:130px; color:rgba(0,0,0,1) ;margin:0px;width:210px;' ></div>");         
+     badge_Ticket.attr("id", "badgeTicket");  
+       
+           
+     var badge_FullName =  $("<div class='badgeElement badgeFullName'   contentEditable='true' style='background-color:#FFFFFF;white-space:nowrap;width:95%;line-height:36px;height:36px;font-size:34px;position:absolute;top:87px;left:5px;' ></div>");        
+         badge_FullName.attr("id", "badgeFullName");             
+       
+        
+     var badge_FirstName =  $("<div class='badgeElement badgeFirstName' contentEditable='true'  style='background-color:#FFFFFF;font-weight:normal;white-space:nowrap;height:36px;line-height:36px;font-size:34px;position:absolute;top:75px;left:5px;width:95%; color:rgba(0,0,0,1);'></div>");      
+        
+           
+         badge_FirstName.attr("id", "badgeFirstName");  
+       
+         console.log(templateId)
+    var badge_LastName =  $("<div class='badgeElement badgeLastName'  contentEditable='true' style='background-color:#FFFFFF;white-space:nowrap;line-height:32px;height:32px;font-size:30px;position:absolute; width:95%;top:120px;left:5px; color:rgba(0,0,0,1);text-align:center;' ></div>");  
+     
+        badge_LastName.attr("id", "badgeLastName");  
+      
+    var badge_JobTitle =  $("<div class='badgeElement badgeJobTitle' contentEditable='true'  style='background-color:#FFFFFF;white-space:nowrap;color:rgba(0,0,0,1)' ></div>");  
+        badge_JobTitle.attr("id", "badgeJobTitle");  
+      
+                                         
+   
+        
+                                     
+    var badge_QrCode =  $("<div class='badgeElement badgeQrCode'   style='background-color:#FFFFFF;white-space:nowrap;margin:0;background-image:url({!$Resource.qrcodelogoimage});margin:0;position:absolute;top:145px;left:5px; width:125px;height:125px;background-size:100% 100%;' > </div>");  
+        
+        badge_QrCode.attr("id", "badgeQrCode");  
+       
+    var badge_CompanyName =  $("<div class='badgeElement badgeCompanyName' contentEditable='true' style='background-color:#FFFFFF;white-space:nowrap;line-height:24px;font-size:24px; height:28px;text-align:center;position:absolute;top:190px;left:135px;width:210px;margin:0px;line-height:28px;'></div>");       
+     badge_CompanyName.attr("id", "badgeCompanyName");  
+      
+    var badge_Attendee_Exhibitor =  $("<div class='badgeElement badgeAttende' contentEditable='true' style='background-color:#FFFFFF;white-space:nowrap;width:95%;position:absolute;top:190px;left:2px;color:#ffffff'></div>");         
+             badge_Attendee_Exhibitor.attr("id", "badgeExhibitor");        
+           
+     
+    //------------------------------Template 1-------------------------------//  
+    if(templateId=="badge_template_1"){
+    var badge_QrCode =  $("<div class='badgeElement badgeQrCode'  style='background-color:#FFFFFF;margin:0;background-image:url({!$Resource.qrcodelogoimage});position:absolute;top:155px;left:5px; width:125px;height:125px;background-size:100% 100%;' > </div>");     
+        
+         badge_QrCode.attr("id", "badgeQrCode");  
+        
+        
+          badge_Logo.attr("height","1.7cm");
+          badge_Logo.attr("width","2.3cm");  
+          $("#bdgMarg").append(badge_Logo);
+           $("#bdgMarg").append(badge_Ticket);
+          badge_Ticket.text("Full Conference");
+         $("#bdgMarg").append(badge_FirstName);   
+          //badge_FirstName.attr("height","32px");
+          badge_FirstName.text("JOHN");
+          $("#bdgMarg").append(badge_LastName); 
+          badge_LastName.text("Smith");
+          $(".name").text(badge_FirstName.text()+" "+badge_LastName.text())
+          
+              $("#bdgMarg").append(badge_QrCode);
+          $("#bdgMarg").append(badge_CompanyName);
+         badge_CompanyName.text("Acme Corp"); 
+          if(badge_Logo)
+  url_result =convertImageToCanvasURL(badge_Logo);
+            badge_type ="Zebra"
+        } 
+            //------------------------------Template 2-------------------------------//
+        else if(templateId=="badge_template_2"){
+            
+            var badge_QrCode =  $("<div class='badgeElement badgeQrCode'   style='background-color:#FFFFFF;white-space:nowrap;margin:0;background-image:url({!$Resource.qrcodelogoimage});position:absolute;top:135px;left:10px;width:125px;height:125px;background-size:100% 100%;' > </div>"); 
+             badge_QrCode.attr("id", "badgeQrCode");  
+       
+        
+  
+            var badge_Attendee_Exhibitor =  $("<div class='badgeElement badgeAttende' contentEditable='true' style='background-color:#FFFFFF;height:18px;white-space:nowrap;width:95%;position:absolute;top:255px;left:5px; color:#FFFFFF'></div>"); 
+             badge_Attendee_Exhibitor.attr("id", "badgeExhibitor");        
+             badge_Attendee_Exhibitor.click(function(e){badgeElementOnClick(e.target.id)})        
+        
+          $("#bdgMarg").append(badge_Logo);
+          badge_Logo.css("height","2.3cm"); 
+          badge_Logo.css("width","2.3cm");                        
+          badge_Logo.css("float","left");           
+         
+          badge_Logo.css("background-repeat","no-repeat");
+        
+          $("#bdgMarg").append(badge_Ticket);
+         
+          badge_Ticket.text("Full Conference");
+        
+           $("#bdgMarg").append(badge_FullName); 
+          badge_FullName.attr("height","32px");  
+         
+          badge_FullName.text("JANE DOE");
+          $(".name").text(badge_FullName.text());
+          $("#bdgMarg").append(badge_QrCode);
+          
+           badge_QrCode.css("background-repeat","no-repeat");
+         $("#bdgMarg").append(badge_CompanyName);
+         badge_CompanyName.css("float","left");  
+         badge_CompanyName.text("Acme Corp"); 
+         
+         $("#bdgMarg").append(badge_Attendee_Exhibitor);
+         badge_Attendee_Exhibitor.text("Attendee");
+          badge_Attendee_Exhibitor.css("background-color","rgba(0,51,0,1)");
+           //if(badge_Logo)
+  url_result =convertImageToCanvasURL(badge_Logo);
+   badge_type ="Zebra"
+        } 
+            //------------------------------Template 3-------------------------------// 
+        else if(templateId=="badge_template_3"){  
+        var badge_QrCode =  $("<div class='badgeElement badgeQrCode'  style='background-color:#FFFFFF;white-space:nowrap;margin:0;background-image:url({!$Resource.qrcodelogoimage});position:absolute;top:10px;left:210px; width:125px;height:125px;background-size:100% 100%;' > </div>");     
+        
+         badge_QrCode.attr("id", "badgeQrCode");  
+      
+        var badge_FullName =  $("<div class='badgeElement badgeFullName'   contentEditable='true' style='background-color:#FFFFFF;white-space:nowrap;width:95%;line-height:36px;height:36px;font-size:34px;position:absolute;top:135px;left:10px; ' ></div>"); 
+         badge_FullName.attr("id", "badgeFullName"); 
+        badge_FullName.click(function(e){badgeElementOnClick(e.target.id)})        
+        var badge_Attendee_Exhibitor =  $("<div class='badgeElement badgeAttende' contentEditable='true' style='background-color:#FFFFFF;height:18px;white-space:nowrap;position:absolute;top:250px;left:5px;width:95%; color:#ffffff'></div>"); 
+        badge_Attendee_Exhibitor.attr("id", "badgeExhibitor");        
+        badge_Attendee_Exhibitor.click(function(e){badgeElementOnClick(e.target.id)})        
+ 
+        
+        var badge_CompanyName =  $("<div class='badgeElement badgeCompanyName' contentEditable='true' style='white-space:nowrap;line-height:24px; height:28px;line-height:24px;position:absolute;top:195px;left:16px;margin:0;text-align:center;width:90%;'></div>");
+         badge_CompanyName.attr("id", "badgeCompanyName");    
+       
+        
+        $("#bdgMarg").append(badge_Logo);
+          badge_Logo.css("height","2.3cm");     
+          badge_Logo.css("width","2.3cm");                      
+          badge_Logo.css("float","left");            
+         
+          badge_Logo.css("background-repeat","no-repeat");
+         
+           $("#bdgMarg").append(badge_QrCode);  
+       
+           $("#bdgMarg").append(badge_FullName); 
+          badge_FullName.attr("height","32px");
+         
+          badge_FullName.text("JOHN SMITH");
+          $(".name").text(badge_FullName.text());
+
+           $("#bdgMarg").append(badge_CompanyName);
+         
+         badge_CompanyName.text("Acme Corp"); 
+         badge_CompanyName.css("text-align","center");
+         $("#bdgMarg").append(badge_Attendee_Exhibitor);
+         badge_Attendee_Exhibitor.text("Exhibitor"); 
+         badge_Attendee_Exhibitor.css("background-color","#ff0000");
+       
+         badge_Attendee_Exhibitor.css("opacity","0.7");  
+         // if(badge_Logo)
+  url_result =convertImageToCanvasURL(badge_Logo); 
+   badge_type ="Zebra"  
+        }      
+            //------------------------------Template 4-------------------------------//
+        else if(templateId=="badge_template_4"){
+         var badge_QrCode =  $("<div class='badgeElement badgeQrCode'  style='white-space:nowrap;margin:0;background-image:url({!$Resource.qrcodelogoimage});position:absolute;top:140px;left:5px; width:125px;height:125px;background-size:100% 100%;' > </div>");     
+        
+         badge_QrCode.attr("id", "badgeQrCode");  
+        badge_QrCode.click(function(e){badgeElementOnClick(e.target.id)})
+         var badge_FullName =  $("<div class='badgeElement badgeFullName'   contentEditable='true' style='height:36px;white-space:nowrap;width:95%;line-height:36px;font-size:34px;position:absolute;top:75px;left:5px;' ></div>");        
+         badge_FullName.attr("id", "badgeFullName");             
+         badge_FullName.click(function(e){badgeElementOnClick(e.target.id)})   
+            
+    var badge_JobTitle =  $("<div class='badgeElement badgeJobTitle' contentEditable='true'  style='white-space:nowrap;width:95%;line-height:30px;font-size:28px;height:30px;position:absolute;top:120px;left:5px; color:rgba(0,0,0,1)' ></div>");  
+        badge_JobTitle.attr("id", "badgeJobTitle");  
+          $("#bdgMarg").append(badge_Logo);                                
+          badge_Logo.attr("height","1.7cm"); 
+          badge_Logo.attr("width","2.3cm");          
+          badge_Logo.css("float","left");    
+        
+          $("#bdgMarg").append(badge_Ticket);
+          badge_Ticket.css("float","left");
+          badge_Ticket.text("Full Conference");
+        
+          $("#bdgMarg").append(badge_FullName);   
+          badge_FullName.attr("height","32px");
+          badge_FullName.text("JANE DOE");  
+           $(".name").text(badge_FullName.text());
+          $("#bdgMarg").append(badge_JobTitle); 
+      
+          badge_JobTitle.text("Managing Partner");
+          badge_JobTitle.css("margin-bottom","20px");    
+          $("#bdgMarg").append(badge_QrCode);
+          badge_QrCode.attr("height","2.3Cm");
+          badge_QrCode.attr("width","2.3cm");   
+          badge_QrCode.css("top","160px"); 
+         $("#bdgMarg").append(badge_CompanyName);
+         badge_CompanyName.css("float","left");  
+         badge_CompanyName.text("Acme Corp");  
+          //if(badge_Logo)
+  url_result =convertImageToCanvasURL(badge_Logo); 
+   badge_type ="Zebra"
+        } 
+        
+//--------------------------------------------------------------------Brother Templates----------------------------------------------------------------------->
+                        //--------------------------------------------Brother Template1------------------------------------//
+                        
+                        
+                     else if(templateId=="brother_template_1"){
+                     
+                     $("#bdgMarg").css("width","3.9in");
+                     $("#bdgMarg").css("height","2.4in");
+                     var badge_QrCode =  $("<div class='badgeElement badgeQrCode'  style='white-space:nowrap;margin:0;background-image:url({!$Resource.qrcodelogoimage});position:absolute;top:10px;left:10px; width:125px;height:125px;background-size:100% 100%;' > </div>");     
+                    badge_QrCode.attr("id", "badgeQrCode");  
+                    badge_QrCode.click(function(e){badgeElementOnClick(e.target.id)})
+                    var badge_CompanyName =  $("<div class='badgeElement badgeCompanyName' contentEditable='true' style='font-size:30px;font-family:Helvetica;white-space:nowrap;height:35px;line-height:35px;position:absolute;top:25px;left:140px;margin:0;text-align:center;width:220px;'>Globalnest Llc</div>");
+                     badge_CompanyName.attr("id", "badgeCompanyName"); 
+                     badge_CompanyName.click(function(e){badgeElementOnClick(e.target.id)})  
+                     var badge_FullName =  $("<div class='badgeElement badgeFullName'   contentEditable='true' style='white-space:nowrap;width:95%;font-family:Helvetica;height:36px;line-height:36px;font-size:34px;position:absolute;top:145px;left:10px;'>John Smith</div>"); 
+                     badge_FullName.attr("id", "badgeFullName"); 
+                    badge_FullName.click(function(e){badgeElementOnClick(e.target.id)})  
+                     
+                      
+                 $("#bdgMarg").append(badge_QrCode); 
+                 $("#bdgMarg").append(badge_CompanyName); 
+                 $("#bdgMarg").append(badge_FullName);             
+                     badge_type ="Brother"
+                    
+                     }
+                     else if(templateId =="brother_template_2")
+                     {
+                     
+                       $("#bdgMarg").css("width","3.9in");
+                       $("#bdgMarg").css("height","2.4in");
+                        $("#bdgMarg").css("border","3px solid ");
+                       var badge_Attendee_Exhibitor =  $("<div class='badgeElement badgeAttende' contentEditable='true' style='height:60px;line-height:60px;font-size:42px;font-family:Helvetica;white-space:nowrap;position:absolute;top:0px;left:0px;width:100%;color:#FFFFFF;background-color:#CCCCCC'>EXHIBITOR</div>"); 
+        badge_Attendee_Exhibitor.attr("id", "badgeExhibitor");        
+        badge_Attendee_Exhibitor.click(function(e){badgeElementOnClick(e.target.id)}) 
+        var badge_FullName =  $("<div class='badgeElement badgeFullName'   contentEditable='true' style='white-space:nowrap;width:95%;font-family:Helvetica;height:50px;line-height:50px;font-size:42px;position:absolute;top:75px;left:10px;height:50px;'>John Smith</div>"); 
+                     badge_FullName.attr("id", "badgeFullName"); 
+                    badge_FullName.click(function(e){badgeElementOnClick(e.target.id)})  
+                    
+                    var badge_CompanyName =  $("<div class='badgeElement badgeCompanyName' contentEditable='true' style='font-size:42px;font-family:Helvetica;white-space:nowrap;height:50px;line-height:50px;position:absolute;top:135px;left:10px;margin:0;text-align:center;width:95%;'>Global Nest LLC</div>");
+                     badge_CompanyName.attr("id", "badgeCompanyName"); 
+                     
+        
+          $("#bdgMarg").append(badge_Attendee_Exhibitor);
+           $("#bdgMarg").append(badge_FullName);
+            $("#bdgMarg").append(badge_CompanyName);   
+             badge_type ="Brother"
+                     }
+                     
+                     
+                     else if(templateId =="brother_template_3")
+                     {
+                       $("#bdgMarg").css("width","3.9in");
+                       $("#bdgMarg").css("height","2.4in");
+                       var badge_FullName =  $("<div class='badgeElement badgeFullName'   contentEditable='true' style='white-space:nowrap;width:95%;font-family:Helvetica;height:40px;line-height:40px;font-size:38px;position:absolute;top:5px;left:10px;'>John Smith</div>"); 
+                     badge_FullName.attr("id", "badgeFullName"); 
+                    badge_FullName.click(function(e){badgeElementOnClick(e.target.id)})  
+                     var badge_CompanyName =  $("<div class='badgeElement badgeCompanyName' contentEditable='true' style='font-size:28px;font-family:Helvetica;white-space:nowrap;height:30px;line-height:30px;position:absolute;top:60px;left:10px;margin:0;text-align:center;width:95%;'>Globalnest Llc</div>");
+                     badge_CompanyName.attr("id", "badgeCompanyName"); 
+                     
+                      var badge_QrCode =  $("<div class='badgeElement badgeQrCode'  style='white-space:nowrap;margin:0;background-image:url({!$Resource.qrcodelogoimage});position:absolute;top:90px;left:235px; width:125px;height:125px;background-size:100% 100%;' > </div>");     
+                    badge_QrCode.attr("id", "badgeQrCode");  
+                    badge_QrCode.click(function(e){badgeElementOnClick(e.target.id)})
+                    
+                     var badge_Attendee_Exhibitor =  $("<div class='badgeElement badgeAttende' contentEditable='true' style='height:35px;line-height:35px;font-size:30px;font-family:Helvetica;white-space:nowrap;position:absolute;top:130px;left:5px;width:220px;color:#000000' >ATTENDEE</div>"); 
+        badge_Attendee_Exhibitor.attr("id", "badgeExhibitor");        
+        badge_Attendee_Exhibitor.click(function(e){badgeElementOnClick(e.target.id)}) 
+                      
+                 $("#bdgMarg").append(badge_QrCode); 
+                 $("#bdgMarg").append(badge_CompanyName); 
+                 $("#bdgMarg").append(badge_FullName); 
+                   $("#bdgMarg").append(badge_Attendee_Exhibitor); 
+                    badge_type ="Brother"
+                     }
+                    
+                   else if(templateId=="badge_dymo"){ 
+                    $("#bdgMarg").css("width","4.19in");
+                     $("#bdgMarg").css("height","2.44in"); 
+        var badge_QrCode =  $("<div class='badgeElement badgeQrCode'  style='background-color:#FFFFFF;white-space:nowrap;margin:0;background-image:url({!$Resource.qrcodelogoimage});position:absolute;top:10px;left:210px; width:125px;height:125px;background-size:100% 100%;' > </div>");     
+        
+         badge_QrCode.attr("id", "badgeQrCode");  
+      
+        var badge_FullName =  $("<div class='badgeElement badgeFullName'   contentEditable='true' style='background-color:#FFFFFF;white-space:nowrap;width:95%;line-height:36px;height:36px;font-size:34px;position:absolute;top:135px;left:10px; ' ></div>"); 
+         badge_FullName.attr("id", "badgeFullName"); 
+        badge_FullName.click(function(e){badgeElementOnClick(e.target.id)})        
+        var badge_Attendee_Exhibitor =  $("<div class='badgeElement badgeAttende' contentEditable='true' style='background-color:#FFFFFF;height:18px;white-space:nowrap;position:absolute;top:250px;left:5px;width:95%; color:#ffffff'></div>"); 
+        badge_Attendee_Exhibitor.attr("id", "badgeExhibitor");        
+        badge_Attendee_Exhibitor.click(function(e){badgeElementOnClick(e.target.id)})        
+ 
+        
+        var badge_CompanyName =  $("<div class='badgeElement badgeCompanyName' contentEditable='true' style='white-space:nowrap;line-height:24px; height:28px;line-height:24px;position:absolute;top:195px;left:16px;margin:0;text-align:center;width:90%;'></div>");
+         badge_CompanyName.attr("id", "badgeCompanyName");    
+       
+        
+        $("#bdgMarg").append(badge_Logo);
+          badge_Logo.css("height","2.3cm");     
+          badge_Logo.css("width","2.3cm");                      
+          badge_Logo.css("float","left");            
+         
+          badge_Logo.css("background-repeat","no-repeat");
+         
+           $("#bdgMarg").append(badge_QrCode);  
+       
+           $("#bdgMarg").append(badge_FullName); 
+          badge_FullName.attr("height","32px");
+         
+          badge_FullName.text("JOHN SMITH");
+          $(".name").text(badge_FullName.text());
+
+           $("#bdgMarg").append(badge_CompanyName);
+         
+         badge_CompanyName.text("Acme Corp"); 
+         badge_CompanyName.css("text-align","center");
+         $("#bdgMarg").append(badge_Attendee_Exhibitor);
+         badge_Attendee_Exhibitor.text("Exhibitor"); 
+         badge_Attendee_Exhibitor.css("background-color","#ff0000");
+       
+         badge_Attendee_Exhibitor.css("opacity","0.7");  
+         // if(badge_Logo)
+  url_result =convertImageToCanvasURL(badge_Logo); 
+   badge_type ="Dymo"  
+        }           
+                              
+           
+        $(".company").text( badge_CompanyName.text());         
+         
+ QrUrl_Result = badge_QrCode.css("background-image"); 
+    
+
+ $(".badgeElement").on("click",function(event){
+ event.stopPropagation();
+if($(this).attr("id") !="badgeLogo"&&$(this).attr("id") !="badgeLogof"&& $(this).attr("id") !="badgeQrCode"&& $(this).attr("id")!="cqrcd"&& $(this).attr("id")!="Logo" && $(this).attr("id")!="qrcode" && $(this).attr("id")!="cclogo")      
+        $(this).attr("contentEditable","true");
+         $(this).css("cursor","pointer");
+         
+          if($(this).is('.ui-resizable'))
+            $(this).resizable("destroy");
+             if($(this).is('.ui-draggable'))
+             $(this).draggable("destroy");
+            
+          $(this).focus(); 
+          console.log("contenteEditable"+$(this).attr("contentEditable")); 
+            badgeElementOnClick($(this).attr("id"));        
+           
+     }).dblclick(function(){
+         $(this).attr("contentEditable","false");
+        $(this).css("cursor","move");
+          
+             $(this).draggable({
+                 zIndex: 100,
+             containment: '#bdgMarg',
+             start: function(e, ui){       
+            var _height= $(this).height();
+            var _width=$(this).width();
+             
+            $(this).css("border","dashed red 2px");                
+        }  
+             })        
+          console.log("contenteEditable"+$(this).attr("contentEditable")); 
+                   
+     })
+    module=''; 
+  checkModuleButton(); 
+checkBadgeTypeRadioButton();
+ $('#defaultattregis').prop('checked',true);   
+     $(".badgeElement").on("mouseover",function(){
+      $(this).css("cursor","pointer");
+         
+    if($(this).is(".ui-draggable"))
+         $(this).draggable("destroy");  
+    
+     $(this).attr("contentEditable","false"); 
+      if($(this).attr("id") =="badgeLogo"||$(this).attr("id") =="badgeLogof"|| $(this).attr("id") =="badgeQrCode" || $(this).attr("id") =="qrcd" || $(this).attr("id") =="cqrcd" ){ 
+                                console.log("Logo") 
+                                $(this).resizable({ containment:"parent" ,
+                           // aspectRatio: true,
+                             autoHide:true ,   
+                            maxHeight: $("#bdgMarg").height()-20,  
+                            maxWidth: $("#bdgMarg").width()-10,
+                            minHeight:125,      
+                            minWidth: 125,  
+                              })
+                              }
+    
+          $(this).resizable({   
+           autoHide:true , 
+           maxHeight: $("#bdgMarg").height()-20,  
+           maxWidth: $("#bdgMarg").width()-10,
+            minHeight:15,      
+            minWidth: 50,
+            
+                      
+          start:function(e, ui){
+          selTblId= $(this).attr("id")
+           var width = parseInt( $(this).css("width"));
+           var height =  parseInt( $(this).css("height"));
+            elementArea = width*height;
+            console.log(ui.originalSize)      
+          console.log("standard start resize" +elementArea )
+          $(this).css("border","2px dashed #FF0000")
+          },  
+          resize:function(){
+           onResizing($(this)); 
+           },     
+          stop:function(){
+                   $("#"+$(this).attr("id")).css("border","1px solid #CCCCCC")
+                   //console.log("resize Stop> "+selTblId)
+                 onResizeStop(selTblId) 
+                            
+                           
+          }    
+          }); 
+          //-------end of resizable----------// 
+     
+     })
+     
+     //-----------End of mouseover-------------//
+      $(".badgeElement").on("mouseout",function(){
+    // $(this).attr("contentEditable","false");  
+         // $(this).resizable();  
+     
+     })
+
+       
+                             
+                             
+      $(".badgeElement").on("keydown",function(e){
+      
+     //-------------------Prevent Enter Key------------------//
+      
+      if(e.keycode == 13 ||e.which ==13  )
+      e.preventDefault();  
+      else if(e.keyCode == '8' || e.keyCode == '46' || e.which=='46' || e.which=='8')
+                {
+                if(newFontSize<42)
+                    newFontSize++;
+                    //$(this).css("font-size",newFontSize)   
+                
+                }   
+      })   
+   
+         $(".badgeElement").on("keyup",function(e){                           
+             var width = $(this).textWidth();
+             text_width = width;
+             var newFontSize = parseInt($(this).css("font-size"));             
+             console.log("textwidth:"+width+"  Width:"+$(this).width())
+            if($(this).width() <= width+20 ){
+               if(newFontSize >2)
+                newFontSize--;                
+                $(this).css("font-size",newFontSize+"px");               
+            }
+            else {                     
+            console.log("Width>"+$(this).width()+"text_Width>"+text_width)
+                if(e.keyCode == '8' || e.keyCode == '46' || e.which=='46' || e.which=='8')                
+                    if(newFontSize<42)
+                        if(text_width<$(this).width())
+                            newFontSize++;                
+                
+                
+                $(this).css("font-size",newFontSize+"px") 
+             
+            }  
+            if(newFontSize > $(this).height())   
+                {
+                  
+                    newFontSize = $(this).height()-2;              
+                  $(this).css("font-size",newFontSize +"px")  
+                  console.log("FontSize>height")   
+                     
+               }                                  
+                                      
+     });
+        
+    
+    }
+    
+    function checkModuleButton()
+    {
+        $('input[name=module]').each(function(){
+              if(module.indexOf($(this).val())!=-1 )
+              {
+              $(this).prop('checked',true);
+
+              }
+              else
+              $(this).prop('checked',false); 
+              })
+    }
+    
+  //--------------------------------------------------- Check the radio button based on the selected badge------------------------------------------//
+   function checkBadgeTypeRadioButton(){
+    //$("input[name=badgeType]").attr('checked', false);          
+     $('input[name=badgeType]').each(function(){
+            console.log("<>"+$(this).val())
+            
+              if(badge_type  == $(this).val() )
+              {
+            // $("input:radio[value=badge_type]").attr('checked','checked');
+              $(this).prop('checked', true);  
+              changeValue(this,'{!$Component.RadioButtonValue}');
+              //$(this).click();    
+              console.log($(this).val());     
+              }
+              }) 
+              }  
+ //---------------------------------------------------Get the back end Data and display Saved Badges  ------------------------------------------//  
+      
+function getDataFromDB(){
+
+var str = $("#dataofscreenshot").text();
+console.log(str);
+
+strarray = [];
+strarray = str.split("***");    
+
+strarray.pop();
+for(var i=0;i<strarray.length;i++ ){
+
+var jsonobj = JSON.parse(strarray[i]);
+console.log(jsonobj.width+'xxxxxxxxxxxxxxxxxxxxx'+jsonobj.height+"xxxxxxxxxxxxxxxxx"+jsonobj.name);
+savedBadge=$("<div style='padding:5px;text-align:center;height:230px;border-bottom:1px solid gray'></div>")
+var savedBdgName=$("<div class='sBdgName' ></div>");
+var saveBdgImage = $("<div class='sBdgImg' style='margin:0 auto; width:200px;height:150px;background-size:100% 100%;' ></div>");
+var delIcon =  $("<div class='delIcon' ></div>");
+var clearFloat=$("<br id='clearDiv' style='clear:both' />")
+//$(saveBdgImage).css("background-image","url("+strarray[i].savedImageDataUrl+")")
+$(saveBdgImage).css("background-image","url("+jsonobj.savedImageDataUrl+")");
+savedBadge.attr("id","div_savedBadge" );
+
+$(savedBadge).on("click",function(){
+console.log("saved badge click")
+  try{
+  console.log("uuuuuu>"+$(this).children("div").eq(0).text());
+ 
+
+$(".loaderBackground").css("display","block");
+console.log("Loading.......")
+ isBadgeClickedForEditing = true;
+ J=1;
+ indexOfTheBadgeToEdit = $(this).index();
+ //nameOfTheBadgeToEdit = $(this).children("div").eq(0).text();
+ 
+SendToServertoedit($(this).children("div").eq(0).text()); 
+ 
+}
+catch(e){
+console.log("Error while savedbadge clicked:"+e)}
+});
+savedBdgName.attr("id","savedBdg_Name");  
+$(savedBdgName).text(jsonobj.name);
+var clearFloat=$("<br id='clearDiv' style='clear:both' />");
+var deleteBtn = $("<a class='deleteButton' >Delete</a>");
+
+$(delIcon).on("click",function (e){ 
+ var _savedBadgeName="";
+ var index = $(this).parent().index();   
+ 
+e.stopPropagation();        
+$("#bdgMarg").empty();  
+$(".badgeName").val("");  
+
+
+ 
+console.log($("#savedBadgeHolderContent").children().length);
+for(var i=0;i<$("#savedBadgeHolderContent").children().length;i++)
+        {
+           var innerBadgeID = $("#savedBadgeHolderContent").children('div').eq(i).attr("id");
+           //console.log(innerBadgeID)
+           for(var j=0;j<$("#"+innerBadgeID).children().length;j++)
+             {
+                  var innerBadgeElementId = $("#"+$("#savedBadgeHolderContent").children('div').eq(i).attr("id")).children().eq(j).attr("id");
+                  //console.log(innerBadgeElementId );
+                  if(innerBadgeElementId == "savedBdg_Name")
+                    {
+                         _savedBadgeName=$($($("#savedBadgeHolderContent").children('div').eq(index)).children('div').eq(j)).text();
+                         
+                         
+                        
+                    }
+             }
+        }
+     console.log(">>"+_savedBadgeName);
+     if(_savedBadgeName!="")
+  SendToServertodel(_savedBadgeName); 
+ $(this).parent().remove(); 
+ 
+ })  
+
+
+
+$(savedBadge).append(savedBdgName);
+if('{!onsiteselected}'==jsonobj.name)
+$(savedBadge).append('<div class="imagecls" style="float:left"><img  src="{!$Resource.onsiteselected}"/></div>');
+$(savedBadge).append(delIcon);
+$(savedBadge).append(clearFloat);
+$(savedBadge).append(saveBdgImage );
+   
+$("#savedBadgeHolderContent").append(savedBadge);
+
+/*if($("#savedBadgeHolderContent").height()>400){
+$("#savedBadgeHolder").css("overflow","scroll");
+}*/
+
+}
+}
+          
+//-----------------------------------------------------------------  Document on ready ---------------------------------------------------------------------// 
+$(document).ready(function(){
+ 
+console.log("Badge Width"+$("#bdgMarg").width()) 
+  J=0;
+  indexOfTheBadgeToEdit =-1;
+  isBadgeClickedForEditing = false;  
+  getDataFromDB();
+  getColorPicker();
+ _dataUrlArr = [];
+   saveCounter = 0;
+   var attendeeClickCounter=0;
+   badge_type="Zebra"
+     $(".badgeName").val(""); 
+   $('.btnHome').on("click",function(){   
+         $('#background').css("display","block");
+         $("#template_holder").css("display","block");
+
+    })
+    $(window).bind('resize', function() {
+               
+             
+      $(".scrollbutton").css("display","block");    
+      var leftOfRightScrollBar = $( window ).width()-70;
+      $("#rightScroll").css("left",leftOfRightScrollBar)
+       
+    }) 
+         
+               
+             
+      $(".scrollbutton").css("display","block");    
+      var leftOfRightScrollBar = $( window ).width()-70;
+      $("#rightScroll").css("left",leftOfRightScrollBar)
+       
+        
+        
+    $(".scrollbutton").click(function(){
+        
+        scrollBadges($(this).attr("id"))
+            console.log("scrolling")
+       
+            
+        })
+      
+   
+    $("#editMenu").css("visibility","hidden");
+    
+    $('#attendee_header').click(function(e){
+        if(attendeeClickCounter==0)
+        {
+        $("#attendee_Details").slideDown('slow');
+             attendeeClickCounter=1;
+        $("#clogo").css("margin-top","1px");     
+        
+        }
+        else if(attendeeClickCounter==1)
+        {
+        $("#attendee_Details").slideUp('slow');
+          attendeeClickCounter=0;
+          $("#clogo").css("margin-top","10px"); 
+        }
+        
+  
+    });   
+      
+    
+
+ 
+
+<!-------------------------------------------- Shuffle Functionality Start------------------------------------------------------>   
+    
+    $(".random-shinny-button").click(function randomNumber()
+{    
+//////console.log(Math.floor((Math.random()*5))); 
+_randomIndex=(Math.floor(Math.random()*6)); 
+        shuffleCompName=""; 
+        shuffleName="";
+        shuffleNameArr = $('#select_attendees option').eq(_randomIndex).val().split("|");
+        shuffleName = shuffleNameArr[0];
+        shuffleCompName = shuffleNameArr[1];
+        shuffleNames(shuffleName,shuffleNameArr,shuffleCompName);  
+//////console.log($('#select_attendees option').eq(_randomIndex).val().split("|"));
+
+});
+    
+    $("#select_attendees").on("change",function shuffle(){
+        shuffleCompName=""
+        shuffleName=""
+        //shuffleName = $('select[name="attendees"] option:selected').text();
+        shuffleNameArr = $(this).val().split("|");
+        shuffleName = shuffleNameArr[0];
+        shuffleCompName = shuffleNameArr[1];   
+        shuffleNames(shuffleName,shuffleNameArr,shuffleCompName);   
+        //////console.log("fdjsl"+($(this).val()).split("|"));  
+        //  
+    }); 
+  
+
+  
+
+
+<!--------------------------------------------Shuffle Functionality End ------------------------------------------------>
+//$( document ).tooltip();   
+    $( "#fontMenu" ).menu();
+    $( "#fntSMenu" ).menu();
+    $( "#fntAlMenu" ).menu();
+    $('.clnTbl').on("click",function(){
+        //////console.log("clicked")
+        customBadgeElementOnClick($(this).attr(id),50,100);
+});     
+$("#bdgMarg").click(function(e){
+    
+     clearBordersOfStage();
+     
+     });
+      
+    $("#close").click(function(){
+         $('#defaultattregis').prop('checked',true); 
+        
+         $('#btnNew').click(); 
+        $("#background").css("display","none");
+        });   
+       
+    
+     $("#btnNew").click(function(){
+        
+            
+            // badge_type ="";
+             //console.log("in new badge type")
+                //$('input:radio[value=badge_type]').attr('checked', 'checked');              
+            //$('input:radio[name="badgeType"]').removeAttr('checked');    
+            if(btnNewClickFlag == false) 
+            {
+          
+             $("#badgeTypeSelection").slideDown("slow");
+               btnNewClickFlag = true;    
+              $('input[name=badgeType]').each(function(){
+              if(badge_type  == $(this).val() )
+              {
+              $(this).attr('checked', 'checked'); 
+              changeValue(this,'{!$Component.RadioButtonValue}');     
+              console.log($(this).val())
+              }
+              })
+            }
+           
+            else 
+            {
+             $("#badgeTypeSelection").slideUp("slow"); 
+              btnNewClickFlag = false;
+             }   
+             console.log("new") 
+                 
+         })
+         
+         
+        $('input[name=badgeType]').click(function() {
+      badge_type = $('input[name=badgeType]:checked').val();  
+
+        if(badge_type !="")
+        {
+            $("#bdgMarg").empty(); 
+            console.log("radio clicked")          
+             J=0; 
+             isBadgeClickedForEditing = false;
+             console.log(J+":J")
+             $(".badgeName").val("");
+             if(badge_type == "Zebra")
+             {
+             console.log("Badge Type:"+badge_type);  
+              $("#bdgMarg").css("height","3in");
+              $("#bdgMarg").css("width","3.75in");   
+              $("#bdgMarg").css("left","1.1in");
+             
+             }
+             else if(badge_type == "Brother")
+             {
+             console.log("Badge Type:"+badge_type);  
+              $("#bdgMarg").css("height","2.4in");
+              $("#bdgMarg").css("width","3.9in");
+             $("#bdgMarg").css("left","1.1in");
+             
+              }
+              else if(badge_type == "Avery")
+             {
+             
+             console.log("Badge Type:"+badge_type);  
+              $("#bdgMarg").css("height","5.92cm");
+              $("#bdgMarg").css("width","8.57cm");
+             $("#bdgMarg").css("left","1.1in");
+             
+              }
+               else if(badge_type == "Dymo")
+             {
+             console.log("Badge Type:"+badge_type);  
+              $("#bdgMarg").css("height","2.44in");
+              $("#bdgMarg").css("width","4.19in");
+             
+             $("#bdgMarg").css("left","1.1in");
+              }
+              else if(badge_type == "CustScanBadge")
+              {
+              $("#bdgMarg").css("height","2.25in");
+              $("#bdgMarg").css("width","3.5in");
+              $("#bdgMarg").css("left","1.1in");
+              }
+              else if(badge_type == "SwedenBadge")
+              {
+              $("#bdgMarg").css("height","4.13in");
+              $("#bdgMarg").css("width","5.82in");
+              $("#bdgMarg").css("left","");
+              }
+               $("#badgeTypeSelection").slideUp("slow");
+               btnNewClickFlag =false;
+             }
+             }); 
+      
+            
+     $("#menuTblsArea").mouseover(function() {
+        //$("#menuTblsArea").show( "slow" );
+        $("#menuTblsArea").css("left","0px");
+    });
+    $("#sideBar").mouseover(function() {
+        //$("#menuTblsArea").slideToggle( "slow" );
+        $("#menuTblsArea").css("left","0px");
+    });
+    $("#bdgMarg").mouseleave(function(){
+        $("#rezDia").show();        
+    });
+    
+    $('.btnStyle').mouseover(function(){
+        $(this).addClass("shdwRaised");
+    });
+    $('.btnStyle').mouseout(function(){
+        $(this).removeClass("shdwRaised");
+    });
+    
+    
+<!-----------------------------------------BadgeTemplate Functionalities Start------------------------------------------->
+   $('.template').click(function(e){
+$('#background').css("display","none");
+isBadgeClickedForEditing = false;
+J=0;
+var template_id = $(this).attr('id');
+bagde_Template(template_id);
+
+//--------------------///
+
+});  
+        $('.template').hover(  
+        function(e){
+            $(this).removeClass('shdwRaised');
+            $(this).addClass('embossed'); } , 
+        function(e){
+            $(this).removeClass('embossed');
+            $(this).addClass('shdwRaised');    
+            });  
+<!----------------------------------------------------------Badge Functionalities End-------------------------------------------------------------->
+  
+    $("#btDel").click(function(e){  
+     
+        
+        $("#"+selTblId).remove();
+        $("#btDel").hide();
+         console.log  ($('#bdgMarg').children().size());   
+        var noOfBadgeItems = $('#bdgMarg').children().size();
+            if(noOfBadgeItems==0)  
+        {
+            $("#btFntAlign").hide();
+            $("#btFntSize").hide();
+            $("#btFont").hide();  
+            $("#btUpdt").hide(); 
+            $("#btEdit").hide();  
+        }
+           
+    });    
+    
+     $("#btEdit").click(function(){ 
+     //$("#editMenu").show(); 
+         $("#btUpdt").hide();
+           
+         $(".sp-replacer").show();
+         $("#bdgMarg").children().each(function() {
+             
+              $(this).css("border","none");           
+        });
+          
+           $("#"+selTblId).css("border","dashed red 1.5pt");     
+        if(selTblId!="badgeLogo"||selTblId!="badgeLogof"|| selTblId!="badgeQrCode"|| selTblId!="cqrcd"|| selTblId!="Logo" || selTblId!="cqrcd"|| selTblId!="cclogo")    
+    {    
+         var badgeElements = $("#bdgMarg").children();   
+        //////////console.log  (""+selTblId)
+        
+        $("#btFont").show(); 
+        $("#btFntSize").show();
+        $("#btFntAlignLeft").show();     
+        $("#btFntAlignCenter").show();   
+        $("#btFntAlignRight").show();     
+        $("#btEdit").hide();
+        $("#bdgNameSave").show();    
+        $("#btTxtTrnsfmCap").show();
+        $("#btTxtTrnsfmLC").show();
+        $("#btTxtTrnsfmUC").show();
+         $(".sp-replacer").show();
+        //$("#color_picker").show();
+      }
+      else         
+      {
+          $("#"+selTblId).css("border","dashed red 1.5pt");  
+           $("#btEdit").hide();   
+                     
+                    
+      }
+       $("#bdgNameSave").show();
+    });
+    var flag=true;  
+    var fontMenuFlag =true;
+    $("#btFont").mouseover(
+        function () { //appearing on hover  
+        console.log("btfontmouseover>"+selTblId)  
+            if(fontMenuFlag){  
+                fontMenuFlag=false; 
+                  
+                $("#fontMenu").slideDown( "slow",function(e) {
+                    // Animation complete.
+                    $(this).off('mouseover');
+                    ////////console.log  ("slide up");
+                });  
+                //highlightFont(selTblId);
+                
+                scrollUpFontMenuListItem(selTblId);   
+                /*$("#fontMenu").animate({
+                    width:'toggle',
+                    height:'toggle'});*/
+            }
+    });       
+        
+   $("#btFont").mouseleave( 
+        function () { //appearing on hover        
+           $("#fontMenu").slideUp( "slow",function(e) {
+                // Animation complete.
+                $(this).on('mouseleave');   
+                ////////console.log  ("slide up");
+                fontMenuFlag =true;    
+            });
+            
+    });
+    
+    
+    
+     $("#btFntSize").mouseover(
+        function () { //appearing on hover  
+            if(flag){  
+                flag=false;           
+                var selTbl =$("#"+selTblId)
+              var maxFontSize = maximumFontSizeAllowed(selTblId)
+              
+                 addOrRemoveListItem(maxFontSize);   
+                     
+                   addClassToFontSize(selTblId);            
+                $("#fntSMenu").slideDown( "slow",function(e) {
+                    // Animation complete.
+                    $(this).off('mouseover');    
+                    ////////console.log  ("slide up");
+                });   
+                   
+                   
+                 scrollUpFontSizeListItem(selTblId);    
+                 console.log(selTblId+"maxFontSize>"+maxFontSize)                
+            }
+    });            
+        
+   $("#btFntSize").mouseleave( 
+        function () { //appearing on hover     
+        addClassToFontSize(selTblId);      
+           $("#fntSMenu").slideUp( "slow",function(e) {
+                // Animation complete.
+                $(this).on('mouseleave');   
+                ////////console.log  ("slide up");
+                flag=true;
+            });
+    });
+              
+    
+     $("#btFntAlign").mouseover(
+        function () { //appearing on hover  
+            if(flag){     
+                flag=false;   
+                $("#fntAlMenu").slideDown( "slow",function(e) {
+                    // Animation complete.
+                    $(this).off('mouseover');
+                    ////////console.log  ("slide up");
+                });
+            }
+    }); 
+        
+   $("#btFntAlign").mouseleave( 
+        function () { //appearing on hover        
+           $("#fntAlMenu").slideUp( "slow",function(e) {
+                // Animation complete.
+                $(this).on('mouseleave');   
+                flag=true;
+            });
+    });               
+   
+    $('.fntChMenu').mouseover(function(e){
+        $(this).stop().slideUp();
+     $(this).stop().slideDown();
+    
+    $(this).css("display","block");     
+        });  
+          
+        $('.fntChMenu').mouseleave(function(e){
+            $(this).slideUp('slow');
+            }); 
+            
+            
+            
+        
+         
+    $('.fontMi').mouseover(function(){
+       //  $(this).css("font-weight","bold");
+         // highlightFont(selTblId); 
+        $(this).css("display","block");  
+       // $("#"+selTblId).css("font-family", $(this).text());  
+        
+       
+    });
+    $('.fontMi').mouseleave(function(){
+        $(this).css("background-color","#fff;");
+       
+        $(this).css("font-weight","normal");  
+        // highlightFont(selTblId); 
+                
+    });     
+      $('.fontSizeMi').on("click",function(){       
+         var selectTbl = $("#"+selTblId);
+         var width = $("#"+selTblId).width();
+        
+         $(this).css("display","block"); 
+         var previousFontSize = parseInt($("#"+selTblId).css("font-size"));
+        
+         
+          addClassToFontSize(selTblId);     
+          $("#"+selTblId).css("font-size", $(this).text()+"px");  
+            text_width =$(selectTbl).textWidth();
+            text_height = $(selectTbl).textHeight();
+             console.log("Old Font Size"+previousFontSize+"width: "+width+"textHeight:"+text_height ) 
+         if(width < text_width){             
+             newFontSize = Math.floor((width/text_width )*parseInt($(this).text()))             
+             if(newFontSize <1)    
+                    newFontSize ++;                     
+              $(selectTbl).css("font-size",newFontSize +"px")  
+              text_width =  $("#"+selTblId).textWidth();                  
+              console.log("New Font Size"+newFontSize+"width:"+width+"textWidth:"+text_width )
+              $(this).css("border","2px dashed #CCCCCC")
+              text_width = $(this).textWidth();
+              if(text_width >width){
+              for(var i=0;i<(text_width-width);i+2)
+               {
+                   if(newFontSize >=1 && text_width >width)
+                   {  
+                      newFontSize --;
+                       $(selectTbl).css("font-size",newFontSize +"px")
+                        text_width = $(this).textWidth();
+                   
+                   }
+                   else   
+                   break;
+               }
+                     
+                 alert("Maximum Allowed font size"+newFontSize)
+                 $("popUpBackgroundFontSizeAlert").css("display","block");
+                    $("popUpContainerFontSizeAlert").css("display","block")
+             }
+             } 
+             else{
+              $(selectTbl).css("font-size",$(selectTbl).css("font-size"))
+              if(text_height >=$("#"+selTblId).height())
+              {    
+                 newFontSize = $("#"+selTblId).height()-2;   
+                $(selectTbl).css("font-size",newFontSize)   
+                  
+                 if(parseInt($(this).text())<newFontSize)
+                 {         
+                 $(selectTbl).css("font-size",$(this).text()+"px")             
+                 console.log("fontsize selected"+$(this).text()+"newFontSize>"+newFontSize)     
+                 }    
+              }   
+              
+              addClassToFontSize(selTblId);  
+             }           
+              
+             
+             $(this).css("border","none");
+          
+          
+          
+         });
+         $(".fontSizeMi").on("mouseDown",function(){        
+          
+         })  
+         
+         $('.fontMi').click(function(){  
+         $(this).css("display","block"); 
+                    
+          $("#"+selTblId).css("font-family", $(this).text()); 
+           onResizing($("#"+selTblId));             
+          highlightFont(selTblId);   
+              
+         });  
+         $('.fontAlnMi').click(function(){ 
+         $(this).css("display","block"); 
+          $("#"+selTblId).css("text-align", $(this).text());     
+         
+         });
+    
+
+    $('.fontSizeMi').mouseover(function(){
+        
+        //$(this).css("font-weight","bold");   
+        $("#"+selTblId).css("border","none"); 
+        addClassToFontSize(selTblId);
+       // $("#"+selTblId).css("font-size", $(this).text()); 
+          
+            
+   
+    });
+    $('.fontSizeMi').mouseout(function(){
+        //var newHeight=parseInt($("#"+selTblId).css("line-height"), 10)+30;
+        
+    
+        $(this).css("background-color","#fff;");     
+        $(this).css("font-weight","normal");    
+          $("#"+selTblId).css("border","#ff0000 dashed 2px"); 
+         // $("#"+selTblId).css("height",newHeight);  
+                    
+    });
+    
+    $('.fontAlnMi').click(function(){  
+        ////console.log($(this).attr("id"));    
+        // $(this).css("font-weight","bold");    
+        if($(this).attr("id")=="btFntAlignLeft")
+        $("#"+selTblId).css("text-align","left");   
+        else if($(this).attr("id")=="btFntAlignCenter")
+        $("#"+selTblId).css("text-align","center"); 
+        else if($(this).attr("id")=="btFntAlignRight"){
+        $("#"+selTblId).css("text-align", "right");   
+        var text= $("#"+selTblId).text();
+         text = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+         $("#"+selTblId).text("");
+         $("#"+selTblId).text(text);
+        //////console.log(text)  
+        }
+        
+        });  
+        
+        
+    $(".txtTransformMi").click(function(){  
+       //  $(this).css("font-weight","bold");    
+        if($(this).attr("id")=="btTxtTrnsfmUC")
+        $("#"+selTblId).css("text-transform","uppercase");   
+        else if($(this).attr("id")=="btTxtTrnsfmLC")
+        $("#"+selTblId).css("text-transform","lowercase"); 
+        else if($(this).attr("id")=="btTxtTrnsfmCap"){
+        $("#"+selTblId).css("text-transform", "capitalize");   
+        var text= $("#"+selTblId).text();
+         text = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+         $("#"+selTblId).text("");
+         $("#"+selTblId).text(text);
+                 
+        //////console.log(text)  
+        }
+         onResizing($("#"+selTblId));  
+           
+        });
+        
+    
+    $('.fontAlnMi').mouseout(function(){
+        $(this).css("font-weight","normal");             
+    });
+    $('.template').click(function(e){
+        $('.templateHolder').css("display","none")}); 
+        
+        
+        
+        
+  
+   
+      
+ $("#btUpdt").click(function savebadge (){
+  var i=0;
+    clearBordersOfStage();
+      // var localDataUrl="";     
+   
+      dataURL ="";
+        $("#"+selTblId).css("border","dashed #ccc 0px");
+        var badgeElements = $("#bdgMarg").children();
+        var badgeElementsPos="";  
+        var bdgElemLen = badgeElements.length;  
+        
+        var bdgElementsArray=[];  
+        var bdgElementDetailsJSON;  
+       
+    
+        if($(".badgeName").val()!=""){ 
+        $(".loaderBackground").css("display","block");
+                 savedBadge=$("<div   style='height:230px;padding:5px;text-align:center;border-bottom:1px solid black;'></div>")   
+                var savedBdgName=$("<div class='sBdgName'  ></div>");
+                savedBdgName.attr("id","savedBdg_Name");
+                var delIcon =  $("<div class='delIcon' ></div>");  
+                var clearFloat=$("<br id='clearDiv' style='clear:both' />")              
+                var deleteBtn = $("<a class='deleteButton' >Delete</a>")   
+                deleteBtn.attr("id","deleteBtn");   
+                $(delIcon ).on("click",function (e){
+                                            e.stopPropagation();
+                                            $("#bdgMarg").empty();
+                                            $(".badgeName").val("");       
+                                            var index = $(this).parent().index();
+                                            var _savedBadgeName="";
+                                            for(var i=0;i<$("#savedBadgeHolderContent").children().length;i++)
+                                                {
+                                                    var innerBadgeID = $("#savedBadgeHolderContent").children('div').eq(i).attr("id");
+     
+                                                    for(var j=0;j<$("#"+innerBadgeID).children().length;j++)
+                                                    {
+                                                        var innerBadgeElementId = $("#"+$("#savedBadgeHolderContent").children('div').eq(i).attr("id")).children().eq(j).attr("id");
+                                                        if(innerBadgeElementId == "savedBdg_Name")
+                                                        {
+                                                          //console.log("I:"+i+"J:"+j+"Length:"+ $($($("#savedBadgeHolderContent").children('div').eq(index)).children('div').eq(j)).text() )
+                                                           _savedBadgeName=$($($("#savedBadgeHolderContent").children('div').eq(index)).children('div').eq(j)).text();
+        
+                                                        }
+                                                     }
+                                                 }
+                                               //-----------------Send to Delete---------------//
+                                                SendToServertodel(_savedBadgeName);
+                                               $(this).parent().remove();        
+                                                /*if($("#savedBadgeHolderContent").height()<600){
+                                                console.log($(saved_BadgeHolder_content).height());
+                                                $("#savedBadgeHolder").css("overflow","hidden");
+                                                }*/
+       
+        
+                                               })             
+      
+  savedBadge.attr("id","div_savedBadge" );
+  
+      html2canvas(bdgMarg,{ 
+                     useCORS: true,
+                  
+            onrendered: function(canvas) {           
+           try{  
+             
+                              
+                var extra_canvas = document.createElement("canvas");
+               
+                extra_canvas.setAttribute('width',200);
+                extra_canvas.setAttribute('height',150);
+                $(extra_canvas).css("margin","auto");                     
+                var ctx = extra_canvas.getContext('2d');
+                ctx.drawImage(canvas,0,0,canvas.width, canvas.height,0,0,200,150);
+                //$(extra_canvas).css("border","1px solid #CCCCCC");   
+                //console.log("GGGGGGGGGGGGEREEEEEEEEEE"+canvas.getImageData(""));
+                 var img = canvas.toDataURL()    
+                img.crossOrigin = 'ananymous';   
+                       
+                 dataURL = canvas.toDataURL("image/jpeg",0.1); 
+                 console.log("dataURL "+dataURL.length);            
+                 _dataUrlArr.push(dataURL); 
+                  console.log("error");
+                 //----------------------------------create object for saving badge details---------------------------------// 
+                  createObjectTosaveBadgeDetails();  
+                
+           }catch(e){
+               console.log("Error>>!!"+e)  
+               //console.log("LineNO"+e.getLineNumber())       
+               console.log(e); 
+               }        
+                                  
+                $(savedBadge).append(savedBdgName);
+                $(savedBadge).append(delIcon);
+                $(savedBadge).append(clearFloat);
+                $(savedBadge).append(extra_canvas);                 
+              
+                $(savedBdgName).text($(".badgeName").val());   
+                 
+               /* if($("#savedBadgeHolderContent").height()>500)
+                {
+                    $("#savedBadgeHolder").css("overflow","scroll");
+                 
+                }*/   
+                 
+                 //  var saveBdgContentLen = $("#savedBadgeHolderContent").size() 
+                  //  console.log(saveBdgContentLen); 
+                //---------------------------------- New Badge ----------------------------------//
+                if(J==0)
+                {
+                console.log("JJJJJJJ>>>>"+J)     
+                    $("#savedBadgeHolderContent").append(savedBadge) 
+                    
+                    /* if($("#savedBadgeHolderContent").height()>500)                
+                    $("#savedBadgeHolder").css("overflow","scroll");*/
+                    
+                   // $("#bdgMarg").empty();
+                     // $(".badgeName").val("");
+                  } //---------------------------------- Existing Badge------------------------//
+                  else if(J==1){
+                       if($("#savedBadgeHolderContent").children().length>0)
+                          {
+                                for(var i=0;i<$("#savedBadgeHolderContent").children().length;i++) 
+                                {
+                                    var savedBdgNameText= $("#savedBadgeHolderContent").children('div').eq(i).children().eq(0).text();
+                                            if(nameOfTheBadgeToEdit  == savedBdgNameText)  {             
+                                           console.log("JJJ>>><<<"+J)
+                                            $("#savedBadgeHolderContent").children('div').eq(i).children().eq(0).parent().remove();
+                                            $("#savedBadgeHolderContent").append(savedBadge);
+                                             if($("#savedBadgeHolderContent").height()>500)
+                
+                                              $("#savedBadgeHolder").css("overflow","scroll");
+                                            }
+                                                                          
+                                    
+                                
+                                } 
+                            }  
+                         }          
+                 
+               /* if($("#savedBadgeHolderContent").height()>500)
+                {
+                    $(saved_BadgeHolder).css("overflow","scroll");
+                 console.log($(saved_BadgeHolder_content).height())   
+                }  */         
+                $(savedBadge).on("click",function(){      
+                 //console.log($(saved_BadgeHolder_content).length+"GGGGGGGGG"+$(this).index()+"::"+$(this).attr("id"))                      
+                 $(".loaderBackground").css("display","block");
+                 
+                 
+                 
+ 
+                 indexOfTheBadgeToEdit = $(this).index();
+              
+                 J=1;
+                 isBadgeClickedForEditing = true;
+                
+                // console.log(J) 
+                 //----------------Send to Edit----------------//                
+               SendToServertoedit($(this).children("div").eq(0).text());        
+                      
+                nameOfTheBadgeToEdit = $(this).children("div").eq(0).text(); 
+                $(".badgeName").val(nameOfTheBadgeToEdit);   
+                   console.log("Name:"+nameOfTheBadgeToEdit +"Index:"+indexOfTheBadgeToEdit );       
+                })
+            }   
+        
+        });      
+     
+ 
+  
+
+    }
+    else{    
+      console.log("Please enter some value in Badge Name Box");
+    }
+       
+     
+    });
+       
+   
+    $('#bdgMarg').droppable( {
+        drop: handleDropEvent
+    }); 
+    
+    
+//-----------------------------------------  Attendee Details on Click -------------------------------------------------->
+
+ $('.drgTbl').click(function (e){
+         
+        isFieldExist = false;
+      
+           $('.templateHolder').css("display","none");  
+        var tid =$(this).attr("id");
+        if(tid=="btnNew" &&  badge_type !=""){
+       
+          //  $("#bdgMarg").empty(); 
+          // $(".badgeName").val("");      
+        }
+        else{  
+       
+        var newElem = $(this).clone();
+        //var newElem = $("<span style='border-radius:0px;'></span>");
+        $(newElem).css("overflow","hidden");    
+        
+       $(newElem).css("position","absolute");
+            $(newElem).css("top","0");
+            $(newElem).css("left","0");  
+            $(newElem).css("margin","0 auto");
+            $(newElem).css("padding","0px");
+            newElem.attr("id", "c"+tid);
+      // newElem.attr("title", "Drag");     
+        newElem.removeClass("shdwRaised");
+       $(newElem).css("padding-left","1px");
+        $(newElem).css("width","95%");
+        $(newElem).css("height","42px");
+        $(newElem).css("line-height","42px");
+        $(newElem).css("font-size","26px");  
+         $(newElem).css("font-family","Times New Roman");        
+            
+         //newElem.attr("contentEditable","true");         
+         $(newElem).css("text-align","center");
+         
+         
+            newElem.removeClass("drgTbl");  
+            newElem.addClass("clnTbl"); 
+            //badgeElementOnClick( $(this).attr("id")); 
+              
+        
+                    if($(this).attr("id")=="firn"  )
+                    {   
+                         console.log($(this).attr("id")) 
+                          $("#bdgMarg").children().each(function(){               
+                         if($(this).attr("id") =="badgeFirstName"||$(this).attr("id")=="cfirn"||$(this).attr("id")=="firn")
+                         { 
+                          isFieldExist = true;
+                          console.log("in Firstname drgtbl")
+                        $(newElem).text($("#badgeFirstName").text())
+                        }  
+                         else{  
+                             $(newElem).text($("#firn").text())   
+                             }  
+                     })
+                    }
+                    else if($(this).attr("id")=="comn" )
+                    {
+                        console.log($(this).attr("id")) 
+                         $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id") == "badgeCompanyName"||$(this).attr("id") =="comn"||$(this).attr("id") =="ccomn"){
+                         isFieldExist = true;
+                        $(newElem).text($("#badgeCompanyName").text())
+                        }
+                        else
+                        {
+                            $(newElem).text($("#comn").text());
+                        }
+                        })
+                    }
+                    else if($(this).attr("id")=="lstn")
+                    {
+                         console.log($(this).attr("id"))
+                          $("#bdgMarg").children().each(function(){ 
+                        if($(this).attr("id")=="badgeLastName"||$(this).attr("id")=="clstn"||$(this).attr("id")=="lstn"){
+                         isFieldExist = true;
+                        $(newElem).text($("#badgeLastName").text())
+                        }
+                        else
+                        {
+                            $(newElem).text($("#lstn").text());
+                        }
+                        })
+                    }
+                    else if($(this).attr("id")=="fulln")
+                    {       
+                      $("#bdgMarg").children().each(function(){
+                     
+                        if($(this).attr("id")== "badgeFullName"||$(this).attr("id") =="fulln"||$(this).attr("id") =="cfulln")
+                        {  
+                        console.log($(this).attr("id"))    
+                             isFieldExist = true;
+                           $(newElem).text($("#badgeFullName").text());   
+                        }
+                        else
+                        { 
+                        $(newElem).text($("#fulln").text());        
+                          
+                        }
+                         })
+                    }
+                    else if($(this).attr("id")=="ticketn")
+                    {
+                       console.log($(this).attr("id")) 
+                        $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="badgeTicket"||$(this).attr("id")=="ticketn"||$(this).attr("id")=="cticketn")
+                        { 
+                         isFieldExist = true; 
+                            ////////console.log($('#bdgMarg').has("#badgeFullName"))  
+                           $(newElem).text($("#badgeTicket").text());   
+                        }
+                        else
+                        {
+                        $(newElem).text($("#ticketn").text());       
+                        ////////console.log("id:"+$(this).attr("id")+"::"+$('#bdgMarg').has("#badgeFullName"))   
+                        }
+                        })
+                    }
+                    else if($(this).attr("id")=="ticketCategory")
+                    {
+                       console.log($(this).attr("id")) 
+                        $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="badgeExhibitor"|| $(this).attr("id")=="ticketCategory"||$(this).attr("id")=="cticketCategory")
+                        {  
+                            ////////console.log($('#bdgMarg').has("#badgeFullName")) 
+                             isFieldExist = true; 
+                           $(newElem).text($("#badgeExhibitor").text());   
+                        }
+                        else
+                        {
+                        $(newElem).text($("#ticketCategory").text());       
+                        ////////console.log("id:"+$(this).attr("id")+"::"+$('#bdgMarg').has("#badgeFullName"))   
+                        }
+                        })
+                        
+                    }
+                    else if($(this).attr("id")=="jobTitle" )
+                    {  
+                     console.log($(this).attr("id"))  
+                      $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="badgeJobTitle"||$(this).attr("id")=="jobTitle"||$(this).attr("id")=="cjobTitle")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#badgeJobTitle").text()); 
+                        }
+                        else  
+                        {
+                        $(newElem).text($("#jobTitle").text());             
+                        ////////console.log("id:"+$(this).attr("id")+"::"+$('#bdgMarg').has("#badgeFullName"))   
+                        }
+                        })
+                    } 
+                     else if($(this).attr("id")=="city" )
+                    {    
+                       $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="ccity")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#city").text()); 
+                        }
+                        else  
+                        {
+                        $(newElem).text($("#city").text());             
+                         
+                        }
+                        })
+                     }
+                     else if($(this).attr("id")=="state" )
+                    {    
+                       $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="cstate")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#state").text()); 
+                        }
+                        else  
+                        {
+                        $(newElem).text($("#state").text());             
+                         
+                        }
+                        })
+                     }
+                     else if($(this).attr("id")=="citystate" )
+                    {    
+                       $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="ccitystate")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#citystate").text()); 
+                        }
+                        else  
+                        {
+                        $(newElem).text($("#citystate").text());             
+                         
+                        }
+                        })
+                     }
+                     else if($(this).attr("id")=="stext" )
+                    {    
+                       $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="cstext")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#stext").text()); 
+                        }
+                        else  
+                        {
+                        $(newElem).text($("#stext").text());             
+                         
+                        }
+                        })
+                     }
+                     else if($(this).attr("id")=="stext2" )
+                    {    
+                       $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="cstext2")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#stext2").text()); 
+                        }
+                        else  
+                        {
+                        $(newElem).text($("#stext2").text());             
+                         
+                        }
+                        })
+                     }
+                      else if($(this).attr("id")=="stext3" )
+                    {    
+                       $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="cstext3")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#stext3").text()); 
+                        }
+                        else  
+                        {
+                        $(newElem).text($("#stext3").text());             
+                         
+                        }
+                        })
+                     }
+                      else if($(this).attr("id")=="uniqNo" )
+                    {    
+                       $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="cuniqNo")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#uniqNo").text()); 
+                        }
+                        else  
+                        {
+                        $(newElem).text($("#uniqNo").text());             
+                         
+                        }
+                        })
+                     }
+                    else if($(this).attr("id")=="dline" )
+                    {    
+                       $("#bdgMarg").children().each(function(){
+                        if($(this).attr("id")=="cdline")
+                        {   
+                         isFieldExist = true;
+                        $(newElem).text($("#dline").text()); 
+                       }
+                        else  
+                        {
+                        $(newElem).text($("#dline").text());             
+                        }
+                        })
+                     }
+        
+    /*  $("#bdgMarg").children().each(function() {
+          if($(this).attr("id") ==  $(newElem).attr("id"))
+          {
+              isFieldExist = true;
+              alert("Field already Exist"+isFieldExist)
+          }
+          
+          
+        
+    });*/
+              
+       
+      if($(this).attr("id")=="qrcd"){ 
+        $(newElem).css("width","125px");    
+            $(newElem).css("height","125px");
+          $(newElem).css("background-image","url({!$Resource.qrcodelogoimage})");
+            $(newElem).css("background-repeat","no-repeat");  
+            $(newElem).css("background-size","100% 100%");  
+            $(newElem).css("border","none");   
+             $(newElem).text("");
+             $(newElem).attr("contentEditable","false");
+            QrUrl_Result = $(newElem).css("background-image"); 
+        }
+        if($(this).attr("id")=="clogo"){
+         console.log($(this).attr("id")+"");
+           
+             //isFieldExist = true;
+             console.log("if logo")
+          
+             newElem.html("<input id='clogoUFile' type='file' onchange=\"readURL(this)\" />"); 
+              $(newElem).css("background-size","100% 100%"); 
+             
+              
+            }
+          if($(this).attr("id")=="slogo"){
+        
+          
+             newElem.html("<input id='slogoUFile' type='file' onchange=\"readURLf(this)\" />"); 
+              $(newElem).css("background-size","100% 100%"); 
+             $(newElem).css("background", "");
+              
+            }   
+        
+    
+   }
+   if(isFieldExist == false && tid !="btnNew")
+              $("#bdgMarg").append(newElem ); 
+     else  if(isFieldExist == true&& tid !="btnNew")
+       alert("Field Already Exist")          
+              
+    console.log($(this).attr("id"))          
+              
+    $('.clnTbl').on("keyup",function(e){
+
+           console.log("keycode"+e.keycode+">>"+e.which)                   
+             var width = $(this).textWidth();
+             var newFontSize = parseInt($(this).css("font-size"));  
+             //text_width =$(this).textWidth();
+             console.log("newFontSize"+newFontSize+"width"+width+":Width:"+$(this).width())
+            if($(this).width() <= width+20){
+            if(newFontSize>2)   
+                newFontSize--;  
+                $(this).css("font-size",newFontSize+"px")
+            }   
+                         
+                else {     
+                newFontSize = parseInt($(this).css("font-size"));                 
+            console.log("Width>"+$(this).width()+"text_Width>"+width)    
+                if(e.keyCode == '8' || e.keyCode == '46' || e.which=='46' || e.which=='8')                
+                    if(newFontSize<42)
+                        if(width<$(this).width())
+                            newFontSize++;                
+                  
+                
+                $(this).css("font-size",newFontSize+"px") 
+             
+            }  
+            if(newFontSize > $(this).height())    
+                {
+                  
+                    newFontSize = $(this).height()-2;            
+                  $(this).css("font-size",newFontSize +"px")     
+                     
+               }   
+                     
+                
+                
+                
+                    
+            //$(this).css("font-size",newFontSize)  
+              
+          
+          });
+           
+    
+       $(".clnTbl").on("keypress",function(){
+            console.log("fdss")
+           // onBadgeElementFontChange($(this).attr("id"),32);
+            });  
+     
+   
+     $(".clnTbl").on("keydown",function(e){
+      //console.log("keycode"+e.keycode+">>"+e.which)
+      if(e.keycode == 13 ||e.which ==13  )
+      e.preventDefault();   
+      else if(e.keyCode == '8' || e.keyCode == '46' || e.which=='46' || e.which=='8')
+                {
+                if(newFontSize<42)
+                    newFontSize++;
+                   // $(this).css("font-size",newFontSize)   
+                
+                }  
+      })  
+    
+   $('.clnTbl').on("mouseover",function(){
+   
+       $(this).css("cursor","pointer");
+       
+     $(this).attr("contentEditable","false"); 
+      if($(this).attr("id") =="badgeLogo"||$(this).attr("id") =="badgeLogof"|| $(this).attr("id") =="badgeQrCode" || $(this).attr("id") =="qrcd" || $(this).attr("id") =="cqrcd" ){ 
+                                console.log("Logo") 
+                                $(this).resizable({
+                            //aspectRatio: true,
+                             autoHide:true ,    
+                            maxHeight: $("#bdgMarg").height()-20,  
+                            maxWidth: $("#bdgMarg").width()-10,
+                            minHeight:125,      
+                            minWidth: 125,  
+                              })
+                              }
+                              $(this).resizable({
+           maxHeight: $("#bdgMarg").height()-20,  
+           maxWidth: $("#bdgMarg").width()-10,
+            minHeight:15,      
+            minWidth: 50,
+             autoHide:true ,    
+          start:function(){
+           var width = parseInt( $(this).css("width"));
+           var height =  parseInt( $(this).css("height"));
+            elementArea = width*height;
+           
+          console.log("standard start resize" +elementArea )
+          $(this).css("border","2px dashed #FF0000")
+          }, 
+          resize:function(){
+          onResizing($(this)) 
+          },     
+          stop:function(){    
+                $(this).focus();       
+               selTblId = $(this).attr("id")
+                 onResizeStop(selTblId) 
+            
+          }
+          });
+          });
+          
+      $('.clnTbl').on("dblclick",function(){
+             $(this).attr("contentEditable","false");
+               
+         $(this).draggable({
+         containment:"#bdgMarg",
+            start: function(e, ui){       
+           // var _height= $("#"+_id).height();
+           // var _width=$("#"+_id).width();
+           // $(ui.helper).addClass("draggableHelper");
+           // $(ui.helper).text=$(ui.helper).attr('id');  
+            $(this).css("border","dashed red 2px");              
+        } 
+         });
+     });
+            
+        $('.clnTbl').on("click",function(event){
+      event.stopPropagation();
+        selTblId =  $(this).attr("id");
+        console.log("click")
+       // $(this).draggable();
+         $(this).focus(); 
+         $("#"+selTblId).focus();
+      if($(this).attr("id") !="badgeLogo"&&$(this).attr("id") !="badgeLogof"&& $(this).attr("id") !="badgeQrCode"&& $(this).attr("id")!="cqrcd"&& $(this).attr("id")!="Logo" && $(this).attr("id")!="qrcode" && $(this).attr("id")!="cclogo")      
+              
+              $(this).attr("contentEditable","true");
+         $(this).css("cursor","pointer");
+        if($(this).is(".ui-draggable"))
+         $(this).draggable("destroy"); 
+         if($(this).is('.ui-resizable'))
+          $(this).resizable("destroy");
+            
+         
+          console.log("contenteEditable"+$(this).attr("contentEditable")); 
+           
+          
+         })        
+         
+    $('.clnTbl').on("click",function() {      
+        
+         clearBordersOfStage() ;  
+         $(this).focus();    
+          $("#btDel").show();    
+         $("#editMenu").css("visibility","visible")
+         $("#btEdit").show();
+          $("#btUpdt").show();
+          $(".sp-replacer").hide();
+          $("#btFntSize").hide();
+          $("#btFont").hide();
+         $("#btFntAlignCenter").hide();
+         $("#btFntAlignLeft").hide();  
+         $("#btFntAlignRight").hide();
+         $("#btTxtTrnsfmCap").hide();
+         $("#btTxtTrnsfmLC").hide();
+         $("#btTxtTrnsfmUC").hide();
+          if($(this).attr("id") !="badgeLogo"&&$(this).attr("id") !="badgeLogof"&& $(this).attr("id") !="badgeQrCode"&& $(this).attr("id")!="cqrcd"&& $(this).attr("id")!="Logo" && $(this).attr("id")!="qrcode" && $(this).attr("id")!="cclogo")      
+              
+              $(this).attr("contentEditable","true");  
+           console.log($(this).attr('id')+"::"+$(this).height()+"::"+$(this).width());           
+        // $(this).css("font-size", "150%");
+         $(this).css("border","dashed #cccccc 1.5px");     
+         
+         selTblId = $(this).attr('id');
+         if(selTblId ==  "badgeLogo"||selTblId ==  "badgeLogof" ||selTblId ==  "badgeQrCode" ||selTblId ==  "cqrcd" || selTblId ==  "cclogo" || selTblId ==  "clogo" )
+      {
+      $("#btEdit").hide();
+          $("#"+selTblId).resizable({
+       // aspectRatio: true,
+         maxHeight: $("#bdgMarg").height()-20,  
+            maxWidth: $("#bdgMarg").width()-10,
+             minHeight:25,      
+            minWidth: 50,
+          })
+      }
+         
+         //$("#"+selTblId).css("border","dashed #ccc 1.5px");
+         if(selTblId=="qrcd"){   
+            $("#"+selTblId).html("<input id='qrcUFile' type='image' />");
+         }
+         if(selTblId=="clogo"){
+            $("#"+selTblId).html("<input id='clogoUFile' type='file' />");
+            
+         }  
+         
+         $("#rezDia").show();         
+        
+         hideFrmtMenu();
+         $("#btEdit").show();
+         $("#btDel").show();
+         $("#btUpdt").show();  
+                    
+    });
+    
+     $(".clnTbl").on("draggable",function(){})
+   .on("click",function() {
+   $(this).css("cursor","pointer");
+ if($(this).attr("id") !="badgeLogo"&&$(this).attr("id") !="badgeLogof"&& $(this).attr("id") !="badgeQrCode"&& $(this).attr("id")!="cqrcd"&& $(this).attr("id")!="Logo" && $(this).attr("id")!="qrcode" && $(this).attr("id")!="cclogo")      
+              
+              $(this).attr("contentEditable","true");
+   $(this).resizable("destroy");
+    $(this).draggable( {disabled: true});
+}).on("dblclick",function() {
+  
+    $(this).draggable({ disabled: false});
+     $(this).css("cursor","move");
+       $(this).attr("contentEditable","false");
+});
+
+
+ $('.clnTbl').mouseover(function(){
+          //$("#"+selTblId).css("border","dashed blue 1px");
+         //console.log  ("over"+$(this).height());
+          //$(this).css("border","dashed #ccc 1px");     
+     });
+     $('.clnTbl').mouseleave(function(){
+          //$("#"+selTblId).css("border","dashed blue 0px");     
+         // $(this).css("border","dashed #ccc 0px");
+     });
+     
+     });     
+     
+     $('.badgeElement').on("mouseover","mouseoverFunction");
+     function mouseoverFunction(){  
+          //$("#"+selTblId).css("border","dashed blue 1px");
+       
+          //$(this).css("border","dashed #ccc 1px");     
+     } 
+     
+     $('.badgeElement').mouseleave(function(){
+          //$("#"+selTblId).css("border","dashed blue 0px");     
+          $(this).css("border","dashed #ccc 0px");
+     });
+     
+    
+      
+     })
+ //-----------------------------------------------------Document .Ready Function Ends----------------------------------------------//  
+ 
+ 
+ function scrollBadges(id){
+ 
+  if(id=="leftScroll"  )  
+        {
+            var scrollLeftPos=$("#displayContainer").scrollLeft();
+                 
+                 
+                $("#displayContainer").animate({scrollLeft:(scrollLeftPos - 200)},800)
+                
+        }     
+        else if(id=="rightScroll" ){
+            
+            var scrollLeftPos=$("#displayContainer").scrollLeft();
+            $("#displayContainer").animate({scrollLeft:scrollLeftPos + 200},800)
+            
+            }
+ 
+ 
+ }  
+    
+//-------------------------------------------------------For Image Upload-----------------------------------------------------//
+    function readURL(input) {
+        var actualLogoHeight ;
+        var actualLogoWidth;
+        isLogoUploaded = false;
+        
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                //////console.log  ("reader.onload jl")
+                 $('.badgeLogo').css({'background-image' : 'none'});
+                
+                if(document.getElementById("badgeLogo")){
+                    ////console.log("badge logo")      
+                    
+                 $('#badgeLogo').css({'background-image' : 'none'});  
+                   
+                 
+              $('#badgeLogo').css({'background-image' : 'url('+e.target.result+')','background-repeat': 'no-repeat'});
+               url_result=convertImageToCanvasURL(badgeLogo);   
+               isLogoUploaded = true;
+                }
+                else{           
+                
+                                                                                                                  
+                             custom_Logo =  $("<div class='badgeElement badgeLogo ' id='badgeLogo' style='margin:0;width:125px;height:125px;background-size:100% 100% ' ></div>");           
+                                                    custom_Logo.attr("id", "badgeLogo");     
+                        $(custom_Logo).css({'background-image' : 'url('+e.target.result+')','background-repeat': 'no-repeat'});                            
+                        
+                   actualLogoHeight=$(custom_Logo).height();
+                   actualLogoWidth = $(custom_Logo).width();    
+                    url_result= convertImageToCanvasURL(custom_Logo)
+                    isLogoUploaded = true;
+                   $("#bdgMarg").append(custom_Logo); 
+                   console.log("Else Logo") 
+                   
+                   
+                    var uploadHolder =$("<div class='upload' style='display:none;background-size:100% 100%'><input type='file' name='upload'       onchange=\'readURL(this)\'/></div>");    
+       // custom_Logo.append(uploadHolder);
+         
+             custom_Logo.on("mouseover",function(){
+             
+                 var this_width =  $(this).css("width");
+                 var this_height =  $(this).css("height")/3;
+                 
+                 $(this).children('div').css("display","block")
+                 uploadHolder.css("width",this_width);
+                  uploadHolder.css("height",this_height); 
+                 })
+                 
+                  custom_Logo.on("mouseout",function(){
+                 $(this).children('div').css("display","none")})
+                   
+                   
+                  custom_Logo.on("click",function(){ 
+                  
+                        $(this).css("cursor","pointer");   
+                      $("#editMenu").css("visibility","visible"); 
+                      $("#btDel").show();
+                     customBadgeElementOnClick($(this).attr("id")); 
+                      if($(this).is(".ui-draggable"))
+         $(this).draggable("destroy"); 
+         if($(this).is('.ui-resizable'))
+          $(this).resizable("destroy");
+         
+                      }).dblclick(function(event){
+                      event.stopPropagation();
+                       // $(this).attr("contentEditable","true");
+          $(this).css("cursor","move");         
+          $(this).draggable({            
+             containment: '#bdgMarg',
+             start: function(e, ui){       
+            var _height= $(this).height();
+            var _width=$(this).width();            
+            $(this).css("border","dashed red 2px");                
+                 }  
+             })     
+           console.log("contenteEditable"+$(this).attr("contentEditable"));      
+                       
+          })
+          
+          custom_Logo.on("mouseover",function(){
+       
+                               console.log("Logo") 
+                                $(this).resizable({
+                           // aspectRatio: true,
+                             autoHide:true ,    
+                            maxHeight: $("#bdgMarg").height()-20,  
+                            maxWidth: $("#bdgMarg").width()-10,
+                            minHeight:50,      
+                            minWidth: 50,  
+                            start:function(){
+                            $(this).css("border","2px dashed red")
+                            },
+                            stop:function(){
+                            $(this).css("border","1px dashed #CCCCCC")
+                            }
+                              })
+                              });                                       
+        }         
+                
+      }      
+        reader.readAsDataURL(input.files[0]);          
+       $("#cclogo").remove();           
+     } 
+   }   
+   
+    function readURLf(input) {
+        var actualLogoHeight ;
+        var actualLogoWidth;
+        isLogoUploaded = false;
+        
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                //////console.log  ("reader.onload jl")
+                 $('.badgeLogof').css({'background-image' : 'none'});
+                
+                if(document.getElementById("badgeLogof")){
+                    ////console.log("badge logo")      
+                    
+                 $('#badgeLogof').css({'background-image' : 'none'});  
+                   
+                 
+              $('#badgeLogof').css({'background-image' : 'url('+e.target.result+')','background-repeat': 'no-repeat'});
+               url_result=convertImageToCanvasURL(badgeLogof);   
+               isLogoUploaded = true;
+                }
+                else{           
+                
+                                                                                                                  
+                             custom_Logo =  $("<div class='badgeElement badgeLogo ' id='badgeLogof' style='margin:0;width:125px;height:125px;background-size:100% 100% ' ></div>");           
+                                                    custom_Logo.attr("id", "badgeLogof");     
+                        $(custom_Logo).css({'background-image' : 'url('+e.target.result+')','background-repeat': 'no-repeat'});                            
+                        
+                   actualLogoHeight=$(custom_Logo).height();
+                   actualLogoWidth = $(custom_Logo).width();    
+                    url_result= convertImageToCanvasURL(custom_Logo)
+                    isLogoUploaded = true;
+                   $("#bdgMarg").append(custom_Logo); 
+                   console.log("Else Logo") 
+                   
+                   
+                    var uploadHolder =$("<div class='upload' style='display:none;background-size:100% 100%'><input type='file' name='upload'       onchange=\'readURLf(this)\'/></div>");    
+       // custom_Logo.append(uploadHolder);
+         
+             custom_Logo.on("mouseover",function(){
+             
+                 var this_width =  $(this).css("width");
+                 var this_height =  $(this).css("height")/3;
+                 
+                 $(this).children('div').css("display","block")
+                 uploadHolder.css("width",this_width);
+                  uploadHolder.css("height",this_height); 
+                 })
+                 
+                  custom_Logo.on("mouseout",function(){
+                 $(this).children('div').css("display","none")})
+                   
+                   
+                  custom_Logo.on("click",function(){ 
+                  
+                        $(this).css("cursor","pointer");   
+                      $("#editMenu").css("visibility","visible"); 
+                      $("#btDel").show();
+                     customBadgeElementOnClick($(this).attr("id")); 
+                      if($(this).is(".ui-draggable"))
+         $(this).draggable("destroy"); 
+         if($(this).is('.ui-resizable'))
+          $(this).resizable("destroy");
+         
+                      }).dblclick(function(event){
+                      event.stopPropagation();
+                       // $(this).attr("contentEditable","true");
+          $(this).css("cursor","move");         
+          $(this).draggable({            
+             containment: '#bdgMarg',
+             start: function(e, ui){       
+            var _height= $(this).height();
+            var _width=$(this).width();            
+            $(this).css("border","dashed red 2px");                
+                 }  
+             })     
+           console.log("contenteEditable"+$(this).attr("contentEditable"));      
+                       
+          })
+          
+          custom_Logo.on("mouseover",function(){
+       
+                               console.log("Logo") 
+                                $(this).resizable({
+                           // aspectRatio: true,
+                             autoHide:true ,    
+                            maxHeight: $("#bdgMarg").height()-20,  
+                            maxWidth: $("#bdgMarg").width()-10,
+                            minHeight:50,      
+                            minWidth: 50,  
+                            start:function(){
+                            $(this).css("border","2px dashed red")
+                            },
+                            stop:function(){
+                            $(this).css("border","1px dashed #CCCCCC")
+                            }
+                              })
+                              });                                       
+        }         
+                
+      }      
+        reader.readAsDataURL(input.files[0]);          
+       $("#cslogo").remove();           
+     } 
+   }     
+    function readQRurl(input) {
+       
+        console.log("hello")
+        var custom_QrCode =  $("<div class='badgeElement customBadgeQrCode'style='width:2.5cm;height:2.5cm; ' ></div>");        
+            custom_QrCode.attr("id", "qrcode");     
+           $(custom_QrCode).css({'background-image' : 'url('+e.target.result+')','background-repeat': 'no-repeat'});
+           $("#bdgMarg").append(custom_QrCode);            
+            custom_QrCode.on("click",function(){
+            customBadgeElementOnClick($(this).attr("id")) 
+                }).dblclick(function(event){
+                event.stopPropagation();
+                event.preventDefault();
+                console.log("qrcode dblclick")
+                })        
+      }   
+   
+           
+    var numCharecters;
+  
+    
+    
+function handleDragStop( event, ui ) {  
+    //var offsetXPos = parseInt( ui.offset.left );
+    //var offsetYPos = parseInt( ui.offset.top );
+    $("#"+selTblId).css("border","dashed blue 0px");
+    ////////console.log  ( "Drag stopped!\n\nOffset: (" + offsetXPos + ", " + offsetYPos + ")\n");
+}
+
+function hideFrmtMenu(){
+    $("#btFont").hide(); 
+    $("#btFntSize").hide();
+    $("#btFntAlign").hide();
+    $("#btUpdt").hide();
+}
+
+
+function handleDropEvent( event, ui ) {
+    var uifXPos = parseInt( ui.offset.left );
+    var uifYPos = parseInt( ui.offset.top );
+    var draggable = ui.draggable;
+    ////////console.log  (uifXPos );
+    ////////console.log  (draggable.css("left"));
+    draggable.removeClass("shdwRaised");
+    //draggable.removeClass("drgTbl");
+    //draggable.addClass("clnTbl");   
+    ////////console.log  (event.clientX);
+    //$(this).append(draggable);
+    draggable.draggable({  
+         zIndex: 2500,
+        containment: 'parent' 
+    });
+    
+   
+      
+                          
+    var dxpos = clientXpos-200;
+    var dypos = clientYpos-120;
+    $("#rezDia").css({"left":dxpos,"top":dypos});
+}
+function scrollUpFontMenuListItem(_id){
+     selTblId = _id;
+   $("#fontMenu").scrollTop(0);
+    console.log(selTblId +"in scrollup font menu"+fontFamily) 
+   var fontFamily = highlightFont(selTblId );
+  
+$(".fontMi").each(function() {    
+    
+        if( fontFamily == $(this).text())    
+        {  
+            //console.log(fontFamily) 
+             $(this).addClass("fontSelected");  
+             
+              var scrollIndex =  $(this).index();   
+             
+           $(this).parent("ul").animate({        
+     scrollTop: $('#fntSMenu li:nth-child('+scrollIndex+')').position().top
+            }, 'slow');
+             console.log($(this).text()) 
+             //$(this).css("color","#FF0000");  
+        }
+    //$(".fntSMenu li").addClass("fontSizeSelected");       
+        
+    }); 
+   
+
+
+}
+function maximumFontSizeAllowed(selTblId){
+  var selectTbl = $("#"+selTblId);
+         var width = $("#"+selTblId).width();
+        
+         $(this).css("display","block"); 
+         var previousFontSize = parseInt($("#"+selTblId).css("font-size"));
+        
+         
+          addClassToFontSize(selTblId);     
+          $("#"+selTblId).css("font-size", $(this).text()+"px");  
+            text_width =$(selectTbl).textWidth();
+            text_height = $(selectTbl).textHeight();
+             console.log("Old Font Size"+previousFontSize+"width: "+width+"textHeight:"+text_height ) 
+         if(width < text_width){             
+             newFontSize = Math.floor((width/text_width )*parseInt($(this).text()))             
+             if(newFontSize <1)    
+                    newFontSize ++;                     
+              $(selectTbl).css("font-size",newFontSize +"px")  
+              text_width =  $("#"+selTblId).textWidth();                  
+              console.log("New Font Size"+newFontSize+"width:"+width+"textWidth:"+text_width )
+              $(this).css("border","2px dashed #CCCCCC")
+              text_width = $(this).textWidth();
+              if(text_width >width){
+              for(var i=0;i<(text_width-width);i+2)
+               {
+                   if(newFontSize >=1 && text_width >width)
+                   {  
+                      newFontSize --;
+                       $(selectTbl).css("font-size",newFontSize +"px")
+                        text_width = $(this).textWidth();
+                   
+                   }  
+                   else     
+                   break;
+               }
+                     
+                 console.log("IN IF Maximum Allowed font size"+newFontSize);
+                 $("popUpBackgroundFontSizeAlert").css("display","block");
+                    $("popUpContainerFontSizeAlert").css("display","block")
+             }
+             } 
+             else{
+                
+           //   $("#dummySpanContainer").css("font-size",$(selectTbl).css("font-size"))
+              newFontSize = parseInt($("#dummySpanContainer").css("font-size"));
+                for(var j=0;j<(width-text_width);j+1)  
+                {
+                text_width = $("#dummySpanContainer").width();       
+                        
+                if(newFontSize >=1 && newFontSize <42  && text_width <width) 
+                    {                    
+                        newFontSize ++;                            
+                        $("#dummySpanContainer").css("font-size",newFontSize +"px")     
+                         console.log("dummy container issue in else in for in if"+text_width)   
+                               
+                        
+               }
+               else if(newFontSize >=1 && newFontSize <42  && text_width >=width)
+                    {      
+                        newFontSize --;                            
+                        $("#dummySpanContainer").css("font-size",newFontSize +"px")     
+                        // console.log("issue in else in for in 2nd if")  
+                    }
+                    
+               else       
+               break;      
+             } 
+             
+             
+             
+             console.log("IN ELSE Max font size new>"+newFontSize)
+             text_height =  $("#dummySpanContainer").height();
+              if(text_height >=$("#"+selTblId).height())
+              {           
+              console.log("fontsize selected"+$(this).text()+"newFontSize>"+newFontSize)   
+                 newFontSize = $("#"+selTblId).height()-2;   
+              //    $(selectTbl).css("font-size",newFontSize)   
+                  
+                 if(parseInt($(this).text())<newFontSize)   
+                 {         
+                // $(selectTbl).css("font-size",$(this).text()+"px")             
+                   
+                 }    
+              }   
+                   
+              addClassToFontSize(selTblId);  
+             } 
+             
+             if(newFontSize >=42)
+             newFontSize =42;
+             if(newFontSize<=1)   
+             newFontSize =1;
+              console.log("Max font size new>"+newFontSize)  
+             
+             return parseInt(newFontSize);                 
+
+
+}     
+
+function addOrRemoveListItem(value){
+   $("#fntSMenu").empty();           
+        
+  var listItemValue = 1;
+  console.log(listItemValue+":listitem<=value:"+value)
+while(listItemValue<=parseInt(value)){    
+
+   var listItem = $("<li class='fontSizeMi'>"+listItemValue+"</li>")
+   $(listItem).on("click",function(){ 
+     $("#"+selTblId).css("font-size",$(this).text()+"px")
+   })    
+$('#fntSMenu').append(listItem);      
+listItemValue ++;
+
+}  
+console.log(listItemValue+":listitem<=value:"+value) 
+}              
+    
+ 
+function scrollUpFontSizeListItem(_id){
+ $("#fntSMenu").scrollTop(0); 
+  var scrollIndex   
+ $(".fontSizeMi").each(function() {  
+     console.log($("#"+_id).css("font-size"))
+        if($("#"+_id).css("font-size") == $(this).text()+"px")
+        { 
+           scrollIndex =  $(this).index();           
+           $('#fntSMenu').animate({   
+     scrollTop: $('#fntSMenu li:nth-child('+scrollIndex+')').position().top
+            }, 'slow');      
+            console.log("Scroll value>>"+$(this).position().top)                     
+          //$(""+this).animate({top:'-=43'});             
+         }
+         else{  
+        
+         if(parseInt($("#"+_id).css("font-size")) >parseInt( $(this).text()) && parseInt($("#"+_id).css("font-size")) <parseInt( $(this).next().text()))
+         {
+          scrollIndex =  $(this).index();   
+           console.log(parseInt( $(this).text())+"else of Index"+parseInt( $(this).next().text()))
+        // addOrRemoveListItem(scrollIndex,parseInt($("#"+_id).css("font-size")))
+         }       
+         }      
+         });            
+}   
+
+function addClassToFontSize(id)
+{   
+    
+            //$(".fontSizeMi").css("color","#000000");  
+            $(".fontSizeMi").removeClass("fontSelected");
+            $(".fontSizeMi").each(function() {  
+     console.log($("#"+id).css("font-size"))
+        if($("#"+id).css("font-size") == $(this).text()+"px")
+        {  
+         //console.log($("#"+id).css("font-size") +"=="+ $(this).text()+"px")
+              
+             $(this).addClass("fontSelected");     
+             console.log($(this).text())  
+             //$(this).css("color","#FF0000");  
+                  
+        }
+        else{  
+        if(parseInt($("#"+id).css("font-size"))== parseInt($(this).text())-1)
+        
+        console.log("Index"+$(this).index());               
+        }
+    //$(".fntSMenu li").addClass("fontSizeSelected");           
+        
+    }); 
+}
+function highlightFont(id){
+console.log("in highlightFont"+id);
+    
+    $(".fontMi").removeClass("fontSelected"); 
+     
+    var noOfCharecters = $("#"+id).css("font-family").length;
+    console.log("FontFamily::"+$("#"+id).css("font-family"));
+    var fontfamilyArr = $("#"+id).css("font-family").split(",");
+   
+    
+    var  fontFamily 
+       if(noOfCharecters>15)
+    fontFamily =  $("#"+id).css("font-family").slice(1,noOfCharecters-1)
+    else
+    fontFamily = $("#"+id).css("font-family") 
+    
+    console.log($(this).text()+"fontFamily "+fontFamily )
+   
+    $(".fontMi").each(function() {  
+     
+        if( fontFamily == $(this).text())  
+        {  
+            console.log("IF>>"+fontFamily) 
+             $(this).addClass("fontSelected");  
+             
+             
+             console.log($(this).text()) 
+             //$(this).css("color","#FF0000");  
+        }
+    //$(".fntSMenu li").addClass("fontSizeSelected");       
+        
+    }); 
+    return fontFamily;
+    }
+       
+
+$('#resizeDiv1,#resizeDiv2,#resizeDiv3,#resizeDiv4')
+    .draggable()
+    .resizable();
+
+$('#resizeDiv,#resizeDiv1,#resizeDiv2,#resizeDiv3,#resizeDiv4')
+    .resizable({
+        
+        start: function(e, ui) {
+            ////////console.log  ('resizing started'+e +' mythily     '+ui);
+        },
+        resize: function(e, ui) {
+           
+        },
+        stop: function(e, ui) {
+        vpw = $(resizeDiv).width();    
+        vph = $(resizeDiv).height();
+        
+            ////////console.log  ('resizing started'+ vpw +' mythily     '+vph);
+             
+        }
+        
+    });// JavaScript Document// JavaScript Document
+    
+    
+function convertImageToCanvasURL(imgDiv){
+
+console.log($(imgDiv).attr("id"))
+ html2canvas(imgDiv,{ 
+                    useCORS: true,
+                   
+                           
+            onrendered: function(canvas) {           
+            try{                    
+                var extra_canvas = document.createElement("canvas");
+               // extra_canvas.setAttribute('width',200);
+               // extra_canvas.setAttribute('height',150);
+               // $(extra_canvas).css("margin","auto");                     
+                var ctx = extra_canvas.getContext('2d');
+                ctx.drawImage(canvas,0,0,canvas.width, canvas.height,0,0,200,150); 
+                ctx.fillStyle = '#FFFFFF';              
+                   var img = canvas.toDataURL()    
+                img.crossOrigin = '';     
+                if($(imgDiv).attr("id")=="badgeLogo" ||$(imgDiv).attr("id")=="Logo" ||$(imgDiv).attr("id")=="cclogo") 
+                 {     
+                    url_result = canvas.toDataURL("image/jpeg",0.5);
+                    console.log("url_result>>"+url_result);
+                }
+                 if($(imgDiv).attr("id")=="badgeLogof" ||$(imgDiv).attr("id")=="cslogo") 
+                 {     
+                    url_result = canvas.toDataURL("image/jpeg",0.5);
+                    console.log("url_result>>"+url_result);
+                }
+                else if($(imgDiv).attr("id")=="badgeQrCode" ||$(imgDiv).attr("id")=="qrcode" ||$(imgDiv).attr("id")=="cqrcd")
+                {
+                    QrUrl_Result ==    $(this).css('background-image');
+                 //   console.log("QrUrl_Result "+QrUrl_Result .length); 
+                }
+                 
+                 
+              // dataURL = canvas.getImageData(0,0,125,100)               
+              // console.log(dataURL) 
+               
+            }catch(e){
+                console.log("Error>><<"+e)         
+                console.log(e);      
+                }
+                
+                }
+                })
+                
+                
+}
+
+
+
+    //----------------------------------------------- Color-picker functionality Starts -----------------------------------------------------------//    
+function getColorPicker(){
+    
+    $(".sp-replacer").css("margin-top","13px");
+     $(".sp-replacer").hide();  
+    $("#full").spectrum({
+    allowEmpty:true,
+    color: "#ECC",
+    showInput: true,
+    className: "full-spectrum",
+    showInitial: true,
+    showPalette: true,
+    showSelectionPalette: true,
+   // showAlpha: true,
+    maxPaletteSize: 10,
+    preferredFormat: "hex",
+    localStorageKey: "spectrum.demo",
+    move: function (color) {
+        updateBorders(color);
+    },
+     change: function(color) {
+       changeColor(color.toRgbString());
+     /*  console.log(original_color);
+      //  var hsv = color.toHsv();
+       // var rgb = color.toRgbString();
+     //   var hex = color.toHexString();
+        //console.log("callback",color.toHslString(), color.toHsl().h, color.toHsl().s, color.toHsl().l)
+        var toChangeBGcolor =confirm("Do you want to change Background color");
+        
+        if(toChangeBGcolor == true){ 
+       // console.log(toChangeBGcolor )
+        $("#"+selTblId).css({  
+            'background': color.toHexString(), 
+           
+        })
+       // console.log(original_color)
+        $("#"+selTblId).css("color",original_color); 
+        }
+        else if(toChangeBGcolor == false){
+            var toChangeTextcolor =confirm("Do you want to change Text color");
+            if(toChangeTextcolor == true){
+            $("#"+selTblId).css({
+                'color': color.toHexString()
+            })}
+            
+            else   if(toChangeTextcolor == false)
+              $("#"+selTblId).css("color",original_color); 
+        }*/
+        
+    },
+    move: function (color) {
+       //changeColor(color.toRgbString()); 
+    },
+    
+    show: function () {
+    original_color =  $("#"+selTblId).css("color");
+    //console.log("show"+original_color )  
+
+    },
+    beforeShow: function () {  
+
+    },
+    hide: function (color) {
+        updateBorders(color);
+    },
+        palette: [
+        ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)", /*"rgb(153, 153, 153)","rgb(183, 183, 183)",*/
+        "rgb(204, 204, 204)", "rgb(217, 217, 217)", /*"rgb(239, 239, 239)", "rgb(243, 243, 243)",*/ "rgb(255, 255, 255)"],
+        ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
+        "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"],
+        ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)",
+        "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)",
+        "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)",
+        "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)",
+        "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)",
+        "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
+        "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
+        "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
+        /*"rgb(133, 32, 12)", "rgb(153, 0, 0)", "rgb(180, 95, 6)", "rgb(191, 144, 0)", "rgb(56, 118, 29)",
+        "rgb(19, 79, 92)", "rgb(17, 85, 204)", "rgb(11, 83, 148)", "rgb(53, 28, 117)", "rgb(116, 27, 71)",*/
+        "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)",
+        "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
+    ]
+});
+}  
+
+var selectedColor= "";
+function changeColor(_color){
+    
+      selectedColor=_color; 
+        $("#popUpBackground").css("display","block");
+        $("#popUpContainer").css("display","block");
+        $("#loaderImg").css("display","none");
+        
+        
+    }
+
+$('input[name=selectColor]').click(function() {
+     colorStyle = $('input[name=selectColor]:checked').val();
+    console.log("ColorStyle:"+$('input[name=selectColor]:checked').val()); 
+});
+$(".select_options").on("click",function(){
+    
+     canChangeColor = $(this).text();  
+    
+     console.log("colorStyle:>>"+colorStyle+">>canChangeColor:"+canChangeColor+">>selectedColor:"+selectedColor);
+     if(colorStyle == 'background-color'  && canChangeColor=="OK") 
+      $("#"+selTblId).css("background-color",selectedColor)
+      else if(colorStyle == 'color'  && canChangeColor=="OK")
+        $("#"+selTblId).css("color",selectedColor)
+        
+        if($(this).attr("id")== "popUpCancle" ){
+       
+        $("#popUpBackground").css("display","none"); 
+       $("#popUpContainer").css("display","none"); 
+       }
+        
+      $("#popUpBackground").css("display","none"); 
+     $("#popUpContainer").css("display","none");  
+    })
+$(".popUpCloseIcon").on("click",function(){
+ $("#popUpBackground").css("display","none"); 
+     $("#popUpContainer").css("display","none"); 
+     })
+     
+     
+ //----------------------------------------------- Colropicker functionality Ends -----------------------------------------------------------//    
+ //----------------------------------------------- Function to find the text width when text edited------------------------------------------//   
+  /*$.fn.textWidth = function(){
+        var self = $(this)
+        console.log("Scroll Width>>"+ self.scrollWidth)
+            //children = self.children(),
+            calculator = $('<span style="display:none;"></span>'),
+            width;
+            $("#leftContent").append(calculator);
+            var newfontSize = $(this).css("font-size");
+            $(calculator ).css('font-size',newfontSize);
+            $(calculator ).text($(this).text());
+        //children.wrap(calculator);
+        
+        width = $(calculator ).width(); 
+        
+       
+        console.log("AAAA"+ width )
+         return width;
+    }*/
+$.fn.textWidth = function(){
+    
+  
+    var text = $(this).text();
+    var newfontSize = $(this).css("font-size");
+    var newTxtTransform = $(this).css("text-transform");
+    var containerWidth = parseInt($(this).css("width"))
+    $("#dummySpanContainer").css('font-size',newfontSize);
+    $("#dummySpanContainer").text(text);
+    $("#dummySpanContainer").css("text-transform",newTxtTransform)
+   
+    var width = $("#dummySpanContainer").width();
+    //console.log("difference"+(width-containerWidth)+ "TXTWIDTH:"+width+"TEXT"+text)
+    //$(this).html(text);
+  
+    return width;   
+}
+
+$.fn.textHeight = function(){  
+    
+  
+    var text = $(this).text();
+    var newfontSize = $(this).css("font-size");
+    var newTxtTransform = $(this).css("text-transform");
+    var containerWidth = parseInt($(this).css("width"))
+    $("#dummySpanContainer").css('font-size',newfontSize);
+    $("#dummySpanContainer").text(text);
+    $("#dummySpanContainer").css("text-transform",newTxtTransform)
+   
+    var height = $("#dummySpanContainer").height();  
+   // console.log("TEXT Height>"+height);    
+    //console.log("difference"+(width-containerWidth)+ "TXTWIDTH:"+width+"TEXT"+text)
+    //$(this).html(text);  
+  
+    return height;   
+}
+
+
+//------------------------------------------Called when Resizing ---------------------------------------------------//
+function onResizing($this){
+     
+var width =  $this.width();
+           var height = $this.height();             
+           var previousFotnSize; 
+           var newFontSize ;
+           var newElementArea = width*height;
+           previousFotnSize = parseInt($this.css("font-size"));               
+             newFontSize = Math.floor(newElementArea/elementArea )*previousFotnSize;
+               if(newFontSize <=1)
+                newFontSize =1;
+                if(newFontSize>=42)
+                newFontSize =42;
+                $this.css("font-size",newFontSize +"px")
+               text_width = $this.textWidth();
+              text_height =  $this.textHeight();                
+              $this.css("line-height",$this.css("height"))             
+              $this.css("border","2px dashed #FF0000")
+             if(text_width >=width){
+             // console.log("issue in IF"); 
+             for(var i=0;i<(text_width -width);i++)
+             {
+             
+               if(newFontSize >=1 && text_width >width)
+               { 
+                  newFontSize --;
+                   $this.css("font-size",newFontSize +"px")
+                    text_width = $this.textWidth();
+                 
+               }   
+               else
+               break;
+             }   
+             }
+              else{   
+             // console.log("issue in else");   
+               
+                for(var j=0;j<(width-text_width);j+1)  
+                {
+                text_width = $this.textWidth();     
+                        
+                if(newFontSize >=1 && newFontSize <42  && text_width <width) 
+                    {                    
+                        newFontSize ++;                            
+                        $this.css("font-size",newFontSize +"px")     
+                        // console.log("issue in else in for in if")   
+                               
+                        
+               }
+               else if(newFontSize >=1 && newFontSize <42  && text_width >=width)
+                    {      
+                     newFontSize --;                               
+                        $this.css("font-size",newFontSize +"px")     
+                        // console.log("issue in else in for in 2nd if")  
+                    }
+             
+               else    
+               break;  
+             } 
+                  
+             }
+              newFontSize =parseInt($this.css("font-size"))  
+              
+             if(newFontSize <=1){       
+             //console.log("VVVVVVVVVVVVVVVVVVVVVV"+newFontSize)
+                newFontSize =1;
+                $this.css("font-size",newFontSize +"px")
+                } 
+                else if(newFontSize >=42){
+            // console.log("VVVVVVVVVVVVVVVVVVVVVV"+newFontSize)
+                newFontSize= 42;
+                $this.css("font-size","42px");          
+                }  
+                   
+                text_width = $this.textWidth(); 
+                text_height = $this.textHeight();    
+              if(text_height >= $this.height())       
+                {
+                  if($this.height()>=42)
+                  newFontSize =40;   
+                   else   
+                    newFontSize = $this.height()-3;   
+                         
+                    //console.log("newFontSize"+newFontSize+"height"+$this.height());         
+                  $this.css("font-size",newFontSize +"px")      
+                  //text_width = $this.textWidth(); 
+                  
+                                  
+               }
+               console.log("Resize"+ $this.attr("id"))    
+            // console.log(text_width +"standard STOP resize" +(width*height))
+          }  
+
+function adjustFontOnOperationComplete($this){
+text_width = $this.textWidth(); 
+//var newFontSize = 
+}    
+
+
+function onResizeStop(_id){
+$("#"+_id).css("border","1px solid #CCCCCC");
+selTblId = _id
+var $this = $("#"+_id)       
+
+ var newFontSize =parseInt($this.css("font-size"))
+ console.log(selTblId +"AfterStop + new fontsize>"+newFontSize);
+  if($this.textWidth()>=$this.width())
+                  {   
+                     
+                    console.log("newFontSize"+newFontSize) 
+                    if(newFontSize>2)
+                    newFontSize = newFontSize-2;   
+                    
+                           
+                    $this.css("font-size",newFontSize+"px");   
+                     console.log($this.textWidth()+"<<>>"+$this.width())           
+                     console.log("newFontSize"+newFontSize)    
+                           
+                    // onResizing($(this));                    
+                 
+                 }   
+                 if($this.css("font-family")=="Helvetica" ||$this.css("font-family")=="Arial")
+                 {
+                     if(newFontSize >2)      
+                     newFontSize = newFontSize-1;  
+                    $this.css("font-size",newFontSize+"px"); 
+                    console.log("AfterStop"+$this.css("font-family"))   
+                     }  
+                        
+$("#"+_id).css("border","1px solid #CCCCCC");
+
+}  
+<!-------------------------------------------- Convert Color and Background color to RGB format------------------------------------------>
+function rgba2hex2rgb(rgb){
+ rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+ var _hex = ("0" + parseInt(rgb[1],10).toString(16)).slice(-2) +
+  ("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
+  ("0" + parseInt(rgb[3],10).toString(16)).slice(-2);
+ var rgb =  hexToRgb(_hex)
+  return rgb;
+}   
+
+function hexToRgb(hex) {    
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    var rgb  = "rgb("+parseInt(result[1], 16)+","+parseInt(result[2], 16)+","+parseInt(result[3], 16)+")";   
+    return result ?rgb: null;
+}
+</script>
+
+</apex:outputpanel>
+</body>
+
+
+  
+<!--apex:commandButton value="Save" action="{!savedimensions}"/-->
+
+
+
+</apex:form>
+<script>
+function SendToServer(ShowValues,badgetype,vals){
+}
+ function SendToServertodel(ShowValues){
+}
+function SendToServertodel(ShowValues){
+}
+function sendtoupdate(ShowValues,badgetype,vals){
+}
+
+</script>
+
+
+<apex:form >
+
+<!--apex:commandButton value="Save" action="{!savedimensions}"/-->
+ <apex:actionFunction name="SendToServer" action="{!savedimensions}" oncomplete="clearBadge();" reRender="djjj,k">
+           
+            <apex:param name="Abcd" value="" />
+            <apex:param name="badgetype" value="" />
+            <apex:param name="vals" value="" />
+            
+          
+ </apex:actionFunction> 
+  
+ <apex:actionFunction name="SendToServertodel" action="{!deletename}" oncomplete="clearBadge();" reRender="djjj,k" >
+           
+            <apex:param name="nameval" value="" />
+          
+ </apex:actionFunction> 
+       
+  <apex:actionFunction name="SendToServertoedit" action="{!editBadge}" oncomplete="showData();" reRender="k" >
+           
+            <apex:param name="editnameval" value="" />
+          
+ </apex:actionFunction> 
+ 
+ <apex:actionFunction name="sendtoupdate" action="{!updatetemplate}" oncomplete="clearBadge();" reRender="k" >
+           
+            <apex:param name="updtnameval" value="" />
+          <apex:param name="badgetypeup" value="" />
+          <apex:param name="valsupdate" value="" />
+          
+ </apex:actionFunction>
+</apex:form>
+
+ 
+</apex:page>

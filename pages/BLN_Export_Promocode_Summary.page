@@ -1,0 +1,87 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_PromoCodeReportCon" action="{!exportPCSummary}" contentType="application/vnd.ms-excel#ByPromocodeExport.xls" readOnly="true"><apex:pageBlock > 
+  
+
+  
+ <table border="1" width="100%">
+  <thead>
+    <tr>
+      <th>Ticket Name</th>
+      <th width="20%">Ticket Type</th>
+      
+      <th width="20%">Promotion Name</th>
+      <th width="20%">Promo Code</th>
+      <th width="20%">Promo Code Type</th>
+      <th width="20%">Used/Available</th>
+      
+      <th width="16%">Discount Amount ({!eventcurrency})</th>
+      <th width="22%" >Total Discounted Amount ({!eventcurrency})</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!--------------------Start of Parent Record (Main Repeat)------------------------>
+     <apex:repeat value="{!promoCodeInnerList}" var="promocode">
+      
+          <!--Group header-->
+         
+          
+              <!-----inside repeat for ticket belongs to pc----->
+              <apex:repeat value="{!promocode.itemPromotionList}" var="itemPromotion">
+                <tr> 
+                  <!------->
+                  <td style="width: 28.2%" > {!itemPromotion.itemPromotionData.Buy_Item__r.item_name__c}
+                    {!itemPromotion.itemPromotionData.Free_Item__r.item_name__c}
+                    <apex:outputLabel value="(Free Item)" rendered="{!(promocode.promotionData.Promotion_Type__c == "Buy Something GetSomething" && itemPromotion.itemPromotionData.Buy_Item_Quantity__c== Null)}" /></td>
+                  <!------->
+                  <td style="width: 20%" > 
+                    
+                        
+                        <apex:repeat value="{!RegList}" var="r">        
+                        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Attendee' && itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name=='Admissions')}"/>
+                        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Exhibitor' && itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name=='Exhibitor')}"/>
+                        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Sponsor' && itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name=='Sponsor')}"/>
+                        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Speaker' && itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name=='Speaker')}"/>      
+                        </apex:repeat>
+                        <apex:outputText value="{!itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name}" rendered="{!(itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name!='Admissions' && itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name!='Exhibitor' && itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name!='Sponsor' && itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name!='Speaker')}"/>       
+                        <apex:repeat value="{!RegList}" var="r">        
+                        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Attendee' && itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name=='Admissions')}"/>
+                        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Exhibitor' && itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name=='Exhibitor')}"/>
+                        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Sponsor' && itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name=='Sponsor')}"/>
+                        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Speaker' && itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name=='Speaker')}"/>      
+                        </apex:repeat> 
+                        <apex:outputText value="{!itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name}" rendered="{!(itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name!='Admissions' && itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name!='Exhibitor' && itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name!='Sponsor' && itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name!='Speaker')}"/>       
+                    
+                    </td>
+                  <!------->
+                  <td style="width: 14%" ><!-- {!itemPromotion.itemPromotionData.Buy_Item_Quantity__c} --> 
+                    {!promocode.promotionData.Name}</td>
+                    
+                    <td style="width: 14%" >
+                    {!promocode.promotionData.Promo_Code__c}</td>
+                    
+                    <td style="width: 14%" > 
+                    {!promocode.promotionData.Promotion_Type__c}</td>
+                    
+                    <td style="width: 14%" > 
+                    {!(promocode.inntotalusedcont)} out of {!promocode.promotionData.T_Max_Count__c}</td>
+                  <!------->
+                  <td style="width: 16%" ><apex:outputText rendered="{!IF(itemPromotion.itemPromotionData.Item_Discount_Type__c == 'Amount', TRUE, FALSE)}"
+                                                            value="{!eventcurrency}" />
+                    {!itemPromotion.itemPromotionData.Item_Discount_Value__c}
+                    <apex:outputText rendered="{!IF(itemPromotion.itemPromotionData.Item_Discount_Type__c == 'Percent', TRUE, FALSE)}"
+                                                            value="%" /></td>
+                  <!------->
+                  <td  style="text-align:right;"><apex:outputText value="{0,number,{!eventcurrency} ###,##0.00}"> 
+                      <!-- <apex:param value="{!itemPromotion.discountedPrice }" />-->
+                      <apex:param value="{!itemPromotion.totdiscount}" />
+                    </apex:outputText></td>
+                  <!-------> 
+                </tr>
+                <!------> 
+              </apex:repeat>
+    </apex:repeat>
+    <!-------------//end of Parent Record (Main Repeat)---------------------------->
+  </tbody>
+</table>
+
+</apex:pageBlock>
+</apex:page>

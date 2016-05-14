@@ -1,0 +1,142 @@
+<apex:page controller="BLN_CheckinHistoryReportCon" showHeader="false" standardStylesheets="false" sidebar="false" action="{!exportselected}"  contentType="application/vnd.ms-excel#CheckinHistoryReport.xls" readOnly="true"><apex:pageBlock >
+ 
+     <apex:form >
+       <apex:outputpanel rendered="{!ShowCHForAttendee}">
+  <table id="example" class="display" border="1">
+    <thead>
+      <tr>
+        <th>Ticket Name</th>
+        <th>Ticket Number</th>
+        <th>Email</th>
+        <th>Company</th>
+        <th>Checkin-out Date/Time</th>
+        <th> Checkin Status </th>
+        <th>Scanned By</th>
+        <th>Device Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <apex:repeat value="{!ticClas}" var="CheckInHistory"> 
+        <tr>
+          <td  colspan="8">
+             <b>  Name:   <font style="color:red;">{!CheckInHistory.GuestName.Tkt_profile__r.First_Name__c} {!CheckInHistory.GuestName.Tkt_profile__r.Last_Name__c}</font>  </b> <br/>
+            <table border="1">
+              <tbody>
+                <apex:repeat var="Check" value="{!CheckInHistory.tcinn}">
+                  <tr>
+                    <td>{!Check.tic.Item_Pool__r.Item_Pool_Name__c}</td>
+                    <td>{!Check.tic.Name}</td>
+                    <td>{!Check.tic.tkt_profile__r.Email__c}</td>
+                    <td>{!Check.tic.tkt_profile__r.TKT_Company__c}</td>
+                    <td colspan="4">
+              <table border="1">
+                        <apex:repeat value="{!Check.tic.tstatus__r}" var="tsat">
+                <tr>
+                            <td style="text-align:left"><apex:outputText rendered="{!tsat.Tstatus_name__c == true}">
+                               <font style="color:#ffffff">.</font><font style="color:#5cb85c"> <!-- <c:MFSI_FormatDateTime date_Timevalue="{!tsat.LastModifiedDate}"/> -->
+                               <c:EV_FormatDt date_Timevalue="{!tsat.scan_time__c}" t_Zone="{!Check.tic.Event__r.Time_Zone__c}"/>
+                               
+                               </font>
+                              </apex:outputText>
+                              <apex:outputText rendered="{!tsat.Tstatus_name__c == false}">
+                               <font style="color:#ffffff">.</font><font style="color:#d9534f"> <!-- <c:MFSI_FormatDateTime date_Timevalue="{!tsat.LastModifiedDate}" /> -->
+                               
+                               <c:EV_FormatDt date_Timevalue="{!tsat.scan_time__c}" t_Zone="{!Check.tic.Event__r.Time_Zone__c}"/>
+                               
+                               </font>
+                              </apex:outputText></td>
+                            <td>
+                              <apex:outputText rendered="{!tsat.Tstatus_name__c == true}">
+                               Check In
+                              </apex:outputText>
+                              <apex:outputText rendered="{!tsat.Tstatus_name__c == false}">
+                               Check Out
+                              </apex:outputText>
+                            </td>
+                            <td>{!tsat.Owner.Name}</td>
+                            <td>{!tsat.Device_Name__c}</td>
+                          </tr>
+                            </apex:repeat>
+                      </table>
+                      </td>
+                </tr>
+                </apex:repeat>
+              </tbody>
+            </table>
+            </td>
+        </tr>
+        </apex:repeat>
+    </tbody>
+    </table>
+    </apex:outputpanel>
+    <apex:outputpanel rendered="{!ShowCHForTicket}">
+<table id="example" class="display"  border="1">
+    <thead>
+        <tr>
+        <th>Name</th>
+        <th>Ticket Number</th>
+        <th>Email</th>
+        <th>Company</th>
+        <th>Checkin-out Date/Time</th>
+        <th> Checkin Status </th>
+        <th>Scanned By</th>
+        <th>Device Name</th>
+        </tr>
+    </thead>
+    <tbody>
+         <apex:repeat value="{!ticClas}" var="ticketName">
+             <tr>
+          <td  colspan="8"  class="grptd"><!-----------> 
+         <b>  Ticket Name: <font style="color:red;"> {!ticketName.GuestName.Item_Pool__r.Item_Pool_Name__c} </font>  </b><br/>
+            <table  border="1">
+              <tbody>
+                <apex:repeat value="{!ticketName.tcinn}" var="guest">
+                  <tr>
+                    <td>{!guest.tic.Tkt_profile__r.First_Name__c}{!guest.tic.Tkt_profile__r.Last_Name__c}</td>
+                    <td>{!guest.tic.Name}</td>
+                    <td>{!guest.tic.tkt_profile__r.Email__c}</td>
+                    <td>{!guest.tic.tkt_profile__r.TKT_Company__c}</td>
+                    <td class="grptd" colspan="4">
+             <table border="1">
+             <apex:variable value="{!0}" var="Ticketcheckin"/>
+                        <apex:repeat value="{!guest.tic.tstatus__r}" var="tsat">
+                   <tr>
+                            <td><apex:outputText rendered="{!tsat.Tstatus_name__c == true}">
+                           <font style="color:#ffffff">.</font><font style="color:#5cb85c"> <!-- <c:MFSI_FormatDateTime date_Timevalue="{!tsat.LastModifiedDate}"/> --> 
+                           
+                              <c:EV_FormatDt date_Timevalue="{!tsat.scan_time__c}" t_Zone="{!guest.tic.Event__r.Time_Zone__c}"/> </font>
+                              </apex:outputText>
+                              <apex:outputText rendered="{!tsat.Tstatus_name__c == false}">
+                              <font style="color:#ffffff">.</font><font style="color:#d9534f"><!-- <c:MFSI_FormatDateTime date_Timevalue="{!tsat.LastModifiedDate}"/> -->  
+                           <c:EV_FormatDt date_Timevalue="{!tsat.scan_time__c}" t_Zone="{!guest.tic.Event__r.Time_Zone__c}"/></font>
+                              </apex:outputText></td>
+                            <td>
+                              <apex:outputText rendered="{!tsat.Tstatus_name__c == true}">
+                               Check In
+                              </apex:outputText>
+                              <apex:outputText rendered="{!tsat.Tstatus_name__c == false}">
+                               Check Out
+                              </apex:outputText>
+                            </td>
+                            <td>{!tsat.Owner.Name}</td>
+                            <td>{!tsat.Device_Name__c}</td>
+                          </tr>
+                          <apex:variable value="{!Ticketcheckin+1}" var="Ticketcheckin"/>
+                            </apex:repeat>
+                      </table>
+                        </td>
+                    </tr>
+                    </apex:repeat>
+              </tbody>
+            </table>
+          </td>
+    </tr>
+    </apex:repeat>
+    </tbody>
+    </table>
+    </apex:outputpanel>
+
+  </apex:form>
+
+</apex:pageBlock>
+</apex:page>

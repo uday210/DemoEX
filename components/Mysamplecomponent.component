@@ -1,0 +1,493 @@
+<apex:component id="commoncomponent">
+
+ <apex:attribute name="BLN_UtillDisplayLinks" description="This is the value for the component."
+                    type="BLN_UtillDisplayLinks" required="true"/>
+
+ <head><title>Booth Leads</title></head>
+
+    <!-- --------------------------- Basic Style sheets ---------------------------------- -->
+     <apex:stylesheet value="{!URLFOR($Resource.MyTickets, 'css/style.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.MyTickets, 'style-button.css')}"/>
+      <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/jquery.min.js')}"></script>
+      
+     <!--   <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/zebra_accordion.src -att.js')}"></script> -->
+      <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/jquery-ui-1.8.16.custom.min.js')}"></script>
+
+       <style>
+     
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+     <style>
+
+
+.button-a.blue {
+background-image: url({!URLFOR($Resource.MyTickets, 'images/button.png')});
+background-position: 0px -60px;
+border: 1px solid #438ac2;
+}
+     
+.selected { background-color: #E0EFF7; } 
+        
+        </style>
+
+<!-- -------------------------------------------------------- apex end------------------------------------------ -->
+   
+<div id="header">
+       <div id="logo">
+    <h1 style=" padding-top:5px; padding-left:20px; color:#FFF ">
+      <apex:image url="{!URLFOR($Resource.MyTickets, 'images/boothleads_logo_with_whitetext.png')}"/> 
+    </h1>
+  </div>
+       
+       <!--close of logo--> 
+     </div>
+<!--close of header--->
+<div  id="ribbon"></div>
+<!--close of ribbon-->
+
+<header>
+   <div id="centered-head" class="res">
+    <nav>
+       <ul>
+        <li id="login"> <span id="login-trigger"> <span id="login-triggers"> 
+          <span id="user-panel-check"></span> <span id="user-panel-title ">My Account</span> </span></span>
+           <div id="login-content">
+             <ul>
+                   <li><a href="editprofile.htm">
+                    <apex:image url="{!URLFOR($Resource.MyTickets, 'images/setting.png')}"/> 
+                   <span>Settings</span></a></li>
+                   <li><a href="upgradeacc.htm"><apex:image url="{!URLFOR($Resource.MyTickets, 'images/upgrade.png')}" width="13px" height="13px" /> <span>Upgrade Account</span></a></li>
+                  <!-- <li><a href="login.htm">  <apex:image url="{!URLFOR($Resource.MyTickets, 'images/logout.png')}"/>  <span>Log Out</span></a></li> -->
+                   <li style="width:100px:height:10px;margin-left:0px;padding-left:5px;">
+                    <apex:form > 
+                     <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" style="padding-left:0px;">
+                         <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/>
+                      <span>{!$Label.site.logout}</span></apex:commandLink>
+                   </apex:form> </li> 
+                 </ul> 
+            </div>
+          </li>
+      </ul>
+         </nav>
+          <div class="account-name">
+            <p><span class="welcome">Welcome,</span> <strong>{!$user.FirstName} {!$user.LastName}</strong></p>
+             <div class="account-separator"></div>
+          </div>
+          <div class="account-name"></div>
+            <div id="quickbuttons" style="border:0px solid #F00;" > <span><a title="My Events" style="text-decoration:none" href="{!$Site.BaseUrl}/apex/BLN_userEvents">
+              <apex:image url="{!URLFOR($Resource.MyTickets, 'images/myevents.png')}" width="79" height="45"/> </a></span> <span >
+              <a title="My Tickets" style="text-decoration:none;  margin-left:5%" href="{!$Site.BaseUrl}/apex/BLN_Mytickets">
+              <apex:image url="{!URLFOR($Resource.MyTickets, 'images/ticketstab.png')}" width="120" height="44"/> </a></span> </div>
+               <!--close of quickbuttons--> 
+                <!-- Navigation end--> 
+            </div>
+         </header>
+     <div class="clear"></div>
+
+<!-- -------------------------------------- Header End  ------------------------------------------------------ -->
+
+<section id="middle" style=" border:0px #000000 solid" class="res">
+    <div id="container-main" >
+      <div id="container">
+           <div id="content">
+            <div class="speedbar" style=" border:0px #FF0000 solid">
+               <div class="speedbar-nav">Booth Leads ›› {!BLN_UtillDisplayLinks.tablabel}</div>
+               <div style="float:right;padding-right:10px;">Selected Event:{!BLN_UtillDisplayLinks.eventName} <b></b></div>
+
+               <!--close of speedbar-nav--> 
+             </div>
+                <!--Statistic-->
+                <div class="grid-1" style=" width:97%;margin-top:10px; margin-left:.8%"  > 
+                  
+             <!-- ----------------------------------------Your Table------------------------------------------------ --> 
+       
+             <apex:componentBody id="compobody">
+             
+             
+             
+             
+             
+             
+  
+             
+             
+             </apex:componentBody>
+             
+               <!-- ---------------------------------------- Your Table End------------------------------------------------ -->
+      
+                   <div class="clear"></div>
+                 </div>
+                 <!-- ----------------- Statistic --------------------------- -->
+              </div>
+           <!-- #content--> 
+         </div>
+              
+     <div id="cssmenu">
+        <aside class="sideLeft">
+          <ul class="menu">
+          <!----------------------------------EVENT ADMIN SETTINGS------------------>
+          
+          <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsEventAdmin}">
+            <li class="expand"><a href="#" class="heading">Events<span class="holder"></span></a>
+              <ul class="acitem content" style="display: block;">
+                <li><a href="{!$Site.BaseUrl}/apex/BLN_Dashboard" class="{!BLN_UtillDisplayLinks.isDashboardPage}">
+                <span class="home icon">Dashboard</span></a></li>
+               
+                <li class="{!BLN_UtillDisplayLinks.isTicketsPageExpand}"  > 
+                 <a href="{!$Site.BaseUrl}/apex/BLN_TicketsNew" style="background-color:{!if(BLN_UtillDisplayLinks.isTicketsPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isTicketsPage}">
+                   <span class="charts icon">Tickets</span><span class="holder"></span></a>
+                    <ul class="acitem content">
+                      <li ><a href="{!$Site.BaseUrl}/apex/BLN_Promo_Code" class="{!BLN_UtillDisplayLinks.ispromocodesPage}"  style="padding-left:55px;" >Promo Codes</a></li>
+                        <li><a href="{!$Site.BaseUrl}/apex/BLN_SurveyQuestions" class="{!BLN_UtillDisplayLinks.issurveyPage}"  style="padding-left:55px;" >Survey Questions</a></li>
+                     <li><a href="{!$Site.BaseUrl}/apex/BLN_orders" style="padding-left:55px;" class="{!BLN_UtillDisplayLinks.isOrdersPage}">Orders</a></li>
+                    
+                    
+                    </ul>
+                </li>
+               
+               
+                <li class="{!BLN_UtillDisplayLinks.isAttendeesPageExpand}">
+                <a href="{!$Site.BaseUrl}/apex/BLN_Attendees" style="background-color:{!if(BLN_UtillDisplayLinks.isAttendeesPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isAttendeesPage}" >
+                <span class="attendee1 icon">
+                    Attendees </span><span class="holder"></span></a>
+                    
+                    <ul class="acitem content">
+                        <li><a href="" style="padding-left:55px;" >
+                        <span class="import icon">Import Attendees</span></a></li>
+                        
+                    </ul>
+                </li>
+                
+                
+               
+                <li class="{!BLN_UtillDisplayLinks.isregistrationPageExpand}">
+                <a href="{!$Site.BaseUrl}/apex/BLN_RegistrationLinks"  style="background-color:{!if(BLN_UtillDisplayLinks.isregistrationPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isregistrationPage}" >
+                <span class="registration icon">Registration<span class="holder"></span></span></a>
+                    <ul class="acitem content">
+                        <li><a href="{!$Site.BaseUrl}/apex/BLN_QUICKREGISTRATION?id={!BLN_UtillDisplayLinks.EventId}" style="padding-left:55px;" class="{!BLN_UtillDisplayLinks.isonsiteRegistrationPage}">Onsite Registration</a></li>
+                        <li><a href="" style="padding-left:55px;">Registration iFrame Links</a></li>
+                        <li><a href="" style="padding-left:55px;"><span class="emails icon">Emails</span></a></li>
+                    <li><a href="" style="padding-left:55px;"><span class="emails icon">Email Campaigns</span></a></li>
+                    
+                   <li><a href="" style="padding-left:55px;"><span class="print icon">print Status</span></a></li>
+                   
+                    </ul>   
+                </li>
+              
+                 
+                
+                <li><a href="#" class="subheading" id="reports_subheading"><span class="reports icon">Reports<span class="holder"></span></span></a>
+                    <ul class="acitem content">
+                        <li><a href="#" style="padding-left:55px;">Event Summary</a></li>
+                        <li><a href="#" style="padding-left:55px;">Demographics</a></li>
+                        <li><a href="#" style="padding-left:55px;">Orders Report</a></li>
+                        <li><a href="#" style="padding-left:55px;">Tickets Report</a></li>
+                    </ul>
+                </li>
+                
+                
+                 <li><a href="#" class="subheading" id="seminars_subheading"><span class="settings icon">Seminar<span class="holder"></span></span></a>
+                    <ul class="acitem content">
+                        <li><a href="#" style="padding-left:55px;">Tracks</a></li>
+                        <li><a href="#" style="padding-left:55px;">Rooms</a></li>
+                        <li><a href="#" style="padding-left:55px;">Speaker</a></li>
+                       </ul>
+                </li>
+                
+                
+                
+                <li class="{!BLN_UtillDisplayLinks.isEventsettingsExpand}">
+             <a href="#" class="subheading" id="eventsettings_subheading"><span class="settings icon">Event Settings<span class="holder"></span></span></a>
+               
+                   <!--  <a href="" style="background-color:{!if(BLN_UtillDisplayLinks.isEventsettingsPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isEventsettings}" >
+                <span class="attendee1 icon">
+                    Event Settings </span><span class="holder"></span></a> -->
+                    <ul class="acitem content">
+                    <li><a href="{!$Site.BaseUrl}/apex/BLN_registration_settings" style="padding-left:55px;" class="{!BLN_UtillDisplayLinks.isAttendeeSettingsPage}">
+                        <span class="settings icon">Attendee Settings</span></a></li>
+                        <li><a href="" style="padding-left:55px;"><span class="settings icon">Display Settings</span></a></li>
+                         <li><a href="{!$Site.BaseUrl}/apex/BLN_PaymentNewSettings?tab=Online" class="{!BLN_UtillDisplayLinks.ispaymentSettingsPage}" style="padding-left:55px;"><span class="settings icon">Payment Settings</span></a></li>
+                       <li><a href="" style="padding-left:55px;"><span class="settings icon">Badge Settings</span></a></li>           
+                        <li ><a href="{!$Site.BaseUrl}/apex/BLN_EventStaff" class="{!BLN_UtillDisplayLinks.isEventstaffPage}"  style="padding-left:55px;" >Event Staff</a></li>
+                        <li ><a href="{!$Site.BaseUrl}/apex/BLN_EventStaffsettings" class="{!BLN_UtillDisplayLinks.isEventstaffsettingsPage}"  style="padding-left:55px;" ><span class="settings icon">Event Staff Settings</span></a></li>
+                         </ul>
+                </li>
+                
+                
+              </ul>
+            
+            </li>
+             </apex:outputPanel> 
+           
+             
+             
+             
+           <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.isEventAdmin || BLN_UtillDisplayLinks.isEventstaff ,false,true)}">
+              <li id="clickme"><a href="#">Booth Leads Apps</a></li>
+            <li> <a href="#" class="heading">Lead Retrieval<span class="holder"></span></a>
+                  <ul class="acitem content" style="display: none;">
+                    <li><a href="index.htm"><span class="home icon">Dashboard</span></a></li>
+                    <li><a href="addattendee.htm"><span class="leads_icon icon">Leads</span></a></li>
+                    <li><a href="importattendee.htm"><span class="attendee1 icon">Booth Staff</span></a></li>
+                    <li><a href="#"><span class="reports icon">Reports</span></a></li>
+                    <li><a href="#"><span class="settings icon">Settings</span></a></li>
+                  </ul>
+            </li>
+           </apex:outputPanel>   
+            
+          <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.isEventAdmin,true,false)}">
+             
+            <li> <a href="#" class="heading">Match Leads<span class="holder"></span></a>
+              <ul class="acitem content" style="display: none;">
+                <li><a href="report-paymentdetails.htm"><span class="home icon">Dashboard</span></a></li>
+                <li><a href="report-checkin.htm">Schedule</a></li>
+                <li><a href="report-itemsales.htm">Buyer Directory</a></li>
+                <li><a href="report-paymentmode.htm">Seller Directory</a></li>
+                <li><a href="report-paymentmode.htm"><span class="reports icon">Reports</span></a></li>
+                <li><a href="#"><span class="settings icon">Settings</span></a></li>
+              </ul>
+            </li>
+           </apex:outputPanel>   
+          
+            <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.isEventAdmin,true,false)}">
+            <li> <a href="#" class="heading">Scan Attendee<span class="holder"></span></a>
+              <ul class="acitem content" style="display: none;">
+                <li><a href="editprofile.htm"><span class="home icon">Dashboard</span></a></li>
+                <li><a href="addusers.htm" class="heading"><span class="items icon">Items</span><span class="holder"></span></a>
+                        <ul class="acitem content" style="display: none;">
+                            <li><a href="report-paymentdetails.htm" >Import Items</a></li>
+                            <li><a href="report-checkin.htm">Item promocodes</a></li>
+                            
+                       </ul>
+                 </li>
+                <li><a href="#" class="heading"><span class="reports icon">Reports<span class="holder"></span></span></a>
+                    <ul class="acitem content" style="display: none; ">
+                            <li><a href="report-paymentdetails.htm" style="padding-left:55px;">Payment Details</a></li>
+                            <li><a href="report-checkin.htm" style="padding-left:55px;">Check In Status</a></li>
+                             <li><a href="report-checkin.htm" style="padding-left:55px;">Item Sales</a></li>
+                              <li><a href="report-checkin.htm" style="padding-left:55px;">Payment Mode</a></li>
+                           
+                       </ul>
+                </li>
+                <li><a href="#"><span class="settings icon">Settings</span></a></li>
+              </ul>
+            </li>
+            
+             
+             <li> <a href="#" class="heading"><span class="mappin icon">Booth Map<span class="holder"></span></span></a>
+              <ul class="acitem content" style="display: none;">
+                <li><a href="index.htm" style="padding-left:55px;"><span class="home icon">Dashboard</span></a></li>
+                <li><a href="#" style="padding-left:55px;"><span class="reports icon">Reports</span></a></li>
+                <li><a href="#" style="padding-left:55px;"><span class="settings icon">Settings</span></a></li>
+              </ul>
+            </li>
+            
+             <li> <a href="#" class="heading">Kiosk<span class="holder"></span></a>
+              <ul class="acitem content" style="display: none;">
+                <li><a href="#"><span class="settings icon">Settings</span></a></li>
+                
+              </ul>
+            </li>
+             </apex:outputPanel>  
+          
+          
+          
+          
+          <!----------------------------------------STAFF SETTINGS------------------>
+          <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsEventstaff}">
+            <li class="expand"><a href="#" class="heading">Events<span class="holder"></span></a>
+              <ul class="acitem content" style="display: block;">
+                <li><a href="{!$Site.BaseUrl}/apex/BLN_Dashboard" class="{!BLN_UtillDisplayLinks.isDashboardPage}">
+                <span class="home icon">Dashboard</span></a></li>
+                <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IstickettabAvailable }">
+                <li class="{!BLN_UtillDisplayLinks.isTicketsPageExpand}"  > 
+                 <a href="{!$Site.BaseUrl}/apex/BLN_TicketsNew" style="background-color:{!if(BLN_UtillDisplayLinks.isTicketsPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isTicketsPage}">
+                   <span class="charts icon">Tickets</span><span class="holder"></span></a>
+                    <ul class="acitem content">
+                      <li ><a href="{!$Site.BaseUrl}/apex/BLN_Promo_Code" class="{!BLN_UtillDisplayLinks.ispromocodesPage}"  style="padding-left:55px;" >Promo Codes</a></li>
+                        <li><a href="{!$Site.BaseUrl}/apex/BLN_SurveyQuestions" class="{!BLN_UtillDisplayLinks.issurveyPage}"  style="padding-left:55px;" >Survey Questions</a></li>
+                     <li><a href="{!$Site.BaseUrl}/apex/BLN_orders" style="padding-left:55px;" class="{!BLN_UtillDisplayLinks.isOrdersPage}">Orders</a></li>
+                    
+                    
+                    </ul>
+                </li>
+                </apex:outputPanel>
+               <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsAttendeeTabAvailable}">
+                <li class="{!BLN_UtillDisplayLinks.isAttendeesPageExpand}">
+                <a href="{!$Site.BaseUrl}/apex/BLN_Attendees" style="background-color:{!if(BLN_UtillDisplayLinks.isAttendeesPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isAttendeesPage}" >
+                <span class="attendee1 icon">
+                    Attendees </span><span class="holder"></span></a>
+                    
+                    <ul class="acitem content">
+                        <li><a href="" style="padding-left:55px;" >
+                        <span class="import icon">Import Attendees</span></a></li>
+                        
+                    </ul>
+                </li>
+                 </apex:outputPanel>
+                
+                 <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsRegistrationTabAvailable}">
+                <li class="{!BLN_UtillDisplayLinks.isregistrationPageExpand}">
+                <a href="{!$Site.BaseUrl}/apex/BLN_RegistrationLinks"  style="background-color:{!if(BLN_UtillDisplayLinks.isregistrationPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isregistrationPage}" >
+                <span class="registration icon">Registration<span class="holder"></span></span></a>
+                    <ul class="acitem content">
+                        <li><a href="{!$Site.BaseUrl}/apex/BLN_QUICKREGISTRATION?id={!BLN_UtillDisplayLinks.EventId}" style="padding-left:55px;" class="{!BLN_UtillDisplayLinks.isonsiteRegistrationPage}">Onsite Registration</a></li>
+                        <li><a href="" style="padding-left:55px;">Registration iFrame Links</a></li>
+                        <li><a href="" style="padding-left:55px;"><span class="emails icon">Emails</span></a></li>
+                    <li><a href="" style="padding-left:55px;"><span class="emails icon">Email Campaigns</span></a></li>
+                    
+                   <li><a href="" style="padding-left:55px;"><span class="print icon">print Status</span></a></li>
+                   
+                    </ul>   
+                </li>
+              </apex:outputPanel>
+              
+                
+                <li><a href="#" class="subheading" id="reports_subheading"><span class="reports icon">Reports<span class="holder"></span></span></a>
+                    <ul class="acitem content">
+                        <li><a href="#" style="padding-left:55px;">Event Summary</a></li>
+                        <li><a href="#" style="padding-left:55px;">Demographics</a></li>
+                        <li><a href="#" style="padding-left:55px;">Orders Report</a></li>
+                        <li><a href="#" style="padding-left:55px;">Tickets Report</a></li>
+                    </ul>
+                </li>
+                
+                
+                 <li><a href="#" class="subheading" id="seminars_subheading"><span class="settings icon">Seminar<span class="holder"></span></span></a>
+                    <ul class="acitem content">
+                        <li><a href="#" style="padding-left:55px;">Tracks</a></li>
+                        <li><a href="#" style="padding-left:55px;">Rooms</a></li>
+                        <li><a href="#" style="padding-left:55px;">Speaker</a></li>
+                       </ul>
+                </li>
+                
+                
+                
+                <li class="{!BLN_UtillDisplayLinks.isEventsettingsExpand}">
+             <a href="#" class="subheading" id="eventsettings_subheading"><span class="settings icon">Event Settings<span class="holder"></span></span></a>
+               
+                   <!--  <a href="" style="background-color:{!if(BLN_UtillDisplayLinks.isEventsettingsPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isEventsettings}" >
+                <span class="attendee1 icon">
+                    Event Settings </span><span class="holder"></span></a> -->
+                    <ul class="acitem content">
+                    <li><a href="{!$Site.BaseUrl}/apex/BLN_registration_settings" style="padding-left:55px;" class="{!BLN_UtillDisplayLinks.isAttendeeSettingsPage}">
+                        <span class="settings icon">Attendee Settings</span></a></li>
+                        <li><a href="" style="padding-left:55px;"><span class="settings icon">Display Settings</span></a></li>
+                         <li><a href="{!$Site.BaseUrl}/apex/BLN_PaymentNewSettings?tab=Online" class="{!BLN_UtillDisplayLinks.ispaymentSettingsPage}" style="padding-left:55px;"><span class="settings icon">Payment Settings</span></a></li>
+                       <li><a href="" style="padding-left:55px;"><span class="settings icon">Badge Settings</span></a></li>           
+                        <!--<li ><a href="{!$Site.BaseUrl}/apex/BLN_EventStaff" class="{!BLN_UtillDisplayLinks.isEventstaffPage}"  style="padding-left:55px;" >Event Staff</a></li>
+                        <li ><a href="{!$Site.BaseUrl}/apex/BLN_EventStaffsettings" class="{!BLN_UtillDisplayLinks.isEventstaffsettingsPage}"  style="padding-left:55px;" ><span class="settings icon">Event Staff Settings</span></a></li>-->
+                         </ul>
+                </li>
+                
+                
+              </ul>
+            
+            </li>
+             </apex:outputPanel> 
+             <li id="clickme"><a href="#">Booth Leads Apps</a></li>
+             
+             
+             
+           <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.isEventAdmin ||  BLN_UtillDisplayLinks.isEventStaff,false,true)}">
+            
+            <li> <a href="#" class="heading">Lead Retrieval<span class="holder"></span></a>
+                  <ul class="acitem content" style="display: none;">
+                    <li><a href="index.htm"><span class="home icon">Dashboard</span></a></li>
+                    <li><a href="addattendee.htm"><span class="leads_icon icon">Leads</span></a></li>
+                    <li><a href="importattendee.htm"><span class="attendee1 icon">Booth Staff</span></a></li>
+                    <li><a href="#"><span class="reports icon">Reports</span></a></li>
+                    <li><a href="#"><span class="settings icon">Settings</span></a></li>
+                  </ul>
+            </li>
+           </apex:outputPanel>   
+            
+          <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.isEventAdmin||  BLN_UtillDisplayLinks.isEventStaff,true,false)}">
+             
+            <li> <a href="#" class="heading">Match Leads<span class="holder"></span></a>
+              <ul class="acitem content" style="display: none;">
+                <li><a href="report-paymentdetails.htm"><span class="home icon">Dashboard</span></a></li>
+                <li><a href="report-checkin.htm">Schedule</a></li>
+                <li><a href="report-itemsales.htm">Buyer Directory</a></li>
+                <li><a href="report-paymentmode.htm">Seller Directory</a></li>
+                <li><a href="report-paymentmode.htm"><span class="reports icon">Reports</span></a></li>
+                <li><a href="#"><span class="settings icon">Settings</span></a></li>
+              </ul>
+            </li>
+           </apex:outputPanel>   
+          
+            <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.isEventAdmin||  BLN_UtillDisplayLinks.isEventStaff,true,false)}">
+            <li> <a href="#" class="heading">Scan Attendee<span class="holder"></span></a>
+              <ul class="acitem content" style="display: none;">
+                <li><a href="editprofile.htm"><span class="home icon">Dashboard</span></a></li>
+                <li><a href="addusers.htm" class="heading"><span class="items icon">Items</span><span class="holder"></span></a>
+                        <ul class="acitem content" style="display: none;">
+                            <li><a href="report-paymentdetails.htm" >Import Items</a></li>
+                            <li><a href="report-checkin.htm">Item promocodes</a></li>
+                            
+                       </ul>
+                 </li>
+                <li><a href="#" class="heading"><span class="reports icon">Reports<span class="holder"></span></span></a>
+                    <ul class="acitem content" style="display: none; ">
+                            <li><a href="report-paymentdetails.htm" style="padding-left:55px;">Payment Details</a></li>
+                            <li><a href="report-checkin.htm" style="padding-left:55px;">Check In Status</a></li>
+                             <li><a href="report-checkin.htm" style="padding-left:55px;">Item Sales</a></li>
+                              <li><a href="report-checkin.htm" style="padding-left:55px;">Payment Mode</a></li>
+                           
+                       </ul>
+                </li>
+                <li><a href="#"><span class="settings icon">Settings</span></a></li>
+              </ul>
+            </li>
+            
+             
+             <li> <a href="#" class="heading"><span class="mappin icon">Booth Map<span class="holder"></span></span></a>
+              <ul class="acitem content" style="display: none;">
+                <li><a href="index.htm" style="padding-left:55px;"><span class="home icon">Dashboard</span></a></li>
+                <li><a href="#" style="padding-left:55px;"><span class="reports icon">Reports</span></a></li>
+                <li><a href="#" style="padding-left:55px;"><span class="settings icon">Settings</span></a></li>
+              </ul>
+            </li>
+            
+             <li> <a href="#" class="heading">Kiosk<span class="holder"></span></a>
+              <ul class="acitem content" style="display: none;">
+                <li><a href="#"><span class="settings icon">Settings</span></a></li>
+                
+              </ul>
+            </li>
+             </apex:outputPanel>   
+        </ul>
+        </aside>
+     </div>
+  </div>
+    
+  <!-- -------------------------------------------- Footer Start ---------------------------------------------------- -->  
+    
+  <footer style="">
+    <div class="info-footer">
+           <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+           <div id="right">
+        <p>Booth Leads</p>
+      </div>
+         </div>
+  </footer>
+     </section>
+<!-- #middle-->
+     <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/functions.js')}"></script> 
+
+</apex:component>

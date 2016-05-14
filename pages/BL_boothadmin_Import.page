@@ -1,0 +1,571 @@
+<apex:page SHOWHeader="FALSE" controller="BL_boothadmin_ImportCon" id="Thepage" tabStyle="account" standardStylesheets="false">
+
+<head>
+<title>Boothleads</title>
+</head>
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+
+
+<!---------------------   SCRIPT FOR Attendees CSV FILE READING ------------------>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+      
+    <script type="text/javascript"> 
+    $(document).ready(function(){
+    
+      var sb1= '{!$Component.Thepage:fileform1234}' 
+    
+      
+       
+       var vb = '#{!$Component.Thepage:fileform1234}' +' input:file';
+       
+     
+        $('#fileform  input:file').change(function(event){
+   
+            
+        file = this.files[0];
+          
+            $('#fileinfo').html('<b>Name:</b> ' + file.name + '<br />' +
+                                '<b>Size:</b> ' + file.size + '<br />' +
+                                '<b>Type:</b> ' + file.type);
+           
+            reader = new FileReader();
+            reader.onload = function(event) {
+                
+              $('#filecontents').html(event.target.result.replace(/\r/g,'aazz11ttt222ggg'));
+             //  $('#filecontents').html(event.target.result.replace(/\r/,'<brbrbr>'));
+               
+              
+               
+             // var linkText = $('#filecontents').html(event.target.result).replace(/\r/g,'bar');
+             //  alert('77777777777777777'+ linkText);
+              
+                //  $thirdLink.text(linkText);
+                
+            }
+            reader.onerror = function(stuff) {
+                $('#errorlog').html(stuff.getMessage());
+            }
+            reader.readAsText(file) //readAsdataURL
+                    });
+    });
+    
+    function checkLoadData(){ 
+     
+     
+     
+    var x=document.getElementById("filecontents").innerHTML;
+    
+      // alert('GGGGGGGGGGGGGG' + x);
+       
+      x =x+ "????:::::******&&&&&&%%%%;;;;"+  file.name  ;
+      // alert(x);
+    
+    // var mycars = new Array();
+    //  mycars =x.split('<br>');
+     loaddatafunction(x);
+    }
+    
+    </script>
+    
+    <div id="filecontents"  style="display:none;">
+   </div>
+<!--------------------------------------------------------------------------------->    
+
+
+<style>
+    .header{
+        background-color:#CCCCCC;
+        height:35px;
+        width:25%;
+        color:#000000;
+        padding-left:10px;
+    }
+
+    .roundedcorner{
+        -moz-border-radius-bottomleft:6px; 
+        -webkit-border-bottom-left-radius:6px; 
+        -moz-border-radius-bottomright:6px; 
+        -webkit-border-bottom-right-radius:6px; 
+        border-radius:0 0 6px 6px; 
+       /* -moz-box-shadow:0 0 45px #CCCCCC; 
+        -webkit-box-shadow:0 0 45px #CCCCCC; 
+        box-shadow:0 0 45px #CCCCCC;
+        background-color:#F3F3F3;*/
+        background: #336699; /* for non-css3 browsers */
+        background: -webkit-gradient(linear, left top, left bottom, from(#37C3D0), to(#8FE1F2));
+        background: -moz-linear-gradient(top, #37C3D0, #8FE1F2);
+        background-image: -o-linear-gradient(top, #37C3D0, #8FE1F2);
+        background-image: -ms-linear-gradient(top, #37C3D0, #8FE1F2);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#37C3D0', endColorstr='#8FE1F2');
+    }
+    
+    .tableHead{
+        Font-weight:bold;
+        background-color:#CCCCCC;
+        text-align:center; 
+       // padding-right:5px;
+    }
+    .even{
+    background-color:#FFFFFF;
+    }
+    .odd{
+    background-color:#EBEBEB;
+    
+    }
+
+    
+</style>
+
+
+<!--<apex:includeScript value="{!$Resource.QRDateTimePickerjs2}"/>-->
+
+
+    <script language="JavaScript">
+
+   
+   function validateImportFields()
+   {
+      
+       var lvFnId = document.getElementById('j_id0:fo:j_id54:1:sel');
+       var lvLnId = document.getElementById('j_id0:fo:j_id66:1:sel');
+       var lvEmId = document.getElementById('j_id0:fo:j_id54:2:sel');
+       
+     
+       
+       lvFnId.value=lvFnId.value.trim();
+       lvLnId.value=lvLnId.value.trim();
+       lvEmId.value=lvEmId.value.trim();
+       
+      
+       
+    if(lvFnId.value == "NONE"   )
+    {
+        alert("Please select First Name");
+        return false;
+    }
+     
+    
+    if(lvLnId.value == "NONE"   )
+    {
+        alert("Please select Last Name");
+        return false;
+    } 
+    
+    if(lvEmId.value == "NONE"   )
+    {
+        alert("Please select Email Id");
+        return false;
+    }    
+
+   }
+    var RollBackBool;
+    function ValidateRollback()
+    {
+    
+         var r= confirm('Are you sure want to RollBalck Import');
+         if (r==true)
+          {
+              rollBackBool = true;
+              return true;
+              
+          }
+        else
+          {
+             rollBackBool =false;
+             return false;
+          }
+    
+    }
+   
+   
+  </script>
+
+<!-- Start: page-top-outer -->
+
+<div id="page-top-outer">    
+
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    <div id="logo">
+    <a href="#">
+
+     </a>
+    </div>
+    <!-- end logo -->
+         
+    <!--  start top-search -->
+    <div id="top-search">
+     
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            
+        
+        <td Class="welcome">
+        
+        <b><font>Welcome : </font>
+                   <font size="2" color="sky blue">{!$User.Firstname}&nbsp;{!$User.Lastname} </font></b>
+        
+     
+        </td>
+        </tr>
+        </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start 
+
+nav-outer-repeat.........................................................
+
+........................................ START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+        <div id="nav-right">
+        
+         
+           
+           <apex:form >
+           <!----LOGOUT ACTION -->
+           <div class="nav">
+        <div class="table">
+
+          <div class="nav-divider">&nbsp;</div>
+           <apex:outputLink value="Bl_eventadmin_Profile"  style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile </apex:outputLink>
+     
+     <!--  <apex:commandLink action="{!ProfileSettings}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" value="Profile"/> -->
+        <div class="nav-divider">&nbsp;</div>
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+        
+            </div></div>
+           </apex:form>
+           <!----LOGOUT ACTION END--->
+           
+           
+            <div class="clear">&nbsp;</div>
+        
+            <!--  start account-content --> 
+            <div class="account-content">
+            <div class="account-drop-inner">
+                <a href="" id="acc-settings">Settings</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-details">Personal details </a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-project">Project details</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-inbox">Inbox</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-stats">Statistics</a> 
+            </div>
+            </div>
+            <!--  end account-content -->
+        
+        </div>
+        <!-- end nav-right -->
+
+
+       
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">  
+         <!--<div class="nav-divider">&nbsp;</div>-->
+          <ul class="select"><li><apex:outputLink value="/apex/BL_EventAdmin_Dashboard"><b>Dashboard</b> </apex:outputLink></li></ul>
+          <div class="nav-divider">&nbsp;</div>                    
+          <ul class="select"><li>
+          <apex:outputLink value="/apex/BL_EventAdmin_Events"><b>Events</b></apex:outputLink></li></ul>
+         
+         <ul class="current"><li>
+         <div class="nav-divider">&nbsp;</div>
+         <apex:outputLink value="/apex/BL_Eventadmin_samplebooth"><b>Booths</b></apex:outputLink></li></ul>
+          <div class="nav-divider">&nbsp;</div>
+         <ul class="select"><li><apex:outputLink value="/apex/Qrcode_Eventadmin_Attendees" ><b>Attendees</b> </apex:outputLink></li></ul>
+         <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li><apex:outputLink value="/apex/BL_EventAdmin_Reports"><b>Reports</b> </apex:outputLink>
+        
+        
+        
+        </li></ul>
+
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <!--  start nav -->
+        
+
+        
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start 
+
+nav-outer-repeat................................................... END -->
+
+ <div class="clear"></div>
+ 
+<!-- start content-outer 
+
+........................................................................................................................START -->
+<div id="content-outer">
+<!-- start content -->
+<div id="content">
+     
+    <div id="page-heading">
+ <apex:form >  
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+         <tr>
+           <td width="230px">  
+                    <h1 style="font-size:20px;">Import Booth Admins</h1> </td>
+        
+                <td width="400px">  <!--  <H2> <apex:commandLink value="Attendees" action="{!Attendees}" /></H2> -->
+                    </td>
+        
+          <td align="right" style="padding-right:15px;">
+       </td>
+         </tr>
+        </table> 
+        
+    </apex:form>        
+     
+    </div>
+    <!-- end page-heading -->
+
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">
+        
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="100" alt="" /></th>
+        <th class="topleft"></th>
+        <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="100" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        <!--  start content-table-inner ...................................................................... START -->
+        <div id="content-table-inner"  overflow="scroll" border="1">
+        
+            <!--  start table-content  rendered="{!showselectCSV}"-->
+            <div id="table-content">
+            
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" id="hi">
+                                <tr>
+                                  <td width="45%" align="left" valign="top" bgcolor="#FFFFFF">
+       
+                                          <table width="100%" align="left" cellspacing="0" cellpadding="0" class="roundedcorner" >
+                                            <tr height="200px">
+                                             <td align="center" valign="top" width="40%" style="background-repeat:no-repeat; padding-top:5px; padding-left:0px;"><label for="search">
+                                            
+                                            
+                                             <span style="background-repeat:no-repeat; padding-top:5px; padding-right:75px;">
+                                         
+                                        <form id="fileform" action="" method="post"> 
+                                     <input type="file" name="file" style="font-size:15px;"/>
+                                   </form>  
+                                      
+                                                                  
+                                    <apex:form id="fileform1234">
+                                      <input style="margin-top:10px;" type="button" value="Show Mapping" onclick="checkLoadData();" Class="awesome"/>
+                                       <apex:actionFunction action="{!MapWindow}" name="loaddatafunction" reRender="hty">
+                                         <apex:param name="one" value=""/>
+                                      </apex:actionFunction>        
+                                  
+
+                                        <br/>
+                                                                   
+                                       <apex:outputText >  
+                                        <br/>
+                                      </apex:outputText>
+                                  
+                                      <font color="Black"> 
+                                      <b>Note:</b> Please use a CSV file or the standard template to upload Booth Admins. <font > 
+                                   <u>  <apex:commandLink style="font-weight:bold"   action="{!exportToCSV}" title=" Click here " target="_blank"> Click Here </apex:commandLink> </u></Font> to download the template.  </font> 
+                                   </apex:form>
+                                    </span></label>  </td>
+                                    </tr>                                    
+                                  </table>
+       
+       
+                                 </td>
+                                 
+                                 
+                                 
+                                 <td width="55%" align="left" valign="top" bgcolor="#FFFFFF" style="padding:15px;">
+                                        <B> Supported Formats </B><br/>
+                                          You can use csv format for importing Booth Admins.<br/>
+                                          <br/>
+                                          <B>Maximum Limits</B><br/>
+                                           <font style="color:red;font-weight:bold;">It is recommended to import 100 records at a time.</font><br/>
+                                          <br/>
+                                          <B> Important Notes</B><br/>
+                                           <br/>
+                                           <ul>
+                                           
+                                           <li>First row of the given file will be treated as field names.
+                                           </li><li>Mandatory fields are <b>First Name, Last Name, Email Id and Company </b>.
+                                           </li>
+                                           <li>Duplicate check will be performed based on the Email of Booth Admins.
+                                           </li>
+                                          </ul>
+                                            <br/><br/>
+                                         <font color="#FF0000">*</font>  <b>It is recommended to test your import with a sample file before you import the actual data.</b><br/>
+
+                                   
+          
+          </td></tr></table>
+  </div>
+            <!--  end content-table  -->
+            
+            
+           
+            <!------------------------------------------------Successfull POPUP----- ----------------------------------------------------------->
+        <apex:form id="hty">   
+      
+     <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!showselectCSV}"  style="width:100%"/>
+        <apex:outputPanel styleClass="custPopup"  style="width:75%;" id="theMapping"  rendered="{!showselectCSV}" >
+          <table align="center" cellpadding="0" cellspacing="0"  width="100%" style="padding-top:100px;  solid #CCCCCC;" >
+                    
+                    <tr>
+                        <td class="pophead">Map your fields with Boothleads fields
+                        
+                        </td>
+                       <td align="right" style="text-align:right" class="pophead"> <apex:commandButton image="{!URLFOR($Resource.Close1)}" action="{!closePopup}"  rerender="hty" immediate="true" title="Close"/></td>
+                    </tr>
+                    <tr>
+                       
+                      <td width="100%" align="center" valign="top" colspan="2">
+                        <apex:dataTable value="{!inn}" var="yu" rendered="{!inn!=null}" border="0" width="98%" rowClasses="odd,even" style="border:0px solid Black;" styleClass="round">
+                          <apex:column value="{!yu.dbFieldvalue}" headerValue="Available Fields" headerClass="headercls" style="height:30px;padding-left:15px;"/>
+                            <apex:column headerValue="Your Fields" headerClass="headercls">
+                            <apex:selectList value="{!yu.selectedValue}" size="1" multiselect="false" style="width:180px;">
+                          <apex:selectOptions value="{!CSVHeaders}" /> 
+                        </apex:selectList> 
+                     </apex:column>      
+                  </apex:dataTable>
+                       
+                       
+                       
+                      </td> 
+                    </tr> 
+                    <tr><td>&nbsp;</td></tr>  
+                  <tr colspan="2" ><td colspan="4" align="center">
+                       <apex:commandButton value="Import" action="{!importValues}"  styleClass="awesome" rendered="{!inn!=null}"/>  &nbsp;&nbsp;&nbsp;
+                        <apex:commandButton action="{!closePopup}" value="Cancel" styleClass="awesome" reRender="hty"/> 
+                     <!-- <apex:commandButton action="{!checkMap}" value="Insert Attendees" styleClass="awesome" onclick="return validateImportFields();"/> &nbsp;&nbsp;&nbsp; 
+                      <apex:commandButton action="{!cancelInSelect}" value="Cancel" styleClass="awesome" />   -->   
+                  </td></tr>
+                </table>
+        </apex:outputPanel>
+      
+                        
+      </apex:form>
+      
+      
+       <apex:form > 
+            <apex:outputPanel id="showpopup">
+         <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!Successbool}"  style="width:100%"/>
+         <apex:outputPanel styleClass="custPopup" layout="block"  rendered="{!Successbool}"  style="width:80%">
+                   
+         
+         <table border="0"  cellspacing="0" cellpadding="0" width="100%" class="tabs_table" >
+                <tr>
+                    <td  align="center" class="pophead">Records Status </td> 
+                </tr>
+                <tr>
+                   <td align="Center" >
+                     
+                      &nbsp;
+                   </td>
+                </tr>
+                   <tr>
+                       <td align="Center" colspan="2"> <apex:outputText >
+                       
+                           BoothLeads.com will now begin to import your file. You will be notified by email at <B style="color:#FF0000; Font-size:13px; Font-weight:bold; text-align:center;">  {!$User.Username}</B> when your import is completed.<br/><br/>Based on the current volume of import activity, we estimate that your import will be completed in approximately <B style="color:#177f0c; Font-size:13px; Font-weight:bold; text-align:center;"> 1 minutes</B>.
+                     
+                       </apex:outputText>
+                      </td>
+                </tr>
+                
+                
+                <tr>
+                   <td align="Center" >
+                   
+                    
+                   </td>
+                </tr>
+                
+                <tr>
+                   <td align="center" style="padding-left:70px;">
+                   
+               <!--<font style="color:red;font-weight:bold;"> You want to import more users ?   </font> &nbsp; &nbsp;&nbsp;   <apex:commandbutton Value="yes" style="width:100px;" styleClass="awesome" action="{!Attendees}"/> 
+               &nbsp; &nbsp;&nbsp;  -->
+                 <apex:commandbutton Value="OK" style="width:100px;" styleClass="awesome" action="{!movetoBoothpage}"/>    
+                   </td>
+               </tr>
+                <tr>
+                   <td align="Center">
+                     
+                      &nbsp;
+                   </td>
+                </tr>
+           </table>     
+                   
+          </apex:outputpanel>
+          </apex:outputpanel>
+      
+                        
+      </apex:form>
+        <!-------------------------------------------------- END of UTF8 Formate Error--------------------------------------------------------->
+            <!--  start actions-box 
+
+............................................... -->
+            <!-- end actions-box........... -->
+            
+            
+            <div class="clear"></div>
+         
+        </div>
+        <!--  end content-table-inner 
+
+............................................END  -->
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+
+</div>
+<!--  end content -->
+<div class="clear">&nbsp;</div> 
+<apex:include pageName="QRCode_Footertemplate"/>
+
+</div>
+</apex:page>

@@ -1,0 +1,281 @@
+<apex:page showHeader="false" sidebar="false" controller="BLN_ReportsCon" renderAs="pdf" readOnly="true">
+
+<apex:stylesheet value="{!URLFOR($Resource.boothscreen_pdf, 'boothscreen.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.landscape_pdf, 'landscape_pdf.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ordersummary-report.css')}"/>
+  
+<body>  
+<!-- header start renderAs="PDF"-->
+
+<div style=" text-align:center;" class="printpdfreportname">Order Summary Report</div>
+<div style="padding:0px; margin:0px;">
+<c:EventDetails BLN_EventDetails="{!eventInfo}"></c:EventDetails>
+ <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #DDD">
+ <tr>
+    <td  class="labeltitles" style="padding-right:0px;font-size:12px; width:16%;font-family: Arial,Helvetica,sans-serif;padding:5px;border:1px solid #DDD;">Total no. of transactions:&nbsp;{!TotalTransactions} </td>
+    
+    <td class="labeltitles" style=" text-align:left; padding-right:0px;font-size:12px; width:23%;font-family: Arial,Helvetica,sans-serif;padding:5px;border:1px solid #DDD;">Total no. of attendees registered:&nbsp;{!TotalAttendeesRegistered}</td>
+    
+   <!-- <td class="labeltitles" style=" padding-right:0px;font-size:12px; width:15%;font-family: Arial,Helvetica,sans-serif;padding:5px;">Check:&nbsp;${!AmountThroughCheck}</td>
+    
+    <td class="labeltitles" style=" padding-right:0px;font-size:12px; width:15%;font-family: Arial,Helvetica,sans-serif;padding:5px;">Card :&nbsp;${!AmountThroughCredit}</td>
+    
+    <td class="labeltitles" style=" padding-right:0px;font-size:12px; width:15%;font-family: Arial,Helvetica,sans-serif;padding:5px;">Cash :&nbsp;${!AmountThroughCash}</td>-->
+    <apex:repeat value="{!paymentTypeInnerList}" var="payment">
+        <!----->
+        <td class="labeltitles" style=" text-align:left; padding-right:0px;font-size:12px; width:23%;font-family: Arial,Helvetica,sans-serif;padding:5px;border:1px solid #DDD;">{!payment.paymentType} :&nbsp;
+        <!----->
+        <apex:outputText value="${0, number, ###,##0.00}">
+                <apex:param value="{!payment.paymentAmount}" />
+            </apex:outputText></td>
+        <!----->
+    </apex:repeat>
+      
+    <td class="labeltitles" style="font-size:12px; width:16%;font-family: Arial,Helvetica,sans-serif;padding:5px;border:1px solid #DDD;">Total Amount:&nbsp;{!currencySymbol}&nbsp; {!TotalAmount}</td>
+         
+  </tr>
+  </table>
+</div>
+<!-- header end -->
+
+<apex:variable var="OrderNumber" value="{!0}"/> 
+<apex:variable var="AttendeeNumber" value="{!0}"/> 
+<table id="example" class="myTable myTable-zebra myTable-horizontal display" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;page-break-inside: avoid !important;">
+                <thead>
+                    <tr>
+                        <th style="text-align:left; color:#848d88; width:5%;">Sno</th>
+                        <th style=" text-align:left; color:#848d88; width:15%;">Transaction Details</th>
+                        <!--<th width="10%">Tag Name</th>-->
+                        <th width="80%" style=" padding:0px; text-align:left;">
+                   
+                        <!-- -------------------- -->
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="5%" class="childtableheader" style="font-size:11px;">Sno</td>
+    <td width="14.28%" class="childtableheader" style="font-size:11px;">Attendee Name</td>
+    <td width="23.28%" class="childtableheader" style="font-size:11px;">Email Id</td>
+    <td width="14.28%" class="childtableheader" style="font-size:11px;">Company</td>
+    <td width="12.28%" class="childtableheader" style="font-size:11px;">Ticket</td>
+    <td width="9.28%" class="childtableheader" style="font-size:11px;">Status</td>
+    <td width="8.28%" class="childtableheader" style="font-size:11px; border-right:0px;">Price({!currencySymbol})</td>
+  </tr>
+</table>
+
+<!--   ---------------- -->
+                          </th>
+ 
+                    </tr>
+                </thead>
+
+    <tbody> 
+    
+    <!---------------------------------------------first row------------------------------>
+    <!---------------------------------------------parent table rows------------------------>
+     <apex:repeat value="{!ListOfListOrders}" var="orders">
+        <apex:repeat value="{!orders}" var="order">
+        
+        
+     <tr class="ticketlevel-highlight">
+      
+      <td width="5%" align="left" valign="top" class="snostyle" style="font-size:12px;font-family:Arial, Helvetica, sans-serif; line-height:20px;">
+       <div style="page-break-inside: avoid !important;"><apex:variable var="OrderNumber" value="{!OrderNumber+1}"/>{!OrderNumber}.</div></td>
+     
+      <!------------transactiondetails parent td-------->
+      <td width="29%" style="padding:0px;" valign="top">
+      <!--------------->
+      <div style="page-break-inside: avoid !important;">
+      <table width="100%" id="transaction_details_tbl" cellspacing="0" cellpadding="0" border="0">
+  <tr>
+ 
+    <td class="labeltitles" style="width:50%;"> <div style="page-break-inside: avoid !important;">Order Id:</div></td>
+    
+    <td style="width:50%;"><div style="page-break-inside: avoid !important;">{!order.Name}</div></td>
+  </tr>
+  <tr>
+  
+    <td class="labeltitles"><div style="page-break-inside: avoid !important;">Amount Paid:</div></td>
+    <td>
+    <div style="page-break-inside: avoid !important;">
+    <apex:variable value="{!0}" var="orderAmount"/>
+                                                    <apex:variable value="{!0}" var="orderAmount1"/>
+                                                    
+                                                    <apex:repeat value="{!order.Tickets__r}" var="attendee">
+ <!-- non package orders-->  
+ <apex:outputText rendered="{!(attendee.Parent_ID__c==Null && attendee.Ticket_Status__c=='Booked')}">                                             
+<apex:outputText rendered="{!attendee.Parent_ID__c==Null}">
+            <apex:variable value="{!(orderAmount+attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)+(attendee.Order_Item__r.Item_Fee__c/ attendee.Order_Item__r.Item_Quantity__c))}" var="orderAmount" rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c == NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"/>
+</apex:outputText>
+<apex:outputText rendered="{!attendee.Parent_ID__c==Null}">
+            <apex:variable value="{!(orderAmount+attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)-(attendee.Order_Item__r.Item_Discount__c/ attendee.Order_Item__r.Item_Quantity__c))}" var="orderAmount" rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c == NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"/>
+</apex:outputText>
+
+<apex:outputText rendered="{!attendee.Parent_ID__c==Null}">
+            <apex:variable value="{!(orderAmount+attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)+(attendee.Order_Item__r.Item_Fee__c/ attendee.Order_Item__r.Item_Quantity__c)-(attendee.Order_Item__r.Item_Discount__c/ attendee.Order_Item__r.Item_Quantity__c))}" var="orderAmount" rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"/>
+</apex:outputText>
+
+</apex:outputText>
+</apex:repeat>
+
+<!-- package orders-->
+<apex:variable value="{!0}" var="count"/>
+<apex:variable var="shwpackg1" value="" />
+<apex:repeat value="{!order.Tickets__r}" var="attendeeTemp" >
+<apex:variable value="{!count+1}" var="count" rendered="{!attendeeTemp.Parent_ID__c!=Null}"/>
+<apex:outputText rendered="{!(attendeeTemp.Parent_ID__c!=Null && attendeeTemp.Ticket_Status__c=='Booked')}">
+            <apex:outputText rendered="{!!Contains(shwpackg1,attendeeTemp.item_pool__r.addon_parent__r.id+attendeeTemp.Parent_ID__c)}"> 
+            <apex:variable var="shwpackg1" value="{!(shwpackg1+attendeeTemp.item_pool__r.addon_parent__r.id+attendeeTemp.Parent_ID__c)}" />
+<apex:outputText rendered="{!attendeeTemp.Parent_ID__c!=Null}">
+            <apex:variable value="{!(orderAmount1+attendeeTemp.Order_Item__r.Each_Ticket_Price__c+(attendeeTemp.Order_Item__r.Tax__c/attendeeTemp.Order_Item__r.Item_Quantity__c)+(attendeeTemp.Order_Item__r.Item_Fee__c/ attendeeTemp.Order_Item__r.Item_Quantity__c))}" var="orderAmount1" rendered="{!IF(AND(attendeeTemp.Order_Item__r.Item_Fee__c != NULL, attendeeTemp.Order_Item__r.Item_Discount__c == NULL,attendeeTemp.Ticket_Status__c=='Booked'), TRUE, FALSE)}"/>
+</apex:outputText>
+<apex:outputText rendered="{!attendeeTemp.Parent_ID__c!=Null}">
+            <apex:variable value="{!(orderAmount1+attendeeTemp.Order_Item__r.Each_Ticket_Price__c+(attendeeTemp.Order_Item__r.Tax__c/attendeeTemp.Order_Item__r.Item_Quantity__c)-(attendeeTemp.Order_Item__r.Item_Discount__c/ attendeeTemp.Order_Item__r.Item_Quantity__c))}" var="orderAmount1" rendered="{!IF(AND(attendeeTemp.Order_Item__r.Item_Fee__c == NULL, attendeeTemp.Order_Item__r.Item_Discount__c != NULL,attendeeTemp.Ticket_Status__c=='Booked'), TRUE, FALSE)}"/>
+</apex:outputText>
+
+<apex:outputText rendered="{!attendeeTemp.Parent_ID__c!=Null}">
+            <apex:variable value="{!(orderAmount1+attendeeTemp.Order_Item__r.Each_Ticket_Price__c+(attendeeTemp.Order_Item__r.Tax__c/attendeeTemp.Order_Item__r.Item_Quantity__c)+(attendeeTemp.Order_Item__r.Item_Fee__c/ attendeeTemp.Order_Item__r.Item_Quantity__c)-(attendeeTemp.Order_Item__r.Item_Discount__c/ attendeeTemp.Order_Item__r.Item_Quantity__c))}" var="orderAmount1" rendered="{!IF(AND(attendeeTemp.Order_Item__r.Item_Fee__c != NULL, attendeeTemp.Order_Item__r.Item_Discount__c != NULL,attendeeTemp.Ticket_Status__c=='Booked'), TRUE, FALSE)}"/>
+</apex:outputText>
+
+</apex:outputText>
+</apex:outputText>
+
+                                                        
+                                                        
+                                                    </apex:repeat>
+                                                    
+                                                    {!currencySymbol} {!(orderAmount+orderAmount1)}
+                                                    </div>
+    </td>
+  </tr>
+  <tr>
+  
+    <td class="labeltitles"><div style="page-break-inside: avoid !important;">Ordered By:</div></td>
+    <td><div style="page-break-inside: avoid !important;">{!order.BLN_TKT_profile__r.First_Name__c} {!order.BLN_TKT_profile__r.Last_Name__c}</div></td>
+  </tr>
+  
+  <tr>
+    <td class="labeltitles"><div style="page-break-inside: avoid !important;">Email:</div></td>
+    <td><div style="page-break-inside: avoid !important;">{!order.BLN_TKT_profile__r.Email__c}</div></td>
+  </tr>
+  
+  <tr>
+    <td class="labeltitles"><div style="page-break-inside: avoid !important;">Ordered Date:</div></td>
+    <td><div style="page-break-inside: avoid !important;"> <apex:outputText value="{0,date,M/d/yyyy hh:mm a}">
+                                <apex:param value="{!order.CreatedDate}"/>
+                            </apex:outputText></div></td>
+  </tr>
+  <apex:variable value="{!0}" var="promoCount"/>
+  <apex:repeat value="{!order.Order_Items__r}" var="OrderTic">
+<apex:variable value="{!promoCount+1}" var="promoCount" rendered="{!OrderTic.Promotion__r.Promo_Code__c!=null}"/>
+<tr style="display:{!IF((OrderTic.Promotion__r.Promo_Code__c!=null && promoCount=1) ,'','none')};">
+        <td class="labeltitles"><div style="page-break-inside: avoid !important;">Promo Code:</div></td>
+        <td><div style="page-break-inside: avoid !important;">
+        {!OrderTic.Promotion__r.Promo_Code__c}
+        </div>
+        </td>
+    </tr>
+    </apex:repeat>
+  <apex:repeat value="{!order.Payments__r}" var="payment">
+  <tr>
+    <td class="labeltitles"><div style="page-break-inside: avoid !important;">Payment Type:</div></td>
+    <td><div style="page-break-inside: avoid !important;">{!payment.Payment_Mode__c}</div></td>
+  </tr>
+ <tr>
+    <td class="labeltitles"><div style="page-break-inside: avoid !important;">Payment Status:</div></td>
+    <td><div style="page-break-inside: avoid !important;">{!order.Order_Status__c}</div></td>
+  </tr>
+<apex:outputText rendered="{!IF(payment.Payment_Mode__c == 'Credit Card', TRUE, FALSE)}">
+ <tr>
+     <td class="labeltitles" style="width:50%;white-space: normal;"><div style="page-break-inside: avoid !important;">Transaction Key:</div></td>
+     <td style="word-wrap: break-word; word-break: break-all; width:150px;"><div style="page-break-inside: avoid !important;">{!payment.Payment_Ref_Number__c}</div></td>
+</tr>
+</apex:outputText>
+</apex:repeat>
+</table>
+
+      
+      <!----------------></div>
+      </td><!--close-->
+       <!----------------------end of transactiondetails parent td------> 
+<!--------------parent td --------------->
+ <td valign="top" style="padding:0px;"> <div style="page-break-inside: avoid !important;">
+ <!------>
+ <table  id="subtable" width="100%" cellspacing="0" cellpadding="0" border="0" style="height:auto;">
+ <!---->
+ <apex:variable var="AttendeeNumber" value="{!0}" />
+ <apex:variable var="shwpackg" value="" />
+ <apex:repeat value="{!order.Tickets__r}" var="attendee">
+ <tr class="ticketlevel-highlight1">
+ <td class="snostyle1" style="width:7%;"><apex:variable var="AttendeeNumber" value="{!AttendeeNumber+1}" />{!AttendeeNumber}.</td>
+ <td  style="width:16%;">{!attendee.Tkt_profile__r.First_Name__c}
+                 {!attendee.Tkt_profile__r.Last_Name__c}</td>
+ <td  style="width:25%;">{!attendee.Tkt_profile__r.Email__c}</td>
+ <td style="width:16.25%;"><apex:outputText value="{!attendee.tkt_profile__r.TKT_Company__c}" rendered="{!IF(Contains(pCompName,attendee.tkt_profile__r.TKT_Company__c),false,true)}" /></td>
+ <td style=" line-height:14px; width:14.28%;"><apex:outputText value="{!attendee.Item_Pool__r.Item_Pool_Name__c}" /> <br/>
+    <div class="pkg_label labeltitles">
+        <apex:outputText rendered="{!(attendee.Item_Pool__r.Item_Pool_Name__c!=attendee.Item__r.item_name__c)}">({!attendee.Item__r.item_name__c})</apex:outputText>
+    </div>
+ </td>
+ <td style="width:11.28%;">{!attendee.Ticket_Status__c}</td>
+ <!-- In Ticket Case -->                                                    
+ <apex:outputText rendered="{!attendee.Parent_ID__c==Null}">
+    <td width="9.6%">
+        <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c == NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"
+        value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)+(attendee.Order_Item__r.Item_Fee__c/ attendee.Order_Item__r.Item_Quantity__c)}" />
+        <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c == NULL,attendee.Ticket_Status__c=='Cancelled'), TRUE, FALSE)}" value="0.00" />
+            
+            <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c == NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"
+        value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)-(attendee.Order_Item__r.Item_Discount__c/ attendee.Order_Item__r.Item_Quantity__c)}" />
+        <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c == NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Cancelled'), TRUE, FALSE)}" value="0.00" />
+            
+            <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"
+        value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)+(attendee.Order_Item__r.Item_Fee__c/ attendee.Order_Item__r.Item_Quantity__c)-(attendee.Order_Item__r.Item_Discount__c/ attendee.Order_Item__r.Item_Quantity__c)}" />
+        <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Cancelled'), TRUE, FALSE)}" value="0.00" />
+    </td>
+</apex:outputText>
+    
+    <!-- In Package Case -->  
+<apex:outputText rendered="{!attendee.Parent_ID__c!=Null}">
+    <td width="9.6%" style="border: 0px;">    
+        <apex:outputText rendered="{!!Contains(shwpackg,attendee.item_pool__r.addon_parent__r.id+attendee.Parent_ID__c)}"><!-- --> 
+        
+            <apex:variable var="shwpackg" value="{!(shwpackg+attendee.item_pool__r.addon_parent__r.id+attendee.Parent_ID__c)}" />
+    <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c == NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"
+            value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)+(attendee.Order_Item__r.Item_Fee__c/ attendee.Order_Item__r.Item_Quantity__c)}" />
+            <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c == NULL,attendee.Ticket_Status__c=='Cancelled'), TRUE, FALSE)}" value="0.00" />
+            
+    <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c == NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"
+            value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)-(attendee.Order_Item__r.Item_Discount__c/ attendee.Order_Item__r.Item_Quantity__c)}" />
+            <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c == NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Cancelled'), TRUE, FALSE)}"  value="0.00" />
+            
+    <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Booked'), TRUE, FALSE)}"
+            value="{!attendee.Order_Item__r.Each_Ticket_Price__c+(attendee.Order_Item__r.Tax__c/attendee.Order_Item__r.Item_Quantity__c)+(attendee.Order_Item__r.Item_Fee__c/ attendee.Order_Item__r.Item_Quantity__c)-(attendee.Order_Item__r.Item_Discount__c/ attendee.Order_Item__r.Item_Quantity__c)}" />
+            <apex:outputText rendered="{!IF(AND(attendee.Order_Item__r.Item_Fee__c != NULL, attendee.Order_Item__r.Item_Discount__c != NULL,attendee.Ticket_Status__c=='Cancelled'), TRUE, FALSE)}"  value="0.00" />
+
+</apex:outputText>
+</td>
+</apex:outputText>
+ </tr>
+ </apex:repeat>
+
+ 
+ </table><!--close of subtable--></div>
+ </td><!--close of parent td-->
+ <!---------------/end of parent td----------------------->
+</tr>
+</apex:repeat>
+</apex:repeat>
+       <!-----------------------------end of parent table rows----------------------->
+<!----------------------------------------------end of first row---------------------------->
+
+</tbody>
+            </table>
+
+
+<c:printPageFooter >
+</c:printPageFooter>
+
+</body>
+
+</apex:page>

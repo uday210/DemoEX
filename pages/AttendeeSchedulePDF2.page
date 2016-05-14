@@ -1,0 +1,463 @@
+<apex:page controller="MM_scheduleCon"  renderAs="pdf" standardStylesheets="true">
+<apex:form >
+<table>
+    <apex:repeat value="{!MatchLeadsschedules}" var="a">
+    <tr>
+    <td width="19%" height="150" align="center" valign="middle" bgcolor="#f3f3f3">
+    <!--<apex:image id="theImage" value="{!$Resource.GNEMSDCEventLogo}" width="100" height="100"/>-->
+    <apex:image url="/servlet/servlet.ImageServer?id={!eventDetails.EV_EventLogo__c}&oid={!$Organization.Id}" style="max-height:100;width:150px;" rendered="{!if(eventDetails.EV_EventLogo__c != null,'TRUE','FALSE')}" height="100px" width="100px"/>
+    <apex:image url="{!$Resource.NoEventLogo}" height="100px" width="100px"  rendered="{!if(eventDetails.EV_EventLogo__c == null,'TRUE','FALSE')}" style="margin:5px;border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px;"/> 
+    </td>
+    <td width="81%" align="left" valign="middle" bgcolor="#f3f3f3">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td width="50%">&nbsp;</td>
+    </tr>
+    <tr>
+    <td align="center" valign="middle"><h1 style="color:#0f71b5;font-family:Verdana, Geneva, sans-serif; font-size:16px;">{!EventDetails.EV_Title__c}</h1></td>
+    </tr>
+    <tr>
+    <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">
+    <apex:outputText value="{0,date, MMM' 'dd', 'yyyy}" rendered="{!IF(MONTH(EventDetails.EV_StartDate__c)!=6,true,false)}">
+    <apex:param value="{!EventDetails.EV_StartDate__c}" /> 
+    </apex:outputText>
+    <apex:outputText value="{0,date, MMMM' 'dd', 'yyyy}" rendered="{!IF(MONTH(EventDetails.EV_StartDate__c)==6,true,false)}">
+    <apex:param value="{!EventDetails.EV_StartDate__c}" /> 
+    </apex:outputText></td>
+    </tr>
+    <tr>
+    <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!eventDetails.EV_HostingLocation__c}</td>
+    </tr>
+    <tr>
+    <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!eventDetails.EV_HistingAddr1__c}, {!eventDetails.AS_HostingCity__c}</td>
+    </tr>
+    <tr>
+    <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!eventDetails.EV_HostingStateNew__c} ,{!eventDetails.EV_HostingZipcode__c}</td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+    <tr>
+    <td colspan="2">
+    <div style="padding:5px; color:#0f71b5;text-align:center;">
+    <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:16px;">{!attendeealias} Schedule</h3>
+    </div>
+    </td>
+    </tr>
+    <tr>
+    <td colspan="2">
+    <div style=" background-color:#0f71b5; padding:5px; color:#FFF;">
+    <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:14px;">{!attendeealias} Details</h3>
+    </div>
+    </td>
+    </tr>
+    
+    <tr>
+    <td height="90" align="center" valign="middle" style="padding:15px;">
+    <!--<apex:image url="/servlet/servlet.ImageServer?id={!a.attendeeLogo}&oid={!$Organization.Id}" width="100%"/>-->
+    <!--<apex:image url="{!$Resource.NoImage}" height="100px" width="100px"  rendered="{!if(a.attendeeLogo== null,'TRUE','FALSE')}" style="margin:5px;border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px;"/> -->
+    
+    <apex:outputPanel rendered="{!esetting.Small_Business_IMAGE__c}">
+    <!--<apex:image url="/servlet/servlet.ImageServer?id={!a.attendeeLogo}&oid={!$Organization.Id}" height="100px" width="100px" rendered="{!if(a.attendeeLogo!= null,'TRUE','FALSE')}" style="margin:5px;border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px;"/>-->
+    </apex:outputPanel>
+    </td>
+    <td align="left" valign="top">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    
+     <tr style="display:{!IF(esetting.MBE_Company_Visible__c=false,'none','')};">
+    <td width="35%" height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!attendeealias}</td>
+    <td width="1%" align="center" valign="middle">:</td>
+    <td width="64%" height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;">
+    <apex:outputText value="{!a.MBE.AS_id__r.AS_Company__c}" rendered="{!IF((a.MBE.EV_id__r.Is_Webank_event__c == false),true,false)}"></apex:outputText>
+            <apex:outputText value="{!a.MBE.MBE_Profile__r.AS_Company__c}" rendered="{!IF((a.MBE.EV_id__r.Is_Webank_event__c == True),true,false)}"></apex:outputText>
+            </td>
+    </tr>
+  
+   
+      <tr style="display:{!IF(esetting.MBE_First_Name_Visible__c=false,'none','')};">
+    <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!attendeealias} Name</td>
+    <td align="center" valign="middle">:</td>
+    <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;">
+    <apex:outputText value="{!a.MBE.AS_id__r.FullName__c}" rendered="{!IF((a.MBE.EV_id__r.Is_Webank_event__c == false),true,false)}"></apex:outputText>
+            <apex:outputText value="{!a.MBE.MBE_Profile__r.FullName__c}" rendered="{!IF((a.MBE.EV_id__r.Is_Webank_event__c == True),true,false)}"></apex:outputText>
+            </td>
+    </tr>
+   
+    <!--  <tr>
+    <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;">Table/Room No.</td>
+    <td align="center" valign="middle">:</td>
+    <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.exhibitorTable}"></apex:outputText></td>
+    </tr> -->
+    
+</table>
+</td>
+</tr>
+    <tr>
+    <td colspan="2">
+    <div style=" background-color:#0f71b5; padding:5px; color:#FFF;">
+    <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:14px;">Scheduled Appointments </h3>
+    </div>
+    </td>
+    </tr>  
+    <tr>
+    <td colspan="2">
+    <div style=" background-color:#FFF; padding:1.5px; color:#FFF;">
+    </div>
+    </td>
+    </tr> 
+    <tr>
+    <td colspan="2" align="right" valign="top">
+    <table width="100%" border="1" cellspacing="0" cellpadding="0" style="margin-top:5px;border:1px solid #FF0000; border-collapse:collapse;" class="boothleadstable">
+      <tr>
+        <th height="23px" width="16%" align="left" valign="middle" bgcolor="#2eace5">Slots</th>
+        <th height="23px" width="20%" align="left" valign="middle" bgcolor="#2eace5">Company Name</th>
+        <th height="23px" width="19%" align="left" valign="middle" bgcolor="#2eace5">{!exhibitoralias} Name</th>
+        <th height="23px" width="31%" align="left" valign="middle" bgcolor="#2eace5">Email</th>
+        <th height="23px" width="14%" align="left" valign="middle" bgcolor="#2eace5">Contact No.</th>
+      </tr>
+      <apex:variable var="i" value="{!0}"/> 
+     <apex:repeat value="{!a.displaySchedules}" var="c">
+     <apex:outputText > 
+      <apex:variable var="i" value="{!i+1}"/>
+      <tr style="{!IF(MOD(i,2)==0, 'background-color:#ceecfa;','background-color:#FFFFFF;')}">
+        <td height="21px" width="16%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.slotTime}"></apex:outputText></td>
+        <td height="21px" width="20%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}" rendered="{!IF(Psettings[0].Company_Name__c== false, false, true)}"/></td>
+        <td height="21px" width="19%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.FullName__c} " rendered="{!IF(Psettings[0].First_Name__c== false, false, true)}"/></td>
+        <td height="21px" width="31%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c}" rendered="{!IF(Psettings[0].Email_Id__c== false, false, true)}"/></td>
+        <td height="21px" width="14%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_WorkPhone__c}" rendered="{!IF(Psettings[0].Work_phone__c== false, false, true)}"/></td>
+      </tr>
+     </apex:outputText>
+    
+    
+    </apex:repeat>
+                        
+    </table>
+</td>
+</tr>
+    
+    <tr><td colspan="2">
+    <div style="page-break-after:always;">  </div>
+<apex:variable var="count" value="{!0}"/>
+    <apex:repeat value="{!a.displaySchedules}" var="c">
+    <apex:variable var="count" value="{!count + 1}"/> 
+    <apex:outputPanel style="color:#000000;" rendered="{!if(c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c== null || c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c== '',false,true)}">
+    <div id="areaToPrint">
+    
+    <!-- 1st table start-->
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="5">
+    <tr>
+    <td height="50" colspan="2" align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr >
+    <td width="50%" height="50" align="left" valign="middle"  style="padding-left:5px;font-size:20px;display:{!IF(Psettings[0].Company_Name__c= false ,'none','')};"> <b> <h2 style="font-family:Verdana, Geneva, sans-serif;"></h2>  {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c} </b> </td>
+    <td width="50%" height="50" align="left" >
+    <!--<apex:image url="/servlet/servlet.ImageServer?id={!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Exhibitor_company_imageUrl__c}&oid={!$Organization.Id}"  width="100px" height="100px"    rendered="{!IF(c.schedule.MM_To_UPE__r.Attendee_Summary__r.Exhibitor_company_imageUrl__c != NULL,TRUE,FALSE)}"/>-->
+    
+    </td>
+    </tr>
+    </table></td>
+    </tr>
+    
+    
+    <tr>
+    <td width="50%" align="center" valign="top">
+    <div style="border:2px solid #93a07d; border-radius:5px;color:#000; width:98%; margin:5px;display:{!IF((Psettings[0].Company_Name__c= false)&&(Psettings[0].DBA__c= false)&&(Psettings[0].Business_Established_Date__c= false)&&(Psettings[0].Primary_Business_Category__c= false)&&(Psettings[0].Secondary_Business_Category__c= false)&&(Psettings[0].BBB_Number__c= false)&&(Psettings[0].Distributors_Country__c= false)&&(Psettings[0].Manufatures_Country__c= false)&&(Psettings[0].Geographical_Region__c= false),'none','')};">
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr>
+    <td width="40%" height="25" align="left" valign="middle" style="border-bottom:2px solid #93a07d;">
+    <h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">COMPANY INFORMATION</h3></td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Company_Name__c= false ,'none','')};"><strong>Company Name : </strong>{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}  </td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].DBA__c= false ,'none','')};"><strong>DBA : </strong>{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.DBA__c}  </td>
+    </tr>  
+  <!--<tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Business_Established_Date__c= false ,'none','')};"> <strong>Established Date : </strong> 
+    <apex:outputText value="{0,date,MM/dd/yyyy}">
+    <apex:param value="{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_BusinessEstablishedDate__c}"/>
+    </apex:outputText>
+    </td>
+    </tr>-->
+    
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Primary_Business_Category__c= false ,'none','')};"><strong>Primary Business Category : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_PrimaryBusinessCategory1__c}</td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Secondary_Business_Category__c= false ,'none','')};"><strong>Secondary Business Category : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.As_SecondaryBusinessCategory1__c} </td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].BBB_Number__c= false ,'none','')};"><strong>BBB Number : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.BBB_Number__c} </td>
+    </tr>
+    <tr>
+    <td height="40" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Distributors_Country__c= false ,'none','')};"><strong>In which country is your companys distribution center located (if applicable)? : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.distribution_Country__c} </td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Manufatures_Country__c= false ,'none','')};"><strong>If your company sells a product, what country or countries manufactures it? : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Manufactures_Country__c} </td>
+    </tr>
+    <tr><td></td></tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Geographical_Region__c= false ,'none','')};"><strong>Geographical Region : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Geographical_Region__c} </td>
+    </tr> 
+    
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Certificate_Processed_by_RPO__c= false ,'none','')};"><strong>Certificate Processed by RPO : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Certificate_Processed_by_RPO__c} </td>
+    </tr> 
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Country__c= false ,'none','')};"><strong>Table/Room No : </strong> {!c.schedule.MM_To_UPE__r.BT_id__r.MM_TableNo__c} </td>
+    </tr> 
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(Psettings[0].Location__c= false ,'none','')};"><strong>Location : </strong> {!c.schedule.MM_To_UPE__r.BT_id__r.BT_Location__c} </td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> </td>
+    </tr>
+        <!--<tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>No.Of Employees :  </strong>    
+    <apex:outputText value="{0,number,0}">
+    <apex:param value="{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_NumberOfEmployees__c}"/>
+    </apex:outputtext>
+    </td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> <strong>Duns Number : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_BusinessDunsNumber__c}</td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Revenue :</strong>  
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_BusinessRevenue__c}
+    </td>
+    </tr>
+    <tr>
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Tax Id :</strong>{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_BusinessTaxId__c} </td>
+    </tr>-->
+    
+    
+    </table>
+    </div>
+    
+    
+    
+    
+    <div style="border:2px solid #93a07d; border-radius:5px;width:98%; margin:5px; color:#000;display:{!IF((Psettings[0].Website__c= false)&&(Psettings[0].Work_phone__c= false),'none','')};"> 
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr style="display:{!IF(Psettings[0].Website__c= false ,'none','')};">
+    <td height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">CONTACT US</h3></td>
+    </tr>
+    <tr style="display:{!IF(Psettings[0].Website__c= false ,'none','')};">
+    <td width="40%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Website URL : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_WebsiteUrl__c}</td>
+    </tr>
+    
+    <tr style="display:{!IF(Psettings[0].Work_phone__c= false ,'none','')};">
+    <td width="40%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;">
+    <apex:outputText rendered="{!Psettings[0].Work_phone__c}">
+    <strong>Phone Number : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_WorkPhone__c}
+    </apex:outputText>
+    </td>
+    </tr>
+    
+    </table>
+    </div> 
+    
+    
+    <div style="border:2px solid #93a07d; border-radius:5px;width:98%; margin:5px; color:#000;display:{!IF(Psettings[0].Work_Address__c= false ,'none','')};">
+    
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr style="display:{!IF(Psettings[0].Work_Address__c= false ,'none','')};">
+    <td width="51%" height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">COMPANY ADDRESS</h3></td>
+    </tr>
+    
+    <tr style="display:{!IF(Psettings[0].Work_Address__c= false ,'none','')};">
+    <td width="49%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;">
+    <apex:outputPanel rendered="{!Psettings[0].Work_Address__c}">
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_WorkAddress1__c} {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_WorkAddress2__c}<br/>
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_WorkCity__c},{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Work_States__c} {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_WorkZip__c}
+    </apex:outputPanel>
+    </td>
+    </tr>
+    
+    </table>
+    </div>     
+    
+        
+    </td>         
+<!--------------------------------------------------------------- 2nd td ------------------------------------------------------------------------------>         
+        <td width="45%" align="center" valign="top">        
+        
+        
+        <div style="border:2px solid #93a07d; border-radius:5px;width:98%; color:#000; margin:5px;display:{!IF((Psettings[0].First_Name__c= false)&&(Psettings[0].Title__c= false ),'none','')};">
+        <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+        <td height="25" colspan="3" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">CONTACT DETAILS</h3></td>
+        </tr>
+        
+        <tr style="display:{!IF(Psettings[0].First_Name__c= false ,'none','')};">
+        <td width="68%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> 
+        <apex:outputPanel rendered="{!Psettings[0].First_Name__c}"><strong>Full Name : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_FirstName__c} &nbsp; {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_LastName__c} </apex:outputPanel> </td>
+        
+        <td width="68%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;">&nbsp;</td>
+        
+        <td width="32%" height="25" rowspan="7" align="center" valign="middle">
+        <apex:image url="/servlet/servlet.ImageServer?id={!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_ImageUrl__c}&oid={!$Organization.Id}"  width="100px" height="100px"  rendered="{!IF(c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_ImageUrl__c != NULL,TRUE,FALSE)}"/>
+        </td>
+        </tr>
+        <!--
+        <tr align="left" valign="middle" style="display:{!IF(Psettings[0].Last_Name__c= false ,'none','')};">
+        <td height="25" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;">
+        <apex:outputPanel rendered="{!Psettings[0].First_Name__c}"><strong>Last Name: </strong>{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_LastName__c} </apex:outputPanel></td>
+        <td>&nbsp;</td>
+        </tr>
+        -->
+        <!--<tr>
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Email :</strong>{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c} </td>
+        </tr>
+        <tr>
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Mobile : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}</td>
+        </tr>-->
+        
+        <tr style="display:{!IF(Psettings[0].Mobile__c= false ,'none','')};">
+        <td  colspan="2" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> 
+        <apex:outputPanel rendered="{!Psettings[0].Mobile__c}" ><strong> Mobile : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c} </apex:outputPanel> </td>
+        </tr>
+        
+        <tr style="display:{!IF(Psettings[0].Email_Id__c= false ,'none','')};">
+        <td width="68%" height="25" colspan="2" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> 
+        <apex:outputPanel rendered="{!Psettings[0].Email_Id__c}"><strong> Email : </strong> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c} </apex:outputPanel> </td>
+        </tr>
+        
+        <tr style="display:{!IF(Psettings[0].Title__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;">
+        <apex:outputPanel rendered="{!Psettings[0].Title__c}">
+        <strong>Title : </strong>{!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_Title__c} </apex:outputPanel> </td>
+        <td>&nbsp;</td>
+        </tr>
+        
+        </table>
+        </div>    
+        
+        
+    
+<!-----------------------------------------------------------------2nd td End--------------------------------------------------------------------------> 
+    <!--<apex:outputText rendered="false">-->
+    <div style="border:2px solid #93a07d; border-radius:5px;  width:98%; margin:5px; color:#000;display:{!IF(Psettings[0].Business_Description__c= false ,'none','')};"> 
+    
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    
+    <tr style="display:{!IF(Psettings[0].Business_Description__c= false ,'none','')};">
+    <td width="32%" height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">BUSINESS DESCRIPTION</h3></td>
+    </tr>
+    <tr style="display:{!IF(Psettings[0].Business_Description__c= false ,'none','')};">
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;"> {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_BusinessDescription__c}  </td>
+    </tr>
+    
+    </table>
+    
+    
+    </div>       
+    <!--</apex:outputText> -->
+    <div style="border:2px solid #93a07d; border-radius:5px; ; width:98%; margin:5px; color:#000;display:{!IF(Psettings[0].KeyWords__c= false ,'none','')};">
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr style="display:{!IF(Psettings[0].KeyWords__c= false ,'none','')};">
+    <td width="27%" height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;display:{!IF(Psettings[0].KeyWords__c= false ,'none','')};"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">PROCUREMENT NEEDS / KEY WORDS</h3></td>
+    </tr>
+    
+    <tr style="display:{!IF(Psettings[0].KeyWords__c= false ,'none','')};">
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;">
+    <apex:outputText rendered="{!Psettings[0].KeyWords__c}">
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Keywords__c} 
+    </apex:outputText>
+    </td>
+    </tr>
+    
+    </table>
+    </div>  
+    <div style="border:2px solid #93a07d; border-radius:5px; ; width:98%; margin:5px; color:#000;display:{!IF(Psettings[0].exceptional_keywords__c= false ,'none','')};">
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr >
+    <td width="27%" height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">SERVICES AND PRODUCTS WE ARE NOT INTERESTED IN</h3></td>
+    </tr>
+    
+    <tr >
+    <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;">
+    
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Exceptional_Key_Words__c} 
+    
+    </td>
+    </tr>
+    
+    </table>
+    </div>  
+    
+    <div style="border:2px solid #93a07d; border-radius:5px;width:98%; margin:5px; color:#FFF;display:{!IF(Psettings[0].NAICS_Codes__c= false ,'none','')};">  
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr style="display:{!IF(Psettings[0].NAICS_Codes__c= false ,'none','')};">
+    <td height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; color:#000; font-family:Verdana, Geneva, sans-serif; font-size:11px;">NAICS INFORMATION</h3></td>
+    </tr>
+    <tr style="display:{!IF(Psettings[0].NAICS_Codes__c= false ,'none','')};">
+    <td width="49%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; line-height:20px;">
+    
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.As_NAICSCode_1__c}<br/>
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.As_NAICSCode_2__c}<br/>
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.As_NAICSCode_3__c}<br/>
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.As_NAICSCode_4__c}<br/>
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.As_NAICSCode_5__c}<br/>
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_NAICSCode6__c}<br/>
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_NAICSCode7__c}<br/>
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_NAICSCode8__c}<br/>
+        {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.AS_NAICSCode9__c}<br/> 
+    </td>
+    </tr>
+    </table>
+    
+    </div>       
+    
+    <div style="border:2px solid #93a07d; border-radius:5px;width:98%; margin:5px; color:#FFF;display:{!IF(Psettings[0].Commodities__c= false ,'none','')};">  
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr style="display:{!IF(Psettings[0].Commodities__c= false ,'none','')};">
+    <td height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; color:#000; font-family:Verdana, Geneva, sans-serif; font-size:11px;">COMMODITIES</h3></td>
+    </tr>
+    <tr style="display:{!IF(Psettings[0].Commodities__c= false ,'none','')};">
+    <td width="49%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; line-height:20px;">
+    
+    
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Commodity_1__c}<br/>
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Commodity_2__c}<br/>
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Commodity_3__c}<br/>
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Commodity_4__c}<br/>
+    {!c.schedule.MM_To_UPE__r.Attendee_Summary__r.Commodity_5__c}<br/>
+    
+    </td>
+    </tr>
+    </table>
+    
+    </div>  
+    </td> </tr>     
+    <tr>
+    <td height="19" align="center" valign="top">&nbsp;</td>
+    <td align="center" valign="top">&nbsp;</td>
+    </tr>
+    </table>           
+    <!-- table End-->           
+    </div> 
+    <apex:outputText rendered="{!IF(count<a.displaySchedules.Size,True,False)}">
+    <div style="page-break-after:always;">
+    
+    </div> 
+    </apex:outputText>
+    </apex:outputPanel>
+    
+    </apex:repeat>
+    
+    
+    </td> 
+    </tr>
+   
+    
+    
+    
+    
+    
+     </apex:repeat>    </table>
+    
+    
+    </apex:form>
+    </apex:page>

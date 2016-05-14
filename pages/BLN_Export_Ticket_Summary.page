@@ -1,0 +1,69 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" action="{!exportTSummary}" controller="BLN_PromoCodeReportCon" contentType="application/vnd.ms-excel#ByticketsPromocodeSummaryExport.xls" readOnly="true"><apex:pageBlock > 
+
+ <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th  width="17%">Promotion Name</th>
+                        <th width="15%">Promo Code No</th>
+                       <th width="20%">Promo Code Type</th>
+                       
+                       <th width="20%">Ticket Name</th>
+                       <th width="20%">Ticket Type</th>
+                       
+                        <th width="16%">Discount Amount ({!eventcurrency})</th>
+                        <th width="13%">Used/Available</th>
+                        <th width="">Total Discount Amount ({!eventcurrency})</th>
+                    </tr>
+                </thead>
+
+    <tbody>
+  <!--------------------Start of Parent Record (Main Repeat)------------------------>
+   <apex:repeat value="{!promoCodeInnerListbyticket}" var="promocode">
+  <!-- <apex:outputText rendered="{!if(promocode.prolistforticketinner.size!= 0, true,false)}"> -->
+
+   <!-----------> 
+   <!--Group header-->
+   <!--
+   <ul class="grpheader">
+    <li class="labeltitles">Ticket Name:{!promocode.ticketname}|
+    Ticket Type:{!promocode.tickettype}</li>
+   </ul>
+   -->
+   
+ <!-----inside repeat for ticket belongs to pc-----> 
+ <apex:repeat value="{!promocode.prolistforticketinner}" var="itemPromotion">
+  <apex:outputText rendered="{!if(itemPromotion.usedbyticket!= 0 && itemPromotion.totaldiscountbyticket!=0,true,false)}">
+  <tr>
+    <td style="width:17%">{!itemPromotion.prolistforticket.name}</td>
+    <td style="width:15%"> {!itemPromotion.prolistforticket.Promo_Code__c} </td>
+    <td style="width:20%"> {!itemPromotion.prolistforticket.Promotion_Type__c}</td>
+    
+    <td style="width:20%"> {!promocode.ticketname}</td>
+    <td style="width:20%"> {!promocode.tickettype}</td>
+    
+    <td style="width:16%">
+     <apex:outputText rendered="{!IF(itemPromotion.prolistforticket.Item_Promotions__r[0].item_Discount_Type__c== 'Amount', TRUE, FALSE)}" value="{!eventcurrency}" />
+     {!itemPromotion.prolistforticket.Item_Promotions__r[0].Item_Discount_Value__c}
+     <apex:outputText rendered="{!IF(itemPromotion.prolistforticket.Item_Promotions__r[0].item_Discount_Type__c== 'Percent', TRUE, FALSE)}" value="%" />
+    </td>
+    <td style="width:13%"><apex:outputText value="{!itemPromotion.usedbyticket}"/> Out Of {!itemPromotion.prolistforticket.T_Max_Count__c}
+    </td>
+    <td> 
+    <apex:outputText value="{0,number,{!eventcurrency} ###,##0.00}"> <apex:param value="{!itemPromotion.totaldiscountbyticket}"/> </apex:outputText>
+    </td>
+     
+  </tr>
+   </apex:outputText> 
+   </apex:repeat>
+  
+  <!-- </apex:outputText> -->
+     </apex:repeat>
+                 
+    <!-------------//end of Parent Record (Main Repeat)----------------------------> 
+       </tbody>
+</table>            
+
+        
+         
+ </apex:pageBlock>
+</apex:page>

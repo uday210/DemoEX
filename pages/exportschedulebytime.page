@@ -1,0 +1,97 @@
+<!--<apex:page contentType="text/csv#Corporate_MBE_Schedule.csv" controller="MM_EventAdmin_ReportsCon" cache="true" language="en-US" sidebar="false" >{!exhibitoralias },{!exhibitoralias } Contact,{!exhibitoralias } Email,{!exhibitoralias } #,{!attendeealias} Company,{!attendeealias} Contact,{!attendeealias} Email,{!attendeealias} #,Appointment Time,Table #
+<apex:outputText rendered="{!viewScheduleByTimeList}">
+ <apex:repeat value="{!byTimeExportInnerList}" var="esch">
+ {!esch.timeSlotString} 
+  <apex:repeat value="{!esch.schedulesList}" var="sch">
+   {!sch.MM_To_UPE__r.BT_id__r.BT_Name__c},"{!sch.MM_To_UPE__r.BoothAdmin_id__r.Name}",{!sch.MM_To_UPE__r.BoothAdmin_id__r.Email},{!sch.MM_To_UPE__r.BT_id__r.BT_ContactPhone__c},"{!sch.MM_To_EAM__r.AS_id__r.AS_Company__c}",{!sch.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!sch.MM_To_EAM__r.AS_id__r.AS_LastName__c},{!sch.MM_To_EAM__r.AS_id__r.AS_Email__c},{!sch.MM_To_EAM__r.AS_id__r.AS_CellPhone__c},{!sch.MM_slot_StartTime__c} - {!sch.MM_Slot_End_Time__c},{!sch.MM_To_UPE__r.BT_id__r.MM_TableNo__c}
+  </apex:repeat>
+ </apex:repeat>  
+ </apex:outputText>
+ <apex:outputText rendered="{!viewScheduleByTimeList2}">
+ <apex:repeat value="{!byGroupExportInnerList}" var="esch">
+ {!esch.statusString} 
+  <apex:repeat value="{!esch.schedulesList2}" var="sch">
+   {!sch.MM_To_UPE__r.BT_id__r.BT_Name__c},"{!sch.MM_To_UPE__r.BoothAdmin_id__r.Name}",{!sch.MM_To_UPE__r.BoothAdmin_id__r.Email},{!sch.MM_To_UPE__r.BT_id__r.BT_ContactPhone__c},{!sch.MM_To_EAM__r.AS_id__r.AS_Company__c},{!sch.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!sch.MM_To_EAM__r.AS_id__r.AS_LastName__c},{!sch.MM_To_EAM__r.AS_id__r.AS_Email__c},{!sch.MM_To_EAM__r.AS_id__r.AS_CellPhone__c},{!sch.MM_slot_StartTime__c} - {!sch.MM_Slot_End_Time__c},{!sch.MM_To_UPE__r.BT_id__r.MM_TableNo__c}
+  </apex:repeat>
+ </apex:repeat>  
+ </apex:outputText>
+</apex:page>-->
+
+
+
+<apex:page contentType="application/vnd.ms-excel#Corporate_MBE_Schedule.xls" controller="MM_EventAdmin_ReportsCon" >  
+<table width="100%" border="2" cellspacing="0" cellpadding="0" >
+<tr>
+  <td width="10%" height="30" align="center"><strong>{!exhibitoralias }</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!exhibitoralias } Contact</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!exhibitoralias } Email</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!exhibitoralias } #</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!attendeealias} Company</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!attendeealias} Contact</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!attendeealias} Email</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!attendeealias} #</strong></td>
+  <td width="10%" height="30" align="center"><strong>Appointment Time</strong></td>
+  <td width="10%" height="30" align="center"><strong>Table #</strong></td>
+  <td width="10%" height="30" align="center"><strong>Status</strong></td>
+</tr>
+<!--------------------------------------------------------------------------->
+<apex:outputText rendered="{!viewScheduleByTimeList}">
+  <apex:repeat value="{!byTimeExportInnerList}" var="esch">
+     <tr>
+    <td width="10%" height="30" align="center"><strong>{!esch.timeSlotString}</strong></td>
+    </tr>
+  <apex:repeat value="{!esch.schedulesList}" var="sch">
+  <apex:outputPanel rendered="{!IF(sch.MM_Slot_Status__c= 'Accepted',True,False)}">
+<tr>
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BT_id__r.BT_Name__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BoothAdmin_id__r.Name}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BoothAdmin_id__r.Email}</td> 
+  
+<!--  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BT_id__r.BT_ContactPhone__c}</td> -->
+ <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}</td>
+ 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_EAM__r.AS_id__r.AS_Company__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!sch.MM_To_EAM__r.AS_id__r.AS_LastName__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_EAM__r.AS_id__r.AS_Email__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_slot_StartTime__c} - {!sch.MM_Slot_End_Time__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BT_id__r.MM_TableNo__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_Slot_Status__c}</td> 
+</tr>
+</apex:outputPanel>
+  </apex:repeat>
+ </apex:repeat>  
+ </apex:outputText>
+ 
+ <!------------------------------------------------------------------------------> 
+<apex:outputText rendered="{!viewScheduleByTimeList2}">
+ <apex:repeat value="{!byGroupExportInnerList}" var="esch">
+ <tr>
+ <td width="10%" height="30" align="center"><strong>{!esch.statusString}</strong></td>
+ </tr>
+<apex:repeat value="{!esch.schedulesList2}" var="sch"> 
+ 
+ <tr>
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BT_id__r.BT_Name__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BoothAdmin_id__r.Name}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BoothAdmin_id__r.Email}</td> 
+  
+ <!-- <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BT_id__r.BT_ContactPhone__c}</td>  -->
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}</td>
+   
+  <td height="30" align="center" valign="middle">{!sch.MM_To_EAM__r.AS_id__r.AS_Company__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!sch.MM_To_EAM__r.AS_id__r.AS_LastName__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_EAM__r.AS_id__r.AS_Email__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_slot_StartTime__c} - {!sch.MM_Slot_End_Time__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_To_UPE__r.BT_id__r.MM_TableNo__c}</td> 
+  <td height="30" align="center" valign="middle">{!sch.MM_Slot_Status__c}</td> 
+</tr>
+
+  </apex:repeat>
+ </apex:repeat>  
+ </apex:outputText>
+ 
+ 
+</table>
+</apex:page>

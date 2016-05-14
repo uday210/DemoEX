@@ -1,0 +1,78 @@
+<apex:component controller="BLN_CountryState_DAO">
+ <script>
+
+            function getstatejs(id,val)
+       {
+       id = id.replace("BusinessCountry", "BusinessState");
+       id = id.replace("BillingCountry", "BillingState");
+       id = id.replace("HomeCountry", "HomeState");
+         Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_CountryState_DAO.statesBasedOnCountry}',
+            val,
+            function(result, event){
+            var opt;
+            document.getElementById(id).innerHTML = "";
+       opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '';
+             document.getElementById(id).add(opt);
+              $.each(result, function (i, vals) {
+          
+             opt = document.createElement('option');
+             opt.value = vals.Id;
+              if(vals.Short_Name__c == undefined ){  
+               opt.innerHTML = vals.Long_Name__c;
+      }else{
+            opt.innerHTML = vals.Short_Name__c+'-'+vals.Long_Name__c;
+            }
+            
+             document.getElementById(id).add(opt);
+             });
+                   
+            }, 
+            {escape: true}
+        );
+        
+       }
+       </script>
+       <script>
+        function getstatejs_forfirsttimeload(id,val,valstate)
+       {
+       id = id.replace("BusinessCountry", "BusinessState");
+       id = id.replace("BillingCountry", "BillingState");
+       id = id.replace("HomeCountry", "HomeState");
+         Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_CountryState_DAO.statesBasedOnCountry}',
+            val,
+            function(result, event){
+            var opt;
+            document.getElementById(id).innerHTML = "";
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '';
+             document.getElementById(id).add(opt);
+              $.each(result, function (i, vals) {
+          
+             opt = document.createElement('option');
+             opt.value = vals.Id;
+               if(vals.Short_Name__c == undefined ){  
+               opt.innerHTML = vals.Long_Name__c;
+      }else{
+            opt.innerHTML = vals.Short_Name__c+'-'+vals.Long_Name__c;
+            }
+             document.getElementById(id).add(opt);
+             });
+              if(id.indexOf('BusinessState')!=-1)
+              document.getElementById(id).value= valstate;
+              if(id.indexOf('HomeState')!=-1)
+              document.getElementById(id).value= valstate;
+              if(id.indexOf('BillingState')!=-1)
+              document.getElementById(id).value= valstate;     
+            }, 
+            {escape: true}
+        );
+        
+       }
+       </script>
+
+</apex:component>

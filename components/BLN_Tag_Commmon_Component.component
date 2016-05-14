@@ -1,0 +1,293 @@
+<apex:component controller="BLN_ReUse_EventsEditCon">
+  <!---------popup for Assign Tag------->
+   <div class="dialogoverlay" style=" z-index:9999;" id="assigntag_dialogoverlay"></div>
+   <div  id="dialogbox_assigntag" style=" display:none;z-index:99991; width:36%; margin-left:32%;"><a id="close" onclick="Alert_assigntag.Cancel();table.fnDraw();" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Assign Tag</div>
+        <div class="content-gird">
+       <!--------------> 
+<div id="tagform" class="createform">
+            <div class="content-top-btn-box" style="">
+           <button type="button" id="tag_Add" class="togglebtn tagadd" style=" padding:5px;" >Add Tag</button>
+            </div>
+            <!--close of content-top-btn-box--->
+            <div class="clear"></div>
+            
+            <!---------tag table--------->
+            <div class="tablewrapper"><!--start of tablewrapper---->
+              <table class="display tagtbl" id="tickettagtable">
+                <!---->
+                <thead>
+                  <tr>
+                    <th style="width:2%"></th>
+                    <th>Tag</th>
+                    <th style="width:20%; text-indent:2%;">Action</th>
+                  </tr>
+                </thead>
+                <!----> 
+                <!---->
+                <tbody>
+                  <!----------->
+                  
+                  
+                  <!------->
+                </tbody>
+                <!---->
+              </table>
+      
+            </div>
+            <!--close of tablewrapper----> 
+            <div  class="clear"></div>
+            <!---------------> 
+          </div><!---close of tagform--->
+        
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <button class="button-a blue" onclick="assignTaggo();return false;">Save</button>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_assigntag.Cancel();table.fnDraw();return false;">Cancel</button>
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+       <!------------end of popup for Assign Tag------------->   
+
+
+
+
+
+
+
+
+
+
+<script>
+function assignTaggo()
+{
+var tagarray='';
+var pmtable = document.getElementById("tickettagtable");
+       for (var i = 1,row; row = pmtable.rows[i]; i++) {
+       if(row.cells[0].children[0].checked){
+       if(row.cells[1].children[0]!=undefined)
+       tagarray+=row.cells[1].children[0].value+",";
+       else
+        tagarray+=row.cells[1].innerHTML+",";
+       
+       }
+       }
+       if(tagarray!=''){
+       tagarray= tagarray.slice(0, -1);
+       assignTag(tagarray);
+       }
+       else
+       alert('Nothing to save');
+       
+
+}
+
+var TagMap = {};  
+/***********************Inline Editing For Tags**********************************/  
+var j$= jQuery.noConflict();
+      //j$(function(){
+//for roles
+function tagadd(){
+    //alert("rrr");
+
+    j$(".tagtbl tbody").append(
+
+        "<tr>"+
+        "<td><input class='chkbox'  type='checkbox' /></td>"+
+        "<td><input type='text' /></td>"+
+        "<td class='textcenter'><a class='tagsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='tagdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");
+    
+    
+        j$(".tagsave").bind("click",tagsave);       
+        j$(".tagdel").bind("click",tagdel);
+}; 
+
+ 
+
+function tagsave(){
+    var par = $(this).parent().parent(); //tr
+    var tagcheckbox=par.children("td:nth-child(1)");
+    var tagname = par.children("td:nth-child(2)");
+    var tdButtons = par.children("td:nth-child(3)");
+    if(tagcheckbox.children("input[type=checkbox]").val()=='on')
+     {
+       Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.createEventTag}',
+            eventid,
+            tagname.children("input[type=text]").val(),
+            'Ticket__c',
+           function(result, event){
+           if (event.status){
+           if(result=='')
+           alert('Duplicate value');
+           else
+           {
+           alert('Saved Succesfully');
+           tagcheckbox.children("input[type=checkbox]").val(result);
+           tagname.html(tagname.children("input[type=text]").val());
+           tdButtons.html("<a class='tagedit'><i class='fa fa-pencil fa-edit20px' title='Edit'>&nbsp; &nbsp;</i></a><a class='tagdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+           j$(".tagedit").bind("click",tagedit);
+          j$(".tagdel").bind("click",tagdel);
+    }
+   
+           }}
+           );
+     }
+     else
+     {
+    Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.updateEventTagwithId}',
+            eventid,
+            tagcheckbox.children("input[type=checkbox]").val(),
+            tagname.children("input[type=text]").val(),
+           function(result, event){
+           if (event.status){
+           alert('Saved Succesfully');
+           tagname.html(tagname.children("input[type=text]").val());
+           tdButtons.html("<a class='tagedit'><i class='fa fa-pencil fa-edit20px' title='Edit'>&nbsp; &nbsp;</i></a><a class='tagdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+   j$(".tagedit").bind("click",tagedit);
+    j$(".tagdel").bind("click",tagdel);
+           }}
+           );
+           }
+    
+                ///////////////////////      
+
+}; 
+
+function tagedit(){
+    var par = $(this).parent().parent(); //tr
+    var tagchkbox = par.children("td:nth-child(1)");
+    var tagname = par.children("td:nth-child(2)");
+    var tdButtons = par.children("td:nth-child(3)");
+     tagchkbox.html(tagchkbox.html());
+    tagname.html("<input type='text'  value='"+tagname.html()+"'/>");
+    tdButtons.html("<a class='tagsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='tagdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    j$(".tagsave").bind("click", tagsave);
+    j$(".tagedit").bind("click", tagedit);
+    j$(".tagdel").bind("click", tagdel);
+};
+
+
+
+function tagdel(){
+    var par = $(this).parent().parent(); //tr
+    var tagname = par.children("td:nth-child(2)");
+    var tagtext;
+    if(tagname.children("input[type=text]").val()==undefined)
+    tagtext=tagname.html();
+    else
+    tagtext=tagname.children("input[type=text]").val();
+   
+    Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.deleteTicketLevelTag}',
+            eventid,
+            tagtext,
+            ticketlistid,
+           function(result, event){
+           if (event.status){
+          alert('Deleted Succesfully');
+           }}
+           );
+           par.remove();
+           
+   
+}; 
+        /////////////////////// 
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    j$(".tagedit").bind("click",tagedit);
+    j$(".tagdel").bind("click",tagdel);
+    j$(".tagadd").bind("click",tagadd);
+    j$(".tagsave").bind("click",tagsave);
+});
+      //})
+/**************end of roles*******************/
+
+/**************************End of Inline Editing for Tags*******************************/ 
+
+
+</script>
+
+
+
+<script>
+                  //load the tags
+                  
+  var eventid='';
+  var ticketid=''; 
+  var ticketlistid='';               
+function loadtags(eventid,tlistid)
+{
+ticketlistid=tlistid;
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getAllSelectedTag}',
+            eventid,
+            tlistid,
+           function(result, event){
+           var tagnames=result;
+           
+         
+
+ Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getEventTag}',
+            eventid,
+            'Ticket__c',
+           function(result, event){
+           
+           if (event.status){
+                   j$(".tagtbl tbody").empty();
+                    $.each(result, function(i, resulteach){
+                    var count = tagnames.split(resulteach.Tag_Text__c).length-1;
+                    var ticketcount=ticketlistid.split(',').length-1;
+                    
+          if(tagnames.indexOf(resulteach.Tag_Text__c)!=-1&&count==ticketcount)
+                   {
+                     j$(".tagtbl tbody").append(
+
+        "<tr>"+
+        "<td><input class='chkbox'  type='checkbox' checked value='"+resulteach.Id+"'/></td>"+
+        "<td>"+resulteach.Tag_Text__c+"</td>"+
+        '<td class="textcenter"><a class="edit-link tagedit" title="Edit"><i class=" fa fa-pencil fa-edit20px"></i></a>&nbsp; &nbsp;<a class="delete-link tagdel" title="Delete"><i class="fa fa-minus-square-o  fa-minus-23x"></i></a></td>'+
+        "</tr>");
+                   }
+                    else
+                    {   
+                       j$(".tagtbl tbody").append(
+
+        "<tr>"+
+        "<td><input class='chkbox'  type='checkbox' value='"+resulteach.Id+"'/></td>"+
+        "<td>"+resulteach.Tag_Text__c+"</td>"+
+        '<td class="textcenter"><a class="edit-link tagedit" title="Edit"><i class=" fa fa-pencil fa-edit20px"></i></a>&nbsp; &nbsp;<a class="delete-link tagdel" title="Delete"><i class="fa fa-minus-square-o  fa-minus-23x"></i></a></td>'+
+        "</tr>");
+        }
+                    
+                    
+                    });
+     j$(".tagedit").bind("click",tagedit);
+    j$(".tagdel").bind("click",tagdel);
+
+                    }
+                    }
+                    );
+                    
+                    }
+                    );
+                    
+} 
+
+
+                  </script>
+</apex:component>

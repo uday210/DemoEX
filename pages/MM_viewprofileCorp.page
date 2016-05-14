@@ -1,0 +1,642 @@
+<apex:page controller="corporateViewProfile" showHeader="false">
+
+    <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.MM_BA_Styles,"css/stylesheet.css")}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.forschedulePage,"SpryAssets/SpryTabbedPanels.css")}"/>
+    <apex:includeScript value="{!URLFOR($Resource.forschedulePage,"SpryAssets/SpryTabbedPanels.js")}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.akordeon.js")}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/jquery.akordeon.css")}"/>
+    
+    <!--<apex:stylesheet value="{!URLFOR($Resource.profile, 'viewprofile/css/osx.css')}"/>-->
+    
+    
+    <script type="text/javascript" src="{!URLFOR($Resource.profile, 'viewprofile/js/jquery/jquery-1.4.1.min.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.profile, 'viewprofile/js/jquery.simplemodal.js')}"></script>
+    <script type="text/javascript" src="{!URLFOR($Resource.profile, 'viewprofile/js/osx.js')}"></script>
+    
+      
+  <script type="text/javascript" >
+$(document).ready(function()
+{
+$(".account").click(function()
+{
+var X=$(this).attr('id');
+
+if(X==1)
+{
+$(".submenu").hide();
+$(this).attr('id', '0');
+}
+else
+{
+
+$(".submenu").show();
+$(this).attr('id', '1');
+}
+
+});
+
+//Mouseup textarea false
+$(".submenu").mouseup(function()
+{
+return false
+});
+$(".account").mouseup(function()
+{
+return false
+});
+
+
+//Textarea without editing.
+$(document).mouseup(function()
+{
+$(".submenu").hide();
+$(".account").attr('id', '');
+});
+
+});
+
+    </script>
+ 
+    
+    
+      <apex:form >
+<div id="topblock">
+<div id="logo"></div>
+
+<div id="topblockright"  style="position:absolute; top:0px;right:0px;">
+                     <table width="98%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="right"><div style="padding-right:20px;"> <span class="username"> {!$User.Firstname}&nbsp;{!$User.Lastname} 
+        <br />  
+        
+       
+        
+        
+         </span></div></td>
+        
+        <td style="width:195px;"><div class="dropdown">
+                    <a class="account" onClick="show1();"><span>Settings</span></a>
+                        <div class="submenu"  id="benefits" style="display: none; ">
+                            <ul class="root">
+<li stlyle="margin-left:0px;">
+  <apex:commandLink value="MM_profile" style="text-style:bold; color:#000000; padding:10px 15px 0 0;"> Edit Profile</apex:commandLink></li>
+    <li stlyle="margin-left:0px;" ><apex:outputLink value="MM_Changepassword?urlreturn=MM_Profile" style="text-style:bold; color:#000000; padding:10px 15px 0 0;">Change Password</apex:outputLink></li>
+
+<li stlyle="margin-left:0px;">
+  <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#000000; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink></li>
+
+</ul>
+                        </div>
+                   </div></td>
+      </tr>
+    </table>
+                 </div>
+                 
+                 
+                 
+                
+                 
+
+</div>
+<!--topblock end-->
+<!--menublock start-->
+<div id="menublock">
+<div id='cssmenu'>
+
+<!--  Tabs ---------------------------- -->
+<ul>
+
+<!-- <li >
+  <apex:outputLink value="MM_DashBoard"><b>Dashboard</b> </apex:outputLink>
+
+</li>-->
+<li><apex:outputLink value="Matchleads_Eventspage"><b>Events</b> </apex:outputLink></li>
+
+<li  ><apex:outputLink value="MM_BA_Matches"><b>Matches</b> </apex:outputLink></li>
+<li>
+<apex:outputLink value="MM_BA_Schedule"><b>Schedule</b> </apex:outputLink>
+</li>
+<!--<li>
+<apex:outputLink value="MM_ExhibitorDirectory"><b>Exhibitor Directory</b> </apex:outputLink>
+</li>-->
+
+
+
+  </ul>
+ <!--  Tabs ---------------------------- --> 
+  
+  
+</div>
+</div>
+</apex:form>
+  
+ 
+ 
+
+
+
+
+
+
+ 
+ <apex:form >
+  <div id="osx-modal-content"  height="530px" >
+           
+
+            <!--<div class="close"><a href="#" class="simplemodal-close" title="Close">x</a></div>-->
+
+            <div id="osx-modal-data" style="padding:0px;margin-left:-5px;margin-top:-10px;" >                   
+              <apex:outputPanel id="profileid"> 
+ 
+   <div id="container" style="width:100%;height:530px;">
+
+<div id="wrapper" style="width:100%; margin:0px auto;  padding-bottom:100px;padding-left:0px;padding-top:10px;background-color:#fff ;">
+<div id="contentbox" style="width:100%; height:auto;" >
+
+<div style="width:100%; background-color:#1DCFDE;">
+<p style=" font-size:20px; padding:6px; font-family:Arial, Helvetica, sans-serif ;margin-left:10px; color:#FFF; ">VIEW PROFILE</p>
+        </div>
+
+<div id="contact-section" style="width:100%; height:auto;">
+<div id="contact-image" style="width:24%; height:180px; float:left; text-align:center; background-color:#FFF;"> &nbsp;
+<apex:outputText rendered="{!Psettings[0].Contact_Image__c}">
+<apex:image url="/servlet/servlet.ImageServer?id={!vewProfileEAM.AS_ImageUrl__c}&oid={!$Organization.Id}"   height="170px" width="150px" style="margin:5px;"/>
+</apex:outputText>
+</div>
+
+<div id="contact-desc" style="width:74%; float:right; height:180px; background-color: #Fff">
+<div style="width:5%; height:16px; margin-right:60px; margin-top:10px; background-color:#fff; float:right;">
+
+
+</div>
+<div style="margin-top:30px;">
+<ul style=" font-family:Arial, Helvetica, sans-serif ;line-height:34px;color:#000; font-size:16px; list-style:none" >
+<li style="font-family:Arial, Helvetica, sans-serif ; font-weight:700;color:#000;">
+            <apex:outputPanel rendered="{!Psettings[0].First_Name__c}">  {!vewProfileEAM.AS_FirstName__c} {!vewProfileEAM.AS_LastName__c}</apex:outputPanel>
+    </li>
+<li style="font-family:Arial, Helvetica, sans-serif ;color:#000;"><apex:outputPanel rendered="{!Psettings[0].Title__c}">{!vewProfileEAM.AS_Title__c}</apex:outputPanel></li>
+<li style="font-family:Arial, Helvetica, sans-serif ;color:#000;"><apex:outputPanel rendered="{!Psettings[0].Email_Id__c}">{!vewProfileEAM.AS_Email__c}</apex:outputPanel></li>
+<li style="font-family:Arial, Helvetica, sans-serif ;color:#000;"><apex:outputPanel rendered="{!Psettings[0].Mobile__c}">{!vewProfileEAM.AS_CellPhone__c}</apex:outputPanel></li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div style="clear:both"></div>
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:95%;"/>
+</div>
+
+<div style="width:100%; margin-top:10px; height:24px; padding:5px; background-color:#DDD;">
+<p style=" font-size:20px; font-family:Arial, Helvetica, sans-serif ;line-height:24px;margin:0px; color:#414141;"> &nbsp;COMPANY DETAILS</p>
+
+</div>
+
+
+
+<div id="company-section" style="width:100%; height:auto">
+
+<div id="company-image" style="width:27%;line-height:14px; height:auto; float:left; background-color:#FFF;">&nbsp;
+<!---<div id="company-image" style="width:27%;line-height:14px; height:250px; float:left; background-color:#FFF;">--->
+<apex:outputText rendered="{!Psettings[0].Company_Logo__c}">
+<apex:image url="/servlet/servlet.ImageServer?id={!vewProfileEAM.Exhibitor_company_imageUrl__c}&oid={!$Organization.Id}"  height="100px" width="100px" style="margin:5px" rendered="{! IF(vewProfileEAM.Exhibitor_company_imageUrl__c !=null, 'TRUE' ,'FALSE')}"/>           
+</apex:outputText>                                           
+<br/>
+<apex:outputText rendered="{!Psettings[0].Company_Name__c}">
+<p style="font-size:18px; font-family:Arial, Helvetica, sans-serif; font-weight:700; margin-left:10px;color:#000;">{!vewProfileEAM.AS_Company__c}</p>
+</apex:outputText>
+<apex:outputText rendered="{!Psettings[0].Work_Address__c}">
+<p style="font-size:13px;font-weight:700; margin-left:10px;font-family:Arial, Helvetica, sans-serif;color:#000;">{!vewProfileEAM.AS_WorkAddress1__c} {!vewProfileEAM.AS_WorkAddress2__c}</p>
+
+<p style="font-size:13px;font-weight:700;margin-top:-15px; margin-left:10px;font-family:Arial, Helvetica, sans-serif;color:#000;">
+    
+   
+<apex:outputText rendered="{!IF( (vewProfileEAM.AS_WorkCity__c != NULL) && (vewProfileEAM.AS_Work_States__c != NULL  || vewProfileEAM.AS_WorkZip__c  != NULL) , TRUE,FALSE)}"> {!vewProfileEAM.AS_WorkCity__c},
+{!vewProfileEAM.AS_Work_States__c} {!vewProfileEAM.AS_WorkZip__c}</apex:outputText></p>
+</apex:outputText>
+
+
+<apex:outputText rendered="{!Psettings[0].Work_phone__c}">
+<apex:outputText rendered="{!IF( vewProfileEAM.AS_WorkPhone__c != NULL, True,False)}">
+<p style="font-size:13px;font-weight:700; margin-left:10px;margin-bottom:-2px; font-family:Arial, Helvetica, sans-serif;color:#000;">Phone: {!vewProfileEAM.AS_WorkPhone__c}</p>
+</apex:outputText>
+</apex:outputText>
+
+<apex:outputText rendered="{!Psettings[0].Website__c}">
+<a  href="http://{!vewProfileEAM.AS_WebsiteUrl__c}" target="_blank" style="font-size:13px;margin-left:10px;font-weight:700; font-family:Arial, Helvetica, sans-serif;color:#000;">{!vewProfileEAM.AS_WebsiteUrl__c}</a><br/>
+</apex:outputText>
+</div>
+
+
+<apex:outputText rendered="{!Psettings[0].Business_Description__c}">
+<apex:outputText rendered="{!IF( vewProfileEAM.AS_BusinessDescription__c != NULL, True,False)}">
+<div id="company-desc" style="width:72.5%; float:right; border:0px solid #000; height:auto; background-color: #Fff;">
+<!---<div id="company-desc" style="width:72.5%; float:right; border:0px solid #000; height:210px; background-color: #Fff;"> --->
+<div id="business description" style=" border:1px solid  #E5E5E5; overflow: auto; width:94.5%; height:250px;background-color:#fff; margin-left:10px ;">
+  <p style=" margin-top:5px;text-align:justify;margin-right:8px; margin-left:8px; font-size:15px; line-height:24px; font-family:Arial, Helvetica, sans-serif;color:#000;">
+    {!vewProfileEAM.AS_BusinessDescription__c}
+ </p>
+
+</div><!--close of business description-->
+
+
+</div><!--close of company-desc-->
+</apex:outputText>
+</apex:outputText>
+</div>
+<div style="clear:both"></div>
+
+
+
+
+<div style="width:100%; height:auto; padding-bottom:5px; background-color:#fff; margin-top:25px; margin-right:10px;">
+<apex:outputText rendered="{!Psettings[0].Additional_Company_Brouchers__c}">
+<apex:outputText rendered="{! IF(attchments.size !=0, TRUE ,FALSE)}">
+<img src="{!URLFOR($Resource.attachment_Icon)}" title="Company Brouchures" style="margin-left:10px; margin-right:5px;"/>
+<apex:repeat value="{!attchments}" var="attac">
+ <apex:commandlink action="/servlet/servlet.FileDownload?file={!attac.Id}" target="_blank" value="{!attac.Name}" style="color:#000; margin-right:7px;" />&nbsp;
+ </apex:repeat>                                              
+</apex:outputText>
+</apex:outputText>
+</div>
+
+<div style="width:100%; height:auto; padding-bottom:5px; background-color:#fff; margin-top:25px; margin-right:10px;">
+<apex:outputText rendered="{!Psettings[0].Additional_Company_videos__c}">
+<apex:outputText rendered="{!IF(videos.size !=0, TRUE ,FALSE)}">
+<table border="0" width="100%" cellpadding="0" cellspacing="0">
+<tr >
+                                              <td align="right" width="35%" ><!--Uploaded Video:&nbsp;--> </td>
+
+                                           <td height="30" width="65%"  align="left" valign="middle">
+<apex:repeat value="{!videos}" var="attac">
+
+ <iframe width="640" height="390" src="{!attac.YouTubeId_c__c}" frameborder="0"></iframe>  
+ </apex:repeat>  
+ </td>
+ </tr>
+ </table>                                            
+</apex:outputText>
+</apex:outputText>
+</div>
+
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:100%;height:55%"/>
+
+</div><!--close of hr-->
+
+<div style="width:100%; margin-top:10px; height:24px;  padding:5px; background-color:#1DCFDE;">
+<p style=" font-size:20px; font-family:Arial, Helvetica, sans-serif ;margin:0px; color:#FFF;line-height:24px;">&nbsp;MATCH MAKING DETAILS</p>
+</div>
+
+<div id="matchmakingdetails" style="width:100%; height:auto; padding-bottom:10px; background-color:#FFF;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="50%" align="center" valign="top">
+    
+    
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" class="viewprofiletable">
+    
+    
+    
+    
+    <apex:outputText rendered="{!Psettings[0].Country__c}">
+      <tr>
+        <td style="color:#000;">Table No :</td>
+        <td style="color:#000;">{!upeforTable.BT_id__r.MM_TableNo__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!Psettings[0].Primary_Business_Category__c}">
+      <tr>
+        <td style="color:#000;">Primary Business Category :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_PrimaryBusinessCategory1__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+      <apex:outputText rendered="{!Psettings[0].DBA__c}">
+      <tr>
+        <td style="color:#000;">DBA :</td>
+        <td style="color:#000;">{!vewProfileEAM.DBA__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!Psettings[0].Distributors_Country__c}">
+      <tr>
+        <td style="color:#000;">Which country is your companys distribution center located (if applicable)? :</td>
+        <td style="color:#000;">{!vewProfileEAM.distribution_Country__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!Psettings[0].Geographical_Region__c}">
+      <tr>
+        <td style="color:#000;">Geographical Region :</td>
+        <td style="color:#000;">{!vewProfileEAM.Geographical_Region__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+    </table></td>
+    <td width="50%" align="center" valign="top">
+    
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" class="viewprofiletable">
+    
+    
+    
+    
+    <apex:outputText rendered="{!Psettings[0].Location__c}">
+      <tr>
+        <td style="color:#000;">Location :</td>
+        <td style="color:#000;">{!upeforTable.BT_id__r.BT_Location__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!Psettings[0].Secondary_Business_Category__c}">
+      <tr>
+        <td style="color:#000;">Secondary Business Category :</td>
+        <td style="color:#000;">{!vewProfileEAM.As_SecondaryBusinessCategory1__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!Psettings[0].BBB_Number__c}">
+      <tr>
+        <td style="color:#000;">BBB Number :</td>
+        <td style="color:#000;">{!vewProfileEAM.BBB_Number__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!Psettings[0].Manufatures_Country__c}">
+      <tr>
+        <td style="color:#000;">If your company sells a product, what country or countries manufactures it? :</td>
+        <td style="color:#000;">{!vewProfileEAM.Manufactures_Country__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!Psettings[0].Certificate_Processed_by_RPO__c}">
+      <tr>
+        <td style="color:#000;">Certificate Processed by RPO :</td>
+        <td style="color:#000;">{!vewProfileEAM.Certificate_Processed_by_RPO__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+    </table></td>
+  </tr>
+</table>
+<table width="97%" border="0" cellpadding="5" cellspacing="0" style="margin:0px auto;">
+    <!-------------------- Vineel Changes -------------------------------> 
+    <apex:outputText rendered="{!Psettings[0].NAICS_Codes__c}">
+    <tr> <td colspan='4'> <hr/></td></tr>
+    
+    <tr> <td style="text-align:left;margin:10px; "><h3 style="padding:0; margin:0px; color:#000;"> NAICS CODES : </h3></td> </tr>
+
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.As_NAICSCode_1__c !=null, TRUE ,FALSE)}">
+     <tr style="margin-top:10px;border:0px solid #000;">
+     
+    <td style="color:#000;" > {!vewProfileEAM.As_NAICSCode_1__c} </td>
+    </tr>
+     
+    </apex:outputText>
+    <apex:outputText rendered="{! IF(vewProfileEAM.As_NAICSCode_2__c !=null, TRUE ,FALSE)}">
+    <tr style="margin-top:10px;border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.As_NAICSCode_2__c}</td>
+    
+    </tr>
+    </apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.As_NAICSCode_3__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    
+    <td style="color:#000;">{!vewProfileEAM.As_NAICSCode_3__c}</td>
+    </tr>
+    </apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.As_NAICSCode_4__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.As_NAICSCode_4__c}</td>
+    </tr>
+    </apex:outputText>
+    
+  
+  
+    <apex:outputText rendered="{! IF(vewProfileEAM.As_NAICSCode_5__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.As_NAICSCode_5__c}</td>
+    <td style="color:#000;">&nbsp;</td>
+    <td style="color:#000;">&nbsp;</td>
+    </tr>
+    </apex:outputText>
+    <apex:outputText rendered="{! IF(vewProfileEAM.AS_NAICSCode6__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_NAICSCode6__c}</td>
+    <td style="color:#000;">&nbsp;</td>
+    <td style="color:#000;">&nbsp;</td>
+    </tr>
+    </apex:outputText>
+  
+    <apex:outputText rendered="{! IF(vewProfileEAM.AS_NAICSCode7__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_NAICSCode7__c}</td>
+    <td style="color:#000;">&nbsp;</td>
+    <td style="color:#000;">&nbsp;</td>
+    </tr></apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.AS_NAICSCode8__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_NAICSCode8__c}</td>
+    <td style="color:#000;">&nbsp;</td>
+    <td style="color:#000;">&nbsp;</td>
+    </tr>
+    </apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.AS_NAICSCode9__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_NAICSCode9__c} </td>
+    <td style="color:#000;">&nbsp;</td>
+    <td style="color:#000;">&nbsp;</td>
+    </tr>
+    </apex:outputText>
+</apex:outputText>
+  
+  <apex:outputText rendered="{!Psettings[0].Commodities__c}">
+    <tr> <td colspan='4'> <hr/></td></tr>
+    <tr> <td style="text-align:left;margin:10px; "><h3 style="padding:0; margin:0px; color:#000;"> COMMODITIES : </h3></td> </tr>
+    
+    
+    
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_1__c !=null, TRUE ,FALSE)}">
+    <tr style="margin-top:10px;border:0px solid #000;">
+    <td style="color:#000;" >{!vewProfileEAM.Commodity_1__c}</td>
+    </tr>
+    </apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_2__c !=null, TRUE ,FALSE)}">
+    <tr style="margin-top:10px;border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.Commodity_2__c}</td>
+    
+    </tr>
+    </apex:outputText>
+    
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_3__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.Commodity_3__c}</td>
+    </tr>
+    </apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_4__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.Commodity_4__c}</td>
+   
+    </tr>
+     </apex:outputText>
+     
+    <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_5__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.Commodity_5__c}</td>
+    <td style="color:#000;">&nbsp;</td>
+    <td style="color:#000;">&nbsp;</td>
+    </tr></apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_6__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.Commodity_6__c}</td>
+   
+    </tr>
+     </apex:outputText>
+     
+     <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_7__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.Commodity_7__c}</td>
+   
+    </tr>
+     </apex:outputText>
+     <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_8__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.Commodity_8__c}</td>
+   
+    </tr>
+     </apex:outputText>
+     <apex:outputText rendered="{! IF(vewProfileEAM.Commodity_9__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.Commodity_9__c}</td>
+   
+    </tr>
+     </apex:outputText>
+    </apex:outputText>
+
+  
+
+  
+</table>
+    <!-------------------- End Vineel Changes -------------------------------> 
+    
+<apex:outputText rendered="{!Psettings[0].KeyWords__c}">
+<apex:outputText rendered="{!IF(vewProfileEAM.Keywords__c != null,TRUE,FALSE)}">
+<p style="margin:10px; font-size:15px; margin-top:15px;color:#000;font-weight:700; font-family:Arial, Helvetica, sans-serif">
+PROCUREMENT NEEDS :
+</p>
+<div style=" width:94%; height:130px; border:1px solid  #E5E5E5; overflow: auto; margin:0px auto; ">
+<p style="text-align:justify;color:#000; margin-right:8px; margin-top:5px; margin-left:8px; font-size:15px; line-height:24px; font-family:Arial, Helvetica, sans-serif;">
+  {!vewProfileEAM.Keywords__c}
+   </p>
+</div>
+</apex:outputText>
+
+</apex:outputText>
+
+<apex:outputText >
+<apex:outputText rendered="{!Psettings[0].exceptional_keywords__c}">
+<p style="margin:10px; font-size:15px; margin-top:15px;color:#000;font-weight:700; font-family:Arial, Helvetica, sans-serif">
+SERVICES AND PRODUCTS WE ARE NOT INTERESTED IN :
+</p>
+<div style=" width:94%; height:130px; border:1px solid  #E5E5E5; overflow: auto; margin:0px auto; ">
+<p style="text-align:justify;color:#000; margin-right:8px; margin-top:5px; margin-left:8px; font-size:15px; line-height:24px; font-family:Arial, Helvetica, sans-serif;">
+  {!vewProfileEAM.Exceptional_Key_Words__c}
+   </p>
+</div>
+</apex:outputText>
+
+</apex:outputText>
+
+                                           
+
+
+</div><!--close of matchmaking details-->
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:95%;"/>
+</div><!--close of hr-->
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+   
+   
+   
+   </apex:outputpanel>
+
+   
+            </div>
+            </div>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ </apex:form>
+ 
+</apex:page>

@@ -1,0 +1,3194 @@
+<apex:page standardStylesheets="false" extensions="BLN_MyticketsCon" showheader="false" sidebar="false" controller="BLN_AttendeesController" action="{!displayPermissions}" id="thePage" readOnly="false">
+
+ <style>
+ .selectall_entire{
+     border:1px solid #ddd;
+     display:none;
+     margin-top:44px; 
+     position:absolute; 
+     margin-left:20%; 
+     z-index:10;
+     padding:5px;
+     background-color:#ffffcc;
+     border-radius:3px;
+     }
+ </style>
+<body>
+<script>
+    $(document).ready(function() {
+    try{
+    ShowLoader();
+     Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_AttendeesController.attendeeStats}',
+            '{!SelectedEvent}',
+           function(stats, eventd){
+           HideLoader();
+           if(stats.attendeesCount!='0')
+           $('#trackedAttendees').html(stats.attendeesCount);
+           else
+           {
+          
+           $( "#trackedAttendees" ).prev().remove(); $( "#trackedAttendees" ).remove();
+           }
+           if(stats.ExhibitorCount!='0')
+           $('#trackedExhibitors').html(stats.ExhibitorCount);
+           else
+           {
+           
+           $( "#trackedExhibitors" ).prev().remove();$( "#trackedExhibitors" ).remove();
+           }
+           if(stats.sponsorCount!='0')
+           $('#trackedSponsors').html(stats.sponsorCount);
+           else
+           {
+           
+           $( "#trackedSponsors" ).prev().remove();$( "#trackedSponsors" ).remove();
+           }
+           if(stats.speakerCount!='0')
+           $('#trackedSpeakers').html(stats.speakerCount);
+           else
+           {
+           
+           $( "#trackedSpeakers" ).prev().remove();$( "#trackedSpeakers" ).remove();
+           }
+           if(stats.MLbuyerCount!='0')
+           $('#matchLeadBuyerCount').html(stats.MLbuyerCount);
+           else
+           {
+           
+           $( "#matchLeadBuyerCount" ).prev().remove();$( "#matchLeadBuyerCount" ).remove();
+           }
+           if(stats.MLsellerCount!='0')
+           $('#matchLeadSellerCount').html(stats.MLsellerCount);
+           else
+           {
+           
+           $( "#matchLeadSellerCount" ).prev().remove();$( "#matchLeadSellerCount" ).remove();
+           }
+           if(stats.chekinCont!='0')
+           $('#totalCheckIns').html(stats.chekinCont);
+           else
+           {
+           
+           $( "#totalCheckIns" ).prev().remove();$( "#totalCheckIns" ).remove();
+           }
+           if(stats.checloutCnt !='0')
+            $('#totalCheckOuts').html(stats.checloutCnt );
+            else
+           {
+           
+           $( "#totalCheckOuts" ).prev().remove();$( "#totalCheckOuts" ).remove();
+           }
+            if(stats.badgePrinted!='0')
+             $('#totalBadgePrint').html(stats.badgePrinted);
+             else
+           {
+           
+           $( "#totalBadgePrint" ).prev().remove();$( "#totalBadgePrint" ).remove();
+           }
+            if(stats.badgeNotPrinted!='0')
+              $('#totalBadgeNotPrint').html(stats.badgeNotPrinted);
+              else
+           {
+          
+           $( "#totalBadgeNotPrint" ).prev().remove(); $( "#totalBadgeNotPrint" ).remove();
+           }
+            
+           }
+           );
+    }catch(e){}
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+     
+    });
+
+</script>
+
+<script type="text/javascript">
+  WebFontConfig = {
+    google: { families: [ 'Droid+Serif:400,700,400italic,700italic:latin', 'Raleway:400,700:latin' ] }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })(); </script>
+</body>   
+
+   <!------------common styles component------------>
+     <!--<script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script>-->
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+    <style>
+.targetdiv{ display:none;}
+
+.chzn-container-single .chzn-drop {
+    width: 220px !important;
+}
+
+.top-stats ul li {display:inline !important;margin: 0px 2px;}
+
+
+
+</style>
+<script>
+        
+            function checktotalselectedrecords(){
+            var check = document.getElementsByName("id[]");
+            var selectallchkbox = document.getElementById("all").checked;
+            
+            var len=0;
+            for (var i=0; i<check.length; i++) 
+            {
+            
+            if(check[i].checked){
+                len++
+                    
+            }
+            }
+            
+
+            console.log('Total Number of Checked boxes '+len+' -----Select All Checkbox -------'+selectallchkbox);
+            
+        
+        if(len<=1000){
+
+        /* If lenth is zero / No Record is Selected or LessThan 1000 selected for Export case */
+        if(len==0){
+                
+         Alert.render('Please Select Atleast One Record' ,'Alert','Ok');
+            return false;
+        }
+        else if(len!=0 && selectallchkbox==true){
+                
+                
+                ShowLoader();
+                    /* Checking Total Number Of Attendees From BackEnd */
+                     Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_AttendeesController.getCheckTypeOfExport}','{!SelectedEvent}',
+           function(res, eve){
+            
+
+                if(eve.status) 
+         {
+                console.log('---Result Frm Remote Action--- '+res); 
+                if(res==true){
+                        
+                continueToBatch('sendToMail');  /* Bulk Export Action Function */
+                return false;
+                
+                }
+                else if(res==false){
+                expAttendees();              /* Normal Export Action Function */
+         }
+         
+                } 
+                else if (eve.type === 'exception') 
+             {
+                console.log('--There is Some Exception in @RemoteAction Method: getCheckTypeOfExport---- '+eve.message);
+                }
+               
+           });  
+                HideLoader();
+        }
+        else if(len!=0 && selectallchkbox==false){
+            console.log('---The Check boxes legnth is Less Than 1000 --- '+len);
+            ShowLoader();
+                 expAttendees();
+             }
+             
+        return false;   
+        }
+        
+        /* If Selected Rows in Table are more than 1000  */
+            if(len>1000){
+                    
+            ShowLoader();    
+                    
+            continueToBatch('sendToMail');
+            
+            return false;   
+            }
+
+            
+            
+            }
+            
+            function continueToBatch(clkbtn)
+        {
+            Alertconfirm.render('<h2>Your Batch Export will be scheduled. Data will be split into multiple files and will be sent to your email. Please check your email after 10 minutes.<br/> <br/>Are you sure you want to schedule this report?</h2>','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+             }
+             
+        
+        
+
+         
+
+          </script>
+<script>
+function gettags()
+{
+//tags filter
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_AttendeesController.getFilterTags}',
+            '{!SelectedEvent}',
+           function(resultstg, eventd){
+          var select2 = j('[class$=widget-15]');      
+           j('[class$=widget-15]').removeAttr( "disabled" );       
+           select2.empty();  
+            select2.append( '<option value>Tag</option>' );  
+            $.each(resultstg, function(i, resulteach){
+               select2.append( '<option value="'+resulteach+'">'+resulteach+'</option>' ); 
+            }
+            )
+           });
+}
+
+function gettickettypes()
+{
+//ticket type filter filter
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_AttendeesController.getTicketTypesForFilter}',
+            '{!SelectedEvent}',
+           function(resultstg, eventd){
+           console.log('aaaaa');
+           console.log(resultstg);
+            var select3 = j('[class$=widget-6]');      
+           j('[class$=widget-6]').removeAttr( "disabled" );       
+           select3.empty();  
+            select3.append( '<option value>Ticket Type</option>' );  
+        for(i=0;i<resultstg.length;i++){
+           for(x=0;x<resultstg[i].ticketTypeFilterList.length;x++){
+           var typeTic=resultstg[i].ticketTypeFilterList[x].Item_Type__r.Name;
+           <apex:variable value="" var="itemname"/>
+           if(typeTic=='Admissions'){
+               <apex:repeat value="{!RegList}" var="v">
+                   <apex:variable value="{!v.Label_Name__c}" var="itemname" rendered="{!(v.Column_Name__c=='Attendee')}"/>
+               </apex:repeat>
+               typeTic='{!itemname}'; 
+            }
+            
+            if(typeTic=='Exhibitor'){ 
+               <apex:repeat value="{!RegList}" var="v">
+                   <apex:variable value="{!v.Label_Name__c}" var="itemname" rendered="{!(v.Column_Name__c=='Exhibitor')}"/>
+               </apex:repeat>
+               typeTic='{!itemname}'; 
+            }
+            
+            if(typeTic=='Sponsor'){ 
+               <apex:repeat value="{!RegList}" var="v">
+                   <apex:variable value="{!v.Label_Name__c}" var="itemname" rendered="{!(v.Column_Name__c=='Sponsor')}"/>
+               </apex:repeat>
+               typeTic='{!itemname}'; 
+            }
+            
+            if(typeTic=='Speaker'){ 
+               <apex:repeat value="{!RegList}" var="v">
+                   <apex:variable value="{!v.Label_Name__c}" var="itemname" rendered="{!(v.Column_Name__c=='Speaker')}"/>
+               </apex:repeat>
+               typeTic='{!itemname}'; 
+        }
+        
+            select3.append( '<option value="'+typeTic+'">'+typeTic+'</option>' ); 
+            }
+        } 
+        
+        
+        var select4 = j('[class$=widget-7]');      
+           j('[class$=widget-7]').removeAttr( "disabled" );       
+           select4.empty();  
+            select4.append( '<option value>Ticket Name</option>' ); 
+            
+        for(y=0;y<resultstg.length;y++){
+           for(z=0;z<resultstg[y].ticketNameFilterList.length;z++){
+         
+            select4.append( '<option value="'+resultstg[y].ticketNameFilterList[z].Item_Pool__r.Item_Pool_Name__c+'">'+resultstg[y].ticketNameFilterList[z].Item_Pool__r.Item_Pool_Name__c+'</option>' ); 
+         
+        }
+        } 
+        
+           });
+}
+
+
+</script>
+    <!------------//common styles component---------->
+    <!-----------datatable stylescss------------->
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}"/>
+
+<!-----------//datatable stylescss------------->
+    <!-------------basic template html component------------------------------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="comp">
+    <!----------AjaxLoader Component------------------> 
+    <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+   <!----------//AjaxLoader Component------------------>  
+        <apex:form id="firstfrm">
+        <apex:inputhidden value="{!ticketId}" id="hiddenticketid"/>
+           <!---------------------template code------------------>
+                <div class="datatable-wrapper">        
+         <!---------------topstats------------------>
+         <div class="top-stats">
+
+        <!-----statistics----------->
+  <apex:include pageName="BLN_AttendeeStatistics_Page" rendered="true" /> 
+        <!-----//end of statistics---------->
+     <!-----start of actions buttons nav-----> 
+     <style>
+     .nav1 ul{
+     margin: 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+     
+     }
+     
+     .nav1 .login-content1 {
+          display: none;
+          position: absolute;
+          /*top:32px;*/
+          right: 0;
+          z-index: 999; background-color:#7f8c8d; opacity:3;
+          
+         
+        }
+
+
+
+.nav1 li .login-content1 {
+          right: 0;
+          width:auto;
+          position: absolute;
+top: 100%;
+/*left: 0;*/
+z-index: 99;
+display: none;
+float: left;
+/* min-width: 160px; */
+padding: 5px 0;
+margin: 2px 0 0;
+font-size: 14px;
+text-align: left;
+list-style: none;
+background-color: #fff;
+-webkit-background-clip: padding-box;
+background-clip: padding-box;
+border: 1px solid #ccc;
+border: 1px solid rgba(0,0,0,.15);
+border-radius: 4px;
+-webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+box-shadow: 0 6px 12px rgba(0,0,0,.175);  
+          
+        }
+        
+     
+     </style> 
+                      <div class="nav1 right togglebtnnav" style="display: inline-block;">
+                          <ul style="float:none; margin-top:0px; margin-left: 4px;">
+                            <li id="login1">
+                            <span class="togglebtn" style="padding:4px;"> 
+                           <i class="fa fa-gear">&nbsp;&nbsp;</i><strong><i class="fa fa-angle-down fa-1x"></i>
+                             </strong>  
+                            </span>
+                              <ul class="login-content1">
+                              <li><!--<a id="export_btn" onclick="expAttendees();return false;"><i
+                                            class="fa fa-external-link">&nbsp;</i>Export
+                                    </a>-->
+                                    
+                                    <apex:outputText >
+                                          <a id="export_btn" onclick="checktotalselectedrecords();return false;">
+                                          <i class="fa fa-external-link">&nbsp;</i>Export
+                                                        </a>
+                                      </apex:outputText>
+                                      
+
+                                                        </li>
+                                  <li><a id="printbdg_btn"  onclick="checklen(this)"><i class="fa fa-print">&nbsp;</i>Print Badge</a></li>
+                                  <li><a id="assignbl_btn"  onclick="checklen(this)"><i class="fa fa-newspaper-o">&nbsp;</i>Badge Label</a></li>
+                                  <li><a id="assignbps_btn" onclick="checklen(this)"><i class="fa fa-newspaper-o">&nbsp;</i>Assign Badge Print Status</a></li>
+                                  
+                                  <li><a id="mergebdg_btn" onclick="checklen(this)"><i class="fa fa-newspaper-o">&nbsp;</i><i class="fa fa-compress">&nbsp;</i>Merge Badge</a></li>
+                                  <!--<li><a id="unmergebdg_btn" onclick="getMergeList();Alert_unmergebadge.render('dialogbox_umbdg','umbdg_dialogoverlay','Alert_unmergebadge' ,this);"><i class="fa fa-newspaper-o">&nbsp;</i><i class="fa fa-expand">&nbsp;</i>Unmerge Badge</a></li>-->
+                                  
+                                  <li><a id="assignrole_btn" onclick="checklen(this)"><i class="fa fa-user">&nbsp;</i>Assign Role</a></li>
+                                  <li><a id="assignseat_btn" onclick="checklen(this)"><img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/seat.png')}"/>Assign Seat No</a></li>
+                                  <li><a id="assigntag_btn" onclick="checklen(this)"><i class="fa fa-tag">&nbsp;</i>Assign Tag</a></li>
+                                  
+                                  <!--<li><a id="spltpkg_btn" onclick="getPackageList();Alert_spltpkg.render('dialogbox_spltpkg','spltpkg_dialogoverlay','Alert_spltpkg' ,this);"><i class="fa fa-expand">&nbsp;</i>Split Package</a></li>-->
+                                 
+                                 </ul>
+                            </li>
+                          </ul>
+                    </div>
+                    <!------merge item btn---->
+       <a id="mergeitem_btn" class="togglebtn right margin-ryt-5px" onClick="getItemList();Alert_mergitem.render('dialogbox_mergeitem','mergeitem_dialogoverlay','Alert_mergitem' ,this);">
+       <i class="fa fa-expand">&nbsp;</i>
+      Merge Tickets 
+       </a>
+       
+       <!-------//merge item btn---> 
+ <!-----end of actions nav---->
+ <!------split package badge btn---->
+       <a id="spltpkg_btn" class="togglebtn right margin-ryt-5px" onClick="getPackageList();Alert_splitpkg.render('dialogbox_splitpkg','splitpkg_dialogoverlay','Alert_splitpkg' ,this);">
+       <i class="fa fa-expand">&nbsp;</i>
+       Split Package Badge 
+       </a>
+       
+       <!-------//split package badge btn---> 
+       <!------import btn---->
+       <a class="togglebtn right margin-ryt-5px" href="{!$Label.siteurl}/apex/BLN_ImportAttendees?id={!selectedEvent}" >
+       <font color="white"><i class="fa fa-expand">&nbsp;</i>
+       Import Attendees</font>
+       </a> 
+       
+       <!--<div class="print_export_cont" style="width: 100%;">
+                <apex:commandLink styleClass="datatables_btn"
+                    onclick="expAttendees();return false;" >
+                    <span>Export</span>
+                </apex:commandLink> 
+            </div>-->
+       <div class="clear"></div>
+       <!-------//simport btn---> 
+      
+
+     <div class="clear"></div>
+</div><!--close of topstats--->
+<div class="selectall_entire">
+ <input type="checkbox" id="all" onclick="setChecked1(this)"/> 
+  <span>Do you want to select the entire records from all the pages?</span>
+</div>
+  <!---close of selectall_entire---->
+
+                           <!-------------//end of print options button--------> 
+  <!---start of table-----> 
+       <table id="example" class="display">
+                <thead>
+                    <tr>
+                      <th class="chkboxth">
+                      
+                  <input type="checkbox" name="selall[]" onclick="setChecked1(this)" id="chk" />
+                
+                  </th>
+                   <th>Attendee Name</th>
+                   <th>Email </th>
+                   <th>Phone</th>
+                   <th>Company</th>
+                    <th>Designation</th> 
+                   <th>Ticket Type</th>
+                   <th>Ticket Name</th>
+                   <th class="border-ryt0px">Badge Label</th>
+                   <th>&nbsp; &nbsp;</th>
+                   <th class="border-ryt0px">Seat No.</th>
+                   <th>&nbsp; &nbsp;</th>
+                   <th class="border-ryt0px">Badge Status</th>
+                   <!--<th>&nbsp; &nbsp;</th>-->
+                   <th>Checkin Status</th>
+                   <th>Buyer Name</th>
+                   <th style="">Tag  </th>
+                   <th>Order Date</th>
+                   <th>Order Id</th>
+                   <th>Ticket Id</th>
+                   <th>Custom Barcode</th> 
+                    </tr>
+                </thead>
+<tbody>
+</tbody>
+   
+</table>
+       
+       <!---end of table----->
+ 
+ 
+        <!---end of table----->
+    </div><!--close of datatable-wrapper----> 
+    
+               <!-----------------//template code----------------------->
+     <!------------------------------- ACTION FUNCTIONS-------------------------------------> 
+                <apex:actionFunction action="{!displayorderEditform}" name="Editordform" reRender="secfrm" >
+                <apex:param value="" name="edform"/>
+                </apex:actionFunction>
+                 <!-- -----------------------------inline badge label ----------------------------- --> 
+                 <apex:actionFunction name="createBadgeLabel" action="{!createBadgeLabel}"  rerender="yyyyy">
+                    <apex:param name="bl1" value="" />
+                    <apex:param name="rowID1" value="" />
+                </apex:actionfunction>
+                <!-- -----------------------------inline seat numbers ----------------------------- --> 
+                <apex:actionFunction name="createSeatNumber" action="{!createSeatNumber}"  rerender="xxxx">
+                    <apex:param name="sn1" value="" />
+                    <apex:param name="rowID2" value="" />
+                </apex:actionfunction>
+            
+               <!-- <apex:actionFunction name="changeBadgeStatus" action="{!changeBadgeStatus}"  rerender="zzz">
+                    <apex:param name="bs1" value="" />
+                    <apex:param name="rowID3" value="" />
+                </apex:actionfunction>-->
+                <!-- -----------------------------print badge ----------------------------- -->
+<!---                <apex:actionFunction name="printingbadge" action="{!printingbadge}" rerender="tickettomergesection" status="AjaxLoader"> 
+                  <apex:param name="ticketid_list11" value="" />
+                </apex:actionFunction> --->
+                
+        <!---        <apex:actionFunction name="genpdf" action="{!genpdf}" rerender="aaaa" status="AjaxLoader"/>--->
+                 <apex:actionFunction name="updateExistingBadgenotprinted" action="{!updateExistingBadgenotprinted}" rerender="tickettomergesection" status="AjaxLoader" oncomplete="window.location.href=window.location.href;">
+                 <apex:param name="ticketid_list11" value="" />
+                  <apex:param name="allpages" value="" />
+                </apex:actionFunction> 
+                <!-- -----------------------------assinging seat numbers ----------------------------- -->
+                <apex:actionFunction name="save_seatNo" action="{!update_seatNos}" rerender="eee" status="AjaxLoader" oncomplete="window.location.href=window.location.href;">
+                    <apex:param name="newseat" value=""/>
+                    <apex:param name="ticketid" value=""/>
+                    <apex:param name="allpages" value=""/>
+                    <apex:param name="unckedlist" value="" assignTo="{!unheckedids}" />
+                </apex:actionFunction>
+                <!-- ---------------------------assigning badge labels -------------------------- -->
+                <apex:actionFunction name="save_badgelabels" action="{!update_badgelabels}" rerender="fff" status="AjaxLoader" oncomplete="window.location.href=window.location.href;">
+                    <apex:param name="newbadge" value=""/>
+                    <apex:param name="ticketid1" value=""/>
+                    <apex:param name="allpages" value=""/>
+                    <apex:param name="unckedlist" value="" assignTo="{!unheckedids}" />
+                </apex:actionFunction>
+                 <!-- -----------------------------changng badge state ----------------------------- -->
+               <!--<apex:actionFunction name="save_bstate" action="{!update_bstates}" rerender="eee1" status="AjaxLoader">
+                    <apex:param name="newbstate" value=""/>
+                    <apex:param name="ticketid" value=""/>
+                </apex:actionFunction>   -->        
+               
+               
+               
+            
+                <!-- ----------------------------------action function for Assign Tag Popup ids ----------------------- -->  
+            
+              <apex:actionFunction name="printingbadge" action="{!printingbadge}" rerender="tickettomergesection" status="AjaxLoader"> 
+                  <apex:param name="ticketid_list11" value="" />
+                   <apex:param name="allpages" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction name="assignTagActionFunction" action="{!assignTagActionFunction}" rerender="assigntag" status="AjaxLoader"> 
+                <apex:param name="ticketid_list44" value="" />
+                </apex:actionFunction> 
+                <apex:actionFunction name="Assignroles" action="{!AssignRoleToAttendee}" rerender="garbage" status="AjaxLoader" > 
+
+                  <apex:param value="" name="selectedroll" />
+                </apex:actionFunction>
+                 <apex:actionFunction action="{!renderDetailsfororder}"
+                   name="detailsOforder" status="AjaxLoader" rerender="frm2">
+                   <apex:param value="" name="selectedordId" />
+               </apex:actionFunction>
+                <apex:actionFunction action="{!editTicket}"
+                   name="editTicket" status="AjaxLoader" >
+                 </apex:actionFunction>
+        
+                 <apex:actionFunction Status="AjaxLoader" action="{!userSelectAttendeesToExport}"
+                name="individualexport" ReRender=""> 
+                   <apex:param value="" name="search" />
+                   <apex:param value="" name="arrVar"/>
+                   <apex:param value="" name="ttypefilter"/>
+                   <apex:param value="" name="tnamefilter"/>
+                   <apex:param value="" name="blabelfilter"/>
+                   <apex:param value="" name="bstatusfilter"/>
+                   <apex:param value="" name="cstatusfilter"/>
+                    <apex:param value="" name="allpages"/>
+                </apex:actionFunction>
+        
+                
+                 <apex:actionFunction Status="AjaxLoader" action="{!exportSelectedTicketBatch}"
+                name="individualexportBulk" ReRender="garbageval"> 
+                   <apex:param value="" name="search" />
+                   <apex:param value="" name="arrVar"/>
+                   <apex:param value="" name="ttypefilter"/>
+                   <apex:param value="" name="tnamefilter"/>
+                   <apex:param value="" name="blabelfilter"/>
+                   <apex:param value="" name="bstatusfilter"/>
+                   <apex:param value="" name="cstatusfilter"/>
+                    <apex:param value="" name="allpages"/>
+                </apex:actionFunction>
+        
+     <!------------------------------- ACTION FUNCTIONS-------------------------------------> 
+     <script>
+
+
+/*******************************************************/
+    function expAttendees(){         
+           constructstrAttendees(); 
+       } 
+  
+ function constructstrAttendees(){ 
+         var skey= $('#example_filter').find('input').val();
+         //alert(skey);
+         //alert(arr);
+         var allpages=false;
+     if(j("[id$='all']").prop("checked") == true){
+     allpages=true;
+     }
+         var strId='';
+         for(var i=0;i<arr.length;i++){
+             strId+=arr[i]+',';
+         }
+          strId= strId.replace(/,\s*$/, "");
+         
+         //Sending filter data to the export
+         var filtr1='';
+         var f1 = $('.widget-6'); 
+         f1.parent().find('.filter-term').each(function(){ 
+             filtr1=filtr1+$(this)[0].innerHTML+',';
+         });
+         
+         filtr1= filtr1.replace(/,\s*$/, ""); 
+         //alert(filtr1);
+         
+         var filtr2='';
+         var f2 = $('.widget-7'); 
+         f2.parent().find('.filter-term').each(function(){ 
+             filtr2=filtr2+$(this)[0].innerHTML+',';
+         });
+         
+         filtr2= filtr2.replace(/,\s*$/, ""); 
+         //alert(filtr2);
+         
+         var filtr3='';
+         var f3 = $('.widget-8'); 
+         f3.parent().find('.filter-term').each(function(){ 
+             filtr3=filtr3+$(this)[0].innerHTML+',';
+         });
+         
+         filtr3= filtr3.replace(/,\s*$/, ""); 
+         //alert(filtr3);
+         
+         var filtr4='';
+         var f4 = $('.widget-12'); 
+         f4.parent().find('.filter-term').each(function(){ 
+             filtr4=filtr4+$(this)[0].innerHTML+',';
+         });
+         
+         filtr4= filtr4.replace(/,\s*$/, ""); 
+         //alert(filtr4);
+         
+         var filtr5='';
+         var f5 = $('.widget-13'); 
+         f5.parent().find('.filter-term').each(function(){ 
+             filtr5=filtr5+$(this)[0].innerHTML+',';
+         });
+         
+         filtr5= filtr5.replace(/,\s*$/, ""); 
+         //alert(filtr5);
+         
+          setTimeout(function(){HideLoader()},5000);
+         individualexport(skey,strId,filtr1,filtr2,filtr3,filtr4,filtr5,allpages); 
+         }
+          function BulkExportAttendees(){ 
+        
+         var skey= $('#example_filter').find('input').val();
+         //alert(skey);
+         //alert(arr);
+         var allpages=false;
+     if(j("[id$='all']").prop("checked") == true){
+     allpages=true;
+     }
+         var strId='';
+         for(var i=0;i<arr.length;i++){
+             strId+=arr[i]+',';
+         }
+          strId= strId.replace(/,\s*$/, "");
+         
+         //Sending filter data to the export
+         var filtr1='';
+         var f1 = $('.widget-6'); 
+         f1.parent().find('.filter-term').each(function(){ 
+             filtr1=filtr1+$(this)[0].innerHTML+',';
+         });
+         
+         filtr1= filtr1.replace(/,\s*$/, ""); 
+         //alert(filtr1);
+         
+         var filtr2='';
+         var f2 = $('.widget-7'); 
+         f2.parent().find('.filter-term').each(function(){ 
+             filtr2=filtr2+$(this)[0].innerHTML+',';
+         });
+         
+         filtr2= filtr2.replace(/,\s*$/, ""); 
+         //alert(filtr2);
+         
+         var filtr3='';
+         var f3 = $('.widget-8'); 
+         f3.parent().find('.filter-term').each(function(){ 
+             filtr3=filtr3+$(this)[0].innerHTML+',';
+         });
+         
+         filtr3= filtr3.replace(/,\s*$/, ""); 
+         //alert(filtr3);
+         
+         var filtr4='';
+         var f4 = $('.widget-12'); 
+         f4.parent().find('.filter-term').each(function(){ 
+             filtr4=filtr4+$(this)[0].innerHTML+',';
+         });
+         
+         filtr4= filtr4.replace(/,\s*$/, ""); 
+         //alert(filtr4);
+         
+         var filtr5='';
+         var f5 = $('.widget-13'); 
+         f5.parent().find('.filter-term').each(function(){ 
+             filtr5=filtr5+$(this)[0].innerHTML+',';
+         });
+         
+         filtr5= filtr5.replace(/,\s*$/, ""); 
+         //alert(filtr5);
+         
+         
+         individualexportBulk(skey,strId,filtr1,filtr2,filtr3,filtr4,filtr5,allpages); 
+         return false;
+         }
+</script>
+     <script>
+     var table;
+     function dtcall(){
+     
+        
+     j('.togglebtn').click(
+    function(){ j(this).next('.login-content1').slideToggle(); 
+    
+    })
+      
+     table=j('#example').dataTable( {
+                      
+                       "scrollX": true, 
+"sScrollX": "100%", 
+"sScrollXInner": "220%", 
+"pagingType": "full_numbers", 
+"aLengthMenu": [[10,25, 50], [10, 25, 50]], 
+"iDisplayLength": 10, 
+ 
+
+"bAutoWidth": false, // Disable the auto width calculation 
+/**default orderid in asc sorting**/ 
+
+                "sDom": 'W<"clear">lfrtip', 
+"oColumnFilterWidgets": { 
+"aiExclude": [ 0,1,2,3,4,5,9,10,11,14,16,17,18,19 ] 
+
+},
+"aoColumnDefs": [ 
+{ 'bSortable': false, 'aTargets': [0,8,10,12] }, 
+
+], 
+order: [],
+                        
+                      "processing": true,
+                      "serverSide": true,
+                  //     "ajax": '{!$Page.BLN_AttendeeHelperPage}?core.apexpages.devmode.url=1',
+                  "ajax": '{!$Page.BLN_AttendeeHelperPage}',
+       
+                       
+                         "rowCallback": function( row, data ) {
+                         
+                          //   alert('123');
+                      //   if(j("[id$='all']").prop("checked") == true){
+                              // alert('global check box is checked');
+                            //   j(row).find(":checkbox").prop("checked",true);
+                             //  j(row).addClass("currenttr"); 
+                              // }
+                         
+                         localArray.push(data.DT_RowId)
+                         if ( j.inArray(data.DT_RowId, arr) !== -1 ) {
+                              //  alert(data.Id);
+                             //   j(row).addClass('selected');
+                               j(row).addClass("currenttr");
+                               j(row).find(":checkbox").prop("checked",true);
+                                
+                            }
+                       
+                              
+                              
+                         
+                                
+                                     
+                                },
+                       
+                       
+                     "columns": [ 
+                        {
+                data:   "active",
+                render: function ( data, type, row ) {
+                       return '<input type="checkbox" name="id[]" onchange="rowchk1(this)" value="1" />';
+                    
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return '<a onclick=document.getElementById("thePage:comp:commoncomponent:firstfrm:hiddenticketid").value="'+data.Id+'";editTicket()>'+data.tkt_profile__r.First_Name__c+' '+data.tkt_profile__r.Last_Name__c+'</a>';
+                        
+                }
+            },
+                  { "data": "item.tkt_profile__r.Email__c" },
+                  {"data":"item.tkt_profile__r.Mobile__c"},
+                  {"data":"item.tkt_profile__r.TKT_Company__c"} ,
+                  {"data":"item.tkt_profile__r.TKT_Job_Title__c"} ,
+                 /* {"data":"item.Item_Pool__r.Item_Type__r.Name"} ,*/
+                  
+{
+    "data":   "labelReName",
+    "render": function ( data, type, row ) {
+    var s=row.item.Item_Pool__r.Item_Type__r.Name;
+    <apex:variable value="" var="LabelName"/>   
+    if(s=='Admissions'){
+        <apex:repeat value="{!RegList}" var="r">        
+            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Attendee'}"/>      
+            <apex:variable value="Admissions" var="LabelName" rendered="{!r.Label_Name__c=='Attendee'}"/>      
+        </apex:repeat>
+        s='{!LabelName}';
+    }
+
+    if(s=='Exhibitor'){
+        <apex:repeat value="{!RegList}" var="r">        
+            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Exhibitor'}"/>     
+        </apex:repeat>
+        s='{!LabelName}';
+    }
+    
+    if(s=='Sponsor'){
+        <apex:repeat value="{!RegList}" var="r">        
+            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Sponsor'}"/>       
+        </apex:repeat>
+        s='{!LabelName}';
+    }
+    
+    if(s=='Speaker'){
+        <apex:repeat value="{!RegList}" var="r">        
+            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Speaker'}"/>       
+        </apex:repeat>
+        s='{!LabelName}';
+    }
+    
+    return s;
+    }
+},
+                  
+            /*{"data":"item.Item_Pool__r.Item_Pool_Name__c"},*/
+            {
+                "data":   "item.Item_Pool__r.Item_Pool_Name__c",
+                "render": function ( data, type, row ) {
+                console.log(row);
+                var s=row.item.Item_Pool__r.Item_Pool_Name__c;
+                console.log(s); 
+                  if(row.item.Item_Pool__r.Item_Pool_Name__c!=row.item.Item__r.item_name__c)
+                 //console.log('****'+data);
+                  s=s+"("+row.item.Item__r.item_name__c+")";
+                // s=JSON.parse(s);
+                // console.log(s);
+                  return s;
+                  }
+            },
+                  {"data":"item.Badge_Label__c"} ,
+                  {
+                  data:   "active",
+                render: function ( data, type, row ) {
+                    
+                        return '<i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_bl" title="Edit" >&nbsp;</i>';
+                              }
+            },
+                  {"data":"item.Tag_No__c"},
+                  {
+                  data:   "item",
+                render: function ( data, type, row ) {
+                   
+                        return '<i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_sn" title="Edit" >&nbsp;</i>';
+                   
+                }
+            },
+                /*  {"data":"item.Badge_ID__r.Print_status__c"},*/
+                  {
+                  data:   "item",
+                render: function ( data, type, row ) {
+                   if(data.Badge_ID__r!=undefined){
+                        return data.Badge_ID__r.Print_status__c;}
+                        else{
+                        return '';
+                        }
+                   }
+                },
+                  {
+                data:   "item",
+                render: function ( data, type, row ) {
+                if(data.Tstatus_Id__c!=undefined)
+                  if(data.Tstatus_Id__r.Tstatus_name__c==true)
+                  return 'Checked In';
+                  else
+                  return 'Checked Out';
+                 
+                  }
+                  
+            },
+                   {
+                data:   "item",
+                render: function ( data, type, row ) {
+                   
+                        return data.Order__r.BLN_TKT_profile__r.First_Name__c+' '+data.Order__r.BLN_TKT_profile__r.Last_Name__c;
+                   
+                }
+            },
+                   {
+                data:   "item",
+                render: function ( data, type, row ) {
+                var tg='';
+                <apex:repeat value="{!tagsmap}" var="x">
+                if(data.Item_Pool__c == '{!x}')
+                 tg=tg+"{!tagsmap[x]}";
+                           
+                </apex:repeat>
+                tg=tg+'&nbsp;';
+                <apex:repeat value="{!tickettagsmap}" var="x">
+                if(data.Id == '{!x}')
+                 tg=tg+"{!tickettagsmap[x]}";
+                            </apex:repeat>
+                      
+                return tg;
+                
+                 
+                  }
+                  
+            },{
+                data:   "createdon",
+                render: function ( data, type, row ) {
+                  
+                  
+                
+                    //return  data.CreatedDate.substr( 0,10 );
+                        return data;
+                        
+                }
+            },
+                   {
+                data:   "item",
+                render: function ( data, type, row ) {
+                 return '<a onclick=detailsOforder("'+data.Order__r.Id+'")>'+data.Order__r.Name+'</a>';
+                }
+            },
+                   {"data":"item.Name"},
+                   {"data":"item.Custom_Barcode__c"}
+                            
+              ],
+
+    
+     initComplete: function () {
+        
+        
+     },
+     
+    
+
+
+
+            
+
+
+             
+         "fnDrawCallback":function(){
+         //for badge status
+         var select2 = j('[class$=widget-12]');      
+         j('[class$=widget-12]').removeAttr( "disabled" );   
+                                
+                 select2.empty();       
+                 select2.append( '<option value>Badge Status</option>' );       
+                           select2.append( '<option value="'+'Printed'+'">'+'Printed'+'</option>' );      
+                            select2.append( '<option value="'+'Not Printed'+'">'+'Not Printed'+'</option>' );
+        
+                            //ticket type filter
+                            gettickettypes();
+                
+                //getticketNames();
+                          
+        
+         var select2 = j('[class$=widget-13]');      
+                                j('[class$=widget-13]').removeAttr( "disabled" );       
+                 select2.empty();       
+                 select2.append( '<option value>Checkin Status</option>' );       
+                           select2.append( '<option value="'+'Checked In'+'">'+'Checked In'+'</option>' );      
+                            select2.append( '<option value="'+'Checked Out'+'">'+'Checked Out'+'</option>' );
+//for tags filter
+                             //gettags();
+       //  console.log( api.rows( {page:'current'} ).data() );
+    
+ 
+//alert('hiiiii'+arr.length);
+    
+    j("input[name='selall[]']:checkbox").attr('checked',false);      
+         
+     
+  /**************script for edit labels ****************/
+  
+    var jk2 = jQuery.noConflict();
+
+/************** inline editing for badge label****************/
+jk2(function(){
+jk2(".btnEditar_bl").bind("click", Editar_bl);
+/******************************/
+    function Editar_bl(){
+    
+     jk2(".btnSalvar").unbind("click", Salvar);
+        jk2(".btnEditar_bl").unbind("click", Editar_bl);
+        var par = jk2(this).parent().parent();  //tr
+        var tdbadgelabeledit = par.children("td:nth-child(9)");
+
+        var tdimgholder = par.children("td:nth-child(10)");
+
+        tdbadgelabeledit.html("<input type='text' id='txtNome' value='"+tdbadgelabeledit.html()+"'/>");
+
+        tdimgholder.html(" <i class='fa fa-save  fa-save20px btnSalvar' title='Save' >&nbsp;</i>");
+
+        jk2(".btnSalvar").bind("click", Salvar);
+        jk2(".btnEditar_bl").bind("click", Editar_bl);
+    
+    };
+/********************/
+    function Salvar(){
+    
+           jk2(".btnEditar_bl").unbind("click", Editar_bl);
+        var par = jk2(this).parent().parent(); //tr
+        var tdbadgelabeledit = par.children("td:nth-child(9)");
+    
+        var tdimgholder = par.children("td:nth-child(10)");
+        
+        var bl1 =   tdbadgelabeledit.children("input[type=text]").val();
+        //alert(bl1);
+        
+        var rowID1=par.children("td:nth-child(19)").text();
+        //alert(rowID1);
+        createBadgeLabel(bl1,rowID1); 
+
+        tdbadgelabeledit.html(tdbadgelabeledit.children("input[type=text]").val());
+
+        tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_bl' title='Edit' >&nbsp;</i>");
+
+        jk2(".btnEditar_bl").bind("click", Editar_bl);
+    
+    };
+
+
+
+    jk2(".btnEditar_bl").bind("click", Editar_bl);
+});
+
+/***************inline editing for seatno******************/
+    var jk3 = jQuery.noConflict();
+      jk3(function(){
+/************************/
+    function Editar_sn(){
+     jk2(".btnSalvar1").unbind("click", Save_sn);
+        jk2(".btnEditar_sn").unbind("click", Editar_sn);
+
+        var par = jk3(this).parent().parent();  //tr
+        var tdseatnoedit = par.children("td:nth-child(11)");
+
+        var tdimgholder = par.children("td:nth-child(12)");
+
+        tdseatnoedit.html("<input type='text' id='txtNome' value='"+tdseatnoedit.html()+"'/>");
+
+        tdimgholder.html(" <i class='fa fa-save  fa-save20px btnSalvar1' title='Save' >&nbsp;</i>");
+
+        jk2(".btnSalvar1").bind("click", Save_sn);
+        jk2(".btnEditar_sn").bind("click", Editar_sn);
+
+    };
+/*****************Badge Statuc****************/
+    function Save_sn(){
+    
+    jk3(".btnEditar_sn").unbind("click", Editar_sn);
+        var par = jk3(this).parent().parent(); //tr
+        var tdseatnoedit = par.children("td:nth-child(11)");
+    
+        var tdimgholder= par.children("td:nth-child(12)");
+        
+        var sn1 =   tdseatnoedit.children("input[type=text]").val();
+        //alert(sn1);
+        
+        var rowID2=par.children("td:nth-child(19)").text();
+        //alert(rowID2);
+
+        tdseatnoedit.html(tdseatnoedit.children("input[type=text]").val());
+
+        tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_sn' title='Edit' >&nbsp;</i>");
+
+        jk3(".btnEditar_sn").bind("click", Editar_sn);
+        
+        createSeatNumber(sn1,rowID2);
+    
+    };
+
+    jk3(".btnEditar_sn").bind("click", Editar_sn);
+});
+/*****************************/
+var oldVal='';
+var rowID3='';
+var tdbsedit='';
+    var jk4 = jQuery.noConflict();
+      jk4(function(){
+
+    function Editar_bs(){
+    jk4(".btnSalvar2").unbind("click", Save_bs);
+        jk4(".btnEditar_bs").unbind("click", Editar_bs);
+        var par = jk4(this).parent().parent();  //tr
+        var tdbsedit = par.children("td:nth-child(13)");
+        
+        oldVal=tdbsedit.text();
+        //alert('oldVal'+oldVal);
+        
+        var tdimgholder = par.children("td:nth-child(14)");//using for capturing the value
+        /*alert(tdbsedit.html());*/
+
+        tdbsedit.html("<select id='selectList' class='selectlist' style='width:auto;'><option value='Printed'>Printed</option><option value='Not Printed'>Not Printed</option></select>");
+
+        tdimgholder.html(" <i class='fa fa-save  fa-save20px btnSalvar2' title='Save' >&nbsp;</i>");
+
+        jk4(".btnSalvar2").bind("click", Save_bs);
+        jk4(".btnEditar_bs").bind("click", Editar_bs);
+
+    };
+
+    function Save_bs(){
+     jk4(".btnEditar_bs").unbind("click", Editar_bs);
+        var par = jk4(this).parent().parent(); //tr
+        tdbsedit = par.children("td:nth-child(13)");
+        var tdimgholder= par.children("td:nth-child(14)");
+       /* alert( 'Text is: ' + jk4('#selectList option:selected').text() ); */
+       
+       bs1 =   jk4("#selectList option:selected").text();
+      //  alert(bs1);
+        
+        rowID3=par.children("td:nth-child(19)").text();
+      //  alert('aaaa'+rowID3);
+        
+        //changeBadgeStatus(bs1,rowID3);
+        
+      
+             
+        tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_bs' title='Edit' >&nbsp;</i>");
+        jk4(".btnEditar_bs").bind("click", Editar_bs);
+
+    
+    };
+
+/*************************************/
+
+    jk4(".btnEditar_bs").bind("click", Editar_bs);
+});
+
+var printTIDs='';
+function TicToPrnt(ticIDs){
+    printTIDs=ticIDs;
+}
+
+function callback(clkbtn , okbtnn){  
+    var ticketid_list11='';
+    if(clkbtn.id=='assignbps_btn'){
+        ticketid_list11=printTIDs;
+    }
+    else if(clkbtn =='sendToMail')
+    {
+    
+    
+    BulkExportAttendees();
+    return false;
+    }
+    else{
+    var ticketid_list11 = rowID3;
+    ticketid_list11=ticketid_list11+',';
+    }
+    printingbadge(ticketid_list11);  
+    Alert_printbadge.render('dialogbox_printbadge','printbadge_dialogoverlay','Alert_printbadge' ,okbtnn);  
+}
+function callbackcancel(clkbtn , cnclbtnn){
+    if(clkbtn.id=='assignbps_btn'){
+        location.reload();
+    }
+    else if(clkbtn =='sendToMail')
+     {
+        return false;
+    }else{
+    tdbsedit.html(oldVal);
+    }
+}
+
+         
+         
+         
+         /*********************on hover function*****************************/  
+                j("#example tbody tr").hover(function(){
+    //alert("ddddd");
+      j(this).has("td").find(".fa_edithover").css("visibility","visible");
+        }, function(){
+       j(this).has("td").find(".fa_edithover").css("visibility"," hidden");
+    });  
+    
+    /************************end of on hover function**************************/   
+         }         
+                      
+                     
+                      
+              });
+              
+      //      j(document).ready(function() {
+              
+         
+   // })
+
+    
+     }
+    
+     </script>
+       <script>
+         
+try{
+
+dtcall();
+}catch(e){}
+</script>
+
+        </apex:form>
+    </c:ed_basictemplate>
+    
+    <!-------------//end of basic template component------------------------>
+
+    <!--/*********************Java Script Section*******************/--> 
+  
+  <!--------//start of datatable js component------------->
+     
+      <c:ed_datatablejs ></c:ed_datatablejs>   
+
+     
+  
+<!---------------popupcomponent------->
+    <c:ed_popupbox ></c:ed_popupbox>
+<!---------------------call the pages-------------------------------->
+ <!--<apex:include pageName="BLN_Attendeeinfo_popup" rendered="true" /> -->
+ <apex:include pageName="BLN_Orderinfo_popup" rendered="true"/> 
+ <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+    <script>
+var dt = jQuery.noConflict();        
+dt('.ED').datetimepicker({
+timepicker:false,
+format:'m/d/Y',
+formatDate: 'm/d/Y',
+
+});
+</script>
+<!---------------------end of call pages--------------------------------->
+  <script>
+  /**************script for edit labels ****************/
+  
+
+
+var printTIDs='';
+function TicToPrnt(ticIDs){
+    printTIDs=ticIDs;
+}
+
+function callback(clkbtn , okbtnn){  
+    var ticketid_list11='';
+    if(clkbtn.id=='assignbps_btn'){
+        ticketid_list11=printTIDs;
+    }
+    else if(clkbtn =='sendToMail')
+    {
+    
+    
+    BulkExportAttendees();
+    return false;
+    }
+    else{
+    var ticketid_list11 = rowID3;
+    ticketid_list11=ticketid_list11+',';
+    }
+    printingbadge(ticketid_list11);  
+    Alert_printbadge.render('dialogbox_printbadge','printbadge_dialogoverlay','Alert_printbadge' ,okbtnn);  
+}
+function callbackcancel(clkbtn , cnclbtnn){
+    if(clkbtn.id=='assignbps_btn'){
+        location.reload();
+    }
+    else if(clkbtn =='sendToMail')
+    {
+     return false;
+    }else{
+    tdbsedit.html(oldVal);
+    }
+}
+
+</script> 
+<!----------------start of datatable js !important-------------------> 
+<apex:form id="seconform">
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script>
+
+<!----<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script> --->    
+<script type="text/javascript" language="javascript" class="init">
+
+var selected = [];
+
+
+           var localArray=[];
+        var j = jQuery.noConflict();
+        j(document).ready(function() {
+          
+    
+          
+          
+          
+             table=j('#example').dataTable( {
+                      
+                       "scrollX": true, 
+"sScrollX": "100%", 
+"sScrollXInner": "220%", 
+"pagingType": "full_numbers", 
+"aLengthMenu": [[10,25, 50], [10, 25, 50]], 
+"iDisplayLength": 10, 
+ 
+
+"bAutoWidth": false, // Disable the auto width calculation 
+/**default orderid in asc sorting**/ 
+
+
+
+                "sDom": 'W<"clear">lfrtip', 
+"oColumnFilterWidgets": { 
+"aiExclude": [ 0,1,2,3,4,5,9,10,11,14,16,17,18,19 ] 
+
+},
+"aoColumnDefs": [ 
+{ 'bSortable': false, 'aTargets': [0,8,10,12] }, 
+
+], 
+order: [],
+                        
+                      "processing": true,
+                      "serverSide": true,
+                     // "ajax": '{!$Page.BLN_AttendeeHelperPage}?core.apexpages.devmode.url=1', 
+                      "ajax": '{!$Page.BLN_AttendeeHelperPage}',
+       
+                       
+                         "rowCallback": function( row, data ) {
+                       
+                          //alert('123');
+                                                         
+                         if(j("[id$='all']").prop("checked") == true){
+                               //alert('global check box is checked');
+                          j(row).find(":checkbox").prop("checked",true);
+                            j(row).addClass("currenttr");
+                                  
+                            }
+                         
+                         localArray.push(data.DT_RowId)
+                         if ( j.inArray(data.DT_RowId, arr) !== -1 ) {
+                              //  alert(data.Id);
+                             //   j(row).addClass('selected');
+                               j(row).addClass("currenttr");
+                               j(row).find(":checkbox").prop("checked",true);
+                                
+                            }
+                         //new code
+
+
+
+                            if ( j.inArray(data.DT_RowId, unchkarr) !== -1 ) {
+                             
+                               j(row).toggleClass("currenttr");
+                               j(row).find(":checkbox").prop("checked",false);
+                                
+                            }   
+                     
+                                
+                                     
+                                },
+                       
+                       
+                     "columns": [ 
+                   {
+                data:   "active",
+                render: function ( data, type, row ) {
+                       return '<input type="checkbox" name="id[]" onchange="rowchk1(this)" value="1" />';
+                    
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  return '<a onclick=document.getElementById("thePage:comp:commoncomponent:firstfrm:hiddenticketid").value="'+data.Id+'";editTicket()>'+data.tkt_profile__r.First_Name__c+' '+data.tkt_profile__r.Last_Name__c+'</a>';
+                        
+                }
+            },
+                  { "data": "item.tkt_profile__r.Email__c" },
+                  {"data":"item.tkt_profile__r.Mobile__c"},
+                  {"data":"item.tkt_profile__r.TKT_Company__c"} ,
+                  {"data":"item.tkt_profile__r.TKT_Job_Title__c"} ,
+                                  /*{"data":"item.Item_Pool__r.Item_Type__r.Name"} ,*/
+{
+    "data":   "labelReName",
+    "render": function ( data, type, row ) {
+    var s=row.item.Item_Pool__r.Item_Type__r.Name;
+    //alert(s);
+    <apex:variable value="" var="LabelName"/>   
+    if(s=='Admissions'){
+        <apex:repeat value="{!RegList}" var="r">        
+            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Attendee'}"/>      
+            <apex:variable value="Admissions" var="LabelName" rendered="{!r.Label_Name__c=='Attendee'}"/>       
+        </apex:repeat>
+        s='{!LabelName}';
+    }
+
+    if(s=='Exhibitor'){
+        <apex:repeat value="{!RegList}" var="r">        
+            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Exhibitor'}"/>     
+        </apex:repeat>
+        s='{!LabelName}';
+    }
+    
+    if(s=='Sponsor'){
+        <apex:repeat value="{!RegList}" var="r">        
+            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Sponsor'}"/>       
+        </apex:repeat>
+        s='{!LabelName}';
+    }
+    
+    if(s=='Speaker'){
+        <apex:repeat value="{!RegList}" var="r">        
+            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Speaker'}"/>       
+        </apex:repeat>
+        s='{!LabelName}';
+    }
+    
+    return s;
+    }
+},
+                  
+            /*{"data":"item.Item_Pool__r.Item_Pool_Name__c"},*/
+            {
+                "data":   "item.Item_Pool__r.Item_Pool_Name__c",
+                "render": function ( data, type, row ) {
+                console.log(row);
+                var s=row.item.Item_Pool__r.Item_Pool_Name__c;
+                console.log(s); 
+                  if(row.item.Item_Pool__r.Item_Pool_Name__c!=row.item.Item__r.item_name__c)
+                 //console.log('****'+data);
+                  s=s+"("+row.item.Item__r.item_name__c+")";
+                // s=JSON.parse(s);
+                // console.log(s);
+                  return s;
+                  }
+            },
+                  {"data":"item.Badge_Label__c"} ,
+                  {
+                  data:   "active",
+                render: function ( data, type, row ) {
+                    
+                        return '<i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_bl" title="Edit" >&nbsp;</i>';
+                              }
+            },
+                  {"data":"item.Tag_No__c"},
+                  {
+                  data:   "item",
+                render: function ( data, type, row ) {
+                   
+                        return '<i class="fa fa-pencil fa-edit20px fa_edithover btnEditar_sn" title="Edit" >&nbsp;</i>';
+                   
+                }
+            },
+                  /*{"data":"item.Badge_ID__r.Print_status__c"},*/
+                  {
+                  data:   "item",
+                render: function ( data, type, row ) {
+                if(data.Badge_ID__c!=undefined){
+                   
+                        return data.Badge_ID__r.Print_status__c;
+                        }else{
+                        return '';
+                        }
+                   }
+                },
+                  {
+                data:   "item",
+                render: function ( data, type, row ) {
+                if(data.Tstatus_Id__c!=undefined)
+                  if(data.Tstatus_Id__r.Tstatus_name__c==true)
+                  return 'Checked In';
+                  else
+                  return 'Checked Out';
+                 
+                  }
+                  
+            },
+                   {
+                data:   "item",
+                render: function ( data, type, row ) {
+                   
+                    //    return data.Order__r.BLN_TKT_profile__r.First_Name__c+' '+data.Order__r.BLN_TKT_profile__r.Last_Name__c;
+                   return data.Order__r.BLN_TKT_profile__r.First_Name__c+' '+data.Order__r.BLN_TKT_profile__r.Last_Name__c;
+                   
+                }
+            },
+                   {
+                data:   "item",
+                render: function ( data, type, row ) {
+                var tg='';
+                <apex:repeat value="{!tagsmap}" var="x">
+                if(data.Item_Pool__c == '{!x}')
+                 tg=tg+"{!tagsmap[x]}";
+                           
+                </apex:repeat>
+                tg=tg+'&nbsp;';
+                <apex:repeat value="{!tickettagsmap}" var="x">
+                if(data.Id == '{!x}')
+                 tg=tg+"{!tickettagsmap[x]}";
+                            </apex:repeat>
+                      
+                return tg;
+                
+                 
+                  }
+                  
+            },{
+                data:   "createdon",
+                render: function ( data, type, row ) {
+
+                        return data;
+                        
+                }
+            },
+                   {
+                data:   "item",
+                render: function ( data, type, row ) {
+                 return '<a onclick=detailsOforder("'+data.Order__r.Id+'")>'+data.Order__r.Name+'</a>';
+                }
+            },
+                   {"data":"item.Name"},
+                   {"data":"item.Custom_Barcode__c"
+                   
+                   }
+                            
+              ],
+
+    
+     initComplete: function () {
+     
+
+     },
+     
+    
+
+
+
+            
+
+
+             
+         "fnDrawCallback":function(){
+          var select2 = j('[class$=widget-12]');      
+                            j('[class$=widget-12]').removeAttr( "disabled" );       
+                 select2.empty();       
+                 select2.append( '<option value>Badge Status</option>' );       
+                           select2.append( '<option value="'+'Printed'+'">'+'Printed'+'</option>' );      
+                            select2.append( '<option value="'+'Not Printed'+'">'+'Not Printed'+'</option>' );
+    
+   //ticket type filter
+                            gettickettypes();
+                
+                //getticketNames();
+                
+ var select2 = j('[class$=widget-13]');      
+                                j('[class$=widget-13]').removeAttr( "disabled" );       
+                 select2.empty();       
+                 select2.append( '<option value>Checkin Status</option>' );       
+                           select2.append( '<option value="'+'Checked In'+'">'+'Checked In'+'</option>' );      
+                            select2.append( '<option value="'+'Checked Out'+'">'+'Checked Out'+'</option>' );
+                            
+                            //for tags filter
+                            //gettags();
+
+//alert('hiiiii'+arr.length);
+    
+    j("input[name='selall[]']:checkbox").attr('checked',false);      
+         
+     
+  /**************script for edit labels ****************/
+  
+    var jk2 = jQuery.noConflict();
+
+/************** inline editing for badge label****************/
+jk2(function(){
+jk2(".btnEditar_bl").bind("click", Editar_bl);
+/******************************/
+    function Editar_bl(){
+    
+     jk2(".btnSalvar").unbind("click", Salvar);
+        jk2(".btnEditar_bl").unbind("click", Editar_bl);
+        var par = jk2(this).parent().parent();  //tr
+        var tdbadgelabeledit = par.children("td:nth-child(9)");
+
+        var tdimgholder = par.children("td:nth-child(10)");
+
+        tdbadgelabeledit.html("<input type='text' id='txtNome' value='"+tdbadgelabeledit.html()+"'/>");
+
+        tdimgholder.html(" <i class='fa fa-save  fa-save20px btnSalvar' title='Save' >&nbsp;</i>");
+
+        jk2(".btnSalvar").bind("click", Salvar);
+        jk2(".btnEditar_bl").bind("click", Editar_bl);
+    
+    };
+/********************/
+    function Salvar(){
+    
+           jk2(".btnEditar_bl").unbind("click", Editar_bl);
+        var par = jk2(this).parent().parent(); //tr
+        var tdbadgelabeledit = par.children("td:nth-child(9)");
+    
+        var tdimgholder = par.children("td:nth-child(10)");
+        
+        var bl1 =   tdbadgelabeledit.children("input[type=text]").val();
+        //alert(bl1);
+        
+        var rowID1=par.children("td:nth-child(19)").text();
+        //alert(rowID1);
+        createBadgeLabel(bl1,rowID1); 
+
+        tdbadgelabeledit.html(tdbadgelabeledit.children("input[type=text]").val());
+
+        tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_bl' title='Edit' >&nbsp;</i>");
+
+        jk2(".btnEditar_bl").bind("click", Editar_bl);
+    
+    };
+
+
+
+    jk2(".btnEditar_bl").bind("click", Editar_bl);
+});
+
+/***************inline editing for seatno******************/
+    var jk3 = jQuery.noConflict();
+      jk3(function(){
+/************************/
+    function Editar_sn(){
+     jk2(".btnSalvar1").unbind("click", Save_sn);
+        jk2(".btnEditar_sn").unbind("click", Editar_sn);
+
+        var par = jk3(this).parent().parent();  //tr
+        var tdseatnoedit = par.children("td:nth-child(11)");
+
+        var tdimgholder = par.children("td:nth-child(12)");
+
+        tdseatnoedit.html("<input type='text' id='txtNome' value='"+tdseatnoedit.html()+"'/>");
+
+        tdimgholder.html(" <i class='fa fa-save  fa-save20px btnSalvar1' title='Save' >&nbsp;</i>");
+
+        jk2(".btnSalvar1").bind("click", Save_sn);
+        jk2(".btnEditar_sn").bind("click", Editar_sn);
+
+    };
+/*****************Badge Statuc****************/
+    function Save_sn(){
+    
+    jk3(".btnEditar_sn").unbind("click", Editar_sn);
+        var par = jk3(this).parent().parent(); //tr
+        var tdseatnoedit = par.children("td:nth-child(11)");
+    
+        var tdimgholder= par.children("td:nth-child(12)");
+        
+        var sn1 =   tdseatnoedit.children("input[type=text]").val();
+        //alert(sn1);
+        
+        var rowID2=par.children("td:nth-child(19)").text();
+        //alert(rowID2);
+
+        tdseatnoedit.html(tdseatnoedit.children("input[type=text]").val());
+
+        tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_sn' title='Edit' >&nbsp;</i>");
+
+        jk3(".btnEditar_sn").bind("click", Editar_sn);
+        
+        createSeatNumber(sn1,rowID2);
+    
+    };
+
+    jk3(".btnEditar_sn").bind("click", Editar_sn);
+});
+/*****************************/
+var oldVal='';
+var rowID3='';
+var tdbsedit='';
+    var jk4 = jQuery.noConflict();
+      jk4(function(){
+
+    function Editar_bs(){
+    jk4(".btnSalvar2").unbind("click", Save_bs);
+        jk4(".btnEditar_bs").unbind("click", Editar_bs);
+        var par = jk4(this).parent().parent();  //tr
+        var tdbsedit = par.children("td:nth-child(13)");
+        
+        oldVal=tdbsedit.text();
+        //alert('oldVal'+oldVal);
+        
+        var tdimgholder = par.children("td:nth-child(14)");//using for capturing the value
+        /*alert(tdbsedit.html());*/
+
+        tdbsedit.html("<select id='selectList' class='selectlist' style='width:auto;'><option value='Printed'>Printed</option><option value='Not Printed'>Not Printed</option></select>");
+
+        tdimgholder.html(" <i class='fa fa-save  fa-save20px btnSalvar2' title='Save' >&nbsp;</i>");
+
+        jk4(".btnSalvar2").bind("click", Save_bs);
+        jk4(".btnEditar_bs").bind("click", Editar_bs);
+
+    };
+
+    function Save_bs(){
+     jk4(".btnEditar_bs").unbind("click", Editar_bs);
+        var par = jk4(this).parent().parent(); //tr
+        tdbsedit = par.children("td:nth-child(13)");
+        var tdimgholder= par.children("td:nth-child(14)");
+       /* alert( 'Text is: ' + jk4('#selectList option:selected').text() ); */
+       
+       bs1 =   jk4("#selectList option:selected").text();
+       // alert(bs1);
+        
+        rowID3=par.children("td:nth-child(19)").text();
+       // alert('aaaa'+rowID3);
+        
+        //changeBadgeStatus(bs1,rowID3);
+        
+      
+             
+        tdimgholder.html("<i class='fa fa-pencil fa-edit20px fa_edithover btnEditar_bs' title='Edit' >&nbsp;</i>");
+        jk4(".btnEditar_bs").bind("click", Editar_bs);
+
+    
+    };
+
+/*************************************/
+
+    jk4(".btnEditar_bs").bind("click", Editar_bs);
+});
+
+var printTIDs='';
+function TicToPrnt(ticIDs){
+    printTIDs=ticIDs;
+}
+
+function callback(clkbtn , okbtnn){  
+    var ticketid_list11='';
+    if(clkbtn.id=='assignbps_btn'){
+        ticketid_list11=printTIDs;
+    }
+    else if(clkbtn =='sendToMail')
+    {
+    
+    
+    BulkExportAttendees();
+    return false;
+    }
+    else{
+    var ticketid_list11 = rowID3;
+    ticketid_list11=ticketid_list11+',';
+    }
+    printingbadge(ticketid_list11);  
+    Alert_printbadge.render('dialogbox_printbadge','printbadge_dialogoverlay','Alert_printbadge' ,okbtnn);  
+}
+function callbackcancel(clkbtn , cnclbtnn){
+    if(clkbtn.id=='assignbps_btn'){
+        location.reload();
+    }
+    else if(clkbtn =='sendToMail')
+    {
+    return false;
+    }
+    else{
+    tdbsedit.html(oldVal);
+    }
+}
+
+         
+         
+         
+         /*********************on hover function*****************************/  
+                j("#example tbody tr").hover(function(){
+    //alert("ddddd");
+      j(this).has("td").find(".fa_edithover").css("visibility","visible");
+        }, function(){
+       j(this).has("td").find(".fa_edithover").css("visibility"," hidden");
+    });  
+    
+    /************************end of on hover function**************************/   
+         }         
+                      
+                     
+                      
+              });
+              
+            //  alert('hiiiii');
+
+            });
+</script>
+<!--------//end of datatable js component------------->
+<script>
+
+ function editOrder(edform,clk)    <!--- Edit PopUp Function---> 
+    {
+      Editordform(edform);
+      return false; 
+   }
+ </script>
+  </apex:form>
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+    
+    <script>
+        /*******creating instances for calling popups*******/
+    var Alert_printbadge = new Custom_formPopup(); //printbadge
+    var Alert_assignbl = new Custom_formPopup(); //assign badgelabel
+    var Alert_assignbps = new Custom_formPopup(); //assign badge printstatus 
+    var Alert_mergebadge = new Custom_formPopup(); //Merge Badge    
+    var Alert_unmergebadge = new Custom_formPopup(); //Unmerge Badge        
+    var Alert_assignrole = new Custom_formPopup(); //Assign Role
+    var Alert_assignseatno = new Custom_formPopup(); //Assign Seatno 
+    var Alert_assigntag = new Custom_formPopup(); //Assign Tag
+    var Alert_splitpkg = new Custom_formPopup(); //Split Package  
+    var Alert_mergitem=new Custom_formPopup(); //Merge Item
+    var Alert_splitpkg_prev = new Custom_formPopup(); //Split Package Prev  
+    //var Alert_orderview = new Custom_formPopup(); //Order popup   
+      
+        
+        /***************/   
+    </script>
+   
+    <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script>
+    
+    
+    <script>
+   $(document).ready(function() { 
+    $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+    
+      
+   });
+    
+    
+    </script>
+    <!----script for badge Printing----->
+     <script>
+    function NewPage(){
+    var allpages=false;
+     if(j("[id$='all']").prop("checked") == true){
+     allpages=true;
+     }
+   // alert(allpages);
+     var style= $("[id$='bpop']").children(0).val();
+    
+   
+    //window.open("{!$Label.SiteURL}/apex/BLN_BadgeTool_RenderPDF?style="+style+"&lis="+arr);
+    if(allpages==false)
+    {
+    window.open("{!$Label.SiteURL}/apex/BLN_BadgeTool_RenderPDF?style="+style+"&allpages="+allpages+"#"+arr);
+    }
+    else{
+    window.open("{!$Label.SiteURL}/apex/BLN_BadgeTool_RenderPDF?style="+style+"&allpages="+allpages+"#"+unchkarr);
+    
+    }
+    }
+    </script>
+    <!----end of script for badge Printing----->
+    <!----------------end of form Popup script----------------------------->
+    <!--------------//end of popupcomponent----------------->
+    <!---------popup for printbadge------->
+<apex:form >
+    <div class="dialogoverlay" id="printbadge_dialogoverlay" style="z-index:9999;"></div>
+<!----------------->
+    <!--close of dialogoverlay-->
+    <div  id="dialogbox_printbadge" style=" display:none;z-index:99991; width:40%; margin-left:29%;"><a id="close" onclick="Alert_printbadge.Cancel()" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding-top:0px;;"> 
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Print Badge</div>
+        <div class="content-gird" >
+        <!--------------> 
+        <div style="width:70%; margin:0px auto;">
+      <div style="margin-left:5%;">
+     <!--- <label>Select Printer:</label>
+       <apex:selectList value="{!selectedprinter}" multiselect="false" size="1"  styleClass="selectlist" style="width:52.5%;">
+             <apex:selectOptions value="{!printerlist}">
+            </apex:selectOptions>
+          <apex:actionSupport event="onchange" reRender="bpop,printbadgepanel" action="{!findtemplate}" status="AjaxLoader"/>
+        </apex:selectList>-->
+     
+      </div>  
+      <br/>
+      <label>Select Template:</label>
+      <span>
+      
+         <apex:outputPanel id="bpop">
+           <apex:selectList value="{!selectedbdtemname}" multiselect="false" size="1"  styleClass="selectlist targetdiv" style=" display: inline-block;width:50%;">
+            <apex:selectOptions value="{!bdstyleslist}">
+            </apex:selectOptions>
+           </apex:selectList>
+        </apex:outputpanel>
+       
+      </span>
+      
+       
+      
+      
+      
+        </div><!--close of content-grid--->
+        
+       <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <!--<button class="button-a blue" onclick="Alert_printbadge.Save()">Save</button> $("[id$='HomeZip']")-->
+     <apex:outputpanel id="printbadgepanel">
+    <!--    <apex:commandbutton styleClass="button-a blue" value="Print" action="{!genpdf}" rendered="{!IF(bdstyleslist.size==0,false,true)}" onclick="Alert_printbadge.Save()"/>---->
+      <!---   <button class="button-a dark-blue"  onclick="NewPage(document.getElementById('thePage:j_id1012:bpop').childNodes[0].value)">Print</button>--->
+<!--<button class="button-a dark-blue"  onclick="NewPage()">Print</button>-->
+              <apex:commandbutton styleClass="button-a blue" value="Print"  rendered="{!IF(bdstyleslist.size==0,false,true)}" onclick="NewPage()"/>
+
+       </apex:outputpanel>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_printbadge.Cancel()">Cancel</button>
+                          </div>
+       <!--------------->                   
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+        </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+   </apex:form>
+    <!------------end of popup for printbadge------------->
+
+    <!---------popup for Assign Badge Label------->
+    <div class="dialogoverlay" style=" z-index:9999;" id="bl_dialogoverlay"></div>
+    <div  id="dialogbox_bl" style=" display:none;z-index:99991; width:40%; margin-left:29%;"><a id="close" onclick="Alert_assignbl.Cancel()" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Assign Badge Label</div>
+        <div class="content-gird">
+       <!--------------> 
+        <div style="width:70%; margin:0px auto;">
+      <label>Badge Label:</label>
+      <input type="text" id="assignbl_txt" style=" width:50%;"/>  
+        </div><!--close of conteent-grid--->
+        
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <button class="button-a blue" onclick="Alert_assignbl.Save()">Save</button>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_assignbl.Cancel()">Cancel</button>
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+       <!------------end of popup for Assign Badgelabel------------->  
+       
+        <!---------popup for assign badge print status------->
+    <div class="dialogoverlay" id="bps_dialogoverlay" style="z-index:9999;"></div>    
+    <div id="dialogbox_bps" style=" display:none;z-index:99991; width:40%; margin-left:29%;"><a id="close" onclick=" Alert_assignbps.Cancel()" style=" margin-top:-5px;">×</a>
+     
+             <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Change Badge Print Status</div>
+        <div class="content-gird">
+       <!--------------> 
+        <div style="width:70%; margin:0px auto;">
+      <label>Select Badge Status:</label>
+<!--<input type="text" id="assignbps_txt" readonly value="Not Printed" style="width:50%;"/>-->
+<select id="bps_selectlst" class="selectlist" style="width:52.5%;">
+<option value="Printed">Printed</option>
+<option value="NotPrinted">Not Printed</option>
+</select>
+        </div><!--close of conteent-grid--->
+        
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <button class="button-a blue" onclick="Alert_assignbps.Save()">Save</button>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_assignbps.Cancel()">Cancel</button>
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                  </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+    <!-------------end of popup for assign badge print status---->   
+  <apex:form > 
+   <!-- ----------------------------------action function for merge badge ids ----------------------- -->    <!--Vineel-->
+                 <apex:actionFunction name="mergeBadge" action="{!mergeBadge}"  rerender="tickettomergesection" status="AjaxLoader" oncomplete="Alert.render('Badge has been successfully merged' ,'Alert','ok');">
+                 <apex:param name="parentticket" value="" />
+                  <apex:param name="restoftheticket" value="" />
+                 </apex:actionfunction>
+                
+                
+                 <apex:actionFunction name="getTicketToMergeList" action="{!getTicketToMergeList}" rerender="tickettomergesection" status="AjaxLoader" oncomplete="Alert_mergebadge.render('dialogbox_mbdg','mbdg_dialogoverlay','Alert_mergebadge' ,'mergebdg_btn');"> 
+                      <apex:param name="email_list" value="" />
+                      </apex:actionFunction> 
+                      <apex:outputpanel id="tickettomergesection"> 
+<!---------popup for merge badge------->
+    <div class="dialogoverlay" id="mbdg_dialogoverlay" style="z-index:9999;"></div>    
+    <div id="dialogbox_mbdg" style=" display:none;z-index:99991; width:60%; margin-left:20%;max-height:100%;overflow:auto"><a id="close" onclick="Alert_mergebadge.Cancel()" style=" margin-top:-5px;">×</a>
+<div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Merge Badge</div>
+        <div class="content-gird">
+         
+       <!--------------> 
+        <div class="mergebdg_wrapper" style="margin:0px auto;">
+      <!---------->   
+        <div class="top-stats" style="width:auto;">
+      <!--------> 
+      <p class=" strong_700 font-12x">Select Parent Badge To Merge</p>
+      <!------>  
+         <div>
+         <ul style="list-style:none;">
+        <!---->
+        <apex:variable var="count" value="{!0}"/>
+      <apex:repeat value="{!emailorder}" var="emorder">
+        <li class=" labeloutput blueanchor margin-lft-5px" style="display:inline;">
+        <input type="radio" value="orderid{!count}"  class="orderid" name="parentorder" />
+        <label>
+        <span class="blue_anchor">{!emorder}
+        <!--<span class="black_clr strong_700">(Order #:01234,1235)</span>-->
+        </span>
+        </label>
+        </li>
+        <apex:variable var="count" value="{!count + 1}"/>
+      </apex:repeat>   
+        
+        
+          <!----->
+       <!-- <li class=" labeloutput margin-lft-5px blueanchor" style="display:inline;">
+        <input type="radio" value="orderid2" class="orderid" name="parentorder" />
+        <label>
+        <span class="blue_anchor">oprah@msn.com
+        <span class="black_clr strong_700">(Order #:1235)</span>
+        </span>
+        </label>
+        </li>-->
+        <!------>
+        </ul>
+         </div>
+      <!-------->   
+        </div><!---close of top-stats ---->
+      <!----------table start---------->  
+      <apex:variable var="count" value="{!0}"/>
+      <apex:repeat value="{!emailorder}" var="emorder">
+      
+      
+     
+      <div  id="orderid{!count}"  class="padding-5px left" style="width:48%; ">
+      <apex:repeat value="{!emailorder[emorder]}" var="ordlist">
+      <apex:repeat value="{!ordlist}" var="ticket">
+      <div class="">
+      <p class=" strong_700 padding-5px" style="font-size:14px;">Available Tickets 
+      <label class="blue_anchor font-12x" style="font-weight:300;">{!ticket}</label>
+      </p>
+      
+      
+      <table  class="display" width="100%">
+  <thead>
+  <tr>
+    <th></th>
+    <th>Ticket Name</th>
+    <th>Attendee Name</th>
+    <th>Parent Badge</th>
+  </tr>
+  </thead>
+  <tbody>
+  <apex:repeat value="{!order[ticket]}" var="singlelist">
+  <apex:repeat value="{!singlelist}" var="single">
+  <tr>
+    <td><input type="checkbox" name="checkboxlist" value="{!single.TicketId}"/></td>
+    <td>{!single.TicketName}</td>
+    <td>{!single.AttendeeName}</td>
+    <td class="textcenter">
+    <input type="radio" name="oprahorderid" value="{!single.TicketId}"/>
+    </td>
+  </tr>
+  </apex:repeat>
+  </apex:repeat>
+</tbody>
+</table>
+
+      </div>  
+      <!------------------------------->
+</apex:repeat>
+ </apex:repeat>
+      </div>  
+      <!------------------------------->
+ 
+  
+    
+      
+     
+      
+     
+  <apex:variable var="count" value="{!count + 1}"/>
+      </apex:repeat>    
+      
+      <div class="clear"></div> 
+      <!-------->
+        </div><!--close of wrapper--->
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <button class="button-a blue" onclick="showsave();return false;">Merge</button>
+          &nbsp;&nbsp;
+          <!--Alert.render('Badge hasbeen successfully Merged !!' ,'Success','ok');-->
+     <button class="button-a dark-blue" onclick="Alert_mergebadge.Cancel()">Cancel</button>
+                          </div>
+                          <script>
+                          function showsave()
+                          {
+                          
+                          var checkValues ='';
+                          var recountmerge=0;
+                           $('input[name=checkboxlist]:checked').map(function()
+            {
+                checkValues=checkValues+$(this).val()+',';
+                recountmerge=recountmerge+1;
+            })
+            if(recountmerge==1){
+            alert('You cannot merge the same record with itself.');
+            return;
+            }
+            if(checkValues!='')
+             checkValues=checkValues.substring(0, checkValues.length - 1);
+                      if(checkValues==''||$('input[name=oprahorderid]:checked').val()==undefined)
+                      alert('Please select a parent radio to merge with');
+                      else{
+                      mergeBadge($('input[name=oprahorderid]:checked').val(),checkValues);
+                      }
+                          }
+                          </script>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                  </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+    <!-------------end of popup for merge badge----> 
+    <!------------script for merge unmerge bdg-------->
+   <script>
+   function mrg_unmrgchange(e) {
+      var selectedchkbox_val=$(this).val();
+      //alert(selectedchkbox_val);
+        //uncheck all the previous checked checkboxes   
+        $(this).closest(".mergebdg_wrapper").find('input[type="checkbox"]').removeAttr('checked');
+        //$(".mergebdg_wrapper").find('input[type="checkbox"]').removeAttr('checked');
+        //alert(selectedchkbox_val);
+        //selected radio button value equals to target available tickets table id   
+        var targetchkbox= $("#"+selectedchkbox_val).find('input[type="checkbox"]');
+        if(this.checked){
+        $("#"+selectedchkbox_val).find('input[type="checkbox"]').attr('checked',$(this).is(':checked'));
+          }
+       };
+     $(".orderid").change(mrg_unmrgchange); 
+      
+    </script>
+  <!------------close script for merge unmerge bdg-------->  
+  <script>
+        var rolename;
+        function fetchrolename(rolnm){
+        rolename = rolnm;
+        //alert(rolename);
+        }
+        function Assignrolesjsfun() {
+          var selectedroll =  rolename;
+               Assignroles(selectedroll);
+            }
+      </script>
+  
+  
+  
+    </apex:outputpanel>
+     
+     <!---------popup for Unmerge badge------->
+      <!-- ----------------------------------action function for Unmerge Badge Popup ----------------------- -->        <!--Vineel-->                                                                                <!--//Vineel-->
+                <apex:actionFunction name="getMergeList" action="{!getMergeList}" rerender="ticketmergelistsection"  status="AjaxLoader"> 
+                </apex:actionFunction>
+                <apex:actionFunction name="cancelBadge" action="{!cancelBadge}"  rerender="ticketmergelistsection" status="AjaxLoader" oncomplete="Alert.render('Badge has been successfully Unmerged' ,'Alert','ok');"/> 
+               
+    <div class="dialogoverlay" id="umbdg_dialogoverlay" style="z-index:9999;"></div>    
+    <div id="dialogbox_umbdg" style=" display:none;z-index:99991; width:40%; margin-left:29%;"><a id="close" onclick="Alert_unmergebadge.Cancel()" style=" margin-top:-5px;">×</a>
+<div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Unmerge Badge</div>
+        <div class="content-gird">
+       <!--------------> 
+        <div style="width:70%; margin:0px auto;">
+      <label>Ticket To Unmerge With:</label>
+      <apex:outputpanel id="ticketmergelistsection">
+                <apex:selectList value="{!selectedunmergetickets}" size="1">
+                <apex:selectOptions value="{!unmergelist}"/>
+                </apex:selectList>
+            </apex:outputpanel> 
+ 
+        </div><!--close of conteent-grid--->
+        
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <!--<button class="button-a blue" onclick="Alert.render('Badge has been successfully Unmerged !!' ,'Success','ok');Alert_unmergebadge.Save()">Unmerge</button>-->
+     <button class="button-a blue" onclick="cancelBadge();return false;">Unmerge</button>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_unmergebadge.Cancel();return false;">Cancel</button>
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                  </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+    <!-------------end of popup for Unmerge badge---->  
+    <apex:actionFunction name="assignRole" action="{!assignRole}" rerender="assigntag" status="AjaxLoader"> 
+                </apex:actionFunction> 
+                
+     <!---------popup for Assign Role------->
+   <div class="dialogoverlay" id="assignrole_dialogoverlay" style="z-index:9999;"></div>    
+   <div id="dialogbox_assignrole" style=" display:none;z-index:99991; width:40%; margin-left:29%;"><a id="close" onclick="Alert_assignrole.Cancel()" style=" margin-top:-5px;">×</a>
+<div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Assign Role</div>
+        <div class="content-gird">
+       <!--------------> 
+        <div style="width:70%; margin:0px auto;">
+      <label>Select Role:</label>
+      <apex:selectList value="{!roleName}" size="1" multiselect="false" id="pklst" onchange="fetchrolename(this.value);">
+                <apex:selectOptions value="{!sroles}" >
+                  
+                </apex:selectOptions>
+                </apex:selectlist> 
+ 
+        </div><!--close of conteent-grid--->
+        
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <button class="button-a blue" onclick="Assignrolesjsfun();"  oncomplete="Alert_assignrole.Save();">Save</button> 
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_assignrole.Cancel()">Cancel</button>
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                  </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+    <!-------------end of popup for Assign Role---->  
+  </apex:form>       
+    <!---------popup for Assign Seat Number------->
+   <div class="dialogoverlay" style=" z-index:9999;" id="assignsno_dialogoverlay"></div>
+   <div  id="dialogbox_assignsno" style=" display:none;z-index:99991; width:40%; margin-left:29%;"><a id="close" onclick="Alert_assignseatno.Cancel()" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Assign Seat Number</div>
+        <div class="content-gird">
+       <!--------------> 
+        <div style="width:70%; margin:0px auto;">
+      <label>Enter Seat Number:</label>
+      <input type="text" id="assignsno_txt" style=" width:50%;"/>  
+        </div><!--close of conteent-grid--->
+        
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <button class="button-a blue" onclick="Alert_assignseatno.Save();">Save</button>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_assignseatno.Cancel()">Cancel</button>
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+       <!------------end of popup for Assign Seat Number-------------> 
+       
+        <!---------popup for Assign Tag------->
+  <apex:form id="tagform">
+   <c:BLN_Tag_Commmon_Component />
+   <apex:actionFunction name="assignTag" action="{!assignTag}" rerender="tagform" status="AjaxLoader" oncomplete="alert('Saved');window.location.href=window.location.href;"> 
+   <apex:param name="tagarray" value=""/>
+   </apex:actionFunction>
+     </apex:form>
+       <!------------end of popup for Assign Tag------------->
+       <!---------popup for merge item------->
+
+<apex:form id="mergeitemform">
+ <!-- ----------------------------------action function for split package ----------------------- -->   
+                 <apex:actionFunction name="getItemList" action="{!getItemList}" rerender="mergeitemblock" status="AjaxLoader"/> 
+                 <apex:actionFunction name="MergeItemSaves" action="{!MergeItemSaves}"  rerender="mergeitemblock" status="AjaxLoader" oncomplete="Alert_mergitem.Cancel();Alert.render('Tickets Succesfully Merged' ,'Success','ok');">
+                 <apex:param name="parentitemid" value=""/>
+                 <apex:param name="allitemid" value=""/>
+                 </apex:actionfunction>
+                 
+     <!---------popup for Split Package------->
+   <div class="dialogoverlay" style=" z-index:9999;" id="mergeitem_dialogoverlay"></div>
+   <div  id="dialogbox_mergeitem" style=" display:none;z-index:99991;max-height: 100%; overflow: auto; width:40%; margin-left:29%;"><a id="close" onclick="Alert_mergitem.Cancel()" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Merge Tickets</div>
+        <div class="content-gird">
+       <!--------------> 
+     
+      <!----------> 
+      <script>
+      function setCheckedAll(obj)
+      {
+          var check = document.getElementsByName("checkboxlistitem");
+    for (var i=0; i<check.length; i++) 
+         {
+          check[i].checked = obj.checked;
+      }
+      }
+      
+      function MergeItemSave()
+      {
+         var check = document.getElementsByName("checkboxlistitem");
+          var pb=$('input[name=oprahorderiditem]:checked').val();
+      if(pb==undefined||pb=='')
+      {
+        alert('Please select item to merge with');
+        return false;
+      }
+         var s=''
+    for (var i=0; i<check.length; i++) 
+         {
+          if(check[i].checked&&check[i].value!=pb)
+          s+=check[i].value+',';
+      }
+       if(s!='')
+      s= s.slice(0, -1);
+      
+      if(s=='')
+      {
+        alert('Please select some items to merge');
+        return false;
+      }
+     
+      MergeItemSaves(pb,s);
+      
+      }
+      </script>  
+        <div class="top-stats" style="width:auto;">
+        <apex:outputpanel id="mergeitemblock">
+    <table  class="display" width="100%">
+  <thead>
+  <tr>
+    <th><input onclick="setCheckedAll(this)" type="checkbox"/></th>
+    <th>Ticket Name</th>
+    <th>Parent Badge</th>
+    </tr>
+  </thead>
+  <tbody>
+  
+  <apex:repeat value="{!mergeitlist}" var="item">
+  <tr>
+    <td><input type="checkbox" name="checkboxlistitem" value="{!item.id}"/></td>
+    <td>{!item.item_name__c}</td>
+    <td class="textcenter">
+    <input type="radio" name="oprahorderiditem" value="{!item.id}"/>
+    </td>
+  </tr>
+  </apex:repeat>
+ 
+</tbody>
+</table>  
+</apex:outputpanel>
+      </div><!---close of top-stats ---->
+      <!----------table start---------->  
+     
+      
+      <!------------------------------->
+
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <button class="button-a blue" onclick="MergeItemSave();return false;">Save</button>
+          <!--&nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_splitpkg.Cancel()">Cancel</button>-->
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+       <!------------end of popup for Merge Item-------------> 
+    </apex:form>   
+<!---------popup for split package------->
+
+<apex:form id="packagesplitform">
+ <!-- ----------------------------------action function for split package ----------------------- -->   
+                 <apex:actionFunction name="getPackageList" action="{!getPackageList}" rerender="ticketpackagelistsection" status="AjaxLoader"/> 
+                 <apex:actionFunction name="splitpackage" action="{!splitpackage}"  rerender="ticketpackagelistsection" status="AjaxLoader" oncomplete="Alert_splitpkg_prev.Cancel();Alert.render('Your Badge Has Successfully Split' ,'Success','ok');"/>
+                 <apex:actionFunction name="previewpackage" action="{!previewpackage}"  rerender="previewpackagesplitpanel" status="AjaxLoader" oncomplete="Alert_splitpkg_prev.render('dialogbox_splitpkg_prev','splitpkg_prev_dialogoverlay','Alert_splitpkg_preview' ,this);"/>
+    
+     <!---------popup for Split Package------->
+   <div class="dialogoverlay" style=" z-index:9999;" id="splitpkg_dialogoverlay"></div>
+   <div  id="dialogbox_splitpkg" style=" display:none;z-index:99991; width:40%; margin-left:29%;"><a id="close" onclick="Alert_splitpkg.Cancel()" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Split Package</div>
+        <div class="content-gird">
+       <!--------------> 
+     
+      <!---------->   
+        <div class="top-stats" style="width:auto;">
+      <!--------> 
+      
+       <apex:outputpanel id="ticketpackagelistsection">
+                    <apex:selectList value="{!selectedpackagetickets}" size="1" styleclass="selectlist-datatable">
+            
+                        <apex:selectOptions value="{!packagelist}"/>
+            <apex:actionSupport event="onchange" action="{!getPackageListContent}" status="AjaxLoader" rerender="ticketpackagelistsectioncontent"/>
+            
+                    </apex:selectList>
+            
+                </apex:outputpanel>
+     <!----------> 
+     <!--<a class="togglebtn right" title="Split Package" onClick="Alert_splitpkg.Cancel();Alert.render('Your Package Has Successfully Split' ,'Success','ok');">Split</a>-->
+      <a id="splt_prevbtn" class="togglebtn right margin-ryt-5px" title="Preview" onclick="previewpackage();">
+      Preview</a>
+      </div><!---close of top-stats ---->
+      <!----------table start---------->  
+      <div  class="padding-5px">
+      <apex:outputpanel id="ticketpackagelistsectioncontent">
+      <apex:inputHidden id="hiddenticketpoolid" value="{!ticketpoolid}"/>
+      
+  <table   class="display" width="100%">
+  <thead><tr>
+  
+  <th></th>
+   <th>Package Buyer</th>
+   <!--  <th>Ticket Name</th>-->
+  </tr>
+  </thead>
+  <tbody>
+<!---------->  
+<apex:repeat value="{!packagelistcontent}" var="pck">
+  <tr>
+    <td><input type="radio" name="ticketpool" value="{!pck.id};{!pck.Item_pool__c}" onclick="document.getElementById('thePage:packagesplitform:hiddenticketpoolid').value=this.value;"/></td>
+    <td>{!pck.tkt_Profile__r.First_Name__c} {!pck.tkt_Profile__r.Last_Name__c}<span class=" blue_anchor"></span></td>
+
+   <!-- <td>
+   <select class="selectlist chzn-select" multiple='true' style="width:222px;">
+      <option>Admission</option>
+      <option>Wifi</option>
+      </select>
+      </td>
+      -->
+
+     </tr>
+</apex:repeat>
+ 
+  </tbody>
+</table>
+</apex:outputpanel>
+      </div>  
+      <!------------------------------->
+
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <!--<button class="button-a blue" onclick="Alert_splitpkg.Save()">Save</button>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_splitpkg.Cancel()">Cancel</button>-->
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+       <!------------end of popup for Split Package-------------> 
+       <apex:outputpanel id="previewpackagesplitpanel">
+         <!---------popup for Split Package Preview------->
+   <div class="dialogoverlay" style=" z-index:99999;" id="splitpkg_prev_dialogoverlay"></div>
+   <div  id="dialogbox_splitpkg_prev" style=" display:none;z-index:999991; width:40%; margin-left:29%;"><a id="close" onclick="Alert_splitpkg_prev.Cancel()" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Split Package Preview</div>
+        <div class="content-gird">
+       <!--------------> 
+     
+      <!---------->   
+        <div class="top-stats" style="width:auto;">
+      <!--------> 
+     <span class="font-12x strong_700"> 
+     <!--Full Conference (Admission-2, Wifi-1)-->
+    </span>
+     
+     <!----------> 
+
+     <div class=" clear"></div>
+    </div><!---close of top-stats ---->
+      <!----------table start---------->  
+      <div class="padding-5px">
+  <table   class="display" width="100%">
+  <thead>
+<tr>
+   <th>Default Split Preview</th>
+  
+  </tr>
+  </thead>
+  <tbody>
+<!---------->  
+<apex:variable var="i" value="{!1}"/>
+<apex:repeat value="{!pbs}" var="p">
+  <tr>
+   
+   <td>
+      {!i})Ticket: {!p.Ticket},
+      Line Items: {!p.LineItems}
+      </td>
+<!-------->  
+</tr>
+<apex:variable var="i" value="{!i+1}"/>
+</apex:repeat>
+    
+ 
+  </tbody>
+</table>
+      </div>  
+      <!------------------------------->
+  
+   <!-------------------Preview Example for particular split against attendee--------->
+            <!---------->   
+        <div class="top-stats" style="width:auto;">
+      <!--------> 
+     <span class="font-12x strong_700"> 
+     <!--Oprah Winfrey
+     (TKT_1345)
+     (2 Admissions, 2 Wifi)-->
+     
+    </span>
+     
+     <!----------> 
+
+     <div class=" clear"></div>
+    </div><!---close of top-stats ---->
+      <!----------table start---------->  
+      <div  class="padding-5px">
+  <table   class="display" width="100%">
+  <thead>
+<tr>
+   <th>Attendee</th>
+   <th>Split lineitems</th>
+  </tr>
+  </thead>
+  <tbody>
+<!---------->  
+<apex:variable var="i" value="{!1}"/>
+<apex:repeat value="{!pbs}" var="p">
+  <tr>
+   <td>
+   
+    {!i})  {!p.TicketGnuserName}
+   </td>
+   <td>
+   <apex:selectList styleclass="chzn-select" multiselect="true" value="{!p.LineItemsId}" style="width:260px;">
+   <apex:selectOptions value="{!splitoption}"/>
+   </apex:selectList>
+    <!--<select class="selectlist chzn-select" multiple='true' style="width:222px;">
+      <apex:repeat 
+      <option>Wifi</option>
+      <option>Admission</option>
+      </select>-->
+   </td>
+   </tr>
+   <apex:variable var="i" value="{!i+1}"/>
+</apex:repeat>
+   <!-------->  
+  
+ 
+  </tbody>
+</table>
+      </div>  
+        <!-------------------End of Preview Example for particular split against attendee--------->
+         
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <!--<button class="button-a blue" onClick="Alert_splitpkg_prev.Cancel();Alert.render('Your Badge Has Successfully Split' ,'Success','ok');">Split</button>-->
+     <apex:outputpanel rendered="{!pbs.size!=0}">
+     <button class="button-a blue" onclick="splitpackage();return false;" >Split</button></apex:outputpanel>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_splitpkg_prev.Cancel();return false;">Cancel</button>
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+       <!------------end of popup for Split Package Preview-------------> 
+        <script>
+       
+       try{
+                                                    var $= jQuery.noConflict();
+                                                    $(function() {
+                                                    $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+                                                    });
+                                                    }catch(e){}
+        </script>
+        </apex:outputpanel>   
+   </apex:form>
+    <!------------end of popup for split package------------->
+    
+  <!---------checkbox select function-------------------->
+<script>
+ <!---------checkbox select function-------------------->
+ var tktype;
+ var chkdtkt;
+ var chktype=[];
+ var arr=[]; //Global array list variable 
+ var unchkarr=[];
+/*******adding select row arraylist function*******/
+function pusharrobj(rowidd){
+        arr.push(rowidd);
+    /*alert(arr.length)*/
+    }
+    
+    function pushunchkarrobj(rowidd){
+        unchkarr.push(rowidd);
+    /*alert(arr.length)*/
+    }
+/*****************function calling on select all checkbox*******************************/
+  function setChecked1(obj) 
+    {
+   var hasmorepages=false;
+     var str=j('#example_paginate span').children().length;
+     
+    if(str>1){
+    hasmorepages = true;}
+        var check = document.getElementsByName("id[]");
+    //    alert(check);
+        for (var i=0; i<check.length; i++) 
+         {
+          check[i].checked = obj.checked;
+           if(obj.checked==true){
+            if(hasmorepages)    
+           $(".selectall_entire").css("display","block");
+
+            $(check[i]).parent().parent().addClass("currenttr");//highlighting the checked rows
+           //  var x=check[i].parentNode.parentNode.setAttribute('id' , 'trr' +(i+1));//assign select //row's id
+             pusharrobj(check[i].parentNode.parentElement.id);//id's adding into array
+           // alert(check[i].parentNode.parentElement.id); 
+           }else{
+                 $(check[i]).parent().parent().removeClass("currenttr");//removing the highlight the checked rows
+                       $(".selectall_entire").css("display","none");
+
+               arr=[];//on unchecked clearing the arraylist 
+               
+           }
+        
+           }
+}
+/********************function for rowlevel(individual) check****************************/
+function rowchk1(rowchks)
+{
+  var check = document.getElementsByName("id[]");
+  
+  
+  
+  //alert(tktype);
+  //!='Staff Admission
+  for (var i=0; i<check.length; i++) 
+         {
+          var qry = check[i];
+          var tktt = $(qry).parents("tr").find("td:nth-child(7)").html();
+          if(rowchks.checked==true&&check[i].checked==true&&tktt!='Staff Admission'){
+            var jsobj = new Object();
+            jsobj.chkdd = check[i].checked.toString();
+            jsobj.ttyp = tktt;
+            chktype.push(jsobj);
+          }
+          if(rowchks.checked==false&&check[i].checked==true&&tktt!='Staff Admission'){
+            var jsobj = new Object();
+            jsobj.chkdd = check[i].checked.toString();
+            jsobj.ttyp = tktt;
+            chktype.push(jsobj);
+          }
+          
+
+          } 
+        //}
+        console.log(chktype);
+if(rowchks.checked==false){
+ $(rowchks).parent().parent().removeClass("currenttr");//highlighting the checked rows
+         pushunchkarrobj(rowchks.parentNode.parentNode.id);//adding into the arraylist
+         tktype = $(rowchks).parents("tr").find("td:nth-child(7)").html();
+         chkdtkt = rowchks.checked;
+        }
+
+if(rowchks.checked==true){
+ $(rowchks).parent().parent().addClass("currenttr");//highlighting the checked rows
+         pusharrobj(rowchks.parentNode.parentNode.id);//adding into the arraylist
+
+         //console.log($(rowchks).parents("tr").find("td:nth-child(7)").html());
+           //alert($(rowchks).parents("tr").find("td:nth-child(7)").html());
+           tktype = $(rowchks).parents("tr").find("td:nth-child(7)").html();
+         chkdtkt = rowchks.checked;
+           
+        }
+        
+        else{
+         $(rowchks).parent().parent().removeClass("currenttr");//highlighting the checked rows
+                 for(var i=0;i<arr.length;i++){
+                   if(rowchks.parentNode.parentNode.id == arr[i])//comparing the rowid if already in the list
+                   {
+                       arr.splice(i,1);//removing the unselectedchkbox row id
+                   }
+               
+               }
+            
+                        }
+                       // alert(arr.length); 
+    }
+
+//alert(arr.length); <!---------checkbox select function-------------------->
+ 
+
+
+/****************function calling on click of options(condition if arraylength greater than1)******************/
+function checklen(clkbtn_id){
+    if(arr.length>=1){
+        //alert("true");
+        //alert(clkbtn_id.id);
+        
+    if(clkbtn_id.id=='printbdg_btn'){
+         var ticketid_list11='';
+        /*    for(var j=0; j<arr.length; j++){
+                ticketid_list11=ticketid_list11+arr[j]+',';
+                
+            }
+            printingbadge(ticketid_list11);  */
+        Alert_printbadge.render('dialogbox_printbadge','printbadge_dialogoverlay','Alert_printbadge' ,clkbtn_id);
+        }   
+        
+   else if(clkbtn_id.id=='assignbl_btn'){
+  Alert_assignbl.render('dialogbox_bl','bl_dialogoverlay','Alert_assignbl' ,clkbtn_id); 
+       }
+       
+        else if(clkbtn_id.id=='assignbps_btn'){
+        
+Alert_assignbps.render('dialogbox_bps','bps_dialogoverlay','Alert_assignbps' ,clkbtn_id);
+       }
+       
+        else if(clkbtn_id.id=='mergebdg_btn'){
+        console.log(arr);
+        if(arr.length>2)
+        {
+            Alert.render('You can select maximum two records' ,'Alert','ok');
+        }
+        else{
+            var email_list='';
+            var ticketName='';
+            for(var j=0; j<arr.length; j++){
+                email_list=email_list+arr[j]+',';
+                }
+                if(email_list!='')
+                email_list=email_list.substring(0, email_list.length - 1);
+                
+
+                getTicketToMergeList(email_list);
+                 
+          
+          }    
+       }
+       
+        else if(clkbtn_id.id=='unmergebdg_btn'){
+
+                getMergeList();
+ Alert_unmergebadge.render('dialogbox_umbdg','umbdg_dialogoverlay','Alert_unmergebadge' ,clkbtn_id);    
+       }
+       
+        else if(clkbtn_id.id=='assignrole_btn'){
+          var check = document.getElementsByName("id[]");
+         var ticketid_list44='';
+         var chkval;
+         var checkedbxs = [];
+         var othertkts = [];
+         
+         
+                    for(var i=0; i<check.length; i++)
+                    {
+                      var qry = check[i];
+                      var tktt = $(qry).parents("tr").find("td:nth-child(7)").html();
+                      console.log(tktt);
+                      console.log(check[i].checked);
+
+                      if(check[i].checked==true&&tktt=='Staff Admission'){
+                        
+                        
+                        checkedbxs.push(tktt);
+                      }
+                      if(check[i].checked==true&&tktt!='Staff Admission') {
+                        othertkts.push(tktt);
+                      }
+                      console.log('--checkedbxs-legnth--'+checkedbxs.length);
+                    }
+                    for(var j=0; j<arr.length; j++){
+                        ticketid_list44=ticketid_list44+arr[j]+',';
+                        //alert(ticketid_list44);
+                    }
+                    
+                   if(checkedbxs.length>0&&othertkts.length>0) {
+
+                    Alert.render('You Can Assign Role To Attendees With <b>Staff Admission</b> Ticket Type Only' ,'Alert','ok');
+                    //alert(ticketid_list44);
+                    //Alert.render('You Cannot <b>Assign Role</b> For <b>Tickets</b> other than <b>Event Staff Ticket</b>' ,'Alert','ok');
+                   }
+                   
+                    else if(othertkts.length>0) {
+
+                    Alert.render('Please Select Attendees with Ticket Type <b>Staff Admission</b> only' ,'Alert','ok');
+                    //alert(ticketid_list44);
+                    //Alert.render('You Cannot <b>Assign Role</b> For <b>Tickets</b> other than <b>Event Staff Ticket</b>' ,'Alert','ok');
+                   }
+                   else if(checkedbxs.length>0&&othertkts.length==0) {
+                       //alert('---ticketid_list44----'+ticketid_list44);
+                      //Alert.render('---ticketid_list44----'+ticketid_list44,'Alert','OK');
+                      console.log(ticketid_list44);
+                      if(checkedbxs.length>1)
+                      {
+                      Alert.render('You have Selected Multiple Attendees. Please note that All the Selected <b>Attendees</b> will have a <b>Same Role!</b>','Alert','OK');
+                      }
+                      
+                    assignTagActionFunction(ticketid_list44);       
+Alert_assignrole.render('dialogbox_assignrole','assignrole_dialogoverlay','Alert_assignrole' ,clkbtn_id);   
+       }
+       
+       }
+       else if(clkbtn_id.id=='assignseat_btn'){
+       
+ Alert_assignseatno.render('dialogbox_assignsno','assignsno_dialogoverlay','Alert_assignseatno' ,clkbtn_id);    
+       }
+       
+       else if(clkbtn_id.id=='assigntag_btn'){
+        var ticketid_list44='';
+                    for(var j=0; j<arr.length; j++){
+                        ticketid_list44=ticketid_list44+arr[j]+',';
+                        //alert(ticketid_list44);
+                    }
+                    assignTagActionFunction(ticketid_list44);
+                    Alert_assigntag.render('dialogbox_assigntag','assigntag_dialogoverlay','Alert_assigntag' ,clkbtn_id); 
+                    eventid='{!selectedevent}';
+                    loadtags('{!selectedevent}',ticketid_list44);
+ 
+                     
+  
+       }        
+        
+        }
+
+    else{
+        //alert("false");
+        Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+        }
+    
+    }
+
+</script>
+    
+    <!-----/*********************//Java Script Section*******************/-->
+    <script>
+/************script for selected tag on click of save assign tag popup***************/
+ var result='';
+              function append_selecttag() {
+                 
+//alert($("#dd1").val());
+var spkrrows =  $('.tagtbl tbody tr');
+ //alert( $('.tagtbl tbody tr').length);
+
+ var sq=1;
+ $('.tagtbl > tbody  > tr').each(function() {
+    if($(this).find('input:checkbox').is(":checked") )
+    {
+        //alert("yes");
+        //alert($(this).find("td:nth-child(2)").text());
+        var selected_tag=$(this).find("td:nth-child(2)").text();
+        
+        
+        //alert(selected_tag); 
+        
+        var str=  sq+')' +' '+selected_tag;
+        result+= str + '\n<br/>' ;
+        sq++;
+    
+        }
+    else {
+        //alert("no");
+        }
+
+    
+     });
+//alert(result);
+
+}
+/************End of selected tag 0n click of save assign tag popup***************/
+</script>
+            
+ <!--------------savecallbackfunction------------->
+<script>
+function popup_savecallback(clkbtn){
+    //alert(clkbtn.id);
+    //alert(arr.length);
+
+if(clkbtn.id=='printbdg_btn'){
+    //alert("true");
+     //alert('{!selectedbdtemname}');
+    //genpdf();
+    }
+/////// 
+else if(clkbtn.id=='assignbl_btn'){
+    //alert("true");
+    
+    var assignbl=document.getElementById("assignbl_txt").value;
+    var allpages=false;
+    //alert(assignbl);
+    if($("[id$='all']").prop("checked") == true)
+    {
+    
+    allpages=true;
+    
+    }
+    if(allpages==false){
+    for(var j=0; j<arr.length; j++){
+      var ticketid1 = arr[j];
+         save_badgelabels(assignbl ,ticketid1,allpages);
+          //added tosave to db end   
+          Alert_assignbl.Cancel();//call of closing the popup method    
+         document.getElementById("assignbl_txt").value='';//clearing the roomtextbox
+         
+        }
+        }
+        else{
+      //  alert(unchkarr);
+        save_badgelabels(assignbl ,ticketid1,allpages,JSON.stringify(unchkarr));
+          //added tosave to db end   
+          Alert_assignbl.Cancel();//call of closing the popup method    
+         document.getElementById("assignbl_txt").value='';//clearing the roomtextbox
+         
+        
+        }
+         var ticketid1 = arr;
+       //  alert(ticketid1 );
+       //  save_badgelabels(assignbl ,ticketid1 );
+          //added tosave to db end   
+      //    Alert_assignbl.Cancel();//call of closing the popup method    
+      //   document.getElementById("assignbl_txt").value='';//clearing the roomtextbox
+    
+    }
+////////
+<!-----badge print status code------>
+else if(clkbtn.id=='assignbps_btn'){
+    var assignbps=$("#bps_selectlst option:selected").text();
+    
+    var ticketid='';
+    var npflag=0;
+    var morethanone=arr.length; 
+    var unchkticketid='';
+        var ncflag=0;
+
+    
+     var chkallpages=false;
+     if($("[id$='all']").prop("checked") == true){
+     chkallpages=true;
+     }
+
+   for(var j=0; j<arr.length; j++){
+          ticketid=ticketid+arr[j]+',';
+                   
+         }
+         
+         for(var j=0; j<unchkarr.length; j++){
+          unchkticketid=unchkticketid+unchkarr[j]+',';
+        }           
+         
+         if(ticketid!='' || chkallpages==true)
+         ticketid=ticketid.substring(0, ticketid.length - 1);
+         Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_AttendeesController.getNotprintedcount}',
+            ticketid,
+           function(resultsd, eventd){
+           npflag=resultsd;
+            if(morethanone==1&&npflag==1&&assignbps=='Printed' && chkallpages==false)
+         {
+           var cnf=confirm("Badge is not printed. Do you want to print the badge?");
+           if(cnf==true)
+           {
+            printingbadge(ticketid);  
+        Alert_printbadge.render('dialogbox_printbadge','printbadge_dialogoverlay','Alert_printbadge' ,'printbdg_btn');
+           }
+           else
+           return;
+         }
+         else if(morethanone>1&&npflag==1&&assignbps=='Printed' && chkallpages==false)
+         {
+           var cnf=confirm("Some of the badges are not printed. Do you want to print the badges?");
+           if(cnf==true)
+           {
+            printingbadge(ticketid);  
+        Alert_printbadge.render('dialogbox_printbadge','printbadge_dialogoverlay','Alert_printbadge' ,'printbdg_btn');
+           }
+           else
+           return;
+         }
+         <!-----new code for all pages------->
+         else if(npflag==1&&assignbps=='Printed' && chkallpages==true)
+         {
+           var cnf=confirm("Some of the badges are not printed. Do you want to print the badges?");
+           if(cnf==true)
+           {
+            printingbadge(unchkticketid,chkallpages);  
+        Alert_printbadge.render('dialogbox_printbadge','printbadge_dialogoverlay','Alert_printbadge' ,'printbdg_btn');
+           }
+           else
+           return;
+         }
+         <!----new code for all pages end---->
+         else
+         {if(chkallpages==true){
+        // alert(unchkarr);
+         updateExistingBadgenotprinted(JSON.stringify(unchkarr),chkallpages);
+         
+         }else{
+       
+         
+         Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_AttendeesController.getBadgecreatedornot}',
+            ticketid,
+           function(res, eve){
+             //  alert('New function fired');
+               
+                ncflag=res;
+            //   alert(ncflag);
+               if(ncflag==0){
+                   if(allpages==true){
+                       updateExistingBadgenotprinted(JSON.stringify(unchkarr),chkallpages);
+                   }
+                   
+               }else{
+                   alert("Badge must be created prior to changing the status to Not Printed");
+               }
+               
+               
+               
+           });
+         
+         updateExistingBadgenotprinted(ticketid,chkallpages);
+         
+         
+         
+         
+         }
+         }
+           });
+         //alert(ticketid);
+         
+    }
+else if(clkbtn.id=='mergebdg_btn'){
+    //alert("true");
+             
+    }
+    
+else if(clkbtn.id=='unmergebdg_btn'){
+    //alert("true");
+   
+    }               
+
+else if(clkbtn.id=='assignrole_btn'){
+    //alert("true");
+         
+ assignRole();
+    }
+else if(clkbtn.id=='assignseat_btn'){
+    //alert("true");
+    var assignseat=document.getElementById("assignsno_txt").value;
+    //alert(assignseat);
+     var allpages=false;
+    //alert(assignbl);
+    if($("[id$='all']").prop("checked") == true)
+    {
+    
+    allpages=true;
+    
+    }
+    if(allpages==false){
+    for(var j=0; j<arr.length; j++){
+     
+             
+              var ticketid=arr[j];
+           
+          save_seatNo(assignseat ,ticketid,allpages);
+          //added tosave to db end
+          Alert_assignseatno.Cancel();//call of closing the popup method    
+         document.getElementById("assignsno_txt").value='';//clearing the roomtextbox
+         
+        }
+        }
+        
+        else{
+       save_seatNo(assignseat ,ticketid,allpages,JSON.stringify(unchkarr));
+          //added tosave to db end   
+         Alert_assignseatno.Cancel();//call of closing the popup method
+         document.getElementById("assignbl_txt").value='';//clearing the roomtextbox
+         
+        
+        }
+         var ticketid = arr;
+        
+    }
+else if(clkbtn.id=='assigntag_btn'){
+    //alert("true");
+    //alert(result);
+
+    for(var j=0; j<arr.length; j++){
+     //alert(document.getElementById(arr[j]).childNodes[33].innerHTML);
+          //document.getElementById(arr[j]).childNodes[19].innerHTML=assignseat;    
+          Alert_assigntag.Cancel();//call of closing the popup method    
+         
+         document.getElementById(arr[j]).childNodes[16].innerHTML=result;
+         //document.getElementById("assignsno_txt").value='';//clearing the roomtextbox
+        
+        }
+         result=''; 
+    }   
+ else if(clkbtn.id=='spltpkg_btn'){
+      
+ }    
+                
+
+}
+
+
+</script>
+<!------------------start of alert popup****************************/-->
+ 
+
+</apex:page>

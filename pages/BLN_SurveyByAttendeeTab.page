@@ -1,0 +1,409 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_SurveyByAttendeeTabReportCon" action="{!hideEventsTab}" readOnly="true">
+        <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/> 
+    <!---------------------------------------------->
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+    <!------------//common styles component---------->
+    <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />   
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-surveyquest-report.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" /> 
+    <!-----------//datatable stylescss------------->
+    <style>
+        button.ColVis_Button {margin-top:-32px !important;}
+        .subtable tbody tr  td:last-child { border-right:0px !important;}   
+        .subtable tbody tr:last-child  td{ border-bottom:0px !important; } 
+        .formelem_boxfull .form_quest input[type="text"]{ margin-left:7px;} 
+        .surveybyatt_tbl tbody tr td .grpheader {background-color:#D2E8FB !important;}
+    </style>
+    <!-----------//datatable stylescss------------->
+  
+  <apex:form id="myForm">
+         <!-------------------------tmplate print & Export Code Start--------------------------->
+         <div class="datatable-wrapper"> 
+            <!---start of tab1 topstats3--->
+            <div id="tab3topstats" > <!-- style="display:none;" -->
+               <!-------------------------print and export button-------------------------------------------->
+               <div class="print_export_cont" style=" text-align:right; margin-bottom:0px; margin-top:5px; margin-right:.4%;">
+               <div id="example_filter" align="right" style="margin-bottom:10px">
+                   <!-- <label style="display:none;" > 
+                       Search:<input type="text" id="searchKeySBA" class="" aria-controls="example" onkeyup="table4.draw();" style="width:20%;margin-right:670px;"/>
+                   </label> -->
+                  <apex:outputText rendered="{!ticketsList.size<1000}">
+                      <input type="button" class="datatables_btn" onclick="exportAttendeeslist();return false;" value="Export"/>
+                  </apex:outputText>
+                  
+                  <apex:outputText rendered="{!ticketsList.size>1000}">
+                      <input type="button" class="datatables_btn" onclick="continueToBatch('sendToMail')" value="Export"/>
+                  </apex:outputText> 
+               </div> 
+    
+   
+                  <!--------> 
+               </div>
+               <!--------------------------//end of print and export button---------------------------------->
+            </div>
+            <!--close of tab3 topstats--->
+         </div>
+         <!--close of datatable-wrapper-->
+         <!-------------------------end template print & Export Code Start--------------------------->
+         <!-------------------------tmplate Code Start--------------------------->
+         <!-----------startoftabs----------------------------> 
+          
+               <div class="TabbedPanelsContent" style=" padding-top:0px;">
+                  <div class="datatable-wrapper" style="margin-top:0px;" id="mainquestions_panelrr">
+                  <!-- ----------------search box for survey by attendee tab start------------------ -->
+          
+         <!-- ---------------search box for survey by attendee tab end---------------------- -->
+                 
+                     <!---------->
+                     <table class="example display surveybyatt_tbl" id='exampleAttendee'>
+                        <!---------------------------------------------------------- 1st ROW ------------------------------------------------------->
+                        <thead>
+                           <tr>
+                              <th >
+                                 <table style="width:100%;">
+                                    <thead>
+                                       <tr> 
+                                          <th style="width:16.3%;border-bottom:0px;">Level</th>
+                                          <th style="width:20%;border-bottom:0px;">Ticket Name</th>
+                                          <th style="width:32%;border-bottom:0px;">Questions</th>
+                                          <th style="width:35%;border-bottom:0px;border-right:0px;">Answers</th>
+                                       </tr>
+                                    </thead>
+                                 </table>
+                              </th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                     </table>
+          
+                     <!----------->
+                  </div>
+                  <!----close of datatable-wrapper------>
+                  <!------------->
+               </div>
+               <!--close3rd tabbedpanelscontent-->
+               <!----------------------------------------------> 
+         <!---------------------->
+         <!------------------------------------------------------------->
+         <apex:actionFunction action="{!exportSurveyQuestions2}" name="surveyByAttendeeExportAction" reRender="aaa"> 
+            <apex:param value="" name="search" />
+         </apex:actionFunction>
+         <c:ed_popupbox ></c:ed_popupbox>  
+     
+         <script>
+        
+         function continueToBatch(clkbtn)
+         {
+             Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+         }
+         
+         function callback(clkbtn , okbtnn){
+             if(clkbtn =='sendToMail')
+             {
+                 exportAttendeeslist();
+             }
+             
+        }
+        function callbackcancel(clkbtn,cnclbtnn)
+        {
+            if(clkbtn =='sendToMail')
+             {
+                 //alert('cancel');
+             }
+             
+        }
+          </script>
+          
+          <script>
+         
+         
+         function hideloader()
+         {
+         alert('hide');
+         $('.Mask').hide();
+         }
+         function exportAttendeeslist(){
+          constructstr();
+          } 
+      
+          function constructstr(){ 
+              var srch1= $("[id$='exampleAttendee_filter']").find('input').val();   
+              //alert(srch1);
+              surveyByAttendeeExportAction(srch1);                        
+          }
+         </script>
+      </apex:form>
+   <!-------------//end of basic template component------------------------>
+   <!--------//start of datatable js component------------->
+   <c:ed_datatablejs ></c:ed_datatablejs>
+   <!--------end of datatable js library------------->
+    <script type="text/javascript" language="javascript" class="init">
+                        
+                        var j = jQuery.noConflict();
+                        var rowindex=0;
+                        var table4;
+                        j(document).ready(function() {                        
+                        table4 = j('#exampleAttendee').DataTable( 
+                        {
+                             
+                            "pagingType": "full_numbers",
+                            "searching" :"true",
+                            "aLengthMenu": [[10, 15,20,25,50], [10,15,20, 25,50]],
+                            "iDisplayLength": 10,
+                                          "sDom": 'W<"clear">lfrtip', 
+                            
+                            /**default orderid in asc sorting**/
+                             "order": [[0, "asc"]],
+                        "bSort": false,
+                        "bAutoWidth": false, // Disable the auto width calculation
+                        "bFilter": false,
+                        //"oColumnFilterWidgets": {
+                        //"aiExclude": [ 0,2,4,5,6,7,9,10 ]
+                        
+                        //},
+                        
+                        "processing": true,
+                        "serverSide": true,
+                        "ajax": '{!$Page.BLN_SurveyByAttendee_Report_HelperPage}',                                            
+                        "fnServerData" : function ( sSource, aoData, fnCallback ) { 
+                            
+                            aoData.push({ "name": "searchKeySBA", "value":aoData[5].value.value});
+                            console.log(aoData);
+                            console.log(aoData[5].value.value);
+                            
+                            $.ajax( {
+                            "dataType": 'json',
+                            "type": "GET",
+                            "url": '{!$Page.BLN_SurveyByAttendee_Report_HelperPage}',
+                            "data": aoData,
+                            "success": fnCallback,
+                            "error": function (e) {
+                                //   console.log(e);
+                               }
+                            } );
+                            
+                            },
+                                "fnPreDrawCallback": function() {
+                                           try{
+                                           var info = table.page.info();
+                                   rowindex=parseInt(info.start);
+                                   }catch(e){}
+                                             },
+                                             <!---columns---->
+                                         "columns": [
+               {
+               data:   "item",
+                render: function ( data, type, row ) {  
+                var returnstring = '';
+                for(i=0;i<row.ticketsData.length; i++) {                                
+                       returnstring+='<ul class="grpheader"><li class="labeltitles">Attendee Name: </li><li class="labeloutput">'+row.ticketsData[i].tkt_profile__r.First_Name__c+' '+row.ticketsData[i].tkt_profile__r.Last_Name__c+'</li>';
+                       returnstring+='<li class="labeltitles">Email Id: </li><li class="labeloutput">'+row.ticketsData[i].tkt_profile__r.Email__c+'</li>';
+                       if (row.ticketsData[i].tkt_profile__r.Mobile__c != undefined) {
+                       returnstring+='<li class="labeltitles">Mobile No: </li><li class="labeloutput">'+row.ticketsData[i].tkt_profile__r.Mobile__c+'</li>';
+                       }
+                       returnstring+='<li class="labeltitles">Order Id: </li><li class="labeloutput">'+row.ticketsData[i].Order__r.Name+'</li></ul>';     
+                       returnstring+='<table class="inside_tbl display" width="100%"><tbody>';
+                       
+                        var isLevel='';
+                      for(x=0;x<row.ticketsData[i].User_Answers__r.totalSize;x++){
+                           if(row.ticketsData[i].User_Answers__r.records[x].Item_Question__r.Question_Level__c=='Event Level'){
+                               isLevel=isLevel+1;
+                           }
+                       } 
+                       
+                        if(isLevel!=0){  
+                        returnstring+='<tr>'; 
+                        returnstring+='<td class="eventlvl_bg" style=" width:16.6%;">Event Level</td>';
+                        returnstring+='<td class="grptd">';
+                        returnstring+='<table class="insidetkt_tbl display" width="100%">';
+                        returnstring+='<tbody>';
+                        returnstring+='<tr><td style="width:24.2%"></td>';
+                        returnstring+='<td class="grptd">';
+                        returnstring+='<table width="100%" class="insidesqans_tbl el_sqans  display hideRow">';
+                        returnstring+='<tbody>';
+                           
+                               var eventNo1 = 0;
+                               var Question = '';
+                               if (row.EventlevelList != undefined) { 
+                                for (k=0; k<row.EventlevelList.length; k++) {
+                                        if (row.EventlevelList[k].Ticket__r.Id==row.ticketsData[i].Id) {
+                                            if (row.EventlevelList[k].Item_Question__r.Question__r.Answer_Type__c != 'Checkboxes') {
+                                            returnstring+='<tr>';
+                                                returnstring+='<td style="width:50%;">'+row.EventlevelList[k].Item_Question__r.Question__r.Question_Text__c+'</td>';
+                                                returnstring+='<td style="width:50%;">'+row.EventlevelList[k].UAnswer_Text__c+'</td>';
+                                            returnstring+='</tr>'; 
+                                            } else {
+                                                if(Question.indexOf(row.EventlevelList[k].Item_Question__r.Question__r.Id) == -1) {
+                                                    Question = Question+row.EventlevelList[k].Item_Question__r.Question__r.Id;          
+                                                    returnstring+='<tr><td style="width:50%;">'+row.EventlevelList[k].Item_Question__r.Question__r.Question_Text__c+'</td> <td style="width:50%;">';
+                                                    var result1='';
+                                                    if(row.EventlevelList[k].Item_Question__r.Question__r.Answer_Type__c == 'Checkboxes'){
+                                                    var QueId=row.EventlevelList[k].Item_Question__r.Question__r.Id;
+                                                    }
+                                                        for (l=0; l<row.EventlevelList.length; l++) {
+                                                             if (row.EventlevelList[l].Item_Question__r.Question__r.Answer_Type__c == 'Checkboxes' && row.EventlevelList[l].Ticket__r.Id == row.ticketsData[i].Id) {
+                                                                    
+                                                                     if (row.EventlevelList[l].Item_Question__r.Question__r.Id==QueId) {
+                                                                          if (result1 == '') {
+                                                                              result1=row.EventlevelList[l].UAnswer_Text__c; 
+                                                                          }  else {
+                                                                               result1=', '+row.EventlevelList[l].UAnswer_Text__c; 
+                                                                          }  
+                                                                          returnstring+=result1; 
+                                                                     }
+                                                             }
+                                                        }
+                                                    returnstring+='</td></tr>';
+                                                     }
+                                             }
+                                         }
+                                }
+                             }
+                      returnstring+='</tbody></table></td></tr></tbody></table></td></tr>';  
+                       }
+                      
+                       var isLevelTic='';
+                       for(y=0;y<row.ticketsData[i].User_Answers__r.totalSize;y++){
+                           if(row.ticketsData[i].User_Answers__r.records[y].Item_Question__r.Question_Level__c=='Ticket Level'){
+                               isLevelTic=isLevelTic+1;
+                           }
+                       }
+                      
+                      if(isLevelTic==0){
+                      returnstring+='</tbody></table>';
+                      }
+                       if(isLevelTic!=0){ 
+                      
+                      returnstring+='<tr>';
+                        returnstring+='<td class="tktlvl_bg" style=" width:16.6%;">Ticket Level</td>';
+                        returnstring+='<td class="grptd">';
+                        returnstring+='<table class="insidetkt_tbl display hideRow" width="100%">';
+                        returnstring+='<tbody>';
+                        returnstring+='<tr><td style="width:24.2%">';
+                        //console.log(row.ticketsData[i].Item_Type__r);
+                          if (row.ticketsData[i].Item_Type__r!= undefined) {
+                               if (row.ticketsData[i].Item_Type__r.Name != 'Package') {
+                                   returnstring+=row.ticketsData[i].Item__r.item_name__c+'<span class="font-12x labeltitles margin-lft-5px">('+row.ticketsData[i].Name+')</span>';
+                               }
+                               
+                               if (row.ticketsData[i].Item_Type__r.Name == 'Package') {
+                                   returnstring+=row.ticketsData[i].Item_Pool__r.Item_Pool_Name__c+'<span class="font-12x labeltitles margin-lft-5px">('+row.ticketsData[i].Name+')</span>';
+                               }
+                               if (row.ticketsData[i].Item_Type__r.Name == 'Package') {
+                                   returnstring+='<br/>';
+                                   returnstring+='<span class="font-10x labeltitles margin-lft-0px">('+row.ticketsData[i].Item__r.item_name__c+')</span>';
+                               }
+                         }
+                               
+                       returnstring+='</td>';
+                       <!----quest and answer td----> 
+                       returnstring+='<td class="grptd">';
+                       <!---start of quest and ans table---->
+                       returnstring+='<table width="100%" class="insidesqans_tbl tl_sqans display hideRow">';
+                       returnstring+='<tbody>';
+                       
+                       
+                       var QuestionCheckboxItem1 = '';
+                        
+                        for (n=0; n<row.TicketlevelList.length; n++) {                                                             
+                            if (row.TicketlevelList[n].Ticket__r.Id==row.ticketsData[i].Id) {                                                              
+                                if (row.TicketlevelList[n].Item_Question__r.Question__r.Answer_Type__c != 'Checkboxes') { 
+                                returnstring+='<tr>';
+                                returnstring+='<td style="width:50%;">'+row.TicketlevelList[n].Item_Question__r.Question__r.Question_Text__c+' </td>';
+                                returnstring+='<td style="width:50%;">'+row.TicketlevelList[n].UAnswer_Text__c+' </td>';
+                                returnstring+='</tr>';
+                                }
+                            
+                                 if (row.TicketlevelList[n].Item_Question__r.Question__r.Answer_Type__c == 'Checkboxes') {
+                                if (QuestionCheckboxItem1.indexOf(row.TicketlevelList[n].Item_Question__r.Question__r.Id) == -1 ) {
+                                 QuestionCheckboxItem1+=row.TicketlevelList[n].Item_Question__r.Question__r.Id;  
+                                  returnstring+='<tr><td style="width:50%;">'+row.TicketlevelList[n].Item_Question__r.Question__r.Question_Text__c+' </td>';
+                                  returnstring+='<td style="width:50%;">'; 
+                                  var resultitemcheckbox2 = '';
+                                  QueId1 = row.TicketlevelList[n].Item_Question__r.Question__r.Id;
+                                   for (o=0; o<row.TicketlevelList.length; o++) {
+                                           if (row.TicketlevelList[o].Item_Question__r.Question__r.Id==QueId1 && row.TicketlevelList[o].Ticket__r.Id==row.ticketsData[i].Id) {
+                                               if (row.TicketlevelList[o].Item_Question__r.Question__r.Answer_Type__c=='Checkboxes') {
+                                                  
+                                                       if (resultitemcheckbox2 != null && resultitemcheckbox2 != '') {
+                                                           resultitemcheckbox2+=', '+row.TicketlevelList[o].UAnswer_Text__c; 
+                                                       
+                                                       } else {
+                                                           resultitemcheckbox2+=row.TicketlevelList[o].UAnswer_Text__c; 
+                                                       }
+                                                   
+                                                    }
+                                           
+                                            }
+                                       
+                                   }
+                                   
+                                  returnstring+=resultitemcheckbox2+'</td></tr>';
+                                       
+                                       }
+                                 }
+                            }
+                        }
+                       returnstring+='</tbody></table></td></tr></tbody></table></td> </tr></tbody></table>';
+                        }
+                      } 
+                    return returnstring;
+                   } 
+               }
+     ]
+      
+                                            
+                                             
+                                  } ); 
+                        } );
+                        
+                     </script>   
+   
+   
+ 
+   <!------------common js libraries component----------->
+   <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>    
+
+   <!------------------------By Vineel------------------------------->
+   <script> 
+    function exporder3(){          
+    constructstr();
+    } 
+    
+    function constructstr3(){
+    //  individualexport(document.getElementById("{!$Component.pgid:copid:commoncomponent:myForm:fdate}").value,document.getElementById("{!$Component.pgid:copid:commoncomponent:myForm:tdate}").value,document.getElementById("{!$Component.pgid:copid:commoncomponent:myForm:selectorder}").value,document.getElementById("searchKey").value );
+    
+    }
+   </script>
+      <script type="text/javascript">
+var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+/*************function calling for tab toggle showhide**************/   
+ $("#tab1clk").click(function(){
+     //alert("1");
+     showpackage("tab1topstats","tab2topstats");
+     hidediv("tab3topstats");
+ })
+ $("#tab2clk").click(function(){
+     //alert("2");
+ 
+ showpackage("tab2topstats","tab1topstats");
+ hidediv("tab3topstats");
+ })
+ 
+  $("#tab3clk").click(function(){
+     //alert("3");
+ 
+ showpackage("tab3topstats","tab1topstats");
+ hidediv("tab2topstats");
+ 
+ })
+/***************************/   
+</script>
+</c:ed_basictemplate>
+   <!------------------------------------------------------->
+</apex:page>

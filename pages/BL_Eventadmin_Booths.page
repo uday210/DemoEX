@@ -1,0 +1,1230 @@
+<apex:page Controller="BL_Eventadmin_SampleBoothCon" showHeader="false" id="Thepage" standardStylesheets="false" action="{!checkUserId}">
+
+<head>
+<title>Boothleads</title>
+</head>
+ <!----- Including Style Sheets ------>
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<style>
+select, option{min-width:90px; max-width:170px}
+.eventtable{border-right:1px solid #cccccc;text-align:left;background-color:#f3f3f3;height:10px;width:30%;padding-left:25px;border-bottom:3px solid #FFFFFF;padding-left:10px;}
+.eventselect{border-right:1px solid #cccccc;text-align:left;background-color:#b4dff9;height:10px;width:30%;padding-left:25px;border-bottom:3px solid #FFFFFF;padding-left:10px;}
+.eventhover{ background-color:#cccccc;}
+</style>
+<apex:includeScript value="{!$Resource.PhoneSetup}"/> 
+ <script language="JavaScript">
+
+   
+   function validateAddBoothFields()
+   {    
+   //alert('============');
+       var lvBnId = document.getElementById('{!$Component.Thepage:Exhibitorform:Org1Name}').value;
+      // alert('============'+lvBnId);
+       var lvFnId = document.getElementById('{!$Component.Thepage:Exhibitorform:FirstName}').value;
+      // alert('============'+lvFnId);
+      
+       var lvLnId = document.getElementById('{!$Component.Thepage:Exhibitorform:LastName}').value;
+       var lvEnId = document.getElementById('{!$Component.Thepage:Exhibitorform:emailId}').value;
+       var lvCnId = document.getElementById('{!$Component.Thepage:Exhibitorform:OrgName}').value;   
+       //var PhoneId = document.getElementById('{!$Component.Thepage:userpopup:phone}').value;
+              
+     
+       if(lvFnId == ""   )
+    {
+        alert("Please Enter First Name");
+      
+        return false;
+    }  
+       
+     if(lvLnId == ""   )
+    {
+        alert("Please Enter Last Name");
+        
+        return false;
+    }     
+       
+        if(lvBnId == "" )
+    {
+        alert("Please Enter Booth Name");
+       
+        return false;     
+    }
+    if(lvEnId == ""){
+    alert("Please Enter Email id");
+       
+        return false;
+    
+    }
+     if(lvCnId == ""){
+    alert("Please Enter Organization name");
+       
+        return false;
+    
+    }
+ 
+   } 
+   
+    function validateEmail(var1)
+    {
+        var x= var1
+        var atpos=x.indexOf("@");
+        var dotpos=x.lastIndexOf(".");
+          if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length)
+          {
+              alert("Please enter a valid Email Id");
+              return false;
+          }else return true;
+    }
+     function callingChangeEventFunction(x){
+        ChangeEventFunction(x);
+    }
+    
+    function ValidateBoothadminForm()
+    {
+  alert('-----------------------');
+           var lvFnId = document.getElementById('{!$Component.Thepage:BoothAdminform:FirstName}').value;
+          // alert('====================Fname================='+lvFnId)
+           var lvLnId = document.getElementById('{!$Component.Thepage:BoothAdminform:LastName}').value;
+          // alert('====================Fname================='+lvLnId)
+           var lvEnId = document.getElementById('{!$Component.Thepage:BoothAdminform:emailId}').value;
+           var lvCnId = document.getElementById('{!$Component.Thepage:BoothAdminform:OrgName}').value;
+           
+                  
+           
+           
+           
+           
+        if(lvFnId == ""   )
+        {
+        
+            alert("Please Enter First Name");
+            
+            return false;
+        } 
+        
+        if(lvLnId == ""   )
+        {
+            alert("Please Enter Last Name");
+           
+            return false;
+        }   
+        
+        if(lvEnId == ""   )
+        {
+            alert("Please Enter Email Id");
+            
+            return false;
+        }
+        
+        if(lvCnId == ""   )
+        {
+            alert("Please Enter Organisation Name");
+            
+            return false;
+        }
+        
+        if(lvEnId !="" )
+        {
+           var boo = validateEmail(lvEnId.value );
+           
+           return boo;
+        }
+     
+    }
+    
+      function EditValidateForm()
+   {    
+   //alert('============');
+       var EditBoothName = document.getElementById('{!$Component.Thepage:edit:EditBoothName}').value;
+      // alert('============'+lvBnId);
+       var EditFirstName = document.getElementById('{!$Component.Thepage:edit:FirstNameEdit}').value;
+      // alert('============'+lvFnId);
+      
+       var EditLastName = document.getElementById('{!$Component.Thepage:edit:LastNameEdit}').value;
+      
+        var EditOrgname = document.getElementById('{!$Component.Thepage:edit:EditOrgName}').value; 
+       
+       
+      // var EditPhoneId = document.getElementById('{!$Component.Thepage:userpopup:Editphone}').value;
+       
+      
+       
+              
+       if(EditBoothName == "" )
+    {
+        alert("Please Enter Booth Name");
+       
+        return false;     
+    }
+       if(EditFirstName == ""   )
+    {
+        alert("Please Enter First Name");
+      
+        return false;
+    }  
+       
+     if(EditLastName == ""   )
+    {
+        alert("Please Enter Last Name");
+        
+        return false;
+    }     
+       
+      
+   
+     if(EditOrgname == ""){
+    alert("Please Enter Organization name");
+       
+        return false;
+    
+    }
+ 
+   } 
+   
+    
+    
+   
+  </script>
+
+
+
+
+
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/><!-----End --->
+<div id="page-top-outer">    
+
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    <div id="logo">
+
+    </div>
+    <!-- end logo -->
+    
+    <!--  start top-search -->
+    <div id="top-search">
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+        <td>        
+        <font  Class="welcome">Welcome :</font>
+                   <font class="username">{!$User.Firstname}&nbsp;{!$User.Lastname} </font></td>        
+        </tr>
+        </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+<div id="nav-right">          
+        <!----LOGOUT ACTION -->
+        <div class="nav">
+        <div class="table">
+        <apex:form >
+        <div class="nav-divider">&nbsp;</div>
+        <!--<apex:commandLink action="{!ProfileSettings}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" value="Profile"/>-->
+        <apex:outputLink value="/apex/BL_Eventadmin_Profile" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:outputLink>
+        <div class="nav-divider">&nbsp;</div>
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+        <div class="nav-divider">&nbsp;</div>
+       <!-- <apex:outputLink target="_new" value="/apex/Boothleads_Help_Booths" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" >Help</apex:outputLink>-->
+        </apex:form>
+        </div></div>           
+        <!----LOGOUT ACTION END--->
+        <div class="clear">&nbsp; </div>        
+        </div>
+        <!-- end nav-right -->
+        
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">
+  
+         <!--<div class="nav-divider">&nbsp;</div>-->
+          <ul class="select"><li><apex:outputLink value="/apex/BL_EventAdmin_Dashboard"><b>Dashboard</b> </apex:outputLink></li></ul>
+          <div class="nav-divider">&nbsp;</div>                    
+          <ul class="select"><li>
+          <apex:outputLink value="/apex/BL_EventAdmin_Events"><b>Events</b></apex:outputLink></li></ul>
+         
+         <ul class="current"><li>
+         <div class="nav-divider">&nbsp;</div>
+         <apex:outputLink value="/apex/BL_Eventadmin_samplebooth"><b>Booths</b></apex:outputLink></li></ul>
+          <div class="nav-divider">&nbsp;</div>
+         <ul class="select"><li><apex:outputLink value="/apex/Qrcode_Eventadmin_Attendees" ><b>Attendees</b> </apex:outputLink></li></ul>
+         <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li><apex:outputLink value="/apex/BL_EventAdmin_Reports"><b>Reports</b> </apex:outputLink>
+        
+        
+        
+        </li></ul>
+        
+        
+   
+        
+        
+        
+        
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <!--  start nav -->
+        
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................................................... END -->
+<div class="clear"></div>
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+ 
+<!-- start content -->
+<div id="content">
+    <!--  start page-heading -->
+    
+  <div id="page-heading">
+  <table width="98%" border="0">
+   <tr>
+    <td width="40%">
+    <apex:form id="Form1">
+     <apex:outputLabel ><font size="2" color="Black">Events</font></apex:outputLabel>
+     <apex:selectList size="1" multiselect="false" value="{!selectEvent}">
+      <apex:selectOptions value="{!eventslistforselect}"/>
+      <apex:actionSupport oncomplete="mallikoutpan" action="{!ListOfBoothAdmins}" event="onchange" status="AjaxLoader" reRender="ButtonsForm,BoothForm,ListofBoothAdmins"/>                       
+     </apex:selectList>&nbsp;&nbsp;
+     <!--<apex:outputtext value="{!DisplayNoEvent}" rendered="{!DisplayNoEventMessage }" style="color:#FF0000;Font-size:1.875em;font-style:italic;font-family:Times New Roman;"/> -->                     
+     <apex:outputPanel rendered="{!DisplayNoEventMessage}">
+      <script>
+       alert('Please select an Event...');
+      </script>
+    </apex:outputPanel>
+    
+    <apex:outputPanel id="mallikoutpan">
+     <!-- <td width="40%" align="right" >       
+      <apex:commandButton value="Add Booth" action="{!AddBooth}" styleClass="awesome" title="Add Booth"  rendered="{!Button}"/>&nbsp;&nbsp;
+      <apex:commandButton action="{!AddBoothAdmin}" value="Add Booth Admin" styleClass="awesome" title="Add Booth Admin" rendered="{!showButton}"/></td>
+     -->
+    </apex:outputPanel>  
+   
+    </apex:form>
+    </td>
+    <td>
+     <apex:form id="ButtonsForm"> 
+     <td width="60%">
+      <apex:commandButton value="Export Booth Admins" action="{!exportBoothadmins}" rendered="{!displayBoothExport}" styleClass="awesome"/> &nbsp;&nbsp;
+      <apex:commandButton value="Import Booths" action="{!importBooths}" rendered="{!Button}" styleClass="awesome"/> &nbsp;&nbsp;
+      <apex:commandButton value="Add Booth" action="{!AddBooth}" styleClass="awesome" title="Add Booth"  rendered="{!Button}"/>&nbsp;&nbsp;
+      <apex:commandButton action="{!AddBoothAdmin}" value="Add Booth Admin" styleClass="awesome" title="Add Booth Admin" rendered="{!showButton}"/>
+     </td>
+    </apex:form>
+    </td>
+   </tr>
+  </table>
+ </div> 
+  
+    
+   <br/><br/> 
+    
+   
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">        
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt="" /></th>
+        <th class="topleft"></th>
+        <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        <!--  start content-table-inner ...................................................................... START -->
+        <div id="content-table-inner">        
+        <!--  start table-content  -->
+        <div id="table-content">
+          <table width="100%" >
+  <tr>
+      <td width="30%" style="background-color:#54b5f1; height:35px; color:#FFFFFF; Font-size:18px;padding-left:15px;border-right:3px solid #FFFFFF;"> Booths</td>
+      <td width="70%" style="background-color:#54b5f1; height:35px; color:#FFFFFF; Font-size:18px;padding-left:15px;"> 
+      Booth Admins 
+      </td>
+     
+  </tr>
+  <tr>
+      <td> <div style="overflow:scroll; border:1px solid #CCCCCC;height:350px;">  <apex:form id="BoothForm">
+      <apex:actionFunction action="{!getListOfBoothAdmins2}" name="ChangeEventFunction" reRender="BoothForm,ListofBoothAdmins">
+             <apex:param name="BoothName" value=""/>
+          </apex:actionFunction>
+      
+      <apex:dataTable value="{!B}" var="UPdatedList"  style="width:100%;" border="0" styleClass="attendee">
+    
+      <apex:column styleClass="{!IF( UPdatedList.id == selectBooth ,  'eventtable' , 'eventselect')}" onclick="callingChangeEventFunction('{!UPdatedList.id}');"  >
+       <apex:commandLink action="{!getListOfBoothAdmins2}" value="{!UPdatedList.BT_Name__c}" style="font-weight:bold;font-size:12px;Padding-Left:10px;font-family:Times New Roman, Times, serif; display: block;padding: 8px 0px 5px 8px; font-family:Arial;" reRender="ButtonsForm,ListofBoothAdmins"  status="AjaxLoader" >
+        <apex:param value="{!UPdatedList.Id}" name="BoothName"/>
+        </apex:commandLink>
+         
+        
+      </apex:column>
+      
+      </apex:datatable></apex:form></div>
+      </td>
+ <td>
+ <apex:form id="ListofBoothAdmins">
+<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all.css"/> 
+<!--
+<link rel="Stylesheet" type="text/css" href="{!$Resource.extjs4_5}/extjs4_5/resources/css/ext-all.css"/>
+<script type="text/javascript" src="{!$Resource.extjs4_1}/extjs4_1/ext-all.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_3/examples/ux/data/PagingMemoryProxy.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_3/examples/ux/ProgressBarPager.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_2/examples/grid-plugins.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_2/examples/paging.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_3/examples/ux/CheckColumn.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_5}/extjs4_5/src/selection/CheckboxModel.js"></script>
+<link rel="Stylesheet" type="text/css" href="{!$Resource.extjs4_3}/extjs4_3/examples/ux/grid/css/GridFilters.css"/>
+-->
+
+<script type="text/javascript"> 
+
+
+Ext.onReady(function(){
+var grid, store;
+var combostr;
+var GridTitle= '';
+ Ext.QuickTips.init();
+ var myData1=new Array();    
+        <apex:repeat value="{!InnerAdminClass}" var="row">
+         
+              var rowArray=new Array();
+               rowArray[0]='{!row.BoothStatus.id}';
+                         
+               var fhost="{!row.BoothStatus.BoothAdmin_id__r.FirstName}";
+               rowArray[1]=fhost.replace(/\'/g,'\'');
+               
+               var lname="{!row.BoothStatus.BoothAdmin_id__r.LastName}";
+               rowArray[2]=lname.replace(/\'/g,'\'');
+               
+               var Bname="{!row.BoothStatus.BT_id__r.BT_Name__c}";
+               rowArray[3]=Bname.replace(/\'/g,'\'');
+               
+               
+               var Bname="{!row.BoothStatus.BT_id__r.BT_Location__c}";
+               rowArray[4]=Bname.replace(/\'/g,'\'');
+               
+               rowArray[5]='{!row.BoothStatus.BoothAdmin_id__r.Email}';
+               
+               rowArray[6]='{!row.BoothStatus.BoothAdmin_id__r.Companyphone__c}';
+               
+               
+               rowArray[7]="{!row.Status}";
+               
+               rowArray[8]="<apex:outputText value="{0,date,MM/dd/yyyy HH:MM:ss }">
+                <apex:param value="{!row.BoothStatus.BoothAdmin_id__r.LastLoginDate}"/>
+               </apex:outputText>"; 
+             
+              myData1.push(rowArray);               
+
+        </apex:repeat>      
+
+ var myDirectfn = function(opts, fn, proxy) {
+    var start = opts.start,
+        end = opts.limit+opts.start,
+        data = [];
+    if (end > myData1.length) end = myData1.length;
+    for (var i = start; i < end; i++)
+        data.push(myData1[i]);
+    data.total = myData1.length;
+    fn(data, {
+        status: true,
+        result: data
+    });
+};
+
+myDirectfn.directCfg = {
+    method: {len:1}
+};
+
+
+if(myData1.length<=0)
+{
+ GridTitle=GridTitle+' <span style=\'padding-left:200px\'><font color=\'red\'>No Records Found</font></span>';
+ tSize=0;        
+}
+
+
+store = new Ext.data.SimpleStore({
+fields:[{name:'id'},{name:'FirstName'},{name:'LastName'},{name:'BoothName'},{name :'Location'},{name:'Email'},{name:'Phone'},{name:'Status'},{name:'LastLoginDate'}],
+pageSize: 50,
+proxy: {
+type: 'direct',
+directFn: myDirectfn,
+reader: {
+type: 'array'
+}
+},
+});
+store.loadData(myData1);
+
+var newstore=new Ext.data.ArrayStore({
+ fields: ['abbr', 'action'],
+ data : [                                         
+   ['Active', 'Active'],
+   ['Inactive', 'Inactive']  
+  ]
+});
+
+
+function openrender(value, p, r)
+{
+ return String.format('<a <href="#" onClick="selectOneCheckBox(\'{0}\')" style="color:blue;text-decoration:none;">{0}</a>',value, r.data.state, r.data.ptt, 'Open');
+}     
+        
+        
+grid = Ext.create('Ext.grid.Panel',{
+store: store, 
+plugins: [{ptype:'cellediting',
+clicksToEdit:1
+}],
+viewConfig: {
+id: 'gv',
+trackOver: true,
+stripeRows: true,
+loadMask: false
+},  
+listeners:
+{
+afterrender: function (component)
+{
+component.down('#refresh').hide();
+}
+},      
+columns: [
+{header:'id', dataIndex: 'id',hidden:true }, 
+{
+header:"<b>Action</b>",dataIndex:'Action',flex:0.6,
+ renderer: function(value,p,r){
+  return '<a href="#" onclick="editRecord(\''+ r.data['id']+'\')" style="color:blue;text-decoration:none;" ><img src="{!URLFOR($Resource.Qrcode_edit)}" border="3"  style="border-color:#003068;width:16px;height:16px" title="Edit"/></a>';
+ }
+},
+{   
+header:"<b>Name</b>",flex:1.25, dataIndex:'Name',
+ renderer: function(value,p,r){
+  return '<a href="#" onClick="BoothAdmindetails(\''+ r.data['id']+'\')" style=\"color:blue;text-decoration:underline;\"> '+r.data['FirstName'] + ' ' + r.data['LastName']+'</a>';
+ }
+}, 
+{header:"<b>Booth Name</b>",flex:1.25,dataIndex:'BoothName'},
+{header:"<b>Booth Location</b>",flex:1.25, dataIndex:'Location'},
+{header:"<b>Email</b>",flex:1.5,dataIndex:'Email'},
+{header:"<b>Phone</b>",flex:0.8,dataIndex:'Phone'}, 
+{header:"<b>Status</b>",flex:0.7,dataIndex:'Status',
+
+ editor:
+ {
+ xtype:'combo',
+ id:'myCombo',
+ editable: false,
+ store: newstore,
+ valueField: 'abbr',
+ displayField: 'action',
+ style: {
+        color: '#0000FF',
+        backgroundColor:'#000000'
+    },
+ tpl: Ext.create('Ext.XTemplate',
+    '<tpl for=".">',
+     '<div class="x-boundlist-item">{action}</div>',
+    '</tpl>'
+ ),
+ listeners:
+ { 
+  select:function(combo,value){
+    var r = grid.getSelectionModel().getSelection();        
+    var temp = '';
+    for (i=0; i<=r.length-1; i++){
+     temp = r[i].get('id');   
+    }    
+    combostr=Ext.getCmp('myCombo').getValue();
+    var total=temp+','+combostr;
+    boothadminstatus1(total); 
+   },
+ }
+ },
+ renderer : function(val, meta, record)
+ {
+  meta.tdAttr = 'data-qtip="Click to Edit"';
+  return val;
+ },     
+},
+{
+header:"<b>Last Login Date</b>",flex:1.6,dataIndex:'LastLoginDate'
+}],
+height: 350, 
+width: '100%',
+title: GridTitle,
+stripeRows:true,
+bbar: new Ext.PagingToolbar({
+        store: store,
+        pageSize: 50,
+        displayInfo: true  
+}),
+renderTo: 'items-grid1'                            
+});
+
+  
+store.loadPage(1);
+
+});
+// -------------------------------------- Grid End --------------------------------------  
+  
+  
+     
+       
+         
+        function BoothAdmindetails(BoothAdminId)
+        {      
+            hdneventName.value=BoothAdminId;                     
+            getBoothdetails(BoothAdminId);                    
+        }
+
+      
+        function DeteleBoothAdmin(BoothAdminId)
+        {                    
+            hdneventName.value=BoothAdminId;                   
+            Activeinactive(BoothAdminId);  //recordId2                    
+        }     
+        function editRecord(BoothAdminId)
+        {
+            hdneventName.value=BoothAdminId;
+            EditBoothAdmin(BoothAdminId);                        
+        }
+        
+        function boothadminstatus1(BoothAdminId)
+        {
+        
+          hdneventName.value=BoothAdminId;
+          boothadminstatus(BoothAdminId);                        
+        }
+         
+       </script>
+       
+    
+        <div id="items-grid1"/>
+        
+        <apex:inputHidden value="{!BoothAdminId}" id="eventNameValue"/>
+        
+        <apex:actionFunction action="{!EditBoothAdmin}" name="EditBoothAdmin" reRender="edit" >
+        </apex:actionFunction>
+       <apex:actionFunction action="{!getBoothdetails}" name="getBoothdetails" reRender="DisplayExhibitors">
+        </apex:actionFunction>
+        <apex:actionFunction action="{!boothadminstatus}" name="boothadminstatus" reRender="DisplayExhibitors" status="AjaxLoader" >
+        </apex:actionFunction>
+        
+        <script>
+        hdneventName = document.getElementById("{!$Component.eventNameValue}");
+        </script>  
+       
+     </apex:form>                     </td></tr>   </table>   
+<!------------------ Adding Booth ----------------->
+    <apex:form id="Exhibitorform">
+                     <apex:outputPanel id="userpopup2">
+                    <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!CreatBoothAdminPopUp}"/>
+                    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!CreatBoothAdminPopUp}" style="width:80%">
+             
+                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <td height="35" colspan="2" align="center" valign="middle" class="pophead"><H2 > <font size="4" color="#FFFFFF">Add Booth Admin</font> </H2>
+     </td><td align="right" class="pophead">
+         <div style="float:right;"><apex:commandButton action="{!CancelBooth}" value="Close" title="Close" image="{!$Resource.Close1}"/> </div>
+     </td>
+   </tr>
+   <tr>
+     <td width="50%" align="center" valign="top"><table width="100%" border="0" cellspacing="5" cellpadding="0">
+      <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Booth Name<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Booth.BT_Name__c}" id="Org1Name" style="width:170px;"/></td>
+       </tr> 
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Booth Location</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+        <apex:inputField value="{!Booth.BT_Location__c}" style="width:170px;"/>
+        </td>
+        </tr> 
+       <tr>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">First Name<font size="4" color="red">*</font></td>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!BoothAdminUser.FirstName}"  id="FirstName" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Last Name<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!BoothAdminUser.LastName}" id="LastName" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Email ID<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!Email}"  id="emailId" style="width:170px;"/>
+           <!--<apex:outputPanel >
+             <h4 style="color:red">{!displayerror}</h4>
+           </apex:outputPanel>--></td>
+        </tr>
+       <tr>
+         <td align="left" style="Padding-left:25px" colspan="3">
+          <apex:outputText value="{!errormessage}" style="color:#FF0000;Font-size:1.0em;font-style:italic;font-family:Times New Roman; padding-left:15px;" rendered="{!error}"></apex:outputText>
+         </td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Organization Name<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!BoothAdminUser.CompanyName}" id="OrgName" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Organization Phone Number</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!BoothAdminUser.Companyphone__c}" id="phone" style="width:170px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>
+        </tr>
+        <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Organization Fax Number</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.CompanyFaxNumber__c}" id="AFax" style="width:170px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>
+        </tr>
+      
+       <tr>
+         <td align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"></td>
+         <td align="left" valign="middle" bgcolor="#FFFFFF"></td>
+        </tr>
+     </table></td>
+     <td width="50%" height="25" align="center" valign="top"><table width="80%" border="0" cellspacing="5" cellpadding="0">
+       <tr>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Website URL</td>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.Company_website__c}"  style="width:170px;"/></td>
+        </tr>
+         <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Address1</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.CompanyAddr1__c}"  style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Address2</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.CompanyAddr2__c}"  style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization City</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.CompanyCity__c}" style="width:170px;" /></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization Country</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.Country__c}"/>
+      <!--  <apex:selectList value="{!selectedCountry}" size="1" style="width:170px;">
+            <apex:selectOptions value="{!Countries}">
+            </apex:selectOptions>
+            <apex:actionSupport reRender="indestates,Selstate" event="onchange"/>
+        </apex:selectList>--></td>
+        </tr><tr>
+        <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization State</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.states__c }"  style="width:170px;"/>
+       <!--  <apex:selectList value="{!selectedstates}" size="1" style="width:170px;" id="Selstate">
+            <apex:selectOptions value="{!States}" id="indestates">
+            </apex:selectOptions>
+        </apex:selectList>-->
+         </td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Zip Code</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputField value="{!BoothAdminUser.Zipcode__c}" style="width:170px;" id="Zip"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization PO Box</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.PoBox__c}" style="width:170px;"/></td>
+        </tr>
+        <tr>
+         <td align="left" style="Padding-left:25px" colspan="3"><apex:pageMessages /></td>
+   
+        </tr>
+        
+     </table></td>
+   </tr>
+   <tr>
+     <td height="35px" colspan="2" align="center" valign="middle">
+      <apex:commandbutton Value="Save" onclick="return validateAddBoothFields();" action="{!SaveBooth}" styleclass="awesome"  title="Save" />&nbsp;&nbsp;
+          
+    <apex:commandbutton Value="Cancel" styleClass="awesome" action="{!CancelBooth}"  title="Cancel"/> 
+     </td>
+   </tr>
+ </table>
+ </apex:outputpanel>
+ </apex:outputpanel>       
+                     
+        </apex:form> 
+<!----------- ::::::::::: END :::::::::::::: ------------------->  
+ <apex:form id="edit">
+                     <apex:outputPanel id="userpopup">
+                    <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!EditExhibitorPopUp}"/>
+                    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!EditExhibitorPopUp}" style="width:80%">
+             
+                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <td height="35" colspan="2" align="center" valign="middle" class="pophead"><H2 > <font size="4" color="#FFFFFF">Edit Booth Admin</font> </H2>
+     </td><td align="right" class="pophead">
+          <div style="float:right;"><apex:commandButton action="{!CancelBA}" value="Close" title="Close" image="{!$Resource.Close1}"/> </div>
+     </td>
+   </tr>
+   <tr>
+     <td width="50%" align="center" valign="top"><table width="100%" border="0" cellspacing="5" cellpadding="0">
+         <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Booth Name<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!MapBoothID.BT_Name__c}" id="EditBoothName" style="width:170px;"/></td>
+        </tr>
+         <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Booth Location</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+        <apex:inputfield value="{!MapBoothID.BT_Location__c}" style="width:170px;"/>
+        </td></tr> 
+       <tr>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">First Name<font size="4" color="red">*</font></td>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.FirstName}"  id="FirstNameEdit" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Last Name<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.LastName}" id="LastNameEdit" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Email ID<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:Outputtext value="{!Admin.Email}"  id="emailId" style="width:170px;"/>
+           <!--<apex:outputPanel >
+             <h4 style="color:red">{!displayerror}</h4>
+           </apex:outputPanel>--></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Organization Name<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.CompanyName}" id="EditOrgName" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Organization Phone Number</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.Companyphone__c}" id="phone" style="width:170px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>
+        </tr>
+        <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Organization Fax Number</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.CompanyFaxNumber__c}" id="AFax" style="width:170px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>
+        </tr>
+        
+       <tr>
+         <td align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"></td>
+         <td align="left" valign="middle" bgcolor="#FFFFFF"></td>
+        </tr>
+     </table></td>
+     <td width="50%" height="25" align="center" valign="top"><table width="80%" border="0" cellspacing="5" cellpadding="0">
+      
+       <tr>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Website URL</td>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.Company_website__c}"  style="width:170px;"/></td>
+        </tr>
+        <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Address1</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.CompanyAddr1__c}"  style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Address2</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.CompanyAddr2__c}"  style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization City</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.CompanyCity__c}" style="width:170px;" /></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization Country</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.Country__c}" style="width:170px;" />
+         <!--<apex:selectList value="{!selectedCountry}" size="1" style="width:170px;">
+            <apex:selectOptions value="{!Countries}">
+            </apex:selectOptions>
+            <apex:actionSupport reRender="EditSelState" event="onchange"/>
+        </apex:selectList>--></td>
+        </tr><tr>
+        <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization state</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!Admin.States__c}" style="width:170px;" />
+         <!--<apex:selectList value="{!selectedStates}" size="1" style="width:170px;" id="EditSelState">
+            <apex:selectOptions value="{!states}">
+            </apex:selectOptions>
+        </apex:selectList>--></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Zip Code</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputField value="{!Admin.Zipcode__c}" style="width:170px;" id="Zip"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization PO Box</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputField value="{!Admin.PoBox__c}" style="width:170px;"/></td>
+        </tr>
+        <tr>
+         <td align="left" style="Padding-left:25px:font-color:red;" colspan="3"><apex:pageMessages /></td>
+   
+        </tr>
+        
+     </table></td>
+   </tr>
+   <tr>
+     <td height="35px" colspan="2" align="center" valign="middle">
+      <apex:commandButton Value="Save" action="{!UpdateBoothAdmin}" styleclass="awesome" title="Save" reRender="userpopup,ListofBoothAdmins" onclick="return EditValidateForm();"/>&nbsp;&nbsp;
+          
+    <apex:commandButton Value="Cancel" styleClass="awesome" action="{!CancelBA}"  title="Cancel" immediate="true"/> 
+     </td>
+   </tr>
+ </table>
+   </apex:outputPanel>
+    </apex:outputPanel> 
+  </apex:form> 
+<!---------------------------------------------------------- DISPLAY EXHIBITORS -------------------------------------------------------------------->        
+ <apex:form id="DisplayExhibitors">
+       
+           <apex:outputpanel >
+           <apex:outputpanel styleClass="popupBackground" layout="block" rendered="{!displayBoothinfoPopUp}"/>
+           <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayBoothinfoPopUp}" style="width:80%;">
+          <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+         
+          
+          <tr>
+              <td colspan="3" style="text-align:center; width:99%; margin:0px auto;" class="pophead"><H2 > <font size="4" color="#FFFFFF" style="text-align:center;">Booth Admin Information</font> </H2>
+              </td><td align="right" class="pophead">
+                   <div style="float:right;"><apex:commandButton action="{!cancel2}" value="Close" title="Close" image="{!$Resource.Close1}"/> </div>
+              </td>
+          </tr>
+<tr>
+<td align="right" valign="top" width="50%">
+
+    <table width="88%" border="0" align="center" cellpadding="0" cellspacing="5">
+<tr height="35px">
+<td width="58%" align="left" valign="top"><apex:outputLabel value="Booth Name:" style="color:#000000;font-weight:bold;"></apex:outputLabel></td>
+<td width="4%" height="25" align="right" valign="top">&nbsp;</td>
+<td width="38%" height="25" align="left" valign="top"><apex:outputlabel value="{!MapBoothID.BT_Name__c}" style="color:#000000;"></apex:outputlabel></td>
+</tr>
+<tr height="35px">
+<td  width="48%"  align="left" valign="top"><apex:outputLabel value="Booth Location: "  style="color:#000000;font-weight:bold;"/></td>
+<td height="25" align="right" valign="top">&nbsp;</td>
+<td  width="48%"  align="left" valign="top"><apex:outputlabel value="{!MapBoothID.BT_Location__c}"  style="color:#000000;"/></td>
+</tr>
+<tr height="35px">
+<td align="left" valign="top"><apex:outputLabel value="First Name: "  style="color:#000000;font-weight:bold;"/></td>
+<td height="25" align="right" valign="top">&nbsp;</td>
+<td height="25" align="left" valign="top"><apex:outputLabel value="{!Admin.FirstName}"  style="color:#000000;"/></td>
+</tr>
+<tr height="35px">
+<td align="left" valign="top"><apex:outputLabel value="Last Name: "  style="color:#000000;font-weight:bold;"/></td>
+<td height="25" align="right" valign="top">&nbsp;</td>
+<td height="25" align="left" valign="top"><apex:outputLabel value="{!Admin.LastName}"  style="color:#000000;"/></td>
+</tr>
+<tr height="35px">
+<td align="left" valign="top"><apex:outputLabel value="Email ID: "  style="color:#000000;font-weight:bold;"/></td>
+<td height="25" align="right" valign="top">&nbsp;</td>
+<td height="25" align="left" valign="top"><apex:outputLabel value="{!Admin.Email}"  style="color:#000000;"/></td>
+</tr>
+<tr height="35px">
+<td align="left" valign="top"><apex:outputLabel value="Organization Name:" style="color:#000000;font-weight:bold;"/></td>
+<td height="25" align="right" valign="top">&nbsp;</td>
+<td height="25" align="left" valign="top"><apex:outputlabel value="{!Admin.CompanyName}" style="color:#000000;" /></td>
+</tr>
+<tr height="35px">
+<td align="left" valign="top"><apex:outputLabel value="Organization Phone Number:" style="color:#000000;font-weight:bold;"/></td>
+<td height="25" align="right" valign="top">&nbsp;</td>
+<td height="25" align="left" valign="top"><apex:outputlabel value="{!Admin.Companyphone__c}" style="color:#000000;"/></td>
+</tr>
+<tr height="35px">
+<td align="left" valign="top"><apex:outputLabel value="Organization Fax Number:" style="color:#000000;font-weight:bold;"/></td>
+<td height="25" align="right" valign="top">&nbsp;</td>
+<td height="25" align="left" valign="top"><apex:outputlabel value="{!Admin.CompanyFaxNumber__c}" style="color:#000000;"/></td>
+</tr>
+</table>
+
+</td>
+<td colspan="2" align="center" valign="top">
+  
+  <table width="88%" border="0" align="center" cellpadding="0" cellspacing="5">
+    <tr height="35px">
+      <td align="left" valign="top"><apex:outputLabel value="Organization Website URL " style="color:#000000;font-weight:bold;"/></td>
+      <td height="25" align="right" valign="top">&nbsp;</td>
+      <td height="25" align="left" valign="top"><apex:outputlabel value="{!Admin.Company_website__c}" style="color:#000000;"/></td>
+      </tr>
+    <tr height="35px">
+      <td align="left" valign="top"><apex:outputLabel value=" Organization Address1:" style="color:#000000;font-weight:bold;" /></td>
+      <td height="25" align="right" valign="top">&nbsp;</td>
+      <td height="25" align="left" valign="top"><apex:outputLabel value="{!Admin.CompanyAddr1__c}" style="color:#000000;" /></td>
+      </tr>
+    <tr height="35px">
+      <td align="left" valign="top"><apex:outputLabel value=" Organization Address2: "  style="color:#000000;font-weight:bold;"/></td>
+      <td height="25" align="right" valign="top">&nbsp;</td>
+      <td height="25" align="left" valign="top"><apex:outputLabel value="{!Admin.CompanyAddr2__c}"  style="color:#000000;"/></td>
+      </tr>
+    <tr height="35px">
+      <td width="48%" align="left" valign="top"><apex:outputLabel value=" Organization City :"  style="color:#000000;font-weight:bold;"/></td>
+      <td width="4%" height="25" align="right" valign="top">&nbsp;</td>
+      <td width="48%" height="25" align="left" valign="top"><apex:outputlabel value="{!Admin.CompanyCity__c}" style="color:#000000;"/></td>
+      </tr>
+    <tr height="35px">
+      <td align="left" valign="top"><apex:outputLabel value=" Organization Country: "  style="color:#000000;font-weight:bold;"/></td>
+      <td height="25" align="right" valign="top">&nbsp;</td>
+      <td height="25" align="left" valign="top">
+        <apex:outputLabel value="{!Country}"  style="color:#000000;"/>
+        <!--<apex:outputLabel value="{!Admin.CompanyCountry__c}"  style="color:#000000;"/>--></td>
+      </tr>
+    <tr height="35px">
+      <td align="left" valign="top"><apex:outputLabel value=" Organization State: "  style="color:#000000;font-weight:bold;"/></td>
+      <td height="25" align="right" valign="top">&nbsp;</td>
+      <td height="25" align="left" valign="top">
+        <apex:outputLabel value="{!Adminstates}"  style="color:#000000;"/>
+        <!--<apex:outputLabel value="{!Admin.CompanyState__c}"  style="color:#000000;"/>--></td>
+      </tr>
+    <tr height="35px">
+      <td align="left" valign="top"><apex:outputLabel value=" Organization Zip Code:" style="color:#000000;font-weight:bold;" /></td>
+      <td height="25" align="right" valign="top">&nbsp;</td>
+      <td height="25" align="left" valign="top"><apex:outputLabel value="{!Admin.Zipcode__c}" style="color:#000000;" /></td>
+      </tr>
+    <tr height="35px">
+      <td align="left" valign="top"><apex:outputLabel value=" Organization PoBox:" style="color:#000000;font-weight:bold;"/></td>
+      <td height="25" align="right" valign="top">&nbsp;</td>
+      <td height="25" align="left" valign="top"><apex:outputlabel value="{!Admin.PoBox__c}" style="color:#000000;"/></td>
+      </tr>
+    
+</table></td>
+</tr>
+<tr>
+    <td align="center" colspan="3"><apex:commandbutton action="{!cancel2}" value="Close" styleclass="awesome"  /></td>
+  </tr>
+
+</table>
+</apex:outputpanel>
+</apex:outputpanel>
+</apex:form>
+
+<!------------------------------------------------------******** END Of DISPLAYING EXHIBITORS *******------------------------------------------------->              
+ <!------------------------------------------------ POP UP For Displaying Status ---------------------------------------->      
+    
+     <apex:form id="Statuspopup">
+      
+          <apex:outputPanel id="userstatuspop">
+             <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!Statuspopup}"/>
+             <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!Statuspopup}" style="width:35%">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <td colspan="2" align="center" valign="middle" class="pophead" ><H2 > <font style="font-size:20px; color:#FFFFFF;">Change Booth Admin Status</font> </H2>
+     </td><td class="pophead" align="right">
+      <div style="float:right;"><apex:commandButton action="{!Cancelstatus}" value="Close" title="Close" image="{!$Resource.Close1}"/> </div>
+     </td>
+   </tr>
+   
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">&nbsp;</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">&nbsp;</td>
+       </tr>
+       
+       <tr>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:50px;"><b>Status Change To</b></td>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px"><apex:selectList value="{!SelectStatus}" size="1" style="width:120px">
+            <apex:selectOptions value="{!Statuslist}">
+            </apex:selectOptions></apex:selectList></td>
+        </tr>
+       <tr>
+       <td align="center" colspan="2"><apex:commandbutton value="Save" action="{!SaveStatus}" styleclass="awesome" title="Save"/>&nbsp;&nbsp;
+           <apex:commandbutton value="Cancel" action="{!Cancelstatus}" styleclass="awesome" title="Cancel"/>
+       </td></tr>      
+              </table>       
+             </apex:outputpanel>
+          </apex:outputPanel>            
+      </apex:form>   
+      
+      
+<!--------------------------------------------------------- END -------------------------------------------------------->                          
+<!------------------ Adding Booth Admin ----------------->
+    <apex:form id="BoothAdminform">
+                     <apex:outputPanel id="userpopup1">
+                    <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!AddingAdmintoBooth}"/>
+                    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!AddingAdmintoBooth}" style="width:80%">
+             
+                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <td height="35" colspan="2" align="center" valign="middle" bgcolor="#54b5f1"><H2 > <font size="4" style="color:#FFFFFF;">Add Booth Admin</font> </H2>
+          <div style="float:right;"><apex:commandButton action="{!CancelBAM}" value="Close" title="Close" image="{!$Resource.Close1}"/> </div>
+     </td>
+   </tr>
+   <tr>
+     <td width="50%" align="center" valign="top"><table width="100%" border="0" cellspacing="5" cellpadding="0">
+       <tr>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">First Name<font size="4" color="red">*</font></td>
+         <td width="50%" height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!BoothAdminUser.FirstName}"  id="FirstName" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Last Name<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!BoothAdminUser.LastName}" id="LastName" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Email ID<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!Email}"  id="emailId" style="width:170px;"/>
+           <!--<apex:outputPanel >
+             <h4 style="color:red">{!displayerror}</h4>
+           </apex:outputPanel>--></td>
+        </tr>
+         <tr>
+         <td align="left" style="Padding-left:25px" colspan="3">
+          <apex:outputText value="{!errormessage}" style="color:#FF0000;Font-size:1.0em;font-style:italic;font-family:Times New Roman; padding-left:15px;" rendered="{!error}"></apex:outputText>
+         </td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Organization Name<font size="4" color="red">*</font></td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!BoothAdminUser.CompanyName}" id="OrgName" style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Organization Phone Number</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputtext value="{!BoothAdminUser.Companyphone__c}" id="phone" style="width:170px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>
+        </tr>
+        <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"> Organization Fax Number</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.CompanyFaxNumber__c}" id="AFax" style="width:170px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>
+        </tr>
+      <tr>
+         <td  height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">Organization Website URL</td>
+         <td  height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.Company_website__c}"  style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"></td>
+         <td align="left" valign="middle" bgcolor="#FFFFFF"></td>
+        </tr>
+     </table></td>
+     <td width="50%" height="25" align="center" valign="top"><table width="80%" border="0" cellspacing="5" cellpadding="0">
+       
+         <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Address1</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.CompanyAddr1__c}"  style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Address2</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.CompanyAddr2__c}"  style="width:170px;"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization City</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.CompanyCity__c}" style="width:170px;" /></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization Country</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+        <apex:inputfield value="{!BoothAdminUser.Country__c}"/>-->
+       <!--  <apex:selectList value="{!selectedCountry}" size="1" style="width:170px;">
+            <apex:selectOptions value="{!Countries}">
+            </apex:selectOptions>
+            <apex:actionSupport reRender="Selstate" event="onchange"/>
+        </apex:selectList>--></td>
+        </tr><tr>
+        <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF"> Organization State</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.States__c}"/>
+      <!--   <apex:selectList value="{!selectedstates}" size="1" style="width:170px;" id="Selstate">
+            <apex:selectOptions value="{!States}">
+            </apex:selectOptions>
+        </apex:selectList>-->
+         </td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization Zip Code</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputField value="{!BoothAdminUser.Zipcode__c}" style="width:170px;" id="Zip"/></td>
+        </tr>
+       <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF">Organization PO Box</td>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:5px">
+         <apex:inputfield value="{!BoothAdminUser.PoBox__c}" style="width:170px;"/></td>
+        </tr>
+        
+        
+     </table></td>
+   </tr>
+   <tr>
+     <td height="35px" colspan="2" align="center" valign="middle">
+      <apex:commandbutton Value="Save" action="{!SaveOnlyBA}" styleclass="awesome" onClick="return ValidateBoothadminForm();" title="Save" />&nbsp;&nbsp;
+          
+    <apex:commandbutton Value="Cancel" styleClass="awesome" action="{!CancelBAM}"  title="Cancel"/> 
+     </td>
+   </tr>
+ </table>
+ </apex:outputpanel>
+ </apex:outputpanel>       
+                     
+        </apex:form>
+
+
+ <!--  end content-table  -->
+ 
+ <!--  start actions-box ............................................... -->
+ </div>           <!-- end actions-box........... -->
+ <div class="clear"></div>
+         </div>
+        <!--  end content-table-inner ............................................END  -->
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+</div>
+<!--  end content -->
+<div class="clear" id="clearDiv">&nbsp;</div>
+</div>
+<!--  end content-outer........................................................END -->
+<div class="clear">&nbsp;</div>
+<script>
+
+</script>
+    <!-- start footer -->         
+<apex:include pageName="QRCode_Footertemplate"/>
+<!-- end footer -->    
+
+</apex:page>

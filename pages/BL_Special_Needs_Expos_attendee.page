@@ -1,0 +1,1162 @@
+<apex:page showHeader="false" controller="BL_Special_Needs_Expos_Con" standardStylesheets="false" id="thepage">
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+<!-- MAp cpde ----------------------------- -->
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3.5&sensor=true"></script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-42893741-1', 'force.com');
+  ga('send', 'pageview');
+  
+</script>
+
+
+    <!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
+    <script type="text/javascript"> 
+    
+    $(document).ready(function() {
+    
+      var myOptions = {
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: false
+      }
+    
+      var map;
+      var marker;
+    
+      var geocoder = new google.maps.Geocoder();
+      var address = "{!event.EV_HistingAddr1__c}, " + "{!event.AS_HostingAddr2__c}, " + "{!event.AS_HostingCity__c}, " + "{!event.EV_HostingCountryNew__c}";
+    
+      var infowindow = new google.maps.InfoWindow({
+        content: "<b>{!event.EV_HistingAddr1__c}</b><br>{!event.EV_HistingAddr1__c}<br>{!event.AS_HostingAddr2__c}, {!event.AS_HostingCity__c}<br>{!event.EV_HostingCountryNew__c}"
+      });
+    
+      geocoder.geocode( { address: address}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK && results.length) {
+          if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+    
+            //create map
+            map = new google.maps.Map(document.getElementById("map"), myOptions);
+    
+            //center map
+            map.setCenter(results[0].geometry.location);
+    
+            //create marker
+            marker = new google.maps.Marker({
+                position: results[0].geometry.location,
+                map: map,
+                title: "{!event.EV_HostingCountry__c}"
+            });
+    
+            //add listeners
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(map,marker);
+            });
+            google.maps.event.addListener(infowindow, 'closeclick', function() {
+              map.setCenter(marker.getPosition()); 
+            });
+    
+          }
+    
+        } else {
+          $('#map').css({'height' : '15px'});
+          $('#map').html("");
+          resizeIframe();
+        }
+      });
+    
+      function resizeIframe() {
+        var me = window.name;
+        if (me) {
+          var iframes = parent.document.getElementsByName(me);
+          if (iframes && iframes.length == 1) {
+            height = document.body.offsetHeight;
+            iframes[0].style.height = height + "px";
+          }
+        }
+      }
+    
+    });
+    </script>
+    
+    <style>
+    
+.awesome{background-color:#2486c3; color:#FFFFFF; padding:5px; font-weight:normal; border:0px;
+cursor:pointer; font-size:13px;
+background: -moz-linear-gradient(top, #2a81b8, #3298d8);
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2a81b8), to(#3298d8));
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+.awesome:hover{background-color:#2486c3; color:#FFFFFF; padding:5px; font-weight:normal; border:0px;
+cursor:pointer; font-size:13px;
+background: -moz-linear-gradient(top,#3298d8, #2a81b8);
+
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3298d8), to(#2a81b8));
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+}
+
+
+
+    .custPopup{
+color:#000000;
+background-color:white;
+
+
+position: absolute;
+top:10px;
+left:0px;
+right:0px;
+z-index: 9999;
+
+
+width:70%;
+height: auto;
+margin:0 auto;
+
+-moz-border-radius-bottomleft:6px; -webkit-border-bottom-left-radius:6px; -moz-border-radius-bottomright:6px; -webkit-border-bottom-right-radius:6px; border-radius:0 0 6px 6px; -moz-box-shadow:0 0 64px #000; -webkit-box-shadow:0 0 64px #000; box-shadow:0 0 64px #000;
+font: 12px/24px "Lucida Grande",Arial,sans-serif;
+
+//background-color:#eee; color:#000; padding-bottom:4px; width:600px; margin-top:100px; -moz-border-radius-bottomleft:6px; -webkit-border-bottom-left-radius:6px; -moz-border-radius-bottomright:6px; -webkit-border-bottom-right-radius:6px; border-radius:0 0 6px 6px; -moz-box-shadow:0 0 64px #000; -webkit-box-shadow:0 0 64px #000; box-shadow:0 0 64px #000;
+
+}
+.popupBackground{
+
+background-color:#000000;
+Opacity:0.50;
+width: 100%;
+height: 150%;
+position: absolute;
+left:0px;
+top:0px;
+z-index: 599;
+
+}
+
+
+    
+    
+    body{font-family:Tahoma;font-size:12px; margin:0px auto;padding:0px;}
+    #maphead{background-color:#eaeaea; height:25px; padding-top:5px; border:1px solid #CCCCCC; padding-left:15px;
+     background: #ffffff;
+
+     }
+#map {
+  font-family: Arial;
+  font-size:12px;
+  line-height:normal !important;
+  height:150px;
+  background:transparent;
+}
+
+
+.error{ 
+        color: #FF0000;
+      }
+    
+.element {color:#414141;}
+
+
+</style>
+
+<!-- --------------------------------------- End ---------------------------- -->
+
+
+
+ <style>
+body{
+ background-color:#0393E0;
+}
+
+</style>
+ 
+ <style>
+ .error{
+  color:#FF0000;
+ }
+ 
+  .val {
+font-size: 20px;
+background: url(https://ebmedia.eventbrite.com/s3-s3/static/images/background/glass_light-trans.png) 0 50% repeat-x #90C833;
+padding: 9px 16px;
+
+border: 1px solid #8BAE42;
+-moz-box-shadow: 0 1px 0 #B7DB81 inset, 0 -1px 0 #B7DB81 inset;
+-webkit-box-shadow: 0 1px 0 #B7DB81 inset, 0 -1px 0 #B7DB81 inset;
+box-shadow: 0 1px 0 #B7DB81 inset, 0 -1px 0 #B7DB81 inset;
+text-shadow: 0 1px #63852B;
+color: #fff;
+color: #555;
+}
+
+ 
+ </style>
+  
+ <apex:stylesheet value="{!URLFOR($Resource.Attendee_Portal_SelfRegistration_CSS,"AttendeeArrowCSSBradcom.css")}"/>
+ 
+<apex:includeScript value="{!$Resource.GE_ES_JQueryFile}"  />
+ 
+ <apex:form id="thefrm">
+ 
+ 
+<script type="text/javascript">
+
+    function toggle_visibility(id) {
+       var e = document.getElementById(id);
+       if(e.style.display == 'block')
+          e.style.display = 'none';
+       else
+          e.style.display = 'block';
+    }
+
+
+  function toggle_visibility3(id) {
+       var e = document.getElementById(id);
+       if(e.style.display == 'block')
+          e.style.display = 'none';
+       else
+          e.style.display = 'block';
+    }
+
+
+
+</script>
+
+  <script>
+$(document).ready(function() {
+  $(".spanCls").click(function(){
+ 
+ var s=$(this).attr('id');
+ s= "#" + s.replace('SpanCol','tr1');
+ $(s).toggle();
+});
+ });
+</script>
+     
+<script>
+          function cpk(){ 
+          var elements = document.getElementsByTagName('select');
+         
+          
+           for(var i=0;i<elements.length;i++){
+            var x =  document.getElementById(elements[i].id).selectedIndex;
+             var d = document.getElementsByTagName("option")[x].value;
+             if(d>0){
+              //alert('Please select at least one ticket');
+               return true;
+             }
+           }
+           alert('Please select atleast 1 ticket');
+           return false;
+          }
+  </script>   
+
+
+   <apex:outputPanel rendered="{!NOT(paymentsPage)}" style="background-color:#FFFFFF;"  id="tick">
+  
+  
+   <table width="100%" style="background-color:#B0E3FF;line-height:40px;" cellspacing="0" cellpadding="0">
+  <tr style="  font-weight:normal;font-size:15px;  ">
+  <th  style="text-align:left;font-weight:normal;padding-left:30px;border-bottom:1px solid white;color:#0077B3" valign="top;padding:0px;">Ticket Information</th>
+ </tr>
+  </table>
+  
+   <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center"  style=" background-color:#FFFFFF; margin:0px auto;line-height:25px;font-family:Tahoma;text-align:left; font-size:12px; border:1px solid #CCCCCC; background-color:#C0DEED;line-height:50px;">
+
+<tr style="height:30px;  font-weight:normal;">
+<th width="25%" style="text-align:left;border-bottom:1px solid white;padding-left:10px;">Ticket Type</th>
+<th width="25%" style="text-align:center;border-bottom:1px solid white;padding-left:10px;">Sales End</th>
+<th width="25%" style="text-align:center;border-bottom:1px solid white;padding-left:10px;">Price</th>
+<!-- <th width="20%" style="border-bottom:1px solid white;padding-left:10px;">Fee</th>-->
+<th width="25%" align="center" style="text-align:center;border-bottom:1px solid white;padding-left:10px;">Quantity</th>
+</tr>
+
+<tr>
+<td colspan="5" valign="top" style="text-align:left;"  >
+
+   <apex:repeat value="{!totalTickets}" var="r" >
+   
+   <apex:outputPanel rendered="{!IF(r.tt.Ticket_Category__c=='Attendee',true,false)}">
+   
+   <table width="100%" border="0" cellspacing="0" cellpadding="0" style="color:#414141; text-align:left;" >
+    <tr style="color:#414141;">
+
+  <td width="25%" style="color:#414141; text-align:left;border-bottom:1px solid white;font-weight:bold;line-height:25px;" >
+    <apex:outputText escape="false" value="{!r.tt.TT_Name__c} "></apex:outputText> 
+       <apex:outputText style="color:#ff0000" value="(Discount - {!r.DiscountValue})" rendered="{!IF((r.DiscountValue!=null&&r.Quantity>0 && r.DiscountValue!='Promocode Expired'),true,false)}"></apex:outputText>  
+  
+   <apex:outputText style="color:#ff0000" value="({!r.DiscountValue})" rendered="{!IF((r.DiscountValue!=null && r.Quantity>0 && r.DiscountValue=='Promocode Expired'),true,false)}"></apex:outputText>  
+  
+   
+   
+     <span id="{!r.tt.id}SpanCol" class="spanCls" style="color:#414141;">
+  <a id="{!r.tt.id}downarrow"  href="" style="text-decoration:none;color:#0077B3;cursor:pointer;font-size:10px;">More info </a>
+  </span> </td>
+  
+         <th width="25%" style="text-align:center;border-bottom:1px solid white;font-weight:normal;"> 
+           
+           <apex:outputtext value="{0,date,MMM dd,yyyy}">
+             <apex:param value="{!r.tt.Sales_End_Date__c}" /> 
+           </apex:outputText>
+            </th>
+           
+   <td width="25%" style="text-align:center;border-bottom:1px solid white;"> $ <apex:outputPanel rendered="{!NOT(if((r.tt.TT_TicketType__c=='Donation'),true,false))}">
+             <apex:outputtext value="{0, number, ###,###,###,###.00}"> 
+           <apex:param value="{!r.tt.TT_Amount__c}"/>
+           
+            </apex:outputText>
+             
+             </apex:outputPanel>  
+             
+             
+               <apex:inputText value="{!r.donationValue}" style="width:60px;"   rendered="{!if((r.tt.TT_TicketType__c=='Donation'),true,false)}">
+                <apex:actionSupport event="onkeyup" action="{!onchangeAct}" reRender="outpanel" status="AjaxLoader"/>           
+             </apex:inputText>
+ </td>
+         
+  <!--  <td width="25%" style="border-bottom:1px solid white;"> ${!r.fee}$ 0.00 </td> -->    
+           
+           
+           
+<td width="25%" align="left" style="text-align:center;border-bottom:1px solid white;">
+
+<apex:selectList value="{!r.quantity}" multiselect="false" size="1" id="myid" rendered="{!if((r.tt.TT_Sold__c)==(r.tt.TT_Available__c)||(r.tt.TT_TicketType__c=='Donation'),false,true)}">
+              <apex:selectOptions value="{!r.opt}" />
+            <apex:actionSupport action="{!onchangeAct}" event="onchange" reRender="outpanel" status="AjaxLoader"/>
+         </apex:selectList>
+         
+      
+          </td>
+</tr>
+
+
+
+ <tr  style="border-bottom:0px;">
+ <td colspan="7" style="border-bottom:0px;padding:0px;position:relative; z-index:1000;">
+        <div  id="{!r.tt.id}tr1" style="border-bottom:1px solid #CCCCCC;display:none;width:100%;background-color:#d4ecf5;line-height:18px;" > 
+         <span style="margin-left:5px;"><apex:outputText escape="false" value=" {!r.tt.Description__c}"></apex:outputText></span>
+       </div>
+             
+             
+       </td></tr>
+  </table></apex:outputPanel></apex:repeat>
+ </td>
+</tr>
+</table>
+       
+   </apex:outputPanel>
+  
+  
+  
+  
+  <apex:outputPanel rendered="{!NOT(paymentsPage)}" > 
+  
+<table style="width:100%; margin:0px auto;" cellspacing="0" cellpadding="0" border="0" align="center">
+
+  <tr style="height:45px;font-size:12px;" >
+      <td width="80%" height="35" align="right"  style="background-color:#f3f3f3;">
+        &nbsp;
+      </td>
+     
+     <td width="20%" height="35" align="right" colspan="2" style="background-color:#f3f3f3;text-align:left;">
+       <a href="#" onclick="toggle_visibility('foo');" style="text-decoration:none;color:Blue;">  Enter promotional code</a>
+        <div id="foo" style="display:none;align:center;">  
+          If you have a promotional code, enter it here: <apex:inputText value="{!promocode}"  /> &nbsp;&nbsp;
+        <apex:commandButton value="Apply" action="{!applayPromocode}" /> </div>
+    
+     &nbsp;<br /><br />
+ <!--</td>
+     <td width="50%" height="35" align="left" style="text-align:right;border:none;background-color:#f3f3f3;font-weight:bold;padding-right:110px;"> -->
+     Grand Total:<apex:outputPanel id="outpanel" >&nbsp;  &#36; {!TotalAmount} </apex:outputPanel></td>
+  </tr>
+  
+  <tr>
+    <td width="20%" align="right" style="padding-right:50px;border-bottom:0px solid red;padding-top:2px; background-color:#e8e8e8;" valign="middle">
+     &nbsp;
+    </td>
+    <td width="20%" align="right" style="padding-right:50px;border-bottom:0px solid red;padding-top:2px; background-color:#e8e8e8;text-align:left;" valign="middle">
+     <apex:commandLink target="_blank" action="{!enabletab1}" onclick="return cpk();">
+       <apex:image URL="{!URLFOR($Resource.Registration_page_images,'/register.png')}"/>
+    </apex:commandLink>
+      
+      </td>
+  </tr>
+  <tr>
+      <td style="background-color:#e8e8e8;text-align:right;" colspan="3">&nbsp;</td>
+  </tr>
+</table>
+ </apex:outputPanel>
+ 
+
+
+ <apex:outputPanel id="thepageblock" rendered="{!paymentsPage}">
+  <!-- --------------------------Main Table Start---------------------------- -->
+   <table style="width:100%;background-color:#0393e0; margin:0px auto;"  cellspacing="0" cellpadding="0" border="1" align="center">
+     <tr><td style="min-height:700px;"> 
+        <table style="width:80%; margin:0px auto;" cellspacing="0" cellpadding="0" border="0" align="center"> 
+          <tr><td style="width:70%;color:#ffffff;" >
+                <h1 style="font-size: 26px;">{!event.EV_Title__c} 
+                 </h1><br />
+                 <h2 style="font-size: 17px;">{!event.EV_HostingOrgName__c}<br />
+                 
+                    <apex:outputText value="{0,date,EEEE MMM dd, yyyy }" style="font-family:Verdana, Geneva, sans-serif;">
+                      <apex:param value="{!event.EV_StartDate__c}"/>  
+                    </apex:outputText> &nbsp; {!event.StartTime__c}  To 
+                    
+                    <apex:outputText value="{0,date,MMM dd, yyyy }" style="font-family:Verdana, Geneva, sans-serif;" rendered="{!IF(event.EV_StartDate__c!=event.EV_EndDate__c,true,false)}">
+                      <apex:param value="{!event.EV_EndDate__c}"/>  
+                    </apex:outputText> &nbsp; {!event.EV_EndTime__c}    <br />  
+                 
+                    {!event.AS_HostingCity__c}, {!event.EV_HostingStateNew__c}</h2></td>  
+                <td style="width:30%;"> 
+                <!-- <apex:image value="{!$Resource.Special_logo}"/> -->
+                
+                <apex:image value="/servlet/servlet.ImageServer?id={!event.EV_EventLogo__c}&oid={!$Organization.Id}"/>
+                
+                
+           </td></tr>
+          <tr ><td colspan="2" style="border-bottom:1px solid white;">&nbsp;</td></tr>
+       </table>
+      
+      
+     <!-- -----------------------------Table Under Header ------------------------------ --> 
+      
+     <table style="width:80%;background-color:#0393E0; margin:0px auto;"  cellspacing="0" cellpadding="0" border="0" align="center">
+      <!------------------------- Left side Td --------------------------------------- -->
+     <tr><td style="width:70%;">  
+    
+          <!-- --------------------- Taking Input ----------------------- -->
+          <table style="width:95%;margin-top:30px;" cellspacing="0" cellpadding="0" border="0" >
+          <tr >
+              <td>
+                  
+                 
+        <table style="width:100%;" cellspacing="0" cellpadding="0" border="0" >
+         
+          <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:20px;line-height:35px;">
+          <td colspan="4" style="border-bottom:1px solid white;padding-left:10px;-webkit-border-radius: 5px;border-radius: 5px;"> Order Summary</td>     </tr>
+                       
+         
+         <tr style="color: #666666;background-color: #c0deed;line-height:30px;">
+         <th style="width:40%;padding-left:10px;border-bottom:1px solid white; text-align:center;" > TYPE  </th>    
+          <th style="width:20%;border-bottom:1px solid white; text-align:center;" > PRICE</th>
+           <th style="width:20%;border-bottom:1px solid white; text-align:center;" > QUANTITY  </th>
+           <th style="width:20%;border-bottom:1px solid white; text-align:center;" > TOTAL</th>
+           </tr>
+        
+        <apex:repeat value="{!seccls}" var="rt">
+          <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+          <td style="width:40%;padding-left:10px;border-bottom:1px solid white; text-align:left;" > {!rt.name.TT_Name__c} </td> 
+           <td style="width:20%;border-bottom:1px solid white;text-align:center; text-align:center;" >&#36; {!rt.Name.TT_Amount__c} </td> 
+            <td style="width:20%;border-bottom:1px solid white;text-align:center; text-align:center;" >  {!rt.Quan} </td> 
+             <td style="width:20%;border-bottom:1px solid white;text-align:center; text-align:center;" > &#36; {!rt.totalPrice} </td> 
+             
+            </tr>
+       </apex:repeat><tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+        <td colspan="4" style="border-bottom:1px solid white;padding-right:15px;font-weight:bold;text-align:right;">TOTAL AMOUNT DUE &nbsp;&#36; {!TotalAmount}</td>     </tr>
+         
+       </table>
+              </td>
+          </tr>
+          <tr>
+            <td style="width:75%;" >
+            
+            <br />
+               <table style="width:100%;margin:0px auto;" cellspacing="0" cellpadding="0" border="0">
+               
+               
+                      <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:20px;line-height:35px;">
+                       <td colspan="3" style="border-bottom:1px solid white;-webkit-border-radius: 5px;border-radius: 5px;padding-left:10px;">
+                          Registration Information</td>     </tr>
+                          
+                          <script>
+function displayResult(id,fnameid,lnameid,emailid,cellphid,jobtitleid,companyid,countryid,addressid1,addressid2,cityid,selstateid,zipid,phoneid,weburlid)
+{
+
+document.getElementById(fnameid).value=document.getElementById(document.getElementById(id).value+'fname').value;
+document.getElementById(lnameid).value=document.getElementById(document.getElementById(id).value+'lname').value;
+document.getElementById(emailid).value=document.getElementById(document.getElementById(id).value+'email').value;
+document.getElementById(cellphid).value=document.getElementById(document.getElementById(id).value+'cellph').value;
+document.getElementById(jobtitleid).value=document.getElementById(document.getElementById(id).value+'jobtitle').value;
+document.getElementById(companyid).value=document.getElementById(document.getElementById(id).value+'company').value;
+document.getElementById(countryid).value=document.getElementById(document.getElementById(id).value+'country').value;
+document.getElementById(addressid1).value=document.getElementById(document.getElementById(id).value+'address1').value;
+document.getElementById(addressid2).value=document.getElementById(document.getElementById(id).value+'address2').value;
+document.getElementById(cityid).value=document.getElementById(document.getElementById(id).value+'city').value;
+document.getElementById(selstateid).value=document.getElementById(document.getElementById(id).value+'selstate').value;
+document.getElementById(zipid).value=document.getElementById(document.getElementById(id).value+'zip').value;
+document.getElementById(phoneid).value=document.getElementById(document.getElementById(id).value+'phone').value;
+document.getElementById(weburlid).value=document.getElementById(document.getElementById(id).value+'weburl').value;
+}
+
+
+
+</script>       
+                          
+                  <apex:repeat value="{!seccls}" var="rt"  id="ticket">
+                  <apex:repeat value="{!rt.innsinn}" var="de" id="attendee"> 
+                     
+                       <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+                           <th style="width:50%;padding-left:15px;border-bottom:1px solid white;font-size:18px;font-weight:bold; text-align:left;" colspan="3">
+                           Ticket #{!de.atsumdom.Ticket_Number__c}-{!rt.name.TT_Name__c}  </th>    
+                       </tr>
+                       <apex:outputPanel rendered="{!if( (rt.innsinn.size>1)&&(rt.innsinn[0]!=de),true,false)}">
+                         <tr style="color: #666666;background-color: #c0deed;line-height:30px;height:40px;">
+                        <td height="30" align="center" colspan="2">Select Ticket to copy:</td>
+                        
+                        <td height="30">
+                        <apex:selectList multiselect="false"  size="1" id="hiy" style="width:220px;" onchange="displayResult('{!$Component.hiy}','{!$Component.fname}','{!$Component.lname}','{!$Component.email}','{!$Component.cellph}','{!$Component.jobtitle}','{!$Component.company}','{!$Component.country}','{!$Component.address1}','{!$Component.address2}','{!$Component.city}','{!$Component.selstate}','{!$Component.zip}','{!$Component.phone}','{!$Component.weburl}')">
+                        <apex:selectOptions value="{!displaycopyOptions}" >
+                        </apex:selectOptions>
+                        
+                        </apex:selectList>
+                        
+                        
+                        </td>
+                        </tr></apex:outputPanel>
+        
+                      <tr style="color: #666666;background-color: #c0deed;line-height:30px;height:40px;">
+                          <td height="30" align="right">First Name:<span class="error">*</span></td>
+                         
+                          <td height="30" style="text-align:left;" colspan="2">
+                          <apex:inputField value="{!de.atsumdom.AS_FirstName__c}"   style="width:186px; font-size:14px; padding:5px;" id="fname"/>
+                        </td> 
+                     </tr>
+                    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+                      <td height="30" align="right">Last Name:<span class="error">*</span></td>
+                      
+                      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_LastName__c}" style="width:186px; font-size:14px; padding:5px;"  id="lname"/></td>
+                    </tr>
+                    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+                      <td height="30" align="right">Email Address:<span class="error">*</span></td>
+                      
+                      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_Email__c}" style="width:186px; font-size:14px; padding:5px;" id="email" /></td>
+                    </tr>
+                  
+                    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+                      <td height="30" align="right">Cell Phone:</td>
+                      
+                      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_CellPhone__c}" style="width:186px; font-size:14px; padding:5px;" id="cellph"  /></td>
+                    </tr>
+       
+       
+        <!-- --------------------------------------------Home address ------------------------------------------------------- -->
+                <apex:outputPanel rendered="{!IF(rt.name.EV_id__c!='a00F0000008G34FIAS',true,false)}"> 
+                    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+                     <td style="width:50%;padding-left:10px;border-bottom:1px solid white;font-size:18px;font-weight:bold;" colspan="3">
+                     Attendee Information </td>    
+                   </tr>
+                <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:12px;line-height:35px;">
+                  <td colspan="3" style="border-bottom:1px solid white;-webkit-border-radius: 5px;border-radius: 5px;padding-left:10px;">
+                    <apex:outputText style="color:#ff0000" value="{!Mainmessage}" ></apex:outputText>
+                    <apex:outputPanel style="color:#ff0000" rendered="{!errorRequiredfield}"> Please fill all Required fields </apex:outputPanel>
+                   </td>   
+                 </tr>
+                 
+        <!--<tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+                      <td height="30" align="right">Company:<span class="error">*</span></td>
+                      
+                      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_Company__c}" required="true" style="width:186px; font-size:14px; padding:5px;"  /></td>
+                    </tr> -->
+       
+       
+       
+       
+            <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+              <td height="30" align="right">Address 1:<span class="error">*</span></td>
+             
+              <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_HomeAddress1__c}" required="true" style="width:186px; font-size:14px; padding:5px;"  /></td>
+            </tr>
+            <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+              <td height="30" align="right">Address 2:</td>
+              
+              <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_HomeAddress2__c}" style="width:186px; font-size:14px; padding:5px;"  /></td>
+            </tr>
+            <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+              <td height="30" align="right">City:<span class="error">*</span></td>
+              
+              <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_HomeCity__c}" required="true" style="width:186px; font-size:14px; padding:5px;"  /></td>
+            </tr>
+            
+            <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+              <td height="30" align="right">Country:<span class="error">*</span></td>
+              
+              <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.As_Home_Country__c}" required="true" style="width:186px; font-size:14px; padding:5px;"  /></td>
+            </tr>
+            
+            
+            <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+              <td height="30" align="right">State:<span class="error">*</span></td>
+              
+              <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.As_Home_State__c}" required="true" style="width:186px; font-size:14px; padding:5px;"  /></td>
+            </tr>
+            
+              <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+              <td height="30" align="right">Zip Code:<span class="error">*</span></td>
+              
+              <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_HomeZip__c}"  required="true" style="width:186px; font-size:14px; padding:5px;"  /></td>
+            </tr>
+         </apex:outputPanel>
+            <!-- --------------------------------------------Home  address------------------------------------------------------- -->
+   
+       
+         <!-- -------------------------------------------- Work address ------------------------------------------------------- -->
+                <apex:outputPanel rendered="{!IF(rt.name.EV_id__c=='a00F0000008G34FIAS',true,false)}"> 
+                   
+                   <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+                 <th style="width:50%;border-bottom:1px solid white;font-size:18px;font-weight:bold; text-align:center;" colspan="3">
+                 Attendee Information </th>    
+               </tr>
+        
+          <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:17px;line-height:35px;">
+          <td colspan="3" style="border-bottom:1px solid white;-webkit-border-radius: 5px;border-radius: 5px;padding-left:10px;">
+            <apex:outputText style="color:#ff0000" value="{!Mainmessage}" ></apex:outputText>
+            
+            <apex:outputPanel style="color:#ff0000" rendered="{!errorRequiredfield}"> Please fill all Required fields </apex:outputPanel>
+            
+           </td>     </tr>
+      
+           
+        <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+                      <td height="30" align="right">Company:<span class="error">*</span></td>
+                      
+                      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_Company__c}" required="true" style="width:186px; font-size:14px; padding:5px;" id="company"   /></td>
+                    </tr> 
+                    
+                    
+     <tr style="color: #666666;background-color: #c0deed;line-height:30px;height:40px;">
+      <td height="30" align="right">Job Title:<span class="error">*</span>  </td>
+     
+      <td height="30" style="text-align:left;" colspan="2">
+      
+       <apex:inputField value="{!de.atsumdom.AS_Title__c}"   style="width:186px; font-size:14px; padding:5px;"  id="jobtitle"/>
+    </td>
+    </tr>
+    
+     <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Country:<span class="error">*</span></td>
+      
+      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_Work_Country__c}" required="true" style="width:186px; font-size:14px; padding:5px;"  id="country"/></td>
+    </tr>
+    
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Address 1:<span class="error">*</span></td>
+      
+      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_WorkAddress1__c}" required="true" style="width:186px; font-size:14px; padding:5px;"  id="address1"/></td>
+    </tr>
+    
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Address 2:</td>
+      
+      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_WorkAddress2__c}" style="width:186px; font-size:14px; padding:5px;" id="address2" /></td>
+    </tr>
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">City:<span class="error">*</span></td>
+      
+      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_WorkCity__c}" required="true" style="width:186px; font-size:14px; padding:5px;"  id="city" /></td>
+    </tr>
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">State:<span class="error">*</span></td>
+      
+      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_Work_States__c}" required="true" style="width:186px; font-size:14px; padding:5px;" id="selstate" /></td>
+    </tr>
+    
+      <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Zip Code:<span class="error">*</span></td>
+      
+      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_WorkZip__c}" required="true"  style="width:186px; font-size:14px; padding:5px;"  id="zip" /></td>
+    </tr>
+    
+     <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Work Phone :<span class="error">*</span></td>
+      
+      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_WorkPhone__c}" required="true" style="width:186px; font-size:14px; padding:5px;" id="phone" /></td>
+    </tr>
+    
+    <!--<apex:outputText rendered="{!IF($User.Username == 'info@licree.com',FALSE,TRUE)}">
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Web Site :</td>
+                                  
+      <td height="30" colspan="2"><apex:inputField value="{!de.atsumdom.AS_WebsiteUrl__c}" required="true"  style="width:186px; font-size:14px; padding:5px;" id="weburl"  /></td>
+    </tr>
+                   
+      </apex:outputText>    -->     
+                   
+                   
+                   
+                   
+                   
+         </apex:outputPanel>
+            <!-- --------------------------------------------Home  address------------------------------------------------------- -->
+            
+           
+            
+            
+            
+            
+   
+       <!-- --------------------------------------------Survey Questions ------------------------------------------------------- -->
+             <tr style="color: #666666;background-color: #c0deed;border-color: #DBF5FC;font-size:20px;">
+              <td colspan="3" style="-webkit-border-radius: 5px;border-radius: 5px; text-align:center;">Other Information </td>   
+             </tr> 
+           <apex:repeat value="{!de.Innvaluessecond}" var="inne">
+                  
+                  
+           <script>
+            
+           function run(ch){
+           
+           var cd  =document.getElementById(ch.id).value;
+       
+           var cn0 = 'I am attending as a'+'0';
+           var cn1 = 'I am attending as a'+'1';
+           var cn2 = 'I am attending as a'+'2';
+           var cn3 = 'I am attending as a'+'3';
+               
+            if(cd=='Professional'){                 
+               document.getElementById(cn0).innerHTML='Please enter your company name'+'<span style="color:red;">* </span>';
+               document.getElementById(cn1).innerHTML='Please enter your work phone number'+'<span style="color:red;">* </span>';
+               
+               document.getElementById(cn2).innerHTML='<apex:inputText required="true" value="{!inne.selectedSurveyValue}"/>';
+               document.getElementById(cn3).innerHTML='<apex:inputText required="true" value="{!inne.selectedSurveyValue}"/>';            
+            }
+            else{
+               document.getElementById(cn0).innerHTML='';
+               document.getElementById(cn1).innerHTML='';
+               
+               document.getElementById(cn2).innerHTML='';
+               document.getElementById(cn3).innerHTML='';
+            }
+          }
+            
+       </script>  
+                  
+                  
+                  
+                  
+                  
+                  
+         <tr style="color: #666666;background-color: #c0deed;border-bottom:1px solid white;line-height:25px;">
+           <td style="text-align:right; width:50%; border:0px solid #FF0000;" valign="top" width="50%">
+           
+               <apex:outputPanel rendered="{!IF(inne.survey.Survey_Questions__r.Waivers__c!=null,false,true)}">
+                <apex:outputText value="{!inne.survey.Survey_Questions__r.Question__c}" rendered="{!IF((inne.survey.Survey_Questions__r.Question__c=='Please enter your company name' || inne.survey.Survey_Questions__r.Question__c=='Please enter your work phone number'),false,true)}"></apex:outputText> 
+     
+                <apex:outputPanel rendered="{!IF((inne.survey.Survey_Questions__r.Question__c=='Please enter your company name' || inne.survey.Survey_Questions__r.Question__c=='Please enter your work phone number'),false,true)}"> 
+                    <span class="error">*</span>
+                </apex:outputPanel>
+                
+                <div id="{!inne.survey.Survey_Questions__r.Question__c}0" style="width:100%;border:0px solid red;padding-top:45px;"></div>
+                <div id="{!inne.survey.Survey_Questions__r.Question__c}1" style="width:100%;border:0px solid red;"></div>
+                </apex:outputPanel>
+           </td> 
+                      
+                      
+           <td style="text-align:left; width:50%; border:0px solid #FF0000;" colspan="2" valign="top">
+           
+             <apex:outputPanel rendered="{!IF(inne.survey.Survey_Questions__r.Waivers__c!=null,false,true)}">
+                     <apex:selectCheckboxes layout="pageDirection"  value="{!inne.selectedSurveyValueCheck}"  rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='CheckBox',true,false)}">
+                     <apex:selectOptions value="{!inne.options}">
+                      </apex:selectOptions>
+             </apex:selectCheckboxes>
+            </apex:outputPanel>
+            
+            
+            
+            
+            
+             <apex:selectList value="{!inne.selectedSurveyValue}" multiselect="false" size="1"  rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='PickList',true,false)}">
+            <apex:selectOptions value="{!inne.options}">
+            </apex:selectOptions>
+          </apex:selectList>
+          
+            
+            
+         <apex:selectRadio value="{!inne.selectedSurveyValue}" id="chooseColor"  onchange="run(this);" layout="pagedirection" rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='Radio button',true,false)}" style="padding:0px; margin:0px;">
+            <apex:selectOptions value="{!inne.options}">
+            </apex:selectOptions>
+         </apex:selectRadio>
+         
+         <div id="{!inne.survey.Survey_Questions__r.Question__c}2" style="width:100%;border:0px solid red;"></div>
+         <div id="{!inne.survey.Survey_Questions__r.Question__c}3" style="width:100%;border:0px solid red;"></div>
+         
+         <apex:outputPanel rendered="{!IF((inne.survey.Survey_Questions__r.Question__c=='Please enter your company name' || inne.survey.Survey_Questions__r.Question__c=='Please enter your work phone number'),false,true)}">
+         <apex:inputText value="{!inne.selectedSurveyValue}" rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='Text',true,false)}"/>
+
+         <apex:inputTextarea value="{!inne.selectedSurveyValue}" rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='Text Area',true,false)}"/>  <br />
+         </apex:outputPanel>
+         </td>  </tr>
+         
+        
+         
+          <apex:outputPanel rendered="{!IF(inne.survey.Survey_Questions__r.Waivers__c!=null,true,false)}">
+           <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+            <td colspan="3">
+             
+             <table style="width:100%;" cellpadding="0" cellspacing="0" border="1"><tr>
+              <td  style="padding-left:10px; width:50%;" valign="top"> 
+             
+              {!inne.survey.Survey_Questions__r.Question__c}
+               <span class="error" >*</span> 
+             </td> 
+              
+              <td colspan="2"  style="padding-left:10px; width:50%;"> 
+              
+              <div style="background-color:#FFFFFF; font-family:Verdana; padding-left:15px; font-size:12px;overflow:scroll; width:350px; height:350px; border:3px solid #skyblue;">
+              <apex:outputText value="{!inne.survey.Survey_Questions__r.Waivers__c}" escape="false" style="font-family:Verdana;"  /></div>
+                          
+             </td>  </tr> 
+             
+             
+             
+             <tr><td colspan="3" > 
+               <apex:selectCheckboxes layout="pageDirection"  value="{!inne.selectedSurveyValueCheck}"  rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='CheckBox',true,false)}">
+            <apex:selectOptions value="{!inne.options}">
+            </apex:selectOptions>
+          </apex:selectCheckboxes></td>
+                         </tr> 
+             
+             </table><br />     
+         
+          </td>  </tr>
+                
+         </apex:outputPanel>
+           </apex:repeat> 
+           
+            <!-- --------------------------------------------Survey Questions End------------------------------------------------------- -->
+        </apex:repeat>  
+      </apex:repeat>   
+           
+           
+           
+            </table>  
+         
+         <table width="100%" cellpadding="0" cellspacing="0" border="0">
+           
+        <tr style="color: #666666;background-color: #c0deed;line-height:10px;border-bottom:1px solid white;height:40px;"> 
+           <td colspan="3" style="text-align:right;padding-right:15px;">    
+           
+                        <apex:actionRegion >    
+                          <apex:selectRadio value="{!paymenttypeIteam}" rendered="{!IF(TotalAmount>0,true,false)}" >
+                            <apex:selectOptions value="{!paytypes}" />
+                            <apex:actionSupport action="{!callpayByCheck}" event="onchange" reRender="outpan" status="AjaxLoader"/>
+                          </apex:selectRadio> 
+                        </apex:actionRegion>  
+        </td></tr>      
+        
+        <tr style="color: #666666;background-color: #c0deed;line-height:15px;border-bottom:1px solid white;height:40px;"> 
+           <td colspan="3" style="text-align:left;padding-left:15px;" valign="top">    
+              <apex:outputPanel rendered="{!IF(TotalAmount>0,true,false)}">
+               <apex:outputPanel rendered="{!NOT(selectAtleastOneError)}">
+                                <b><font style="font-size:11px;"> You will be taken to PayPal to complete payment.<br />
+                                        No PayPal account is required.</font></b> </apex:outputPanel></apex:outputPanel>
+               </td></tr>                           
+                          
+  
+    </table>
+       
+           
+           
+           
+           <apex:outputPanel id="outpan"> 
+           
+           
+           
+          <table cellspacing="0" cellpadding="0" border="0" style="width:100%; background-color:#c0deed;" >
+           
+               <tr>
+                   <td>
+                   
+                        <apex:outputPanel rendered="{!selectAtleastOneError}" >
+                
+                            <table cellspacing="0" cellpadding="0" border="0" style="width:100%">
+                
+                            <tr style="height:35px;"> 
+                                <td colspan="2" style="font-weight:bold;font-size:18px;text-align:left;padding-left:20px;"> Purchase Tickets </td> 
+                            </tr>
+                       
+                            <tr>
+                                 <td style="text-align:left;padding-left:20px; line-height:20px;">
+                                     <b>Pay By Check:</b> Please make the check payable to:<br /> 
+                                    
+                                      <apex:outputPanel rendered="{!eventAdminEvent[0].Accept_check__c}" >
+                                          <apex:outputText value="{!checkadd}" escape="false"> </apex:outputText> 
+                                      </apex:outputpanel>
+                                 
+                                 </td>
+                                 <td>
+                                     <apex:commandLink action="{!Pay}" >
+                                     <apex:image URL="{!URLFOR($Resource.Registration_page_images,'/PAY_BY_CHECK.png')}"/>
+                                     </apex:commandLink>
+                               </td>
+                           </tr>
+                       
+               </table>
+               
+               
+             </apex:outputPanel> 
+                   
+                   </td>
+               </tr>
+           
+           </table>
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;"> 
+         <td colspan="3" style="text-align:right;padding-right:15px;">
+         
+             <apex:outputPanel rendered="{!NOT(selectAtleastOneError)}" id="out2">
+              <table cellspacing="0" cellpadding="0" border="0" style="width:100%">
+                        <tr> 
+                            <td  style="font-weight:bold;font-size:18px;text-align:right;padding-left:20px;"> 
+                            
+                                <apex:commandLink action="{!Pay}"   style="padding:8px;text-decoration:none;">
+                                  <apex:image URL="{!URLFOR($Resource.Registration_page_images,'/COMPLETE_REGISTRATION.png')}"/>
+                          </apex:commandLink>
+                          
+                             </td> 
+                         </tr>
+                         <tr>
+                           <td colspan="2">&nbsp;</td>
+                       </tr>
+                   </table>
+               </apex:outputPanel> 
+             
+             </td>
+       </tr>
+     </table>   
+           
+      </apex:outputPanel>    
+           
+           
+       <!--  <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;"> 
+           <td colspan="3" style="text-align:right;padding-right:15px;">
+           <apex:commandButton Value="Complete Registration" action="{!Pay}"  styleClass="val"  style="height:60px;" />   </td>
+        </tr>      
+           
+        <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;"> 
+         <td colspan="3" style="text-align:right;padding-right:15px;">
+         &nbsp; </td>
+       </tr>
+    </table>   -->
+           
+    </td> </tr> </table>   
+  <!-- -------------------------------- Taking input end ----------------------------- -->
+     </td> 
+       <!------------------------- Leftside Td END --------------------------------------- -->
+       
+       
+     <!------------------------- Right side Td --------------------------------------- -->
+      <td  style="width:30%;" valign="top">
+      
+      <table> <tr><td>
+      
+       <table style="width:100%; margin-top:30px;" cellspacing="0" cellpadding="0" border="0"  >
+         
+          <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:16px;line-height:35px;">
+          <td  style="border-bottom:1px solid white;padding-left:10px;-webkit-border-radius: 5px;border-radius: 5px;">When &amp; Where</td>     </tr>
+               
+           
+         
+         <tr style="color: #666666;background-color: #c0deed;line-height:20px;">
+         <td style="width:50%;padding-left:10px;border-bottom:1px solid white;" > 
+           
+           <table cellspacing="0" cellpadding="0">
+            <tr><td> &nbsp;</td></tr>
+           <tr><td style="align:center;">
+           <div id="map" style="padding-left:0px;height:250px; border:0px solid #CCCCCC;width:98%;float:left;margin:0px auto;"></div></td></tr>
+            <tr><td> &nbsp;</td></tr>
+           
+           <tr><td> {!event.EV_HostingLocation__c}</td></tr>
+           
+           <tr><td>  {!event.EV_HistingAddr1__c}</td></tr>
+           <tr><td>{!event.AS_HostingCity__c}, {!event.EV_HostingStateNew__c} {!event.EV_HostingZipcode__c}</td></tr>
+           <tr><td> &nbsp;</td></tr>
+           <tr><td> 
+           
+              <apex:outputText value="{0,date,EEEE MMM dd, yyyy }" style="font-family:Verdana, Geneva, sans-serif;">
+                      <apex:param value="{!event.EV_StartDate__c}"/>  
+                    </apex:outputText> &nbsp; {!event.StartTime__c}  To 
+                    
+                    <apex:outputText value="{0,date,MMM dd, yyyy }" style="font-family:Verdana, Geneva, sans-serif;" rendered="{!IF(event.EV_StartDate__c!=event.EV_EndDate__c,true,false)}">
+                      <apex:param value="{!event.EV_EndDate__c}"/>  
+                    </apex:outputText> &nbsp; {!event.EV_EndTime__c}   </td></tr>
+          
+           <tr><td style=" font-weight:bold;color:#0077B3; padding-left:15px; padding-bottom:10px;">
+    <div onclick="toggle_visibility('foo3');" style="text-decoration:none;color:#0077B3;">
+   
+    <apex:image url="{!URLFOR($Resource.calander_logos, 'calander_logos/calander.png')}" style="margin-bottom:-5px;"/>   Add to my calendar</div>
+      
+      <div id="foo3" style="display:none;align:center;margin-top:10px; padding-left:15px;line-height:25px;">  
+       
+       
+       
+       <a style="text-decoration:none;color:#0077B3;" href="/servlet/servlet.FileDownload?file={!calenderId}"  target="_blank">
+            <apex:image url="{!URLFOR($Resource.calander_logos, 'calander_logos/outlook.png')}" style="margin-bottom:-5px;"/>&nbsp;&nbsp;Outlook Calendar </a><br />
+                       
+            <!--<a style="text-decoration:none;color:#0077B3" href="http://www.google.com/calendar/event?action=TEMPLATE&text=Special Needs Expos NYC Exhibitor Registration&dates=20131208T150000Z/20131208T220000Z&details=For details, link here: https://specialneedsexponyc.com&location=Metropolitan Pavilion - 125 W 18th St - New York, NY 10011" target="_blank" rel="nofollow">
+            <apex:image url="{!URLFOR($Resource.calander_logos, 'calander_logos/gmail.png')}" style="margin-bottom:-5px;"/>&nbsp;&nbsp;Google Calendar</a><br />-->
+            
+             <a style="text-decoration:none;color:#0077B3" href="http://www.google.com/calendar/event?action=TEMPLATE&text={!event.EV_Title__c}&dates={!thisTimeStr}/{!endtimestr}&details={!event.EV_Description__c}&location={!event.EV_HostingLocation__c} - {!event.EV_HistingAddr1__c}  {!event.AS_HostingAddr2__c}- {!event.AS_HostingCity__c}, {!event.EV_HostingStateNew__c} {!event.EV_HostingZipcode__c}" target="_blank" rel="nofollow">
+            <apex:image url="{!URLFOR($Resource.calander_logos, 'calander_logos/gmail.png')}" style="margin-bottom:-5px;"/>&nbsp;&nbsp;Google Calendar</a><br />
+       
+           <!-- <a style="text-decoration:none;color:#0077B3" href="http://calendar.yahoo.com/?v=60&view=d&type=20&title=Special Needs Expos NYC Exhibitor Registration&st=20131208T150000Z&dur=0700&desc=For details, link here: https://specialneedsexponyc.eventbrite.com&in_loc=Metropolitan Pavilion  - 125 W 18th St - New York NY 10011" target="_blank"> 
+            <apex:image url="{!URLFOR($Resource.calander_logos, 'calander_logos/yahoo.png')}" style="margin-bottom:-5px;"/>&nbsp;&nbsp;Yahoo! Calendar</a><br />-->
+
+             <a style="text-decoration:none;color:#0077B3" href="/servlet/servlet.FileDownload?file={!calenderId}" target="_blank"> 
+            <apex:image url="{!URLFOR($Resource.calander_logos, 'calander_logos/icalander.png')}" style="margin-bottom:-5px;"/>&nbsp;&nbsp;iCal Calendar </a>
+       
+      
+       
+       </div>
+         
+           
+           
+           </td></tr>
+          
+          
+          
+           
+           <tr><td> &nbsp;</td></tr></table>
+      
+      
+      
+        </td>     
+     
+     
+      </tr> </table>
+     
+      </td>     
+     
+     
+      </tr>
+       <tr>
+           <td>
+               <table style="width:100%; margin-top:30px;" cellspacing="0" cellpadding="0" border="0" >
+         
+          <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:16px;line-height:35px;">
+          <td  style="border-bottom:1px solid white;padding-left:10px;-webkit-border-radius: 5px;border-radius: 5px;">Organizer</td>     </tr>
+               
+           
+         
+         <tr style="color: #666666;background-color: #c0deed;line-height:20px;">
+         <td style="width:50%;padding-left:10px;border-bottom:1px solid white;" > 
+           
+           <table cellspacing="0" cellpadding="0" style="line-height:30px;">
+        
+           <tr ><td style="border-bottom:1px solid white;"><h3 style="padding:0px; margin:0px;"> 
+           {!event.EV_Title__c}</h3></td></tr>
+           
+            <tr><td style="line-height:30px;">
+           <apex:commandButton value="Contact Organizer" image="{!$Resource.SendMessage}" action="{!displaypopup}" immediate="true"/>
+          </td></tr>
+                
+           
+           
+           <tr><td style="line-height:30px;">
+            <a style="text-decoration:none;color:#0077B3" href="{!event.EV_WebsiteURL__c}" target="_blank">
+                    {!event.EV_WebsiteURL__c}
+                </a></td></tr>
+                
+           <tr><td style="line-height:30px;"> <a style="text-decoration:none;color:#0077B3" href="{!event.FacebookId__c}" target="_blank">
+                  <apex:image url="{!URLFOR($Resource.calander_logos, 'calander_logos/facebook.png')}" style="margin-bottom:-5px;"/>  
+                  {!event.FacebookId__c}
+                </a></td></tr>
+           <tr><td style="line-height:30px;"> <a style="text-decoration:none;color:#0077B3" href="{!event.TwitterId__c}" target="_blank">
+              <apex:image url="{!URLFOR($Resource.calander_logos, 'calander_logos/twitter.png')}" style="margin-bottom:-5px;"/>    {!event.TwitterId__c}
+                </a></td></tr>
+                     
+          <tr><td> &nbsp;</td></tr></table> 
+           </td>
+       </tr>
+       
+       
+       
+       
+       </table>
+      
+      
+       </td>
+       </tr>
+       
+       
+       
+       
+       </table>
+      
+      
+       </td>
+       <!------------------------- Right side END--------------------------------------- -->
+      </tr> 
+     
+      </table>
+         
+     <!-- -----------------------------Table Under Header End ------------------------------ --> 
+        
+      
+      
+      
+      
+      <!-- --------------------------Main Table End---------------------------- -->
+      </td></tr></table>
+ 
+ 
+  </apex:outputPanel>
+  
+  
+</apex:form>
+
+<apex:form id="frm2">
+
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!contactinfo}" />
+       <apex:outputPanel styleClass="custPopup" layout="block" style="width:45%; background-color:#eaeaea;" rendered="{!contactinfo}" id="rte">
+              
+         <table cellpadding="0" cellspacing="0" style="line-height:30px; width:100%;">
+         <tr><td colspan="2" style="font-size:25px;font-weight:bold;padding-left:15px; border-bottom:2px solid #FFFFFF; height:40px">Contact organizer </td>
+         </tr>
+         
+         <tr><td style="padding-left:15px;">Your name : </td></tr>
+         <tr><td style="padding-left:15px;"><apex:inputText value="{!yourName}" style="padding:5px; width:400px;"/> </td></tr>
+         
+         
+         <tr><td style="padding-left:15px;">Email address :  </td></tr>
+         <tr><td style="padding-left:15px;"><apex:inputText value="{!yourEmail}" style="padding:5px; width:400px;"/> </td></tr>
+         
+         <tr><td style="padding-left:15px;"> Send your message :</td></tr>
+         <tr><td style="padding-left:15px;"><apex:inputTextarea value="{!yourMessage}" style="height:100px;width:400px;"/> </td></tr>
+         
+         <tr><td colspan="2" style="text-align:center; height:50px;"> 
+         <apex:commandButton value="Send message" action="{!sendMail}" styleClass="awesome "/> &nbsp;
+         <apex:commandButton value="Cancel" action="{!closepop}" reRender="frm2,rte" styleClass="awesome "/>
+          </td>
+         </tr>
+         
+         
+         </table>    
+               
+               
+  </apex:outputPanel>
+
+</apex:form>
+
+
+</apex:page>

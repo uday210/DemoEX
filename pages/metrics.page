@@ -1,0 +1,503 @@
+<apex:page controller="metricscon" showHeader="false">
+<head>
+<title>Boothleads</title>
+</head>
+
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<!--<apex:stylesheet value="{!$Resource.ExtJS4}/resources/css/ext-all.css" />
+<apex:includeScript value="{!$Resource.ExtJS4}/ext-all.js"/>  
+<apex:includeScript value="{!$Resource.ExtJS4}/resources/Direct.js"/>  
+<apex:includeScript value="{!$Resource.ExtJS4}/resources/PagingMemoryProxy.js"/>  
+<apex:includeScript value="{!$Resource.ExtJS4}/resources/PagingSelectionPersistence.js"/>  -->
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/>  
+<apex:include pageName="dashboardicons"/>
+
+    <style>
+    #dashbox{border-radius: 8px; 
+    -moz-border-radius: 8px; 
+    -webkit-border-radius: 8px; 
+    border: 1px solid #CCCCCC; font-family:Arial, Helvetica, sans-serif; font-size:13px; font-weight:bold; background-color:#f3f3f3; margin:5px;
+    -moz-box-shadow: 0 0 5px #eaeaea;
+    -webkit-box-shadow: 0 0 5px #eaeaea;
+    box-shadow: 0 0 5px #eaeaea;
+    margin:5px;
+    } 
+    html{font-family:Arial, Helvetica, sans-serif; font-size:15px;}
+    h3{color:#FFFFFF;}
+    </style>
+<style>
+.round 
+{
+-webkit-font-smoothing: subpixel-antialiased;
+
+-webkit-border-radius: 5px 5px 5px 5px;
+-moz-border-radius: 5px 5px 5px 5px;
+border-radius: 5px 5px 5px 5px;
+margin:0px auto;
+
+padding:8px;
+background-color:#FFF;
+width:100%;
+-moz-box-shadow: 0 0 5px #888;
+-webkit-box-shadow: 0 0 5px#888;
+box-shadow: 0 0 5px #888;
+border:1px solid #414141;
+border-bottom:1px solid #414141;
+}
+.h4green{color:#258d51; font-size:14px;}
+.h4lightblue{color:#00a2b1; font-size:14px;}
+.h4maroon{color:#ac1324; font-size:14px;}
+.h4lightgreen{ color:#94af0a; font-size:14px;}
+
+.grid{ 
+        width: 90%; 
+        border-collapse: collapse;
+        border:1px solid #91b5db; 
+       
+    }
+    /* Zebra striping */
+   .grid tr:nth-of-type(odd) { 
+        background: #eee; 
+        
+    }
+     .grid tr:hover{ 
+        background: #f3f3f3; 
+       
+    }
+   .grid th { 
+        background: #CCCCCC;
+       color: #414141; 
+        font-weight: bold; 
+        background: #eaeaea; /* Old browsers */
+background: -moz-linear-gradient(top,  #eaeaea 0%, #f3f3f3 39%, #f3f3f3 58%, #eaeaea 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eaeaea), color-stop(39%,#f3f3f3), color-stop(58%,#f3f3f3), color-stop(99%,#eaeaea)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* IE10+ */
+background: linear-gradient(to bottom,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#eaeaea',GradientType=0 ); /* IE6-9 */
+    }
+    .grid td{ 
+      
+        border-bottom:1px solid #91b5db; 
+        text-align: left;
+      border-right:0px;;
+      
+    }
+    .grid th { 
+       
+        padding-left:0px; 
+        border: 1px solid #D3D3D3; 
+        font-size:11px;
+        text-align: left; 
+        height:19px;
+    }
+    .grid1 td{
+    border-right:0px solid #F00; 
+  
+    }
+ .grid tr:nth-child(odd)     { background-color:#fafafa; }
+ .grid tr:nth-child(even)      { background-color:#fff; }
+ 
+ 
+  
+.glossy{background: #d8e5f5; /* Old browsers */
+background: -moz-linear-gradient(top,  #d8e5f5 0%, #cfdff3 45%, #c6d9f1 48%, #b6ceee 48%, #aec9ed 48%, #bed4f0 73%, #caddf3 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8e5f5), color-stop(45%,#cfdff3), color-stop(48%,#c6d9f1), color-stop(48%,#b6ceee), color-stop(48%,#aec9ed), color-stop(73%,#bed4f0), color-stop(100%,#caddf3)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e5f5', endColorstr='#caddf3',GradientType=0 ); /* IE6-9 */
+
+}
+.gridbottom{border-bottom:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;background-color:#d6e3f2; padding:3px; border-top:1px solid #91b5db;}
+.trwhite{ background-color: #FFFFFF; }
+.trwhite:hover { background-color: #FFFFFF; }
+</style>
+  
+
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/> 
+<!-- Start: page-top-outer -->
+<div id="page-top-outer">    
+<!-- Start: page-top -->
+<div id="page-top">
+
+<!-- Start logo -->
+<div id="logo">  
+</div>
+<!-- End logo -->
+
+<!--  start top-search -->
+<div id="top-search">
+ <table border="0" cellpadding="0" cellspacing="0">
+  <tr>
+   <td class="welcome"> Welcome  :
+   <span class="username">{!$User.Firstname}&nbsp;{!$User.Lastname}</span>
+   <!--<apex:area/>inputText value="{!searchstr}" styleClass="top-search-inp" />-->  </td>
+  </tr>
+ </table>
+</div>
+<!--  end top-search -->
+
+<div class="clear"></div>
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+<div class="clear">&nbsp;</div>
+<!--  start nav-outer-repeat...........START -->
+<div class="nav-outer-repeat"> 
+
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+<div id="nav-right">
+        
+               
+<!----LOGOUT ACTION START-->
+<div class="nav">
+ <div class="table">
+
+<apex:form >
+<div class="nav-divider">&nbsp;</div>
+ <!--<apex:commandLink action="{!profileaction}"  style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:commandLink>-->
+ <apex:outputLink value="/apex/BL_Eventadmin_Profile" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:outputLink>
+<div class="nav-divider">&nbsp;</div>
+ <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+<!-- <div class="nav-divider">&nbsp;</div>
+  <apex:outputLink target="_new" value="/apex/BL_EventAdmin_Help" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" >Help</apex:outputLink> -->
+</apex:form>
+
+ </div>
+</div>
+   
+<!----LOGOUT ACTION END--->
+
+ <div class="clear">&nbsp;</div>
+ </div>
+ <!-- end nav-right -->
+
+
+<!--  start nav -->
+<div class="nav">
+<div class="table">
+  
+<!--<div class="nav-divider">&nbsp;</div>-->
+ <ul class="current"><li>
+ <apex:outputLink value="/apex/BL_EA_Dashboard?id={!EventString}" id="Dashboard"><b>Dashboard</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>                    
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_EventAdmin_Events?id={!EventString}" id="Events"><b>Events</b></apex:outputLink></li></ul>
+         
+ <ul class="select"><li>
+ <div class="nav-divider">&nbsp;</div>
+ <apex:outputLink value="/apex/BL_Eventadmin_BoothAdmins?id={!EventString}" id="Booths"><b>Booths</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_Eventadmin_Attendees?id={!EventString}" id="Attendees"><b>Attendees</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_EA_Reports?id={!EventString}" id="Reports"><b>Reports</b> </apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/metrics?id={!EventString}" id="Metrics"><b>Metrics</b> </apex:outputLink></li></ul>
+        
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+</div>
+<!--  start nav -->
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................ END -->
+
+<apex:form >
+<div style="height:35px; background-color:#eaeaea; width:100%; margin-top:5px;">
+<table width="98%" border="0" cellspacing="8" cellpadding="0" style="margin:0px auto;">
+ <tr style="height:35px;">
+  <td>
+   <b>SELECT EVENT :</b>&nbsp; <apex:selectList value="{!EventString}" size="1" style="width:220px; padding:3px;">
+        <apex:selectOptions value="{!Events}"/> 
+        <apex:actionSupport action="{!getdashboard}" event="onchange" status="AjaxLoader"  /> 
+        </apex:SelectList>
+  </td>
+ </tr>
+</table>
+</div>
+<br />
+
+ 
+ 
+ <table width="98%" border="0" cellspacing="8" cellpadding="0" style="margin:0px auto;">
+  <tr>
+    <td style="width:50%; text-align:center;">
+    
+        <table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #999933;">
+ <tr>
+  <td>
+   <div style="height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+   <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Revenue Metrics</div>
+   </div>
+  </td>
+ </tr>
+     <tr>
+      <td>
+        <div style="height:300px;">
+            <apex:outputPanel rendered="{!showdb}" >
+            <apex:commandLink action="{!registrationreport}"> 
+            <apex:chart width="100%" height="300" data="{!pay}" theme="Category2">
+            <apex:pieSeries dataField="data" labelField="name" >
+            <apex:chartTips width="150"/>
+           <apex:chartLabel display="none"/>
+           
+            </apex:pieSeries>
+            <apex:legend position="right"/>
+            </apex:chart>               
+             </apex:commandlink>
+            </apex:outputPanel>     
+        </div>   
+       </td>
+      </tr>
+</table>
+    
+    
+    
+    </td>
+    <td style="width:50%; text-align:center;">
+    
+        <table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #999933;">
+ <tr>
+  <td>
+   <div style="height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+   <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Dashboard for Amount Generated on Dates</div>
+   </div>
+  </td>
+ </tr>
+     <tr>
+      <td>
+        <div style="height:300px;">
+                <apex:outputPanel rendered="{!regdb}" > 
+                              
+                <apex:chart data="{!reg}" width="100%" height="300">
+                <apex:axis type="Category" position="bottom" fields="DateString" title="Amount Generated on particular Date"/>
+                <apex:axis type="Numeric" position="left" fields="deci1" title=" Total Amount Generated" minimum="0" steps="0"/>
+                <apex:barSeries title="Bar" orientation="vertical" axis="left" xField="DateString" yField="deci1" colorSet="#AD3333" stacked="true" groupGutter="1" gutter="8">
+                 <apex:chartLabel display="insideEnd" field="deci1" color="#333"/> 
+                </apex:barseries>
+                </apex:chart>        
+                
+                </apex:outputPanel>
+              </div>
+       </td>
+      </tr>
+</table>
+    
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+ <tr>
+    <td style="width:50%; text-align:center;">
+    
+        <table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #999933;">
+  <!--    <tr>
+  <td>
+   <div style="height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+   <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Revenue Metrics</div>
+   </div>
+  </td>
+ </tr>
+     <tr>
+      <td>
+        <div style="height:300px;">
+            <apex:outputPanel rendered="{!showdb}" >
+            <apex:commandLink action="{!registrationreport}"> 
+            <apex:chart width="100%" height="300" data="{!pay}" theme="Category2">
+            <apex:pieSeries dataField="data" labelField="name"  donut="40">
+            <apex:chartTips width="150"/>
+           <apex:chartLabel display="none"/>
+           
+            </apex:pieSeries>
+            <apex:legend position="right"/>
+            </apex:chart>               
+             </apex:commandlink>
+            </apex:outputPanel>     
+        </div>   
+       </td>
+      </tr>
+</table>
+    
+    
+    </td>
+    <td style="width:50%; text-align:center;">
+    
+         <table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #999933;">
+ <tr>
+  <td>
+   <div style="height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+   <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Revenue Metrics</div>
+   </div>
+  </td>
+ </tr>
+     <tr>
+      <td>
+        <div style="height:300px;">
+            <apex:outputPanel rendered="{!showdb}" >
+            <apex:commandLink action="{!registrationreport}"> 
+            <apex:chart width="100%" height="300" data="{!pay}" theme="Category2">
+            <apex:pieSeries dataField="data" labelField="name"  donut="40">
+            <apex:chartTips width="150"/>
+           <apex:chartLabel display="none"/>
+           
+            </apex:pieSeries>
+            <apex:legend position="right"/>
+            </apex:chart>               
+             </apex:commandlink>
+            </apex:outputPanel>     
+        </div>   
+       </td>
+      </tr>-->
+</table>
+    
+    
+    </td>
+  </tr>
+</table>
+ 
+ 
+ 
+ 
+ <!---------------------------End-------------->
+        
+ <!-- <table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #999933;">
+ <tr>
+  <td>
+   <div style="height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+   <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Revenue Metrics</div>
+   </div>
+  </td>
+ </tr>
+     <tr>
+      <td>
+        <div style="height:300px;">
+            <apex:outputPanel rendered="{!showdb}" >
+            <apex:commandLink action="{!registrationreport}"> 
+            <apex:chart width="100%" height="300" data="{!pay}" theme="Category2">
+            <apex:pieSeries dataField="data" labelField="name"  donut="40">
+            <apex:chartTips width="150"/>
+           <apex:chartLabel display="none"/>
+           
+            </apex:pieSeries>
+            <apex:legend position="right"/>
+            </apex:chart>               
+             </apex:commandlink>
+            </apex:outputPanel>     
+        </div>   
+       </td>
+      </tr>
+</table>-->
+
+<!--<table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #999933;">
+ <tr>
+  <td>
+   <div style="height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+   <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Revenue Metrics for Attendee types</div>
+   </div>
+  </td>
+ </tr>
+     <tr>
+      <td>
+        <div style="height:300px;">
+            <apex:outputPanel rendered="{!showtypes}" >
+            
+            <apex:chart width="100%" height="300" data="{!type}" theme="Category2">
+            <apex:pieSeries dataField="data" labelField="name"  donut="40">
+            <apex:chartTips width="150"/>
+           <apex:chartLabel display="none"/>
+            </apex:pieSeries>
+            <apex:legend position="right"/>
+            </apex:chart>               
+           
+            </apex:outputPanel>     
+        </div>   
+       </td>
+      </tr>
+</table>-->
+  <!--      <tr>
+         <td colspan="2" align="center" valign="top" height="10px"></td>
+        </tr>
+      <tr>
+        <td align="center" valign="top"><table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #999933;">
+          <tr>
+            <td>
+                <div style="height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+                <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Dashboard for Amount Generated on dates</div>
+                </div>
+             </td>
+            </tr>
+           <tr>
+            <td>
+             <div style="height:300px;">
+                <apex:outputPanel rendered="{!regdb}" > 
+                              
+                <apex:chart data="{!reg}" width="100%" height="300">
+                <apex:axis type="Category" position="bottom" fields="DateString" title="Amount Generated on particular Date"/>
+                <apex:axis type="Numeric" position="left" fields="deci1" title=" Total Amount Generated" minimum="0" steps="0"/>
+                <apex:barSeries title="Bar" orientation="vertical" axis="left" xField="DateString" yField="deci1" colorSet="#AD3333" stacked="true" groupGutter="1" gutter="8">
+                 <apex:chartLabel display="insideEnd" field="deci1" color="#333"/> 
+                </apex:barseries>
+                </apex:chart>        
+                
+                </apex:outputPanel>
+              </div>
+            </td>
+          </tr>          
+        </table>
+       </td>
+       <td align="center" valign="top"><table width="98%" border="" cellspacing="0" cellpadding="0" style="border:1px solid #999933;">
+       <tr>
+          <td>
+          <div style="height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+           <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Test</div>
+          </div>
+          </td>
+        </tr>
+       <tr>
+            <td> 
+            <div style="height:300px;">
+                <apex:outputPanel rendered="{!revenuedb}" >   
+                <apex:commandlink action="{!RevenueReport}" >            
+                <apex:chart data="{!rev}" width="100%" height="300">
+                <apex:pieSeries dataField="deci" labelField="Revenue">
+                <apex:chartTips width="200"/>
+                 <apex:chartLabel display="none"/>
+                </apex:pieSeries>
+               <apex:legend position="right"/>              
+                </apex:chart>           
+                </apex:commandlink>
+                </apex:outputPanel> 
+           </div>
+            </td>
+          </tr>
+        </table></td>
+      </tr>-->
+   
+
+
+
+</apex:form>
+</apex:page>

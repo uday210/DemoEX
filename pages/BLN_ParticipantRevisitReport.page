@@ -1,0 +1,133 @@
+<apex:page controller="BLN_ParticipantRevisitReportCon" action="{!displayPermissions}" id="pgid" sidebar="false" showHeader="false" standardStylesheets="false" cache="true" readOnly="true">
+    <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+    <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+    
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-checkinhistory-report.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ticketreport.css')}" />
+    
+    <!-----------//datatable stylescss------------->
+    <!-------------basic template html component------------------------------------->
+    <style>
+    .columnwidget_wrapper{
+        float:right;
+    }
+    </style>
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="copid">
+    
+       <apex:form id="myForm">
+       <apex:actionFunction name="exportaction" action="{!exportRevisit}" reRender="myForm">
+           <apex:param name="seldates" value=""/>
+       </apex:actionFunction>
+       <apex:CommandButton value="Export" onclick="exportreport();return false;" style="float:right;" styleClass="datatables_btn"/>
+       <div class="datatable-wrapper">
+
+        <table id="example" class="display" >
+        <thead>
+            <tr>
+            <th width="1%" style="display:none">Event Dates</th>
+            <th width="33%">Name</th>
+            <th width="33%">Email</th>
+            <th width="33%">Company</th>
+            
+            </tr>
+        </thead>  
+        <tbody > 
+            <apex:repeat value="{!Totalinner}" var="inn">
+              <apex:repeat value="{!inn.RevisitedList}" var="RE">
+            <tr>
+            <td style="display:none">
+            <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                <apex:param value="{!RE.scandate}" />
+            </apex:outputText>
+            </td>
+            <td  colspan="3"  class="grptd">
+            <ul class="grpheader">      
+            <li class="labeltitles">Revisisted Date:</li>        
+            <li class="labeloutput">  
+                  
+             <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+             
+                <apex:param value="{!RE.scandate}" />
+                </apex:outputText>
+            </li>       
+            </ul>
+            <table class="display checkin_rpttbl" width="100.1%">
+            <apex:repeat value="{!RE.TstatusRecs}" var="x">
+            
+            <tr> 
+                
+                 
+                <td width="33%">{!x.Ticket__r.tkt_profile__r.First_Name__c}&nbsp;{!x.Ticket__r.tkt_profile__r.Last_Name__c}</td>
+                <td width="33%">{!x.Ticket__r.tkt_profile__r.Email__c}</td>
+                <td width="33%">{!x.Ticket__r.tkt_profile__r.TKT_Company__c}</td>
+               
+            </tr>
+            </apex:repeat>
+            </table>
+            </td>
+            
+            </tr>
+            </apex:repeat>
+             </apex:repeat>
+        </tbody >  
+
+        </table>
+        </div>
+       <apex:actionFunction action="{!fncall}" name="actfncall" rerender="myForm" status="AjaxLoader">
+           <apex:param name="ttype" value=""/>
+       </apex:actionFunction>
+       </apex:form>
+    </c:ed_basictemplate>
+ <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+        <c:ed_datatablejs ></c:ed_datatablejs>
+    <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script>
+    <script type="text/javascript" class="init">
+            var table;
+            var ttype='';
+            var j = jQuery.noConflict();
+            j(document).ready(
+                function() {
+                    table = j('#example').DataTable( 
+                        {
+                          "pagingType" : "full_numbers",
+                          "aLengthMenu": [[ 10, 15,20,25, -1], [10,15,20, 25, "All"]],
+                          "iDisplayLength": 10,
+                          "sDom": 'W<"clear">lfrtip', 
+    
+                          /**default orderid in asc sorting**/
+                          "order" : [ [ 0, "asc" ] ],
+                          "bSort": false,
+                          "bAutoWidth": false, // Disable the auto width calculation
+                          "bFilter": true,
+                          "oColumnFilterWidgets": {
+                          "aiExclude": [1,2,3]
+                          }
+                        });
+
+                }
+            )
+      
+    </script>        
+    <!---export script---->
+    <script>
+    var seldates='';
+    function exportreport(){
+    
+    $('.filter-term').each(function(){
+    
+    //alert($(this).html());
+    seldates +=$(this).html()+','; 
+    });
+    exportaction(seldates);
+    }
+    
+    </script>
+    
+    <!----end of export script---->
+</apex:page>

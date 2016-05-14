@@ -1,0 +1,59 @@
+<apex:page showHeader="false" standardStylesheets="false"
+   sidebar="false" cache="true"  controller="BLN_AbandonedOrdersReportCon"
+   action="{!hideEventsTab}"  id="pgid" contentType="application/vnd.ms-excel#AbandonedOrders.xls">
+
+
+            <apex:variable var="OrderNumber" value="{!0}" />
+
+      <table border="1">
+               
+                  <tr>
+                     <th >S.no</th>
+                     <th >Order No</th>
+                     <th >Ordered By</th>
+                     <th >Email</th>
+                     <th> Phone </th>
+                     <th> Company </th>
+                     <th >Order Date</th>
+                     <th >Pay Type</th>
+                     <th >Order Status</th>
+                     <th >Amount ({!currencySymbol}) </th>
+                  </tr>
+               
+               <apex:repeat value="{!abandonedOrd}" var="order">
+                  <tr>
+                     <td>
+                        <apex:variable var="OrderNumber" value="{!OrderNumber+1}"/>
+                        {!OrderNumber}. 
+                     </td>
+                     <td>  {!order.Name} </td>
+                     <td> {!order.BLN_TKT_profile__r.First_Name__c} {!order.BLN_TKT_profile__r.Last_Name__c} </td>
+                     <td>{!order.BLN_TKT_profile__r.Email__c} </td>
+                     <td> {!order.BLN_TKT_profile__r.Mobile__c} </td>
+                     <td> {!order.BLN_TKT_profile__r.TKT_Company__c} </td>
+                     <td>
+                        <c:EV_FormatDt date_Timevalue="{!order.CreatedDate}" t_Zone="{!se.Time_Zone__c}"></c:EV_FormatDt>
+                     </td>
+                     <td>
+                        <apex:repeat value="{!order.Payments__r}" var="payment">
+                           {!payment.Payment_Mode__c}
+                        </apex:repeat>
+                     </td>
+                     <td> {!order.Order_Status__c}</td>
+                     <td style="text-align: right;"> {!order.Amount_Paid__c} </td>
+                  </tr>
+               </apex:repeat>
+            </table>
+
+
+   
+<c:currencyFormatting ></c:currencyFormatting>
+   <script>
+      function currencyformat()
+      {
+          //alert();
+          rightJustificationOrders('{!currencySymbol}');
+      }
+      rightJustificationOrders('{!currencySymbol}');
+   </script>
+</apex:page>

@@ -1,0 +1,1417 @@
+<apex:page sidebar="false" showHeader="false"  id="Tpage" controller="BL_Event_TicketTypesCon">
+<head>
+<title>Boothleads</title>
+</head>
+<apex:stylesheet value="{!URLFOR($Resource.Attendee_Portal_SelfRegistration_CSS,"AttendeeArrowCSSBradcom.css")}"/>
+   
+  <apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+ 
+
+<!--<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/screen.css")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/pro_dropline_ie.css")}"/>-->
+<!-- CSS For The Page Start's From Here -->
+<!-- Alerts Start-->
+
+<!--css-->
+
+
+<!--
+
+<apex:stylesheet value="{!URLFOR($Resource.bldashboard2,"menu_assets/styles.css")}"/>
+-->
+
+<!--css-->
+<!-----Dynamic Fields Adding in table----->
+   
+
+   <style>
+        .even{ background-color:#F3F3F3; height:30px; }
+        
+        .odd{ background-color:#EAEAEA; height:30px; }
+        
+        #round {
+            border:1px solid #CCCCCC;
+            
+            -webkit-border-radius: 12px;
+            
+            -moz-border-radius: 12px;
+            
+            border-radius: 12px;
+            border-width:2px;
+            width:500px;
+            text-align:center;
+            vertical-align: middle;
+            height:120px;
+           
+            
+        }
+        
+       
+        
+            
+    </style>
+    
+    
+<style>
+.addticket{border:1px solid #dedede;}
+.addticket th{ background-color:#dedede; height:25px; padding-left:10px;}
+.addticket tr{border-bottom:1px solid #CCCCCC; height:25px;}
+
+.addticket td{vertical-align:middle; padding-left:10px;}
+
+.addticket tr:nth-child(odd) {
+  background-color: #FFFFFF;
+ 
+}
+.addticket tr:nth-child(even) {
+  background-color: #f3f3f3;
+  border-bottom:1px solid #CCCCCC;
+}
+.addticket tr:hover{background-color:#e3f3ff; }
+.addticket table{border:1px solid #dedede;}
+.datepicker{
+    z-index:10000;
+}
+</style>
+
+
+
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}" />
+
+
+
+<!--header-->
+<style>
+         
+         .datePicker{
+    z-index:20000;
+}
+</style>
+<!-- Start: page-top-outer -->
+<div id="page-top-outer">    
+
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    <div id="logo">
+   
+      
+    </div>
+    <!-- end logo -->
+    
+    <!--  start top-search -->
+    <div id="top-search">
+    <table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+    <td>
+     <font  class="welcome">Welcome  :</font>
+     <font  class="username">{!$User.Firstname}&nbsp;{!$User.Lastname}    </font> 
+    </td> 
+    </tr>
+    </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+        <div id="nav-right">
+        
+               
+       <!----LOGOUT ACTION -->
+       <div class="nav">
+        <div class="table">
+        
+       <apex:form >
+        
+       
+        <div class="nav-divider"></div> 
+        <apex:outputLink value="BL_Eventadmin_Profile?id={!SelectedEvent}" style="text-style:normal; color:#FFFFFF; padding:10px 15px 0 0;">
+         Profile</apex:outputLink>
+          
+       <div class="nav-divider">&nbsp;</div>
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+        </apex:form>
+
+            </div></div>
+           
+           <!----LOGOUT ACTION END--->
+           
+           
+            <div class="clear">&nbsp;</div>
+        
+            <!--  start account-content --> 
+            <div class="account-content">
+            <div class="account-drop-inner">
+                <a href="" id="acc-settings">Settings</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-details">Personal details </a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-project">Project details</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-inbox">Inbox</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-stats">Statistics</a> 
+            </div>
+            </div>
+            <!--  end account-content -->
+        
+        </div>
+        <!-- end nav-right -->
+
+
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">
+        
+        <ul class="select"><li><apex:outputLink value="/apex/BL_EA_Dashboard?id={!SelectedEvent}"><b>Dashboard</b></apex:outputLink>
+          </li></ul>
+        
+        <div class="nav-divider">&nbsp;</div>
+                            
+        <ul class="current"><li>
+        <apex:outputLink value="/apex/BL_EventAdmin_Events?id={!SelectedEvent}"><b>Events</b></apex:outputLink>
+
+      
+        </li>
+        </ul>
+        
+        
+        
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li>
+        <apex:outputLink value="/apex/BL_Eventadmin_BoothAdmins?id={!SelectedEvent}" ><b>Booths</b></apex:outputLink>         
+       
+        </li>
+        </ul>
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li>
+        <apex:outputLink value="/apex/BL_Eventadmin_Attendees?id={!SelectedEvent}"><b>Attendees</b> </apex:outputLink>
+
+        </li>
+        </ul>
+        
+        
+        
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li>
+        <apex:outputLink value="/apex/BL_EA_Reports?id={!SelectedEvent}"><b>Reports</b> </apex:outputLink>
+        
+        </li>
+        </ul>
+        
+      
+        
+        
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <!--  start nav -->
+        
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+
+
+<!--  start nav-outer-repeat................................................... END -->
+<div class="clear"></div> 
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+<!-- start content -->
+<div id="content">
+    <!--  start page-heading -->
+    <apex:form id="Form12">
+    <div id="page-heading">
+       <h1 style="font-size:20px;">Tickets for {!Event[0].EV_Title__c}  </h1> 
+        
+        <H2> <apex:outputLink value="BL_EventAdmin_Events?id={!SelectedEvent}" style="padding-left:15px;padding-right:10px;font-size:16px;" >Events</apex:outputLink></H2>
+       
+       
+                    <H3  style="padding-right:50px;"><apex:outputText value=">"/> 
+                    <apex:OutputText value=" Event Detail" /></H3>
+                    
+                    <span style="float:right; text-align:right;width:30%; margin-right:25px;">
+                      <apex:commandButton value="Assign Category"  action="{!renderTicbool}" styleClass="awesome"/>&nbsp;
+                    
+                        <apex:commandButton value="Tickets" rendered="{!listTickets}" action="{!TicketList}" styleClass="awesome"/>&nbsp;
+                         <apex:commandButton value="Payment Settings" rendered="{!PayementSettings}" action="{!Paymentsett}" styleClass="awesome"/>
+                     </span >
+                              
+    </div> </apex:form>
+    <!--don't delete--> 
+    <div style="height:10px;"></div>
+    
+    <!-- end page-heading -->
+    
+      
+    
+    
+    
+    
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">        
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt=""  /></th>
+        <th class="topleft"></th>
+        <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        <!--  start content-table-inner ...................................................................... START -->
+        <div id="content-table-inner" style="margin:0px;padding:0px;">        
+            <!--  start table-content  -->
+            <div  id="table-content" style="margin:0px;padding:0px;">            
+<!-- Hearder Part Ends Here    -->
+    
+ 
+   <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="border:0px solid #cccccc; margin:0px auto;">
+      
+        <tr>
+      <!--   <td width="13%" rowspan="2" align="center" valign="top" style="border-right:1px solid #CCC; background-color:#f1f1f1;">
+         <table width="150px" border="0" cellpadding="0" cellspacing="5">
+          <tr>
+            <td height="30" align="left" valign="middle">&nbsp;</td>
+            </tr>
+          <tr>
+            <td align="left" valign="middle">&nbsp;</td>
+            </tr>
+         <tr>
+            <td height="35" align="right" valign="middle" bgcolor="#f1f1f1">
+           <apex:form >  <apex:commandLink style="width:150px;height:32px; "   action="{!customToQuick}"> 
+                             <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"custom.png")}" rendered="{!QuickRegBool}"/>
+                             <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"custom-select.png")}" rendered="{!NOT(QuickRegBool)}"/>
+                              <apex:param value="quickToCustom" name="cust"/>
+                            </apex:commandLink>  
+                            <apex:outputText value="http://boothleads.force.com/BL_Attendee_Register?event="></apex:outputText>
+                             <apex:commandButton value="Tickets"/> &nbsp;
+            </apex:form> 
+               </td>
+            </tr> 
+        <tr>
+            <td align="right" valign="middle" bgcolor="#f1f1f1">&nbsp;</td>
+            </tr>
+          <tr>
+            <td height="35" align="right" valign="middle" bgcolor="#f1f1f1"> <apex:form > 
+                         
+                            <apex:commandLink action="{!customToQuick}"> 
+                             <apex:image style="width:150px;height:32px;" url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"quick.png")}" rendered="{!NOT(QuickRegBool)}"/>
+                             <apex:image style="width:150px;height:32px;" url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"quick-select.png")}" rendered="{!QuickRegBool}"/>
+                              <apex:param value="customtoquick" name="cust"/>
+                            </apex:commandLink> 
+                           
+                            <apex:commandButton value="PayMentSettings"/> &nbsp;
+                            
+                        </apex:form> </td>
+            </tr> 
+          </table> </td>-->
+        
+      </tr>
+     <apex:outputPanel rendered="{!ProvideEmailId}">
+         <script>
+           //  alert('Please add your Pay Pal Account ID');
+         </script>
+     </apex:outputPanel> 
+      
+      <tr>
+        <td align="center" bgcolor="#FFFFFF">
+        
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <!--<tr style="height:20px;">
+            <td bgcolor="#999999" class="gradiant" style="padding-left:20px; padding-top:3px;">
+             
+            </td>
+            
+            <td bgcolor="#999999" class="gradiant" style="padding-left:20px;padding-top:5px;">&nbsp;</td>
+            </tr>-->
+         <apex:form >   
+                
+              <div style="text-align:right; padding:3px; margin-right:8px;">
+        
+        <apex:commandButton value="Add Ticket" styleClass="awesome" action="{!AddTicket}" rendered="{!RemoveAddTicket}"/></div>   
+            
+         </apex:form><div style="height:10px;"></div>
+          <tr>
+            <td height="35" align="center" valign="top" colspan="2">
+           
+            <table width="98%" border="0" cellspacing="0" cellpadding="0">
+              
+              <tr>
+                <td  align="center" valign="top"> 
+              
+               
+                  
+                  <!----------------------------End of 2nd Tab(Demograph) ------------------ rendered="{!ticketBool}"---------->
+                  <!----------------------------Start Of 3rd Tab(Ticket Types) -------------------------->
+                  <apex:form id="ticket" rendered="{!ShowTicketTypesdiv}">
+        
+              
+                      <apex:outputPanel rendered="{!ShowTicketTypes}" id="OutP">
+                      
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;" class="addticket">
+
+    
+    <tr>
+        <th width="6%">Image</th>
+        <th width="15%">Ticket Name</th>
+        <th width="10%">Ticket Type</th>
+        <th width="10%">Ticket Category</th> 
+        <th width="10%">Ticket Quantity</th>        
+         <th width="10%">Price</th>
+        <th width="3%">Ticket Visibility</th>
+        <th width="12%">Action</th>
+        
+          <th width="12%">Order</th>
+    </tr></table> 
+    
+ <div style="min-height:300px; overflow:scroll;overflow-x:hidden;">   
+   <table cellpadding="0" cellspacing="0" border="0" style="width:100%;"  class="addticket">
+   
+   
+       <apex:repeat value="{!ListOfTickectNames}" var="T" >
+    <apex:outputPanel rendered="{!IF(NOT(OR(T.TT_Name__c == 'Guest', T.TT_Name__c == 'Attendee Staff')), TRUE, FALSE)}" >
+   <tr>
+     <td width="6%"><apex:image url="/servlet/servlet.ImageServer?id={!T.Ticket_Image_URL__c }&oid={!$Organization.Id}" height="40px" width="40px" rendered="{!IF(T.Ticket_Image_URL__c!=null,true,false)}"/></td>
+        <td width="15%"><strong> <apex:commandLink value="{!T.TT_Name__c}" action="{!TicketDetails}" style="color:#0f90ba;">
+         
+         <apex:param value="{!T.id}" name="TicketID" assignTo="{!TicketTypeID}"/>
+                  
+         </apex:commandLink></strong>
+        
+        </td>  
+        <td width="10%" style="padding-left:20px;"> <apex:outputField value="{!T.TT_TicketType__c}"/></td>  
+         <td width="10%"><apex:outputField value="{!T.Ticket_Category__c}"/></td>   
+         <td width="10%"><apex:outputField value="{!T.Available__c}"/></td>  
+         <td width="10%" style="padding-left:20px;"><apex:outputField value="{!T.TT_Amount__c}"/></td>  
+         <td width="10%" style="padding-left:20px;"><apex:outputField value="{!T.Avilable_for_Portal__c}"/></td>  
+         <td width="12%">
+         
+         <apex:commandLink action="{!cloneTicket}" >  
+            <apex:param value="{!T.id}" name="TicketID" assignTo="{!cloneId}"/>  
+            Clone </apex:commandLink>
+            &nbsp;|&nbsp;
+             
+         <apex:commandLink action="{!EditTicket}" >  
+        <apex:param value="{!T.id}" name="TicketID" assignTo="{!TicketTypeID}"/>  
+        <apex:image value="{!$Resource.Qrcode_edit}" title="Edit"/></apex:commandLink>
+        &nbsp;|&nbsp; <apex:commandLink action="{!DeleteRec}"  >
+          <apex:param value="{!T.id}" name="upPhani"/>
+          <apex:image url="{!URLFOR($Resource.Up_Down_Delete_Icons,'delete.png')}"> </apex:image>
+      </apex:commandLink>
+     
+               </td>
+               
+          
+          <td width="12%">
+         
+          
+       
+         <div style="width:45%;float:left;text-align:right;">
+           <apex:commandLink action="{!up}"   rendered="{!IF(T.order__c!=0,true,false)}">
+          <apex:param value="{!T.id}" name="upPhani"/>
+          <apex:image url="{!URLFOR($Resource.Up_Down_Delete_Icons,'up_arrow.png')}"> </apex:image>
+         </apex:commandLink></div>
+         
+         <!-- Move Down ----------------------------------  -->   
+             <div style="width:45%;float:right;text-align:left;">
+            <apex:commandLink action="{!down}"  rendered="{!IF(T.order__c==listsize-1,false,true)}">
+              <apex:param value="{!T.id}" name="upPhani"/>
+               <apex:image url="{!URLFOR($Resource.Up_Down_Delete_Icons,'down_arrow.png')}"> </apex:image>
+            </apex:commandLink></div>
+            <!-- -----------------------------End  -------------------------------&nbsp; -->
+            
+            
+          </td>     
+               
+        </tr>
+</apex:outputPanel>
+        </apex:repeat> 
+       
+         </table> 
+    </div>
+   
+   
+     
+
+    </apex:outputPanel>
+                    
+                          <table class="even,odd" width="98%" border="0">                   
+                            <apex:outputPanel rendered="{!noTicketTypeBool}">
+                             <div >  
+                             <tr>
+                              <td colspan="5" align="center" style="padding-top:20px; min-height:350px;">
+                                  <div id="round"  width="75%" align="center" style="padding-top:50px;">
+
+                                       No Tickets Found. <br/> To create Ticket Please click on <B> Add Ticket </B>
+                                  </div>
+                              </td>
+                             </tr> 
+                          </div>
+                         </apex:outputPanel>
+                          </table>
+                        
+                            <br />
+                     
+                  
+                  </apex:form>
+
+                 
+                        <apex:form id="payment" rendered="{!ShowPaymentsdiv}">
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="height:40px;">
+                            <td style="text-align:center;font-size:20Px;color:#006095;font-weight:bold;" colspan="2">Payment Options</td>
+                            </tr>
+                            
+                            <tr style="height:40px;">
+                            <td style="text-align:Left;font-size:20Px;color:#006095;padding-left:20px;" colspan="2"> Collect payments from attendees</td>
+                            </tr>
+                           
+                            
+                           <tr style="height:60px;">
+                                <td style="text-align:right;padding-right:20px;">Select Payment Processor: </td>
+                                  <td><apex:selectList value="{!PayPalAccount.Account_types__c}" size="1" multiselect="false" id="SS">
+                                        <apex:selectOptions value="{!AccountTypeValues}" />
+                                        <apex:actionSupport action="{!SelectedAccounttype}" event="onchange"> 
+                                        <apex:param value="{!PayPalAccount.Account_types__c}" name="AccountTypes" /></apex:actionSupport>
+                                        </apex:selectList>
+                                    </td>
+                               
+                              </tr>
+                            <apex:outputtext rendered="{!Accountype  == 'PayPal Account'}">
+                                 <apex:outPutText id="pid" rendered="{!PayPalAccountre}">
+                                 <tr style="height:35px; ">
+                                    <td style="text-align:right;padding-right:20px;"><strong><apex:outPutText value="PayPal Username (Email Address) :" rendered="{!PayPalAccountre}" /></strong>&nbsp;&nbsp;</td>
+                                    <td  style="text-align:left;"><apex:inputField value="{!PayPalAccount.Email_Id__c}" style="width:220px; font-size:12px;" id="Email" /></td>
+                                    </tr>
+                                     
+                               </apex:outputText>
+                               <apex:outPutText rendered="{!PayPalAccountre}" >
+                                 <tr style="height:35px; ">
+                                    <td style="text-align:right;padding-right:20px;"><strong><apex:outPutText value="Thank You page (url should start with http/https):" rendered="{!PayPalAccountre}" /></strong>&nbsp;&nbsp;</td>
+                                    <td  style="text-align:left;"><apex:inputField value="{!PayPalAccount.Redirect_Url__c}" style="width:260px; font-size:12px;" /></td>
+                                    </tr>
+                                     
+                               </apex:outputText>
+                               </apex:outputtext>
+                              
+                               
+                               
+                               <tr style="height:35px; ">
+                                    <td style="text-align:right;padding-right:20px;"><strong><apex:outPutText value="Customer ID:"  rendered="{!Accountype  == 'TrustCommerce'}"/></strong>&nbsp;&nbsp;</td>
+                                    <td  style="text-align:left;"><apex:inputField value="{!PayPalAccount.PuserName__c}" style="width:220px; font-size:12px;" id="tmcid" rendered="{!Accountype  == 'TrustCommerce'}"/></td>
+                                    </tr>
+                               <tr style="height:35px; ">
+                                    <td style="text-align:right;padding-right:20px;"><strong><apex:outPutText value="API Password:"  rendered="{!Accountype  == 'TrustCommerce'}"/></strong>&nbsp;&nbsp;</td>
+                                    <td  style="text-align:left;"><apex:inputField value="{!PayPalAccount.Ppassword__c}" style="width:220px; font-size:12px;" id="tmpasword" rendered="{!Accountype  == 'TrustCommerce'}"/></td>
+                                    </tr>
+                                    
+                              
+                               
+                              
+                               <apex:outPutText rendered="{!Accountype  == 'Authorize.Net'}"><tr style="height:35px; text-align:Right;" id="aid"> 
+                                            <td><strong><apex:outPutText value="Authorize.Net Id:" rendered="{!Accountype  == 'Authorize.Net'}"/></strong>&nbsp;&nbsp;</td>
+                                           <td style="text-align:left;"><apex:inputField value="{!PayPalAccount.AuthorizationDotNet__c}" style="width:220px; font-size:12px;" id="Autho" rendered="{!Accountype  == 'Authorize.Net'}"/></td>
+                                    </tr>
+                                    <tr style="height:35px; text-align:Right;"> 
+                                       <td><strong><apex:outPutText value="Authorize.Net Key:" rendered="{!Accountype  == 'Authorize.Net'}"/></strong>&nbsp;&nbsp;</td>
+                                       <td style="text-align:left;"><apex:inputField value="{!PayPalAccount.AuthorizationDotNetKey__c}" style="width:220px; font-size:12px;" id="Key" rendered="{!Accountype  == 'Authorize.Net'}"/>
+                                    </td>
+                                    
+                              </tr></apex:outPutText>
+                              
+                              <apex:outputtext rendered="{!Accountype  != 'TrustCommerce'&&Accountype  != 'Authorize.Net'}">
+                              <tr style="height:40px;">
+                            <td style="text-align:Left;font-size:20Px;color:#006095;padding-left:20px;" colspan="2">
+                             Additional payment methods (optional)</td>
+                            </tr>
+                             
+                              <tr style="height:35px; text-align:Right;"> 
+                                            <td><strong>
+                                            <apex:outPutText value="Offline payment options:"/></strong>&nbsp;&nbsp;</td>
+                                           <td style="text-align:left;">
+                                             <apex:inputField value="{!PayPalAccount.Accept_check__c}" style="width:220px; font-size:12px;" >
+                                                <apex:actionSupport event="onchange" action="{!onchnageCheckbox}"/>
+                                              </apex:inputField>
+                                             
+                                            </td>
+                                    </tr>
+                                 
+                              
+                                <apex:outPutText rendered="{!PayPalAccount.Accept_check__c}"><tr style="height:35px; text-align:Right;"> 
+                                            <td><strong><apex:outPutText value="Address :" /></strong>&nbsp;&nbsp;</td>
+                                           <td style="text-align:left;"><apex:inputField value="{!PayPalAccount.Check_Address__c}"  style="width:220px;height:70px; font-size:12px;" id="Autho6" /></td>
+                                    </tr>
+                                    <tr style="height:35px; text-align:Right;"> 
+                                       <td><strong><apex:outPutText value="Minimum Amount To Accept Check" /></strong>&nbsp;&nbsp;</td>
+                                       <td style="text-align:left;">
+                                       <apex:inputField value="{!PayPalAccount.check_amount_Minimum__c}"  style="width:220px; font-size:12px;" id="Key6" />
+                                    </td>
+                                    
+                              </tr></apex:outPutText>
+                              
+                              
+                              <!----------------Added by Unni---------------------------->
+                              
+                              <tr style="height:40px;">
+                            <td style="text-align:Left;font-size:20Px;color:#006095;padding-left:20px;" colspan="2">
+                             Online payment method (Paypal)</td>
+                            </tr>
+                             
+                              <tr style="height:35px; text-align:Right;"> 
+                                            <td><strong>
+                                            <apex:outPutText value="Enable Paypal:"/></strong>&nbsp;&nbsp;</td>
+                                           <td style="text-align:left;">
+                                             <apex:inputField value="{!PayPalAccount.Enable_Paypal__c}" style="width:220px; font-size:12px;" >
+                                                <apex:actionSupport event="onchange" action="{!onchnageCheckbox}"/>
+                                              </apex:inputField>
+                                             
+                                            </td>
+                                    </tr>
+                             
+                                <apex:outPutText rendered="{!PayPalAccount.Enable_Paypal__c}">
+                                <tr style="height:35px; text-align:Right;"> 
+                                       <td><strong><apex:outPutText value="Minimum Amount for Paypal" /></strong>&nbsp;&nbsp;</td>
+                                       <td style="text-align:left;">
+                                       <apex:inputField value="{!PayPalAccount.Min_Amount_for_Paypal__c}"  style="width:220px; font-size:12px;"  />
+                                    </td>
+                                    
+                              </tr>
+                                    <tr style="height:35px; text-align:Right;"> 
+                                       <td><strong><apex:outPutText value="Maximum Amount for Paypal" /></strong>&nbsp;&nbsp;</td>
+                                       <td style="text-align:left;">
+                                       <apex:inputField value="{!PayPalAccount.Max_Amount_for_Paypal__c}"  style="width:220px; font-size:12px;" />
+                                    </td>
+                                    
+                              </tr></apex:outPutText>
+                              
+                              
+                               </apex:outputtext>
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                               <tr style="height:35px;">
+                                    <td colspan="2" align="center"><apex:commandButton value="Save" action="{!SavePaypal}" styleClass="awesome" title="Save" onclick="return EmailValidation();"/>&nbsp;
+                                    <apex:commandButton value="Cancel" action="{!CancelPopUp}" styleClass="awesome" title="Cancel" /></td>
+                              </tr>
+                            
+                            </table>
+                      
+                      
+                      </apex:form>
+                      
+                  </td>
+                </tr>
+              </table></td>
+            </tr>
+          </table></td>
+      </tr>
+   </table>
+    
+       
+    
+   <apex:outputPanel styleClass="Popupbackground" rendered="{!successPopup}"/>
+      <apex:outputPanel styleClass="customPopup" rendered="{!successPopup}">
+          <apex:outputText value="You can start adding tickets."></apex:outputText>
+          <br/><br/>
+              <apex:outputLink value="/apex/BL_Tickettypes?event={!SelectedEvent}" styleClass="awesome"> OK </apex:outputLink>
+          
+     
+   </apex:outputPanel>
+
+    
+    
+   
+
+<!-- Middle Part Of the SCC Starts Here -->
+
+ </div>
+            <!--  end content-table  -->
+        
+           
+            
+            
+            <div class="clear"></div>
+         
+        </div>
+        <!--  end content-table-inner ............................................END -->
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+
+</div>
+<!--  end content -->
+<div class="clear">&nbsp;</div>
+</div>
+<!--  end content-outer........................................................END-->
+
+<div class="clear">&nbsp;</div>
+<apex:form id="Form1">
+<apex:outputPanel id="userpopup2">
+                   <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!AddTicketTypes}"/>
+                    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!AddTicketTypes}" style="width:80%; margin-top:125px;">
+     
+     
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <td height="35" align="right" valign="middle" class="pophead" style="width:98%;">
+     
+     <H2> <font size="4" color="#FFFFFF"><apex:outputText value="{!PopUpName}" /></font> </H2>
+     </td>
+     <td align="right" class="pophead" style="width:2%;">
+         <div style="float:right;"><apex:commandButton action="{!Cancel}" value="Close" title="Close" image="{!$Resource.Close1}" immediate="true"/> </div>
+     </td>
+   </tr>
+   <tr>
+     <td align="center" valign="top" colspan="2">
+     
+     
+     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td colspan="2" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="53%" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="37%" height="25" align="right">Ticket Name<font size="4" color="red">*</font></td>
+        <td width="2%" height="25">&nbsp;</td>
+        <td width="61%" height="25"><apex:inputfield value="{!TicketTypes.TT_Name__c}" required="true" style="width:210px;" id="TName"/></td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top" >Ticket Type<font size="4" color="red">*</font></td>
+        <td height="25">&nbsp;</td>
+        
+        
+        
+        <td height="25">
+            <apex:selectRadio value="{!TicketTypes.TT_TicketType__c}" layout="pageDirection" label="Ticket Types" id="TType" immediate="true" onclick="return ShowAmount();" >
+           <apex:selectOptions value="{!TicketTypeValues}"/>
+           <!--<apex:actionSupport action="{!ForSelectedTicketTypes}" event="onclick" reRender="pg,PGS"> 
+             <apex:param value="{!TicketTypes.TT_TicketType__c}" name="Ticket" /></apex:actionSupport>-->
+         </apex:selectRadio>
+        </td>
+      </tr>
+      
+     <!--  <tr>
+       <td height="25" align="right" valign="top" >User Type<font size="4" color="red">*</font></td>
+        <td height="25">&nbsp;</td>
+       <td height="25">
+            <apex:InputField value="{!TicketTypes.User_Type__c}"  />
+          
+        </td>
+      </tr> 
+      
+      <tr>
+       <td height="25" align="right" valign="top" >Section Name</td>
+        <td height="25">&nbsp;</td>
+       <td height="25">
+            <apex:InputField value="{!TicketTypes.Section_Name__c}"  />
+          
+        </td>
+      </tr>-->
+      
+      
+      
+      <tr>
+        <td height="25" align="right" >Amount</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.TT_Amount__c}" required="true"  id="TAmount"  style="visibility:visible; width:210px;"/>
+        </td>
+      </tr>
+      
+      
+      
+      
+      <tr>
+        <td height="25" align="right" valign="top" >Ticket Category</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+          <!--  <apex:selectRadio value="{!TicketTypes.Ticket_Category__c}" layout="pageDirection" label="Ticket Category" id="TCategory">
+           <apex:selectOptions value="{!TicketcategoryValues}"/>
+           <apex:actionSupport action="{!ForSelectedTicketTypes}" event="onclick"> 
+             <apex:param value="{!TicketTypes.Ticket_Category__c}" name="TicketCategory" /></apex:actionSupport>  rendered="{!typeboolforadd}"
+             </apex:selectRadio>
+              -->
+             <apex:outputPanel >
+              <div style="overflow: scroll;height:150px; width:250px; line-height:35px; border:3px solid #eaeaea; background-color:#f3f3f3;">
+            
+              <apex:selectCheckboxes value="{!selectedtypes}" layout="pageDirection">
+        <apex:selectOptions value="{!atttypes}"/>
+         </apex:selectCheckboxes>
+         </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(PopUpName == 'Edit Ticket',true,false )}">
+        <font style="size:4;color:red;">Please note that separate tickets will be created for each selected category</font>
+        </apex:outputPanel>
+        
+       <!--
+        <apex:outputPanel rendered="{!typeboolforEdit}">
+        <apex:repeat value="{!selectedtypes}" var="x">
+        <apex:outputText >{!x}</apex:outputText>
+        </apex:repeat>
+        </apex:outputPanel>
+         -->
+         
+        </td>
+      </tr>
+      
+    <!---------------ADDED BY MYTHILY FOR------->
+
+        <tr>
+        <td height="25" align="right" >Tickets Type</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:selectList value="{!selectedtype}" size="1">
+            
+            <apex:selectOptions value="{!typeoptions}"/>
+            </apex:selectList>
+            
+        </td>
+      </tr>
+
+
+
+
+
+
+
+   <!---------------------------------------->
+
+      <tr>
+        <td height="25" align="right" valign="top" > Start Sales</td>
+        <td height="25">&nbsp;</td>
+       
+        <td height="25">
+         <table cellpadding="0" cellspacing="5px" width="200px" border="0" valign="top">
+             <tr>
+                 <td style="width:100px;height:20px;">
+                 <c:RemoveLink id="SD">
+                    <apex:inputField value="{!TicketTypes.Sales_Start_Date__c}" required="true" label="Start Sales" id="TSalesS"/> </c:RemoveLink>&nbsp;</td>
+                  <td valign="top"  style="width:100px;height:20px;"> <apex:inputField value="{!TicketTypes.Start_Time__c}"  label="Start Time " id="TSalesSTime"/>
+                  </td>
+              </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top" >End Sales</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+        
+        <table cellpadding="0" cellspacing="0" width="200px" border="0" style="height:19px;">
+            <tr>
+                <td valign="top" style="width:100px;height:20px;">
+                    <c:RemoveLink id="ED">
+                    <apex:inputField value="{!TicketTypes.Sales_End_Date__c}" required="true" label="End Sales " id="TSalesE"/></c:RemoveLink>&nbsp;</td>
+                    <td valign="top" style="width:100px;height:20px;"><apex:inputField value="{!TicketTypes.End_Time__c}"  label="Start Time " id="TSalesETime"/>
+                   </td>
+               </tr>
+           </table>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" >Min. Tickets per Order</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.Min_Tickets_per_Order__c}" required="true" label="Min Tickets per Order" id="TMin" style="width:210px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" >Max. Tickets per Order</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.Max_Tickets_per_Order__c}" required="true" label="Max Tickets per Order" id="TMax" style="width:210px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top">Service Fee</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:selectRadio layout="pageDirection" label="Service Fee" value="{!TicketTypes.Service_Fee__c}" id="TService">
+           <apex:selectOptions value="{!TicketServiceFee}">
+             
+           </apex:selectOptions>
+         </apex:selectRadio>
+        </td>
+      </tr>
+    </table></td>
+    <td width="47%" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="29%" height="25" align="right">
+            Quantity Avaliable<!--<font size="4" color="red">*</font>-->
+        </td>
+        <td width="2%" height="25">&nbsp;</td>
+        <td width="69%" height="25">
+            <apex:inputField value="{!TicketTypes.TT_Available__c}" required="true"  id="TAvailable"  style="width:210px;" />
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">Ticket Visibility</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.Avilable_for_Portal__c}"  label="Active"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top">
+            Ticket Description
+        </td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.Description__c}" style="width:210px;"/>
+        </td>
+      </tr>
+      
+      <tr style="padding-top:2px;">
+        <td height="25" align="right">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+        <td height="25"  style="padding-top:3px;" >
+            <div style=" width:80px; height:80px; border:3px solid #eaeaea;padding-top:2px;">
+             <apex:image url="/servlet/servlet.ImageServer?id={!TicketTypes.Ticket_Image_URL__c }&amp;oid={!$Organization.Id}" height="80px" width="80px"/>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">Ticket Image</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+           
+           <apex:inputFile value="{!TicketImage}" filename="{!TicketFileName}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr><td>&nbsp;</td></tr>
+  <tr>
+     
+    <td align="center" colspan="2" style="text-align:center;">
+    <apex:commandButton value="Save" action="{!save}" onclick="return checkValidations();" styleclass="awesome" title="Save"/>&nbsp;
+    <apex:commandButton value="Cancel" action="{!Cancel}" immediate="true" styleclass="awesome" title="Cancel"/>
+    </td>
+  </tr>
+</table>
+
+
+
+
+</td>
+</tr>
+</table>
+ </apex:outputpanel>
+ </apex:outputpanel>       
+                      
+        
+</apex:form>
+  <apex:form id="DetailForm">
+ <apex:outputPanel id="userpopup3">
+                   <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!ShowDetailsTicketTypes }" style="z-index:98;"/>
+                    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!ShowDetailsTicketTypes }" style="width:80%;z-index:99; margin-top:125px;">
+     
+     
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <td height="35" align="right" valign="middle" class="pophead" style="width:98%;">
+     
+     <H2> <font size="4" color="#FFFFFF">Ticket Settings</font> </H2>
+     </td>
+     <td align="right" class="pophead" style="width:2%;">
+         <div style="float:right;"><apex:commandButton action="{!Cancel}" value="Close" title="Close" image="{!$Resource.Close1}" immediate="true"/> </div>
+     </td>
+   </tr>
+   <tr>
+     <td align="center" valign="top" colspan="2">
+     
+     
+     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td colspan="2" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="53%" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="37%" height="25" align="right">Ticket Name :</td>
+        <td width="2%" height="25">&nbsp;</td>
+        <td width="61%" height="25"><apex:outputField value="{!TicketTypes.TT_Name__c}" style="width:250px;" label="Ticket Name" /></td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top" >Ticket Types :</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.TT_TicketType__c}" label="Ticket Types"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" >Amount :</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.TT_Amount__c}"   id="TAmount"  style="visibility:visible; width:210px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top" >Ticket Category :</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.Ticket_Category__c}" />
+          
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" > Start Sales:</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.Sales_Start_Date__c}"  label="Start Sales " id="TSalesS"/>&nbsp;
+           <apex:outputField value="{!TicketTypes.Start_Time__c}"  label="Start Time " id="TSalesSTime"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" >End Sales:</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.Sales_End_Date__c}"  label="End Sales " id="TSalesE"/>&nbsp;
+           <apex:outputField value="{!TicketTypes.End_Time__c}"  label="Start Time " id="TSalesETime"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" >Min. Tickets per Order :</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.Min_Tickets_per_Order__c}"  label="Min Tickets per Order" id="TMin" style="width:210px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" >Max. Tickets per Order :</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.Max_Tickets_per_Order__c}"  label="Max Tickets per Order" id="TMax" style="width:210px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top">Service Fee :</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField label="Service Fee" value="{!TicketTypes.Service_Fee__c}"/ >
+           
+        </td>
+      </tr>
+    </table></td>
+    <td width="47%" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="29%" height="25" align="right">
+            Quantity Avaliable :
+        </td>
+        <td width="2%" height="25">&nbsp;</td>
+        <td width="69%" height="25">
+            <apex:outputField value="{!TicketTypes.TT_Available__c}"   id="TAvailable"  style="width:210px;" />
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">Ticket Visibility :</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.Avilable_for_Portal__c}"  label="Active"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top">
+            Ticket Description :
+        </td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:outputField value="{!TicketTypes.Description__c}" style="width:210px;"/>
+        </td>
+      </tr>
+      
+      <tr style="">
+        <td height="25" align="right">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <div style=" width:80px; height:80px; border:3px solid #eaeaea;padding-top:3px;">
+             <apex:image url="/servlet/servlet.ImageServer?id={!TicketTypes.Ticket_Image_URL__c }&amp;oid={!$Organization.Id}" height="80px" width="80px"/>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">Ticket Image :</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+           
+           <!--<apex:inputFile value="{!TicketImage}" filename="{!TicketFileName}"/>-->
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    
+    <td align="center" colspan="2" style="text-align:center;">
+    <apex:commandButton value="Cancel" action="{!cancel}" immediate="true" styleclass="awesome" title="Cancel"/>
+    </td>
+  </tr>
+</table>
+
+
+
+
+</td>
+</tr>
+</table>
+ </apex:outputpanel>
+ </apex:outputpanel>
+ 
+ <apex:outputPanel >
+ <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!RegisterPopUp}" />
+ <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!RegisterPopUp}" style="width:30%;">
+ <table border="0" width="100%" cellpadding="0" cellspacing="0">
+ <tr>
+     <td style="padding-top:2%; background-color:#e8e8e7;" align="center">
+      &nbsp;
+      </td>
+  </tr>
+ <tr>
+     <td style="padding-top:2%" align="center">
+      Are you Willing to use BoothLeads Registration? 
+      </td>
+  </tr>
+  <tr><td align="center" style="padding-top:5%">
+  <apex:selectRadio value="{!ShowRadio}" layout="horizontally">
+      <apex:selectOptions value="{!Values}"/>
+  </apex:selectRadio><br/>
+  <!--<apex:commandButton action="{!Yes}" value="Yes"/>--></td></tr>
+  <tr><td style="padding-left:3%"><apex:inputField value="{!Event[0].Showagain__c}"/>&nbsp;Do not Show this message again
+  </td></tr>
+  <tr><td style="padding-top:7%;padding-right:3%;" align="right">
+  <apex:commandButton action="{!SaveReg}" value="Save" /></td></tr>
+  </table>
+ </apex:outputPanel>
+ </apex:outputPanel> 
+ </apex:form> 
+  <apex:form >
+ 
+   <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!ChangeTiccategoty}" />
+                    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!ChangeTiccategoty}" style="width:90%">
+     
+     
+     
+     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <td height="35" align="right" valign="middle" class="pophead" style="width:98%;">
+     
+     <H2> <font size="4" color="#FFFFFF">Assign Categories</font> </H2>
+     </td>
+     <td align="right" class="pophead" style="width:2%;">
+         <div style="float:right;">
+         <apex:commandButton action="{!renderTicboolcancel}" value="Close" title="Close" image="{!$Resource.Close1}" immediate="true"/> </div>
+     </td>
+   </tr>
+     
+    </table> 
+     
+     
+     <apex:dataTable style="width:100%;" value="{!InnTicList}" var="grt" rowClasses="odd,even"> 
+     
+      <apex:column value="{!grt.ticinn.TT_Name__c}" headerValue="Ticket Name" style="padding-left:20px;"/>
+       <apex:column headerValue="Ticket Name">
+        <apex:selectList value="{!grt.selecteListval}" multiselect="false" size="1">
+         <apex:selectOptions value="{!grt.optionsInn}">
+         </apex:selectOptions>
+        </apex:selectList>
+       
+       </apex:column>
+   </apex:dataTable>
+     
+     
+     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr style="height:45px;">
+   <td style="text-align:center"> <apex:commandButton value="Save" action="{!innvaluesSave}" styleClass="awesome"/> </td>
+    </tr>
+     
+    </table> 
+     
+     
+     
+     
+ 
+ 
+     </apex:outputPanel> 
+ 
+ 
+ 
+ </apex:form>
+ 
+ 
+ 
+ 
+ <apex:form id="Form4">
+<apex:outputPanel id="userpopup6">
+                   <apex:outputPanel styleClass="popupBackground"  layout="block" rendered="{!displycloneTic}"/>
+                    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displycloneTic}" style="width:80%; margin-top:125px;">
+     
+     
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+     <td height="35" align="right" valign="middle" class="pophead" style="width:98%;">
+     
+     <H2> <font size="4" color="#FFFFFF"><apex:outputText value="{!PopUpName}" /></font> </H2>
+     </td>
+     <td align="right" class="pophead" style="width:2%;">
+         <div style="float:right;"><apex:commandButton action="{!Cancelclone}" value="Close" title="Close" image="{!$Resource.Close1}" immediate="true"/> </div>
+     </td>
+   </tr>
+   <tr>
+     <td align="center" valign="top" colspan="2">
+     
+     
+     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td colspan="2" align="center">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="53%" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="37%" height="25" align="right">Ticket Name<font size="4" color="red">*</font></td>
+        <td width="2%" height="25">&nbsp;</td>
+        <td width="61%" height="25"><apex:inputfield value="{!TicketTypes.TT_Name__c}" required="true" style="width:210px;" id="TName"/></td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top" >Ticket Type<font size="4" color="red">*</font></td>
+        <td height="25">&nbsp;</td>
+        
+        
+        
+        <td height="25">
+            <apex:selectRadio value="{!TicketTypes.TT_TicketType__c}" layout="pageDirection" label="Ticket Types" id="TType" immediate="true" onclick="return ShowAmount();" >
+           <apex:selectOptions value="{!TicketTypeValues}"/>
+           <!--<apex:actionSupport action="{!ForSelectedTicketTypes}" event="onclick" reRender="pg,PGS"> 
+             <apex:param value="{!TicketTypes.TT_TicketType__c}" name="Ticket" /></apex:actionSupport>-->
+         </apex:selectRadio>
+        </td>
+      </tr>
+      
+    
+      
+      
+      <tr>
+        <td height="25" align="right" >Amount</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.TT_Amount__c}" required="true"  id="TAmount"  style="visibility:visible; width:210px;"/>
+        </td>
+      </tr>
+      
+      
+      
+      
+      <tr>
+        <td height="25" align="right" valign="top" >Ticket Category</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+         
+             <apex:outputPanel >
+              <div style="overflow: scroll;height:150px; width:250px; line-height:35px; border:3px solid #eaeaea; background-color:#f3f3f3;">
+            
+              <apex:selectCheckboxes value="{!selectedtypes}" layout="pageDirection">
+        <apex:selectOptions value="{!atttypes}"/>
+         </apex:selectCheckboxes>
+         </div>
+        </apex:outputPanel>
+     
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top" > Start Sales</td>
+        <td height="25">&nbsp;</td>
+       
+        <td height="25">
+         <table cellpadding="0" cellspacing="5px" width="200px" border="0" valign="top">
+             <tr>
+                 <td style="width:100px;height:20px;">
+                 <c:RemoveLink id="SD">
+                    <apex:inputField value="{!TicketTypes.Sales_Start_Date__c}" required="true" label="Start Sales" id="TSalesS"/> </c:RemoveLink>&nbsp;</td>
+                  <td valign="top"  style="width:100px;height:20px;"> <apex:inputField value="{!TicketTypes.Start_Time__c}"  label="Start Time " id="TSalesSTime"/>
+                  </td>
+              </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top" >End Sales</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+        
+        <table cellpadding="0" cellspacing="0" width="200px" border="0" style="height:19px;">
+            <tr>
+                <td valign="top" style="width:100px;height:20px;">
+                    <c:RemoveLink id="ED">
+                    <apex:inputField value="{!TicketTypes.Sales_End_Date__c}" required="true" label="End Sales " id="TSalesE"/></c:RemoveLink>&nbsp;</td>
+                    <td valign="top" style="width:100px;height:20px;"><apex:inputField value="{!TicketTypes.End_Time__c}"  label="Start Time " id="TSalesETime"/>
+                   </td>
+               </tr>
+           </table>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" >Min. Tickets per Order</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.Min_Tickets_per_Order__c}" required="true" label="Min Tickets per Order" id="TMin" style="width:210px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" >Max. Tickets per Order</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.Max_Tickets_per_Order__c}" required="true" label="Max Tickets per Order" id="TMax" style="width:210px;"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top">Service Fee</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:selectRadio layout="pageDirection" label="Service Fee" value="{!TicketTypes.Service_Fee__c}" id="TService">
+           <apex:selectOptions value="{!TicketServiceFee}">
+             
+           </apex:selectOptions>
+         </apex:selectRadio>
+        </td>
+      </tr>
+    </table></td>
+    <td width="47%" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="29%" height="25" align="right">
+            Quantity Avaliable<!--<font size="4" color="red">*</font>-->
+        </td>
+        <td width="2%" height="25">&nbsp;</td>
+        <td width="69%" height="25">
+            <apex:inputField value="{!TicketTypes.TT_Available__c}" required="true"  id="TAvailable"  style="width:210px;" />
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">Ticket Visibility</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.Avilable_for_Portal__c}"  label="Active"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" valign="top">
+            Ticket Description
+        </td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+            <apex:inputField value="{!TicketTypes.Description__c}" style="width:210px;"/>
+        </td>
+      </tr>
+      
+      <tr style="padding-top:2px;">
+        <td height="25" align="right">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+        <td height="25"  style="padding-top:3px;" >
+            <div style=" width:80px; height:80px; border:3px solid #eaeaea;padding-top:2px;">
+             <apex:image url="/servlet/servlet.ImageServer?id={!TicketTypes.Ticket_Image_URL__c }&amp;oid={!$Organization.Id}" height="80px" width="80px"/>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">Ticket Image</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">
+           
+           <apex:inputFile value="{!TicketImage}" filename="{!TicketFileName}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+        <td height="25">&nbsp;</td>
+      </tr>
+    </table></td>
+  </tr>
+  
+  
+  <tr><td style="padding-left:70px;border:1px solid red;text-align:left;"  colspan="1">
+   Would you like to copy survey questions?  </td> <td>
+    <apex:inputCheckbox value="{!selectedcheckforCopySurvey}"/>
+    </td></tr>
+  <tr><td style="padding-left:70px;border:1px solid red;text-align:left;"  colspan="1">
+   Would you like to copy promo codes?  </td> <td>
+    <apex:inputCheckbox value="{!selectedcheckforpromo}"/>
+    </td></tr>
+  
+  
+  
+  <tr>
+  
+    <td align="center" colspan="2" style="text-align:center;">
+    <apex:commandButton value="Save" action="{!saveCloneTicket}" onclick="return checkValidations();" styleclass="awesome" title="Save"/>&nbsp;
+    <apex:commandButton value="Cancel" action="{!Cancelclone}" immediate="true" styleclass="awesome" title="Cancel"/>
+    </td>
+  </tr>
+</table>
+
+
+
+
+</td>
+</tr>
+</table>
+ </apex:outputpanel>
+ </apex:outputpanel>       
+                      
+        
+</apex:form>
+ 
+ 
+ 
+ 
+ 
+<!-- start footer -->        
+<apex:include pageName="QRCode_Footertemplate"/>   
+</apex:page>

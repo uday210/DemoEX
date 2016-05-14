@@ -1,0 +1,199 @@
+<apex:page controller="BL_RegInfodetailsCon" showHeader="false">
+
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/>
+
+ <style>
+  table td {
+     color: #807f7f;
+  }
+  
+  a{
+   color:blue;
+  }
+  </style>
+
+<apex:form id="fm">
+
+   <script>
+     function hideRec(vf){
+       var r = confirm("Are you sure you want to hide record!");
+        if (r == true) {
+        
+           hir(vf);
+        } else {
+           
+        } 
+     
+     }
+   </script>
+ 
+  <apex:actionFunction action="{!hideRec}" name="hir" reRender="fm">
+      <apex:param value="" name="recid"/>
+  </apex:actionFunction>
+
+
+  <div style="width:100%;padding-bottom:5px;">
+   <div style="width:48%;text-align:left;border:0px solid red; float:left;">
+    <apex:selectList value="{!selectedValue}" size="1" multiselect="false" style="color: #807f7f;">
+    Events :   <apex:selectOptions value="{!options}"></apex:selectOptions>
+       <apex:actionSupport action="{!onchangeEvent}" event="onchange"/>
+    </apex:selectList> 
+    </div>
+    
+        <div style="width:49%;text-align:right;border:0px solid red;float:right;"> 
+           <span style="color: #247dba;font-weight:bold;font-size:14px;"> Search :</span> 
+              <input type="text" id="searchTxt" onkeyup="searchSel();"/> &nbsp;
+          </div>  </div> <br /><br />
+          
+         <div style="width:100%;padding-bottom:5px;" >
+          <apex:dataTable value="{!outParameterList}" var="test" cellpadding="3" frame="hside" rendered="{!IF(outParameterList.size>0,true,false)}">
+                               <apex:column >
+                                  <apex:facet name="header">Email </apex:facet>
+                                   <apex:outputText value="{!test.Email}"></apex:outputText>
+                               </apex:column> 
+                         
+                               <apex:column >
+                                  <apex:facet name="header">Amount </apex:facet>
+                                   <apex:outputText value="{!test.Amt}"></apex:outputText>
+                                </apex:column>
+                                <apex:column >
+                                  <apex:facet name="header">Payment Type </apex:facet>
+                                   <apex:outputText value="{!test.PaymentType}"></apex:outputText>
+                                </apex:column>
+                               <apex:column >
+                                  <apex:facet name="header">Primary </apex:facet>
+                                   <apex:outputText value="{!test.Primary}"></apex:outputText>
+                             </apex:column> 
+                             <apex:column >
+                                  <apex:facet name="header">InvoiceId</apex:facet>
+                                   <apex:outputText value="{!test.InvoicId}"></apex:outputText>
+                             </apex:column> 
+                             <apex:column >
+                                  <apex:facet name="header">Transaction Id</apex:facet>
+                                   <apex:outputText value="{!test.Trans}"></apex:outputText>
+                             </apex:column> 
+                             <apex:column >
+                                  <apex:facet name="header">Transaction Status</apex:facet>
+                                   <apex:outputText value="{!test.TranStatus}"></apex:outputText>
+                             </apex:column> 
+                             <apex:column >
+                                  <apex:facet name="header">SenderTransaction Id</apex:facet>
+                                   <apex:outputText value="{!test.SenderTransactionId}"></apex:outputText>
+                             </apex:column>
+                             <apex:column >
+                                  <apex:facet name="header">SenderTransaction Status</apex:facet>
+                                   <apex:outputText value="{!test.SenderTransactionStatus}"></apex:outputText>
+                             </apex:column>
+                             <apex:column >
+                                  <apex:facet name="header">Refund Amt</apex:facet>
+                                   <apex:outputText value="{!test.RefAmt}"></apex:outputText>
+                               </apex:column>
+                               <apex:column >
+                                  <apex:facet name="header">Pending Refund</apex:facet>
+                                   <apex:outputText value="{!test.PenRef}"></apex:outputText>
+                               </apex:column>
+                            </apex:dataTable>
+          </div>    
+                
+                
+                <table style="width:100%;line-height:20px;border:0px solid #CCC;"  cellpadding="0" cellspacing="0" border="1" class="display" id="dataTable12" >
+     
+      <tr >
+               <th style="width:20%;background-color:#2486c3;color:#FFFFFF;"  valign="top">Transaction Details </th> 
+               <th style="width:68%;background-color:#2486c3;" valign="top"> 
+                <table style="width:100%;border:0px;line-height:20px;vertical-align:top;" cellpadding="0" cellspacing="0" border="0" >
+                   <tr>
+                         <th style="width:22%;border:0px;background-color:#2486c3;color:#FFFFFF;">Attendee Name</th> 
+                         <th style="width:22%;border:0px;background-color:#2486c3;color:#FFFFFF;">Email Id</th>
+                         <th style="width:22%;border:0px;background-color:#2486c3;color:#FFFFFF;">Company</th> 
+                          <th style="width:22%;border:0px;background-color:#2486c3;color:#FFFFFF;">Ticket</th> 
+                          <!-- <th style="width:5%;border:0px;">Quantity</th> -->
+                      </tr>
+                   
+                 </table>
+               </th>
+          </tr>
+       <apex:repeat value="{!transactions}" var="trn">
+           <tr style="background-color:#FFFFFF">
+               <td style="padding-right:15px;" valign="top"> 
+               <p style="display:none;" class="cpkn" >{!trn.Name},{!trn.Email__c},{!trn.Payment_Type__c}, {!trn.payKey__c}</p>              
+               
+                 <span style="color: #247dba;">Order Id:</span> {!trn.Name} &nbsp;
+                  <span style="color: #247dba;">Amount Paid :
+                  </span> 
+                  
+                   <apex:outputPanel rendered="{!if(trn.Payment_Type__c=='Check',TRUE,FALSE)}">
+                      $ &nbsp;<apex:inputField value="{!trn.Total_Amount__c}" style="width:60px;"/> &nbsp; 
+                   </apex:outputPanel>
+                    
+                    <apex:outputPanel rendered="{!if(trn.Payment_Type__c!='Check',TRUE,FALSE)}">
+                     ${!trn.Total_Amount__c} &nbsp; 
+                    </apex:outputPanel><br />
+                 
+                  
+                <span style="color: #247dba;">Order By : </span>{!trn.Email__c}<br />
+                 <span style="color: #247dba;">Order Date : </span>
+                 <apex:outputText value="{0,date,M/d/yyyy hh:mm a}">
+                <apex:param value="{!trn.createdDate}"/>
+                </apex:outputText>
+                 <br />
+                <span style="color: #247dba;"> Trasaction Key :</span> {!trn.payKey__c}<br /> 
+                
+                 <div id="{!trn.id}" style="color:blue;cursor:pointer;width:100%;text-align:right;border:0px solid red;">
+                   <div style="width:30%;float:left;border:0px solid red;text-align:left;">
+                  <apex:commandLink value="Paid Staus" action="{!checkPaymentStatus}">
+                    <apex:param value="{!trn.payKey__c}" name="ketno"/>
+                  </apex:commandLink>
+                 </div> 
+                  <div style="width:30%;float:left;border:0px solid red;text-align:left;">
+                  <a href="/apex/BL_special_needs_expos_success?paykey={!trn.id}"  target="_blank" >Insert records</a>
+                   </div>
+                 
+                   <div style="width:30%;float:right;border:0px solid red;text-align:left;"> 
+                        <input type="checkbox" onclick="hideRec('{!trn.id}');">Do not Show </input>
+                   </div>
+                  </div>
+                 
+                 
+                 
+                 <div style="display:none;" id="{!trn.id}dic">
+                     <span style="color: #247dba;">Payment Type :</span> {!trn.Payment_Type__c}<br />
+                   
+                    <span style="color: #247dba;"> Payment Status :</span>
+                    
+                     <apex:outputPanel rendered="{!if(trn.Payment_Type__c=='Check',TRUE,FALSE)}">
+                      <apex:inputField value="{!trn.Payment_Status__c}"/> &nbsp; 
+                      
+                     <!-- <apex:commandLink value="Save" style="color:blue;" action="{!updatePaymentDetails}">
+                         <apex:param value="{!trn.id}"  name="selectedInn"/>
+                      </apex:commandLink> -->
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel rendered="{!if(trn.Payment_Type__c!='Check',TRUE,FALSE)}">
+                      {!trn.Payment_Status__c} &nbsp; 
+                    </apex:outputPanel>
+                    
+                </div> 
+               </td>
+                <td valign="top">
+                <table style="width:100%;border:0px;line-height:20px;background-color:#FFFFFF" cellpadding="0" cellspacing="0" border="0" >
+                 <apex:repeat value="{!trn.Dummays__r}" var="d" > 
+                         <tr style="background-color:#FFFFFF">
+                         <p  style="display:none;" class="cpkn" >{!d.First_Name__c},{!d.Last_Name__c},{!d.Email__c},{!d.Company__c},{!d.TicketTypes__r.TT_Name__c}</p>           
+               
+                         <td style="width:22%;border:0px;">{!d.First_Name__c} {!d.Last_Name__c}</td>
+                           <td style="width:22%;border:0px;">{!d.Email__c}</td> 
+                           <td style="width:22%;border:0px;">{!d.Company__c}</td>
+                           <td style="width:22%;border:0px;">{!d.TicketTypes__r.TT_Name__c}</td>
+                         <!-- <td style="width:5%;border:0px;">{!d.Tickets_Quantty__c}</td> -->
+                      </tr>
+                   
+                    </apex:repeat>  
+                  </table> 
+               </td>           
+            </tr>
+       </apex:repeat>
+     </table>
+        
+  </apex:form>        
+</apex:page>

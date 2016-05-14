@@ -1,0 +1,1135 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false"  controller="MM_Evenntadmin_schedulecon" action="{!CheckUser}">
+    <apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/> <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+ <style>
+.tableclass{border:1px solid #00a7e5; margin:0px auto; border-collapse:collapse; font-family:Verdana, Geneva, sans-serif; font-size:13px;}
+.tableclass th{border:1px solid #00a7e5;text-align:center; color:black; font-family:Verdana, Geneva, sans-serif; font-size:13px;}
+.tableclass tr{border:1px solid #00a7e5;}
+.tableclass td{border:1px solid #00a7e5; padding-left:10px;}
+</style>
+ <div style="background-color:white;">
+ 
+  <apex:stylesheet value="{!URLFOR($Resource.MM_BA_Styles,"css/stylesheet.css")}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/jquery.akordeon.css")}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.forschedulePage,"SpryAssets/SpryTabbedPanels.css")}"/>
+  
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+ <apex:includeScript value="{!URLFOR($Resource.forschedulePage,"SpryAssets/SpryTabbedPanels.js")}"/> 
+ <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.akordeon.js")}"/>
+ 
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/reveal.css")}"/>
+ 
+ <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.akordeon.js")}"/>
+  <apex:includeScript value="{!$Resource.PhoneSetup}"/>
+  
+  
+  <apex:form id="theForm" style="background-color:#FFFFFF;">  
+     <apex:include pageName="MallikTest2" />  
+<style>
+
+.listcls
+    {
+    background-color: #81BEF7;
+    color: #ffffff;
+    }
+    .listcls:hover
+    {
+    background-color: #ffffff;
+    color: #09F;
+    }
+
+</style>
+  <script type="text/javascript" >
+  function confirmcancel()
+    {
+    
+    var r=confirm("Are you sure you want to cancel the appointment?");
+    if (r==true){
+    return true;
+    }else{
+    return false;
+    }
+    }
+    
+    function confirmmissed()
+    {
+    
+    var r=confirm("Are you sure you want to miss the appointment?");
+    if (r==true){
+    return true;
+    }else{
+    return false;
+    }
+    }  
+    
+    
+  function move(){
+
+  
+ window.open("http://boothleads.force.com/MatchMaking/apex/bl_eventadmin_events","_self");
+ return true;
+ }
+$(document).ready(function()
+{
+$(".account").click(function()
+{
+var X=$(this).attr('id');
+
+if(X==1)
+{
+$(".submenu").hide();
+$(this).attr('id', '0');    
+}
+else
+{
+
+$(".submenu").show();
+$(this).attr('id', '1');
+}
+    
+});
+
+//Mouseup textarea false
+$(".submenu").mouseup(function()
+{
+return false
+});
+$(".account").mouseup(function()
+{
+return false
+});
+
+
+//Textarea without editing.
+$(document).mouseup(function()
+{
+$(".submenu").hide();
+$(".account").attr('id', '');
+});  
+    
+});
+
+ $(document).ready(function() {
+
+    //Default Action
+    $(".tab_content").hide(); //Hide all content
+    $("ul.tabs li:first").addClass("active").show(); //Activate first tab
+    $(".tab_content:first").show(); //Show first tab content
+    
+    //On Click Event
+    $("ul.tabs li").click(function() {
+        $("ul.tabs li").removeClass("active"); //Remove any "active" class
+        $(this).addClass("active"); //Add "active" class to selected tab
+        $(".tab_content").hide(); //Hide all tab content
+        var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
+        $(activeTab).fadeIn(); //Fade in the active content
+        return false;
+    });
+
+});
+
+    </script> 
+
+  <!--topblock start-->
+      <div id="topblock"> 
+            <div id="logo"></div>
+            <div id="topblockright"  style="position:absolute; top:0px;right:0px;">
+                     <table width="98%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+      
+        <td align="right"><div style="padding-right:10px;color:#83CBF2;font-size:14px;">Hello {!$User.Firstname}&nbsp;{!$User.Lastname}</div></td>
+         
+                  
+       <td style="width:195px;font-weight:bold;font-size:14px;"><div class="dropdown">
+                    <a class="account" ><span><B>Settings</b></span></a>
+                        <div class="submenu" style="display: none; ">
+                             <ul class="root">
+                                    
+                                    <li style="list-style: none;margin: 0; padding: 0;"><apex:outputLink value="/apex/MM_Profile" ><span>View/Edit Profile</span> </apex:outputLink></li>
+                                      
+                                    <li style="list-style: none;margin: 0; padding: 0;"><apex:outputLink value="/apex/MM_Changepassword?urlreturn=MM_Eventadmin_attendeesDirectory" ><span>Change Password</span> </apex:outputLink></li>
+                                    <li style="list-style: none;margin: 0; padding: 0;">
+                    <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}">{!$Label.site.logout}</apex:commandLink>
+                             </li>
+                              </ul>
+                        </div>
+                   </div></td>
+                   
+                    <td align="center" colspan="2">   <apex:selectList value="{!selectedapp}" multiselect="false" size="1" onchange="return move();" style="border-radius:15px;width:180px;font-size:14px;" styleClass="listcls" >
+                                  <apex:selectOptions value="{!apps}">
+                                  </apex:selectOptions>
+                                 </apex:selectList>
+        
+         </td>
+      </tr>
+     
+    </table>
+                 </div>
+             </div>   
+    <!--topblock end-->
+<!--menublock start-->
+<div id="menublock">
+<div id='cssmenu' >
+<ul>
+ 
+                      <li><apex:outputLink value="/apex/Matchleads_eventsPage" ><span>Events</span></apex:outputLink></li>
+                       <li class="active"><apex:outputLink value="/apex/MM_Eventadmin_schedule" ><span>Schedule</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_ExhibitorsDirectory" ><span>{!exhibitoralias }</span></apex:outputLink></li>
+                        <apex:outputPanel rendered="{!IF($User.Username =='mcmillen@hartford.edu',true,false )}">
+                         <li><apex:outputLink value="/apex/bl_eventadmin_corporatestaff" ><span>Prime Partners</span></apex:outputLink></li>
+                       </apex:outputPanel>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_AttendeesDirectory" ><span>{!attendeealias}</span></apex:outputLink></li>
+                       <apex:outputPanel rendered="{!IF($User.Username =='mcmillen@hartford.edu',true,false )}">
+                         <li><apex:outputLink value="/apex/MM_eventadmin_SponsorsDirectory" ><span>Resource Partner Directory</span></apex:outputLink></li>
+                        </apex:outputPanel>
+                        <li><apex:outputLink value="/apex/MM_EventAdmin_Reports" ><span>Reports</span></apex:outputLink></li>
+                          <li><apex:outputLink value="/apex/MM_Eventadmin_survey" ><span>Survey Questions</span></apex:outputLink></li>
+
+
+                     
+                  </ul>
+</div>
+</div>
+
+
+      <style>
+.table2{ border:1px solid #eaeaea; margin:2px; height:auto; height:50px;}
+
+.table2 td{height:25px;}
+.pophead{
+background-color:#54b5f1;
+height:35px;
+width:100%;
+color:#FFFFFF;
+font-size:18px;
+text-align:center;
+}
+
+
+ .comlink{
+         font-family:Verdana,
+         Geneva, sans-serif;
+         font-size:13px;
+         color:#000000;
+         padding:5px; height:20px;
+         background-color:#f1f1f1;
+         border:1px solid #CCCCCC;
+         border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px;
+         text-decoration:none;
+    }
+    
+    .comlinkBusy{
+         font-family:Verdana,
+         Geneva, sans-serif;
+         font-size:13px;
+         color:#000000;
+         padding:5px; height:20px;
+         background-color:#808080;
+         border:1px solid #808080;
+         border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px;
+         text-decoration:none;
+    }
+    
+    .comlinkpink{
+         font-family:Verdana,
+         Geneva, sans-serif;
+         font-size:13px;
+         color:#000000;
+         padding:5px; height:20px;
+         background-color:#f05b5b;
+         border:1px solid #f05b5b;
+         border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px;
+         text-decoration:none;
+    }
+    
+    .comlinkorange{
+         font-family:Verdana,
+         Geneva, sans-serif;
+         font-size:13px;
+         color:#000000;
+         padding:5px; height:20px;
+         background-color:#ffbb00;
+         border:1px solid #ffbb00;
+         border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px;
+         text-decoration:none;
+    }
+
+   .comlinkgreen{
+           font-family:Verdana, Geneva, sans-serif; font-size:13px;
+           color:#000000;
+           padding:5px;
+           height:20px;
+           background-color:#00c47c;
+           border:1px solid #00c47c;
+           border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px;
+           text-decoration:none;
+       }
+
+       .comlinkgreen a{
+           color:#FFFFFF;
+       }
+
+
+       .comlinkred{
+           font-family:Verdana, Geneva, sans-serif;
+           font-size:13px; color:#FFFFFF;
+           padding:5px; height:20px;
+           background-color:#d11d0c;
+           border:1px solid #841206;
+           border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px;
+           text-decoration:none;
+           }
+
+a.account {
+font-size: 13px;
+line-height: 16px;
+color: #555;
+position: absolute;
+right:20px;
+z-index: 110;
+display: block;
+padding: 11px 0 0 25px;
+height: 28px;
+width: 121px;
+margin: -11px -10px 0 -10px;
+text-decoration: none;
+//background: url(images/arrow.png) 80px 19px no-repeat;
+//background:url(../images/arrow.png) 80px 19px no-repeat;
+cursor:pointer;
+}
+
+
+</style>  
+    
+    
+  <script type="text/javascript">
+       function returnSelectVal(){
+           var selects = document.getElementById("single-label-example");
+           var selectedValue = selects.options[selects.selectedIndex].value; 
+           
+           choosenValeFromJS(selectedValue);
+           
+       }
+       
+       function returnSelectValForExhibitor(){
+           var selects = document.getElementById("single-label-Corporate");
+           var selectedValue = selects.options[selects.selectedIndex].value; 
+           
+           choosenValeForJS(selectedValue);
+           
+       }
+   
+     </script>  
+
+<!-- {!seeQuery } -->
+<style>
+     #smallleftcontainer #eventsidemenu ul li a{line-height:25px;border-bottom: 0px; padding-top:5px;}
+     
+    #smallleftcontainer #eventsidemenu ul li{border-bottom:0px;}
+    #smallleftcontainer #eventsidemenu ul li a{text-decoration: none;color: #FFFFFF; margin-top:5px;
+    
+    
+    display: inline-block; 
+    padding: 5px 10px 6px; 
+    color: #fff; 
+    text-decoration: none;
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    position: relative;
+    cursor: pointer;
+    font-family:Arial, Helvetica, sans-serif;
+    width:92%;
+    font-size:13px;
+    
+    }
+    
+    #smallleftcontainer #eventsidemenu ul li a:hover {text-decoration: none;color: #000000; border-bottom:px solid #CCCCCC;font-size:13px;}
+    #smallleftcontainer #eventsidemenu ul li a:visited {text-decoration: none;color: #FF0000; border-bottom:px solid #CCCCCC;font-size:13px;}
+     #smallleftcontainer #eventsidemenu ul li a:active {text-decoration: none;color: #FF0000; border:0px solid #CCCCCC;font-size:13px;}
+     
+     #smallleftcontainerscroll {
+                width: 100%;
+                max-height: 695px;
+                float: left;
+                padding: 10px;
+                /*background-color: #f3f3f3;*/
+                padding-top: 0px;
+                overflow:scroll;
+                margin-left:-10px;
+        }
+ </style>
+   
+
+  
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" align="Center">
+              <tr align="Center">
+                <td height="30" style="text-align:left;padding-left:10px;">Event :&nbsp;<b><apex:outputText value="{!eventtimedetails.EV_Title__c}" style="font-weight:bold;"/></b></td>
+               
+                <td height="30" align="left" style=" padding-top:5px;padding-left:10px;"> 
+                    Event Type :&nbsp;<b><apex:outputText value="{!eventtimedetails.MatchMaking_Type__c}" style="font-weight:bold;"></apex:outputText></b> 
+                  
+                </td>
+                
+                <td style=" padding-top:5px;padding-right:15px;" align="right">
+                <apex:commandButton value="Schedule By Time" action="{!typeButtons}" reRender="theForm,newForm" style="width:180px;height:35px; font-size:16px;font-weight:bold;" rendered="{!IF(showScheduleByName, TRUE,FALSE)}"/>
+               <!-- <apex:outputPanel rendered="{!IF(eventtimedetails.Match_Making_Schedules__c!='Closed', TRUE,FALSE)}">-->
+                <apex:commandButton value="Schedule By Name" action="{!typeButtons}"  style="width:180px;height:35px; font-size:16px;font-weight:bold;" rendered="{!IF(showScheduleByTime, TRUE,FALSE)}"/>
+               <!-- </apex:outputPanel>-->
+                <!--<apex:commandButton value="Multiple Schedule" style="width:180px;height:40px; font-size:16px;fone-weight:bold;" action="{!multischedules}"/>-->
+                </td>
+                
+  </tr>
+        </table>
+   
+<apex:outputPanel rendered="{!showButtons}" id="buttonsId"> 
+ <div  align="center"  style="width:100%;border-radius:5px; align:center;" id="smallleftcontainer">
+
+ <table align="center" width="50%" style="margin-top:20px;">
+    <tr>
+           <td align="Right" style="padding-top:15px;">
+          </td>
+          <td align="left" style="padding-top:15px;">
+          </td>
+          </tr>
+          <tr>
+           <td align="Right" style="padding-top:15px;">
+          </td>
+          <td align="left" style="padding-top:15px;">
+          </td>
+          </tr>
+          <tr>
+           <td align="Right" style="padding-top:15px;">
+          </td>
+          <td align="left" style="padding-top:15px;">
+          </td>
+          </tr>
+           
+     <tr>
+           <td align="Right" style="padding-top:15px;">
+           
+               <apex:commandButton value="Schedule by Time" style="width:180px;height:40px; font-size:16px;fone-weight:bold;" action="{!scheduleByTime}" reRender="ScheduleByTimeId,theForm,BASId,timeSch,newForm"/>
+          </td>
+          <td align="Right" style="padding-left:10px;">
+          </td>
+         
+          <td align="left" style="padding-top:15px;">
+               <apex:commandButton value="Schedule by Name" style="width:180px;height:40px; font-size:16px;fone-weight:bold;" action="{!scheduleByName}" reRender="ScheduleByNameId,theForm"/>
+          </td>
+          <!-- <td align="left" style="padding-top:15px;">
+               <apex:commandButton value="Multiple Schedule" style="width:180px;height:40px; font-size:16px;fone-weight:bold;" action="{!multischedules}"/>
+          </td>-->
+          </tr>
+          
+       </table>
+       
+     
+ </div>
+ </apex:outputPanel>
+ 
+<apex:outputPanel rendered="{!showScheduleByTime}" id="ScheduleByTimeId"> 
+
+    <div id="smallleftcontainer">      
+        <div id="Dates" >
+            <table style="width:100%;" cellpadding="0" cellspacing="0" border="0">
+                <tr style="height:52px;">
+                    <apex:repeat value="{!matchDatesList}" var="matchDate">
+                        <td  style="{! IF(AND(CONTAINS(matchDate, selectedMatchDate),NOT(ISBLANK(selectedMatchDate)) ),'background-color:#e74c3c;','background-color:#eab098') };  text-align:center;padding-top:15px;">
+                            <apex:commandLink value="{!matchDate}" action="{!timeSlotsForPickedDate}" style="height:25px;color:#FFFFFF; text-decoration:none;text-align:center;" reRender="BASId,timeSch,newForm,theForm">&nbsp;  &nbsp;
+                                <apex:param value="{!matchDate}" name="MatchmakingDate"/>
+                            </apex:commandLink>
+                       </td>
+                   </apex:repeat>
+               </tr>
+               </table>
+               </div>  
+       
+ 
+ <style>
+     #smallleftcontainer #eventsidemenu ul li a{line-height:25px;border-bottom: 0px; padding-top:5px;}
+     
+    #smallleftcontainer #eventsidemenu ul li{border-bottom:0px;}
+    #smallleftcontainer #eventsidemenu ul li a{text-decoration: none;color: #FFFFFF; margin-top:5px;
+    
+    
+    display: inline-block; 
+    padding: 5px 10px 6px; 
+    color: #fff; 
+    text-decoration: none;
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    position: relative;
+    cursor: pointer;
+    font-family:Arial, Helvetica, sans-serif;
+    width:92%;
+    font-size:13px;
+    
+    }
+    
+    #smallleftcontainer #eventsidemenu ul li a:hover {text-decoration: none;color: #000000; border-bottom:px solid #CCCCCC;font-size:13px;}
+    #smallleftcontainer #eventsidemenu ul li a:visited {text-decoration: none;color: #FF0000; border-bottom:px solid #CCCCCC;font-size:13px;}
+     #smallleftcontainer #eventsidemenu ul li a:active {text-decoration: none;color: #FF0000; border:0px solid #CCCCCC;font-size:13px;}
+     
+     #smallleftcontainerscroll {
+                width: 100%;
+                max-height: 695px;
+                float: left;
+                padding: 10px;
+                /*background-color: #f3f3f3;*/
+                padding-top: 0px;
+                overflow:scroll;
+                margin-left:-10px;
+        }
+ </style>
+ <div id="smallleftcontainerscroll">
+     <apex:repeat value="{!timeSlotsForMatchDate}" var="slot">
+    
+    
+          <div id="eventsidemenu">
+              <div>  <ul style="margin:0px; margin-left: -0px; padding:0px; ">
+                        <li>
+                           <apex:commandLink action="{!scheduleTimeSlotSelect}" style=" color:#FFFFFF;{! IF(AND(CONTAINS(slot, selectedMatchSlotTime),NOT(ISBLANK(selectedMatchSlotTime))), 'background-color:#01d48f;', 'background-color:#95a5a6' )};">
+                                       {!slot} &nbsp;
+                           <!--<apex:outputText rendered="{!IF(AND(CONTAINS(slot, selectedMatchSlotTime),NOT(ISBLANK(selectedMatchSlotTime))), 'TRUE', 'FALSE' ) }" style="color:#FFFFFF"> 
+                              Open({!opensize})
+                              </apex:outputText>-->
+                              <apex:variable var="count" value="{!0}"/>
+                         <apex:repeat value="{!timeslotmap}" var="key">
+                         <apex:outputText value="Open({!unsecheduledlist.size-timeslotmap[key]}/{!unsecheduledlist.size})" rendered="{!If(LEFT(slot,8)==key,true,false)}"/>
+                         <apex:variable var="count" value="{!count + 1}" rendered="{!If(LEFT(slot,8)==key,true,false)}"/>
+                         </apex:repeat>
+                         <apex:outputText value="Open({!unsecheduledlist.size})" rendered="{!If(count==0,true,false)}"/>
+                         <apex:variable var="count" value="{!0}"/>
+                               <apex:param value="{!slot}" name="SelectedSlotTime"/>
+
+                          </apex:commandLink>
+                           
+                           
+                       </li> 
+                </ul> </div> 
+        </div>
+    </apex:repeat>
+</div>
+</div>
+
+ 
+ 
+ </apex:outputPanel>  
+             
+ <apex:outputPanel rendered="{!showScheduleByName}" id="ScheduleByNameId"> 
+ 
+ <div  align="center"  style="width:100%;border-radius:5px; align:center;">
+ 
+                 
+         
+           
+   
+    <table align="center" width="50%" style="margin-top:20px;">
+    
+     <tr>
+           <td align="center" colspan="3" style="padding-top:15px;"><!--
+               <apex:commandButton value="Make An Appointment" action="{!matchProfiles}" style="width:180px;height:40px; font-size:14px;fone-weight:bold;" reRender="matchesId,newForm"/>
+         -->  </td>
+            
+       </tr>
+       
+       
+       <tr >
+           <td>    &nbsp;
+           </td>
+            <td align="left" style="padding-right:10px; margin-left:10px;padding-bottom:10px;">
+                <apex:outputText value="{!attendeealias} :" style="font-weight:bold;padding-bottom:20px; padding-top:100px; "></apex:outputText>&nbsp;
+            </td>
+            <td align="left" style="padding-right:10px; margin-left:10px;padding-bottom:10px;">
+                <apex:outputText value="{!exhibitoralias} :" style="font-weight:bold;padding-bottom:20px; padding-top:100px; "></apex:outputText>&nbsp;
+            </td> 
+         </tr>
+         <tr>
+            <td style="padding-right:10px; margin-left:10px;"> &nbsp;
+            </td>
+            <td style="padding-right:10px; margin-left:10px;">
+            
+              <select data-placeholder="Select {!attendeealias}" class="chosen-select" style="width:350px;" tabindex="17" id="single-label-example" onchange="returnSelectVal();">
+            <option value=""></option>
+            <apex:repeat value="{!listOfMBEsForEvent}" var="eam">
+                <apex:repeat value="{!eam}" var="ea">
+                    <option value="{!ea.id}">{!ea.AS_id__r.AS_FirstName__c}&nbsp;{!ea.AS_id__r.AS_LastName__c}&nbsp;&nbsp;&nbsp;{!ea.AS_id__r.AS_Company__c}</option>
+                </apex:repeat>
+            </apex:repeat>
+                     
+          </select>  
+     
+          </td><td style="padding-right:10px; margin-left:10px;">  
+  
+    
+     <select data-placeholder="Select {!exhibitoralias}" class="chosen-select" style="width:350px;" tabindex="17" id="single-label-Corporate" onchange="returnSelectValForExhibitor();">
+            <option value=""></option>
+            <apex:repeat value="{!listOfExhibitorsForEvent}" var="upe">
+                <apex:repeat value="{!upe}" var="up">
+                    <option value="{!up.id}">{!up.BT_id__r.BT_Name__c}&nbsp;&nbsp;&nbsp;Table No:&nbsp;{!up.BT_id__r.MM_TableNo__c}</option>
+                </apex:repeat>
+            </apex:repeat>
+                     
+          </select>
+    
+   </td>
+            </tr>
+          
+</table>
+     
+        
+</div>
+<script type="text/javascript">
+  
+    var config = {
+      '.chosen-select'           : {},
+      '.chosen-select-deselect'  : {allow_single_deselect:true},
+      '.chosen-select-no-single' : {disable_search_threshold:10},
+      '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
+      '.chosen-select-width'     : {width:"95%"}
+    }
+    for (var selector in config) {
+      $(selector).chosen(config[selector]);
+    }
+    
+     
+    
+  </script>
+</apex:outputPanel>
+     
+   
+   </apex:form>
+   </div>
+  
+  <apex:form id="newForm" style="background-color:white;">
+  <div style="height:350px;width:100%">
+  <script type="text/javascript">
+   
+       function selectedExhibitorScript(){
+           var selects = document.getElementById("single-Exhibitor-Id");
+           var selectedValue = selects.options[selects.selectedIndex].value; 
+           exhibitorIdFromJS(selectedValue);
+           
+       }
+       
+       function selectedMBEScript(){
+           var selects = document.getElementById("single-MBE-Id");
+           var selectedValue = selects.options[selects.selectedIndex].value; 
+           
+           mbeIdFromJS(selectedValue);
+           
+       }
+       
+     </script>  
+     
+   <apex:actionFunction name="mbeIdFromJS" action="{!mbeScheduleTimeId}" reRender="BASId" status="AjaxLoader">
+               <apex:param value="" name="mbeTimeId" assignTo="{!selectedMBETimeId}"/>
+           </apex:actionFunction>
+     <apex:actionFunction name="exhibitorIdFromJS" action="{!corporateScheduleTimeId}" reRender="BASId" status="AjaxLoader">
+               <apex:param value="" name="exhibitorTimeId" assignTo="{!selectedUPETimeId}"/>
+           </apex:actionFunction> 
+  
+ 
+    <apex:actionFunction action="{!exstingAppointmentsForMBE}" name="choosenValeFromJS" reRender="SchedulesForMBE,newForm">
+               <apex:param value="" name="choose" assignTo="{!selectedMBEId}"/>
+           </apex:actionFunction>
+     <apex:actionFunction action="{!exstingAppointmentsForCorporate}" name="choosenValeForJS" reRender="SchedulesForCorporate,newForm">
+               <apex:param value="" name="exhibitorId" assignTo="{!selectedCorporateId}"/>
+           </apex:actionFunction>      
+
+
+   <apex:outputPanel id="timeSch" rendered="{!showTimePicklist}">         
+   <div id="smallrightcontainer" style=" height:250px;">
+
+  
+  <div style=" padding-left:10px;background-color:#95a5a6; display:block; height:45px; padding-top:15px; font-size:16px;font-weight:bold;">
+  
+  <span style="color:#FFFFFF;"><b>Open {!exhibitoralias} Appointments</b></span>
+  
+  </div >
+  
+
+ 
+ <div style="height:3px;background-color:white;"></div>
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" >
+            <tr>
+                   <td colspan="3" align="center">       
+                          <apex:outputText rendered="{!listOfExhibitorsForEventTime.size  == 0}">
+                          <div style="padding-left:100px;padding-top:50px;">
+                          <font size="6" color="#006400">{!exhibitoralias}s are Busy at this Time Slot</font>
+                          </div>
+                         </apex:outputText>
+                               <!--<apex:outputText rendered="{!IF(eventtimedetails.Match_Making_Schedules__c =='Closed', TRUE,FALSE)}">
+                               <div style="padding-left:100px;padding-top:50px;">
+                          <font size="6" color="#006400">Scheduling has been Closed</font>
+                          </div>
+                               </apex:outputText>-->
+                       </td>
+                       </tr>
+            <tr>
+              <td colspan="2" align="center" valign="top"><table cellpadding="0" cellspacing="0" width="100%" >
+               
+                <tr>
+                  <td height="35" align="left" valign="middle">
+                  
+                       <!--<apex:outputPanel rendered="{!IF(eventtimedetails.Match_Making_Schedules__c!='Closed', TRUE,FALSE)}">-->
+                    
+                    <div >
+                    <apex:outputText rendered="{!listOfExhibitorsForEventTime.size !=0}" id="listId">
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0" class="Scheduledtable">
+                       <tr>
+                        <td style="padding-right:10px;padding-top:10px;padding-left:10px;width:40%;text-align:left;">
+                          <apex:outputText value="{!exhibitoralias}" style="font-weight:bold;"/>
+                        </td>
+                        <td style="width:20%;"></td>
+                        <td style="padding-right:10px;padding-top:10px;padding-left:10px;width:40%;text-align:left;">
+                          <apex:outputText value="{!attendeealias}" style="font-weight:bold;"/>
+                        </td>
+                       </tr>
+                       <tr>
+                         <td style="padding-right:10px;padding-top:10px;padding-left:10px;width:40%;text-align:left;">
+                            <select data-placeholder="Select {!exhibitoralias}" class="chosen-select" style="width:350px;height:150px;" tabindex="17" id="single-Exhibitor-Id" onchange="selectedExhibitorScript();">
+                                <option value=""></option>
+                                    <apex:repeat value="{!listOfExhibitorsForEventTime}" var="upe">
+                                        <apex:repeat value="{!upe}" var="up">
+                                            <option value="{!up.id}">{!up.BT_id__r.BT_Name__c}&nbsp;&nbsp;&nbsp; Table No: {!up.BT_id__r.MM_TableNo__c}</option>
+                                        </apex:repeat>
+                                    </apex:repeat>
+                     
+                             </select>
+                         </td>
+                         <td style="width:20%;"></td>
+                        <td style="padding-right:10px;padding-top:10px;padding-left:10px;width:40%;text-align:left;">
+                           <select data-placeholder="Select {!attendeealias} " class="chosen-select" style="width:350px;" tabindex="17" id="single-MBE-Id" onchange="selectedMBEScript();">
+                                <option value=""></option>
+                                    <apex:repeat value="{!listOfMBEsForEventTime}" var="eam">
+                                        <apex:repeat value="{!eam}" var="ea">
+                                            <option value="{!ea.id}">{!ea.AS_id__r.AS_Company__c} &nbsp;&nbsp;&nbsp;{!ea.AS_id__r.AS_FirstName__c} {!ea.AS_id__r.AS_LastName__c}</option>
+                                        </apex:repeat>
+                                    </apex:repeat>
+                     
+                          </select>  
+                       </td>    
+                 </tr>
+                <tr>
+                 
+                 <td colspan="3" align="center" style="padding-right:10px;padding-top:10px;">
+                 
+                       <apex:commandButton value="Make An Appointment" action="{!opencoomentbox}"   style="width:180px;height:40px;font-size:14px;fone-weight:bold;" reRender="newForm" status="AjaxLoader"/>
+                     
+                       </td>
+                       <td>
+                       </td>
+                 </tr>
+                    </table>
+                   </apex:outputText>
+                 
+                     </div>  <!--</apex:outputPanel>-->
+               </td>
+               </tr> 
+                </table>
+                </td>
+                </tr>
+                
+          </table>
+          </div>
+  </apex:outputPanel>  
+  <apex:outputPanel id="BASId" rendered="{!showTimeList}">
+    <div id="smallrightcontainer" style="background-color:white;">
+ <apex:outputText rendered="{!ShowScheduleError}" style="align:center;color:red;font-weight:bold;font-size:16px;" value="* The {!exhibitoralias} has already an appointment with {!attendeealias}" >
+  </apex:outputText>
+ <div style="width:100%; background-color:#eaeaea; font-size:16px;font-weight:bold;">
+ <span style=" padding-left:10px;background-color:#95a5a6; display:block; height:25px; padding-top:7px; color:#FFFFFF;">Scheduled Appointments</span></div>
+    
+    
+   <div style="height:3px;background-color:white;" ></div> 
+     
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+            
+            <tr>
+              <td colspan="2" align="center" valign="top">
+              
+              <table cellpadding="0" cellspacing="0" width="100%" >
+               
+                <tr>
+                  <td height="35" align="left" valign="middle">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                      
+                      <td width="25%" height="35" align="left" valign="middle" bgcolor="#eaeaea" style="padding-left:10px;"><strong>{!exhibitoralias}</strong></td>
+                      <td width="25%" height="35" align="left" valign="middle" bgcolor="#eaeaea" style="padding-left:10px;"><strong>{!attendeealias}</strong></td>
+                      <td width="25%" height="35" align="left" valign="middle" bgcolor="#eaeaea" style="padding-left:10px;"><strong>Table/Room No.</strong></td>
+                      <td width="25%" height="35" align="left" valign="middle" bgcolor="#eaeaea" style="padding-left:10px;"><strong>Action</strong></td>
+                      <td width="3%" height="35" align="left" valign="middle" bgcolor="#eaeaea" style="padding-left:10px;"><strong>&nbsp;</strong></td>
+                    </tr>
+                  </table>
+                   <div style=" height:300px; overflow:scroll;background-color:white;">
+                   
+                      <table cellpadding="0" cellspacing="0" width="100%" border="0" class="Scheduledtable">
+                    
+                  
+                            <apex:repeat value="{!scheduleForExhibitors}" var="BA">
+                              <tr>
+                                <td width="25%" height="35" align="left" valign="middle" style="padding-left:10px;">{!BA.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}</td>
+                                <td width="25%" height="35" align="left" valign="middle" style="padding-left:10px;">{!BA.MM_To_EAM__r.AS_id__r.AS_Company__c}</td>
+                                <td width="25%" height="35" align="left" valign="middle" style="padding-left:10px;"> {!BA.MM_To_UPE__r.BT_id__r.MM_TableNo__c}</td>
+                                <td width="25%" height="35" align="left" valign="middle" style="padding-left:10px;">
+                                    <apex:commandLink value="Cancel" action="{!cancelSchedule}" onclick="return confirmcancel();">
+                                        <apex:param value="{!BA.id}" name="esid" assignTo="{!BA.id}"/>
+                                    </apex:commandLink>&nbsp;-&nbsp;
+                                    <apex:commandLink value="Miss" action="{!UpdateAppmntToMissed}" onclick="return confirmmissed();">
+                                        <apex:param value="{!BA.id}" name="missedAppId" assignTo="{!BA.id}"/>
+                                    </apex:commandLink>
+                                </td>
+                                <td width="3%" height="35" align="left" valign="middle" style="padding-left:10px;">&nbsp;</td>
+
+                               </tr>
+                      
+                             </apex:repeat>
+                     
+                               <apex:outputText rendered="{!scheduleForExhibitors.size ==0 }" style="padding-left:65px;">
+                               <div style="padding-left:100px;padding-top:50px;background-color:white;">
+                               <font size="6" color="#006400" style="padding-left:25px;">No Appointments Found</font>
+                                </div>
+                               </apex:outputText>
+                   
+                              </table>
+                  
+                        </div>
+                        </td>
+                </tr>
+                
+              </table></td>
+            </tr>
+            <tr>
+              <td width="50%" align="center" valign="top">&nbsp;</td>
+              <td width="50%">&nbsp;</td>
+            </tr>
+          </table>
+   
+   </div> 
+ 
+  </apex:outputPanel>
+ 
+  
+  <script type="text/javascript">
+  
+    var config = {
+      '.chosen-select'           : {},
+      '.chosen-select-deselect'  : {allow_single_deselect:true},
+      '.chosen-select-no-single' : {disable_search_threshold:10},
+      '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
+      '.chosen-select-width'     : {width:"95%"}
+    }
+    for (var selector in config) {
+      $(selector).chosen(config[selector]);
+    }
+    
+     
+    
+  </script> 
+    
+    
+
+          <table align="center" width="100%" style="font-family: Arial, Helvetica, sans-serif;"> 
+           
+         
+    <tr>
+            <td>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+            <td style="padding-bottom:10px;padding-top:5px;" width="50%" >
+                 <apex:outputPanel id="SchedulesForMBE" rendered="{!showMBESchedulesBool}" > 
+                 <div style="float:right;width:350px; border-radius:5px;background-color:White;height:300px;overflow:scroll;">
+                 
+                 <table align="Right" border="2" cellspacing="0" cellpadding="0" class="tableclass" style="width:100%;font-family: Arial, Helvetica, sans-serif;">
+  <tr>
+    <td height="30" align="left" colspan="10" bgcolor="#B0E0E6" style="font-weight:bold;" >Appointments For {!selectedMBEName}</td>
+  </tr>
+  
+  <tr>
+  
+    <td height="30" align="center" bgcolor="#BDC3C7" style="font-weight:bold;">{!exhibitoralias}</td>
+    <td height="30" align="center" bgcolor="#EEE8AA" style="font-weight:bold;">Start Time</td>
+    <td height="30" align="center" bgcolor="#6BB9F0" style="font-weight:bold;">Table No</td>
+   
+  </tr>
+      <apex:repeat value="{!MBEBookedSchedules}" var="ms">
+
+  <tr>
+  
+  
+  
+    <td height="30" align="left" valign="middle" bgcolor="#BDC3C7"><apex:outputText value="{!ms.MM_To_UPE__r.BT_id__r.BT_Name__c}" title="{!selectedMBEName} has an appointment with {!ms.MM_To_UPE__r.BT_id__r.BT_Name__c} on {!ms.MM_slot_Date__c} at {!ms.MM_slot_StartTime__c}-{!ms.MM_Slot_End_Time__c}">
+    </apex:outputtext>
+    </td>
+    <td height="30" align="center" valign="middle" bgcolor="#EEE8AA"><apex:outputText value="{!ms.MM_slot_StartTime__c}"/></td>
+    <td height="30" align="center" valign="middle" bgcolor="#6BB9F0"><apex:outputText value="{!ms.MM_To_UPE__r.BT_id__r.MM_TableNo__c}"/></td>
+    
+  
+  
+  
+   </tr> </apex:repeat>
+</table>
+     </div>            
+                </apex:outputPanel> 
+            </td>
+            <td>
+            &nbsp;
+            </td>
+            <td style="padding-bottom:10px;padding-top:5px;text-align:left;" width="50%" >
+                <apex:outputPanel id="SchedulesForCorporate" rendered="{!showCorporateSchedulesBool}" >
+                 <div style="float:left;width:350px; border-radius:5px;background-color:White;height:300px;overflow:scroll;">
+                 
+                 <table align="Right" border="2" cellspacing="0" cellpadding="0" class="tableclass" style="width:100%;font-family: Arial, Helvetica, sans-serif;">
+         <tr>
+                        <td height="30" align="left" colspan="10" bgcolor="#B0E0E6" style="font-weight:bold;" >Appointments For {!selectedCorporateName}</td>
+                      </tr>
+  
+                      <tr>
+  
+                        <td height="30" align="center" bgcolor="#BDC3C7" style="font-weight:bold;">{!attendeealias}</td>
+                        <td height="30" align="center" bgcolor="#EEE8AA" style="font-weight:bold;">Start Time</td>
+                        <td height="30" align="center" bgcolor="#6BB9F0" style="font-weight:bold;">Table No</td>
+   
+                      </tr>
+                      <apex:repeat value="{!CoroprateBookedSchedules}" var="ms">
+                      <tr>
+
+                        <td height="30" align="left" valign="middle" bgcolor="#BDC3C7"><apex:outputText value="{!ms.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!ms.MM_To_EAM__r.AS_id__r.AS_LastName__c}" title="{!selectedCorporateName} has an appointment with {!ms.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!ms.MM_To_EAM__r.AS_id__r.AS_LastName__c} on {!ms.MM_slot_Date__c} at {!ms.MM_slot_StartTime__c}-{!ms.MM_Slot_End_Time__c}"/></td>
+                        <td height="30" align="center" valign="middle" bgcolor="#EEE8AA"><apex:outputText value="{!ms.MM_slot_StartTime__c}"/></td>
+                        <td height="30" align="center" valign="middle" bgcolor="#6BB9F0"><apex:outputText value="{!ms.MM_To_UPE__r.BT_id__r.MM_TableNo__c}"/></td>
+                      </tr>
+                   </apex:repeat>
+                </table>
+
+  </div>
+                </apex:outputPanel>
+               
+                </td>
+                </tr>
+                </table> 
+
+              <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!showMatches}" style="width:100%;z-index:950;"/> 
+         <apex:outputPanel styleClass="custPopup"  layout="block" style="width:70%;z-index:960;" rendered="{!showMatches}" id="matchesId">  
+ 
+   
+ <table cellpadding="0" cellspacing="0"  style="margin:2px;width:100%;" >
+      <tr style="background-color:#55B7F4">
+          <td style="border-bottom:0px solid #FFFFFF;text-align:left;padding:5px; padding-left:10px;color:#FFFFFF;width:30%" valign="top" class="pophead">
+          <apex:outputText value="Schedule an Appointment" style="font-weight:bold;width:30%"></apex:outputText>
+          </td>
+          <td style="border-bottom:0px solid #FFFFFF;text-align:left;padding:5px; padding-left:10px;color:#FFFFFF;width:30%" valign="top" class="pophead">
+             
+                         <apex:outputText rendered="{!ShowDatePicklist}" style="text-align:right;"> 
+                         <apex:outputText value="Select Date:" style="text-align:left;"/> 
+                             <apex:selectList value="{!selectedEventDate}" multiselect="false" size="1">
+                                 <apex:selectOptions value="{!eventDatesList}"/>
+                                     <apex:actionSupport event="onchange" action="{!timeSlotsForDate}" reRender="matchesId"/>
+                             </apex:selectList>
+                         </apex:outputText>
+                        
+                     </td> 
+                    <td align="right" class="pophead">
+         <div style="float:right;"><apex:commandButton value="Close" title="Close" image="{!$Resource.Close1}" action="{!closeSlotPopup}" reRender="SchedulesForMBE,SchedulesForCorporate,newForm"/> </div>
+      </td>
+                     
+      
+      </tr>
+       <tr align="center"> <td colspan="4"> 
+                <table width="100%">
+                
+                 <tr style="padding-top:5px;"> 
+                        <td style="padding-top:5px;"> <div style="width:20px;height:20px;background-color:#00c47c;"></div></td>
+                        <td><apex:outputText value="Available Timings for {!exhibitoralias}/{!attendeealias}" ></apex:outputText></td> 
+                        <td style="padding-top:5px;"><div style="width:20px;height:20px;background-color:#808080;"></div></td>
+                        <td><apex:outputText value="{!exhibitoralias} and {!attendeealias} Busy at the time slots." ></apex:outputText></td>
+                
+                 </tr>
+                  
+                <tr>
+                        <td><div style="width:20px;height:20px;background-color:#f05b5b;"></div></td>
+                        <td><apex:outputText value="{!exhibitoralias} Busy at the time slots" ></apex:outputText></td>
+                        <td><div style="width:20px;height:20px;background-color:#ffbb00;"></div></td>
+                        <td><apex:outputText value="{!attendeealias} Busy at the time slots" ></apex:outputText></td>
+               
+                </tr>
+                   
+                 </table>   
+                 
+                 </td>
+             </tr>
+             
+          <apex:repeat value="{!matchesInnList}" var="r">
+            <tr style="background-color:#55B7F4" width="100%">
+              <td style="border-bottom:0px solid #FFFFFF;text-align:left;padding:5px; color:#FFFFFF;font-weight:bold;" valign="top" colspan="3">
+                  {!r.sTime} 
+               </td></tr>
+               <tr>
+               <td>
+               </td>
+               </tr>
+           <tr height="30%" width="100%">
+              <td style="border-bottom:1px solid #FFFFFF;text-align:left;" valign="top" colspan="3">
+               
+               <apex:outputPanel rendered="{!IF(r.errorreached!='',false,true)}">
+               
+                <div style="width:98%;border:0px solid red;height:100%;text-align:center;" >
+                       <apex:repeat value="{!r.mapListTime}" var="vtimes">
+                      
+                         <apex:outputPanel rendered="{!IF(OR((vtimes.slotName!=null),(contains(listvals,vtimes.slottime)),(contains(listvalsmbe,vtimes.slottime))),false,true)}" style="margin:2px 2px 2px 2px ;float:left;width:19%;padding-top:8px;"> 
+                           <apex:commandLink style="color:#ffffff;"  styleClass="comlinkgreen" action="{!addCommentsToSchedule}">
+                              {!vtimes.slottime}
+                               <apex:param value="{!r.sTime}"  name="dateValue" assignTo="{!selectedDate}"/>
+                              <apex:param value="{!vtimes.slottime}"  name="timeValue" assignTo="{!selectedTimeSlot}"/>
+                              </apex:commandLink> 
+                           </apex:outputPanel> 
+                           
+                          <apex:outputPanel title="You have an appointment with {!vtimes.slotName.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}"  rendered="{!IF(OR((AND(vtimes.slotName!=null, vtimes.slotName.MM_To_UPE__c == selectedCorporateId, vtimes.slotName.MM_To_EAM__c != selectedMBEId)),(contains(listvals,vtimes.slottime))),true,false)}" style="margin:2px 2px 2px 2px ;float:left;width:19%;color:#FFFFFF;padding-top:8px;">
+                           <apex:commandLink styleClass="comlinkpink" style="color:#000000;" >
+                              {!vtimes.slottime} &nbsp;
+                               </apex:commandLink> 
+                         </apex:outputPanel> 
+                         
+                         <apex:outputPanel title="You have an appointment with {!vtimes.slotName.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}"  rendered="{!IF(OR((AND(vtimes.slotName!=null, vtimes.slotName.MM_To_UPE__c == selectedCorporateId, vtimes.slotName.MM_To_EAM__c != selectedMBEId)),(contains(listvalsmbe,vtimes.slottime))),true,false)}" style="margin:2px 2px 2px 2px ;float:left;width:19%;color:#FFFFFF;padding-top:8px;">
+                           <apex:commandLink styleClass="comlinkorange" style="color:#000000;" >
+                              {!vtimes.slottime} &nbsp;
+                               </apex:commandLink> 
+                         </apex:outputPanel> 
+                         
+                         
+                          <apex:outputPanel title="You have an appointment with {!vtimes.slotName.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}"  rendered="{!IF(AND(vtimes.slotName!=null,vtimes.slotName.MM_To_UPE__c != selectedCorporateId,vtimes.slotName.MM_To_EAM__c == selectedMBEId),true,false)}" style="margin:2px 2px 2px 2px ;float:left;width:19%;color:#FFFFFF;padding-top:8px;">
+                           <apex:commandLink styleClass="comlinkorange" style="color:#000000;" >
+                              {!vtimes.slottime} &nbsp;
+                               </apex:commandLink> 
+                         </apex:outputPanel> 
+                         
+                          <apex:outputPanel title="You have an appointment with {!vtimes.slotName.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}"  rendered="{!IF(AND(vtimes.slotName!=null,vtimes.slotName.MM_To_UPE__c == selectedCorporateId,vtimes.slotName.MM_To_EAM__c == selectedMBEId),true,false)}" style="margin:2px 2px 2px 2px ;float:left;width:19%;color:#FFFFFF;padding-top:8px;">
+                           <apex:commandLink styleClass="comlinkBusy" style="color:#000000;" >
+                              {!vtimes.slottime} &nbsp;
+                               </apex:commandLink> 
+                         </apex:outputPanel>   
+                        
+                      </apex:repeat>  </div></apex:outputPanel>
+                     <apex:outputPanel rendered="{!IF(r.errorreached!='',true,false)}" style="text-align:center;color:#CCCCCC;font-size:18px;"> <div style="text-align:center;width:100%;"> {!r.errorreached }</div ></apex:outputPanel>
+                    
+               
+                 </td>
+                 </tr>
+                 <tr>
+                 <td width="100px;">
+                 </td>
+                 </tr>
+                     </apex:repeat>
+               </table>
+             </apex:outputPanel> 
+
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayCommentsPopup}" style="width:100%;z-index:950;"/> 
+<apex:outputPanel styleClass="custPopup"  layout="block" style="width:70%;z-index:960;" rendered="{!displayCommentsPopup}" id="commentsId1" >  
+ 
+ <table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td class="pophead">Schedule Request: {!selectedTimeSlot}</td>
+<td class="pophead"><apex:commandButton action="{!CloseCommentsPopup}"  image="{!$Resource.Close1}" rerender="newForm"/>
+</td>
+</tr>
+</table>
+
+
+ <!--<h1 style="line-height:50px;border:0px; "> You have an successfully made an appointment.</h1> -->
+ 
+   <table cellspacing="0" cellpadding="0" border="0" style="width:90%;margin:0px auto;">
+   
+   <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:14px">&nbsp; </td></tr>
+   
+   
+   
+    <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:16px">Your comments  </td></tr>
+   
+   <tr> <td>  <apex:inputTextarea richText="true"  value="{!comments}" style="width:80%"/>  </td></tr>
+  
+  <tr> <td align="right"> <apex:commandButton action="{!CloseCommentsPopup}"  value="Close"/> &nbsp;&nbsp; 
+   <apex:commandButton action="{!makeSchedule}" value="Confirm" reRender="newForm" status="AjaxLoader"/>  </td></tr></table>
+  
+  
+  </apex:outputPanel>
+  <!-----------------------------COMMENT POP UP FOR SCHEDULE BY TIME----------------------->
+   <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayCommentsPopup1}" style="width:100%;z-index:950;"/> 
+<apex:outputPanel styleClass="custPopup"  layout="block" style="width:70%;z-index:960;" rendered="{!displayCommentsPopup1}" id="commentsId" >  
+ 
+ <table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td class="pophead">Schedule Request: </td>
+<td class="pophead"><apex:commandButton action="{!CloseCommentsPopup}"  image="{!$Resource.Close1}" />
+</td>
+</tr>
+</table>
+
+
+ <!--<h1 style="line-height:50px;border:0px; "> You have an successfully made an appointment.</h1> -->
+ 
+   <table cellspacing="0" cellpadding="0" border="0" style="width:90%;margin:0px auto;">
+   
+   <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:14px">&nbsp; </td></tr>
+   
+    <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:16px">Your comments  </td></tr>
+   
+   <tr> <td>  <apex:inputTextarea value="{!Commentsnew}" style="width:80%"/>  </td></tr>
+  
+  <tr> <td align="right"> <apex:commandButton action="{!CloseCommentsPopup}"  value="Close"/> &nbsp;&nbsp; 
+   <apex:commandButton action="{!makeTimeSchedule}" value="Confirm"  status="AjaxLoader"/>  </td></tr>
+   
+   </table>
+  
+  
+  </apex:outputPanel>
+  
+  
+  <!---------------------------------------------------------------------------------------->
+  
+  
+   <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayErrorPopup}" style="width:100%;z-index:950;"/> 
+<apex:outputPanel styleClass="custPopup"  layout="block" style="width:70%;z-index:960;" rendered="{!displayErrorPopup}" id="errorId" >  
+ 
+  
+   <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr><td class="pophead">&nbsp; </td>
+    <td class="pophead"><apex:commandButton action="{!closeErrorPopup}"  image="{!$Resource.Close1}" reRender="SchedulesForMBE,SchedulesForCorporate,newForm"/>
+   </td></tr>
+</table>
+
+   <table cellspacing="0" cellpadding="0" border="0" style="width:90%;margin:0px auto;">
+   
+   <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:14px">&nbsp; </td></tr>
+   
+   
+   
+    <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:16px"> </td></tr>
+   
+   <tr> <td> {!selectedMBEName}({!attendeealias}) already has a Confirmed appointment with {!selectedCorporateName}({!exhibitoralias}).</td></tr>
+  
+  <tr> <td align="right"> <apex:commandButton action="{!closeErrorPopup}"  value="Ok" rerender="SchedulesForMBE,SchedulesForCorporate,newForm"/> &nbsp;&nbsp; 
+    </td></tr></table>
+  
+  
+  </apex:outputPanel>  
+  
+  </div>
+  </apex:form>
+
+   <!--footer start-->
+
+<div id="footer">
+ © BoothLeads. All Rights Reserved 
+</div>
+
+<!--footer end-->
+
+</apex:page>

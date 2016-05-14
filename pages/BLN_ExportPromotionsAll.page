@@ -1,0 +1,177 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_PromoCodeReportCon" contentType="application/vnd.ms-excel#ByPromocodeExport.xls" readOnly="true"><apex:pageBlock > 
+  <apex:outputtext rendered="{!bypromosummtype=='bypromosummarytab'}">
+ <table border="1" width="100%">
+  <thead>
+    <tr>
+      <th>Ticket Name</th>
+      <th width="20%">Ticket Type</th>
+      
+      <th width="20%">Promotion Name</th>
+      <th width="20%">Promo Code</th>
+      <th width="20%">Promo Code Type</th>
+      <th width="20%">Used/Available</th>
+      
+      <th width="16%">Discount Amount ({!eventcurrency})</th>
+      <th width="22%">Total Discounted Amount ({!eventcurrency})</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!--------------------Start of Parent Record (Main Repeat)------------------------>
+     <apex:repeat value="{!promoCodeInnerList}" var="promocode">
+      
+          <!--Group header-->
+          <!--
+          <ul class="grpheader">
+            <li class="labeltitles">Promotion Name:{!promocode.promotionData.Name}|
+           Promo Code:{!promocode.promotionData.Promo_Code__c}|
+            Promo Code Type:{!promocode.promotionData.Promotion_Type__c}|
+             Discount:<apex:outputText rendered="{!IF(promocode.promotionData.Item_Promotions__r[0].item_Discount_Type__c== 'Amount', TRUE, FALSE)}" value="$" />
+              {!promocode.promotionData.Item_Promotions__r[0].Item_Discount_Value__c}
+              <apex:outputText rendered="{!IF(promocode.promotionData.Item_Promotions__r[0].item_Discount_Type__c == 'Percent', TRUE, FALSE)}" value="%" /> |
+            Used/Available:{!promocode.inntotalusedcont}/{!promocode.promotionData.T_Max_Count__c}</li>
+          </ul>
+          -->
+          <!---------------->
+          
+              <!-----inside repeat for ticket belongs to pc----->
+              <apex:repeat value="{!promocode.itemPromotionList}" var="itemPromotion">
+                <tr> 
+                  <!------->
+                  <td style="width: 28.2%" > {!itemPromotion.itemPromotionData.Buy_Item__r.item_name__c}
+                    {!itemPromotion.itemPromotionData.Free_Item__r.item_name__c}
+                    <apex:outputLabel value="(Free Item)" rendered="{!(promocode.promotionData.Promotion_Type__c == "Buy Something GetSomething" && itemPromotion.itemPromotionData.Buy_Item_Quantity__c== Null)}" /></td>
+                  <!------->
+                  <td style="width: 20%" > {!itemPromotion.itemPromotionData.Buy_Item__r.item_type__r.Name}
+                    {!itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name} </td>
+                  <!------->
+                  <td style="width: 14%" ><!-- {!itemPromotion.itemPromotionData.Buy_Item_Quantity__c} --> 
+                    {!promocode.promotionData.Name}</td>
+                    
+                    <td style="width: 14%" >
+                    {!promocode.promotionData.Promo_Code__c}</td>
+                    
+                    <td style="width: 14%" > 
+                    {!promocode.promotionData.Promotion_Type__c}</td>
+                    
+                    <td style="width: 14%" > 
+                    {!(promocode.inntotalusedcont)} out of {!promocode.promotionData.T_Max_Count__c}</td>
+                  <!------->
+                  <td style="width: 16%" ><apex:outputText rendered="{!IF(itemPromotion.itemPromotionData.Item_Discount_Type__c == 'Amount', TRUE, FALSE)}"
+                                                            value="{!eventcurrency}" />
+                    {!itemPromotion.itemPromotionData.Item_Discount_Value__c}
+                    <apex:outputText rendered="{!IF(itemPromotion.itemPromotionData.Item_Discount_Type__c == 'Percent', TRUE, FALSE)}"
+                                                            value="%" /></td>
+                  <!------->
+                  <td ><apex:outputText value="{0,number,{!eventcurrency} ###,##0.00}"> 
+                      <!-- <apex:param value="{!itemPromotion.discountedPrice }" />-->
+                      <apex:param value="{!itemPromotion.totdiscount}" />
+                    </apex:outputText></td>
+                  <!-------> 
+                </tr>
+                <!------> 
+              </apex:repeat>
+    </apex:repeat>
+    <!-------------//end of Parent Record (Main Repeat)---------------------------->
+  </tbody>
+</table>
+ </apex:outputtext> 
+ <apex:outputtext rendered="{!bypromodetailtype=='bypromodetailtab'}">
+ <table border="1" width="80%">
+                <thead>
+                    <tr>
+                        <th width="20%">Order No</th>
+                        <th width="30%">Ticket Name</th>
+                       <th width="30%">Attendee Name</th>
+                       
+                       <th width="30%">Promotion Name</th>
+                       <th width="30%">Promo Code</th>
+                       <th width="30%">Promo Code Type</th>
+                      <!-- <th width="30%">Used/Available</th> -->
+                       
+                        <th width="30%">Discount Amount ({!eventcurrency})</th>
+                    
+                    </tr>
+                </thead>
+                <tbody>
+                 <apex:repeat value="{!promoCodeInnerListbypromdetail}" var="promocode">
+                            <!--
+                                    <ul class="grpheader">
+                                        <li class="labeltitles">Promotion Name:
+                                       {!promocode.promotionData.Name}|
+                                       Promo Code:>
+                                        {!promocode.promotionData.Promo_Code__c}|
+                                       Promo Code Type:
+                                        {!promocode.promotionData.Promotion_Type__c}|
+                                        Discount:
+                                       <apex:outputText rendered="{!IF(promocode.promotionData.Item_Promotions__r[0].item_Discount_Type__c== 'Amount', TRUE, FALSE)}" value="$" />
+                                          {!promocode.promotionData.Item_Promotions__r[0].Item_Discount_Value__c}
+                                          <apex:outputText rendered="{!IF(promocode.promotionData.Item_Promotions__r[0].item_Discount_Type__c == 'Percent', TRUE, FALSE)}" value="%" /> |
+                                       Used/Available:
+                                       {!promocode.promotionData.T_Used_Count__c}/{!promocode.promotionData.T_Max_Count__c}
+                                       </li>
+                                    </ul> 
+                                    --> 
+                                            <!-----inside repeat for ticket belongs to pc----->
+                                            <apex:repeat value="{!promocode.itemPromotionList1}"
+                                                var="itemPromotion">
+                                                <apex:outputText rendered="{!if(itemPromotion.itemPromotionData.Item_Discount__c!= 0,true,false)}">
+                                                <tr>
+                                                    <!------->
+                                                    <td style="width: 20%">
+                                                        {!itemPromotion.itemPromotionData.Order__r.Name}
+                                                       <!-- {!itemPromotion.itemPromotionData.Free_Item__r.item_name__c} 
+                                                        <apex:outputLabel value="(Free Item)"
+                                                            rendered="{!(promocode.promotionData.Promotion_Type__c == "
+                                                            Buy Something Get
+                                                            Something" && itemPromotion.itemPromotionData.Buy_Item_Quantity__c== Null)}" />  ------->
+                                                    </td> 
+                                                  
+                                                    <td style="width: 30%">
+                                                        {!itemPromotion.itemPromotionData.Item__r.item_name__c}
+                                                      <!--  {!itemPromotion.itemPromotionData.Free_Item__r.item_type__r.Name} -->
+                                                    </td>
+                                                    <!------->
+                                                    <td style="width: 30%">
+                                                        {!itemPromotion.itemPromotionData.Order__r.BLN_TKT_profile__r.First_Name__c}{!itemPromotion.itemPromotionData.Order__r.BLN_TKT_profile__r.Last_Name__c} 
+                                                    </td>
+                                                    
+                                                    <td style="width: 30%">
+                                                    {!promocode.promotionData.Name}
+                                                    </td>
+                                                    <td style="width: 30%">
+                                                    {!promocode.promotionData.Promo_Code__c}
+                                                    </td>
+                                                    <td style="width: 30%">
+                                                    {!promocode.promotionData.Promotion_Type__c}
+                                                    </td>
+                                                   <!-- <td style="width: 30%">
+                                                    {!promocode.promotionData.T_Used_Count__c} out of {!promocode.promotionData.T_Max_Count__c}  
+                                                    </td> -->
+                                                                                                        
+                                                    <!------->
+                                                    <td ><apex:outputText value="{0,number,{!eventcurrency} ###,##0.00}">
+                                                            <apex:param value="{!itemPromotion.itemPromotionData.Item_Discount__c}" />
+                                                        </apex:outputText>
+                                                          </td>
+ 
+                                                  
+                                                   
+                                                </tr>
+                                                <!------>
+                                                 </apex:outputText>
+                                            </apex:repeat>
+                        </apex:repeat>
+ <!------>
+  </tbody>
+</table>
+<!----------------->
+ 
+               
+   
+    
+   
+    </apex:outputtext> 
+   
+ 
+</apex:pageBlock>
+</apex:page>

@@ -1,0 +1,914 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_TicketSalesReportCon" action="{!hideEventsTab}" id="pg" readOnly="true">
+<!------------common styles component------------>
+ <c:DateFormatChange />
+<c:ed_commonstyles ></c:ed_commonstyles>
+<!------------//common styles component---------->
+<!-----------datatable stylescss------------->
+<!---------//CSS Stylesheets---------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" />
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ticketreport.css')}" />
+<style>
+.tabclass thead tr th:last-child { border-right:1px solid #ffffff; }
+.newst{
+width:11%;
+border-bottom:1px solid #fcfcfc;
+background-color:#FFFFFF;
+border-right:1px solid #ffffff !important;
+}
+.even {
+
+background-color: #f9f9f9 !important;
+}
+.ticktrec_tbl{
+margin-bottom:13px;margin-top:13px;
+}
+table.ticktrec_tbl thead tr th{
+
+background-color: #f3f3f3;
+
+}
+table.ticktrec_tbl thead tbody tr td{
+
+font-size:11px !important;
+
+}
+table.dataTable.display.no-footer thead tbody tr td{
+boder-bottom:1px solid red;
+
+}
+.borderst {
+border-bottom:1px solid #ffffff !important;
+width:11% !important;
+}
+tr.odd td{
+border-bottom:1px solid #f9f9f9 !important;
+}
+tr.even td{
+border-bottom:1px solid #f9f9f9 !important;
+}
+
+.ticktrec_tbl {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    border: 0px;
+    border: 1px solid #ccc;
+}
+
+.amount{ padding-right:5px !important;}
+</style>
+
+<c:ed_popupbox ></c:ed_popupbox>
+
+<!------------------------------------------------------------------------------------------------------------------------------------------->
+
+<!--/css---->
+<!-----------//datatable stylescss------------->
+<!-------------basic template html component------------------------------------->
+<script>
+function vdate(){
+
+var frmdate = new Date(($("[id$='fdate']")).val());
+
+var ttdate = new Date(($("[id$='tdate']")).val());
+
+var tdatilfrmdate = new Date(($("[id$='tdfrdate']")).val());
+
+var tdatilttdate = new Date(($("[id$='tdtdate']")).val());
+
+
+if(frmdate > ttdate){
+//alert('From Date should not be greater than To Date');
+ Alert.render('From Date should not be greater than To Date' ,'Alert','ok');
+return false;
+}
+else if(tdatilfrmdate > tdatilttdate){
+
+//alert('From Date should not be greater than To Date');
+ Alert.render('From Date should not be greater than To Date' ,'Alert','ok');
+
+return false;
+}
+else{
+return true;
+}
+
+}
+</script>
+
+<c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="comid">
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<apex:form id="fm" >
+<div class="datatable-wrapper"> 
+  <!---start of tab1 topstats1--->
+  <div id="tab1topstats"> 
+    <!--------> 
+    <!-------------------------print and export button-------------------------------------------->
+    
+    
+    <div class="print_export_cont" style="width: 100%;" id="ticSaleSummary">
+      <apex:commandLink styleClass="datatables_btn"
+                    onclick="exporder1();return false;"> <span>Export</span> </apex:commandLink>
+      <!---
+      <apex:commandLink styleClass="datatables_btn"
+                    action="{!printTicketSales}" target="_blank"> <span>Print</span> </apex:commandLink>----->
+    </div>
+    <!--------------------------//end of print and export button---------------------------------->
+    <div class="top-stats" id="summrysearch" style="display:none;"> 
+   <!---  <div class="top-stats" id="detailsearch"> --->
+   <!-----start of from date and to date----->
+     <p class="right" style="text-align: right;"> 
+      <span class="labeltitles">From Date:</span> <span>
+        <apex:inputText value="{!sdte}" styleClass="ED1" style="width:18%; height:20px;" id="fdate"/>
+        </span> <span class="labeltitles">To Date:</span> <span>
+        <apex:inputText value="{!edte}" styleClass="ED1" style="width:18%; height:20px;"  id="tdate"/>
+        </span> <span>
+        <apex:commandLink styleClass="secondarybtn" onclick=" return vdate();" action="{!displayTicketSalesReport}"> 
+        <i class="fa fa-search fa-1x" style='color: #ffffff;'></i> </apex:commandLink>
+        </span> </p>
+      <!---------end of from date and to date--------------->
+      <div class="clear"></div>
+      <!--close of clear--> 
+      <!----> 
+    </div>
+    <!--close of top-stats--> 
+  </div>
+  <!--close of tab1 topstats---> 
+  <!---start of tab2 topstats--->
+  <div id="tab2topstats"> 
+    <!-------------------------print and export button-------------------------------------------->
+    <div class="print_export_cont" style="width: 100%;display:none" id="ticDetail">
+      <!-- <apex:commandLink styleClass="datatables_btn"
+               onclick="exporder();return false;" > <span>Export1</span> </apex:commandLink> {!ShowticketDetail.size<1000} -->
+              <apex:outputText rendered="{!totalTiclist.size<1000}">
+  <input type="button" class="datatables_btn" onclick="exporder();return false;" value="Export"/>
+</apex:outputText>
+
+<apex:outputText rendered="{!totalTiclist.size>1000}">
+  <input type="button" class="datatables_btn" onclick="continueToBatch('sendToMail')" value="Export"/>
+</apex:outputText> 
+   
+      <!--<apex:commandLink styleClass="datatables_btn"
+                action="{!BLN_printdetailsTicketSales}" target="_blank"> <span>Print</span> </apex:commandLink>-->
+    </div>
+    <!--------------------------//end of print and export button----------------------------------> 
+    <!-------->
+    <div class="top-stats" id="detailsearch" style="display:none;"> 
+      
+      <p class="right" style="text-align: right;"> 
+        <span class="labeltitles">From Date:</span> <span>
+            <apex:inputText value="{!sdtesm}" styleClass="ED1" style="width:18%; height:20px;" id="tdfrdate"/>
+        </span> <span class="labeltitles">To Date:</span> <span>
+            <apex:inputText value="{!edtesm}" styleClass="ED1" style="width:18%; height:20px;" id="tdtdate"/>
+        </span> <span>
+        
+        <!--<apex:commandLink styleClass="secondarybtn" onclick=" return vdate();" action="{!ShowDetailsReport}"> 
+            <i class="fa fa-search fa-1x" style='color: #ffffff;'></i> 
+        </apex:commandLink>-->
+        <apex:commandLink styleClass="secondarybtn" 
+               onclick="table.draw();return false;">
+            <i class="fa fa-search fa-1x" style='color: #ffffff;'></i> 
+        </apex:commandLink>
+        </span> </p>
+        <br/><br/>
+                <!--  <div id="example1_filter" align="right"><label>Search:<input type="text" id="searchKey" class="" aria-controls="example" onkeyup="table.draw();" style="width:20%"/></label></div>-->
+      <div class="clear"></div>
+    </div>
+    <!--close of top-stats--> 
+  </div>
+  <!--close of tab2 topstats---> 
+  <div class="print_export_cont" style="width: 100%;display:none" id="TotTicSumm">
+      <apex:commandLink styleClass="datatables_btn"
+               action="{!exportTotalTicketSales}"  > <span>Export</span> 
+           </apex:commandLink>  
+           
+    </div>
+</div>
+<!--close of datatable-wrapper--> 
+<!-----------startoftabs---------------------------->
+
+<div id="TabbedPanels1" class="TabbedPanels" style=" width:97.7%; margin-left:1%; margin-top:10px;" >
+<ul class="TabbedPanelsTabGroup">
+  <li id="tab1clk" class="TabbedPanelsTab" onClick="document.getElementById('tab1topstats').style.display='';document.getElementById('TotTicSumm').style.display='none'">Ticket Sales Summary</li>
+   <li id="tab3clk" class="TabbedPanelsTab" onClick="document.getElementById('tab1topstats').style.display='';document.getElementById('detailsearch').style.display='none';document.getElementById('ticDetail').style.display='none';document.getElementById('TotTicSumm').style.display='';">Payment Gateway Summary</li>
+  <li id="tab2clk" class="TabbedPanelsTab" onClick="document.getElementById('tab2topstats').style.display='';document.getElementById('ticDetail').style.display='';document.getElementById('detailsearch').style.display='';;document.getElementById('TotTicSumm').style.display='none';">Ticket Detail Report</li>
+</ul>
+<div class="TabbedPanelsContentGroup" style="padding-top:5px;">
+
+<!--------------------start of ist tab------------------>
+<div class="TabbedPanelsContent" style="padding-top:0px;">
+<!---------------------template code------------------>
+
+<div class="datatable-wrapper">
+<style>
+tbody tr td {padding:0px !important;}
+.ticktrec_tbl {
+    margin-bottom: 0px;
+    margin-top: 1px;
+
+}
+</style>
+<!-----datatable start-------->
+
+<table id="example" class="display">
+  <thead>
+    <tr>
+    <th style="padding:0px;">
+      <table width="100%" class="tabclass">
+      <thead>
+      <tr>
+      <th class="borderst">Ticket Name</th>
+      <th class="borderst">Ticket Type</th>
+      <th class="borderst">Payment Type</th>
+      <th class="borderst">Sold Quantity</th>
+      <th class="borderst">Price ({!currencySymbol})</th>
+      <th class="borderst">Tax({!currencySymbol})</th>
+      <th class="borderst">Fee ({!currencySymbol})</th>
+      <th class="borderst">Discount ({!currencySymbol})</th>
+      <th class="borderst">Amount ({!currencySymbol})</th>
+    </tr>
+    </thead>
+      </table>
+      </th>
+    </tr>
+  </thead>
+  <!----->
+  
+  <tbody>
+    
+  </tbody>
+ 
+</table>
+
+<!-----------end of datatable report-->
+            </div><!--close of datatable-wrapper-->
+             <!-----------end of datatable report-->
+            </div><!--close of tab content1---->
+            <!-----------------------start of 2nd tab content------------------------------>
+       
+                 <div class="TabbedPanelsContent" style="padding-top:0px;">
+                 <!------------>
+ <div class="datatable-wrapper">  
+   <!--------->
+     <apex:outputpanel id="totalsalesarea">
+     <table class="display">
+  <thead>
+  
+      <tr>
+      <th style="width:11%; border-right:1px solid #ccc;">Payment Type</th>
+      <th style="width:11%; border-right:1px solid #ccc;">Sold Quantity</th>
+      <th style="width:11%; border-right:1px solid #ccc;">Item Total ({!currencySymbol})</th>
+      <th style="width:11%; border-right:1px solid #ccc;">Tax({!currencySymbol})</th>
+      <th style="width:11%; border-right:1px solid #ccc;">Fee ({!currencySymbol})</th>
+      <th style="width:11%; border-right:1px solid #ccc;">Discount ({!currencySymbol})</th>
+      <th style="width:11%; border-right:1px solid #ccc;">Amount ({!currencySymbol})</th>
+    </tr>
+   
+  </thead>
+  <!----->
+  
+  <tbody>
+  <apex:variable var="totqty" value="{!0}"/> 
+  <apex:variable var="totprice" value="{!0}"/> 
+  <apex:variable var="tottax" value="{!0}"/> 
+  <apex:variable var="totfee" value="{!0}"/> 
+  <apex:variable var="totdiscount" value="{!0}"/> 
+  <apex:variable var="totamt" value="{!0}"/> 
+  <apex:repeat value="{!mainlistpayment}" var="mainp">
+  <tr>
+  <td style="padding-left:15px;">{!mainp.PaymentType}</td>
+  <td style="padding-left:15px;">{!mainp.Quantity}</td>
+  <td class="amount">{!mainp.Price}</td>
+  <td class="amount">{!mainp.Tax}</td>
+  <td class="amount">{!mainp.Fee}</td>
+  <td class="amount">{!mainp.Discount}</td>
+  <td class="amount">{!mainp.Amount}</td>
+  </tr>
+  <apex:variable var="totqty" value="{!totqty+mainp.Quantity}"/> 
+  <apex:variable var="totprice" value="{!totprice+mainp.Price}"/> 
+  <apex:variable var="tottax" value="{!tottax+mainp.Tax}"/> 
+  <apex:variable var="totfee" value="{!totfee+mainp.Fee}"/> 
+  <apex:variable var="totdiscount" value="{!totdiscount+mainp.Discount}"/> 
+  <apex:variable var="totamt" value="{!totamt+mainp.Amount}"/>
+  </apex:repeat>
+  <tr>
+  <td>Total Sales</td>
+  <td>{!totqty}</td>
+  <td class="amount">{!totprice}</td>
+  <td class="amount">{!tottax}</td>
+  <td class="amount">{!totfee}</td>
+  <td class="amount">{!totdiscount}</td>
+  <td class="amount">{!totamt}</td>
+  </tr>
+    
+  </tbody>
+ 
+</table>
+     </apex:outputpanel>
+   
+       
+                 </div>
+                 <!----------->
+
+ </div><!--close of tab content2---->
+
+  <!-----------------------start of 3nd tab content------------------------------>
+       
+                 <div class="TabbedPanelsContent" style="padding-top:0px;">
+                 <!------------>
+
+   <!--------->
+     <div class="datatable-wrapper">  
+   
+      <!-----datatable start-----> 
+           <table id="example1" class="display" width="100%">
+           
+                <thead>
+                    <tr>
+                          <th width="8%">Ticket No.</th>
+                          <th width="9.5%">Ticket Name</th>
+                          <th width="8%">Order Id</th>
+                          <th width="9.5%">Ticket Type</th>
+                          <th width="9%">First Name</th>
+                          <th width="9%">Last Name</th>
+                          <th width="9%">Email</th>
+                          <th width="8%">Title</th>
+                          <th width="8%">Company</th>
+                        <th width="8%">Status</th>
+                          <th>Sale Date</th>
+                          <th >Badge Status</th>
+
+                    </tr>
+                </thead>
+              <!----->  
+              
+   <tbody>
+      
+      
+   </tbody>
+   
+   </table>
+        <!-----------end of datatable report-->
+            </div><!--close of datatable-wrapper-->     
+                 
+                 <!----------->
+
+ </div><!--close of tab content3---->
+ 
+<!------------------------------------------------->
+</div><!---close of TabbedPanelsContentGroup---->
+</div><!-----close of TabbedPanels1--------->
+<!-------------->
+<!-----------------//template code----------------------->
+   <apex:actionfunction name="showtotalsales" action="{!showtotalsales}" rerender="totalsalesarea" status="AjaxLoader" oncomplete="currencyformat()"/>    
+    <apex:actionFunction action="{!userSelectPerticularToExport}"
+            name="individualexport" ReRender="aaa">
+            <apex:param value="" name="fromdate" />
+            <apex:param value="" name="todate" />
+            <apex:param value="" name="search" />
+            <apex:param value="" name="tktName" />
+            <apex:param value="" name="tktType" />
+            <apex:param value="" name="tktStatus" />
+            <apex:param value="" name="tktbadge" />
+         </apex:actionFunction>
+         
+     <apex:actionFunction action="{!exportTicketSales}" name="individualexport1" reRender="bbb" status="Ajaxloader" oncomplete="alert('sss');">
+        <apex:param value="" name="fromdate1" />
+        <apex:param value="" name="todate1" />
+        <apex:param value="" name="search1" />
+     </apex:actionFunction>
+        </apex:form> 
+        </c:ed_basictemplate>
+    <!-------------//end of basic template component------------------------>   
+  <!--/*********************Java Script Section*******************/-->
+    <!--------//start of datatable js component------------->
+   
+ <script>
+
+ function continueToBatch(clkbtn)
+ {
+     Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+ }
+ 
+ function callback(clkbtn , okbtnn){
+     if(clkbtn =='sendToMail')
+     {
+         exporder();
+     }
+     
+}
+function callbackcancel(clkbtn,cnclbtnn)
+{
+    if(clkbtn =='sendToMail')
+     {
+         //alert('cancel');
+     }
+     
+}
+  </script>  
+    <c:ed_datatablejs ></c:ed_datatablejs>
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script>
+<script type="text/javascript" language="javascript" class="init">
+ var tiname='';
+ var titype='';
+ var tistatus ='';
+  var tibadge ='';
+var table;
+var table1;
+var j = jQuery.noConflict();
+j(document).ready(function() {
+    
+<!------------for first tab table----------------------->
+    
+      table1 = j('#example').dataTable( {
+    
+        "pagingType": "full_numbers",
+        
+         "aLengthMenu": [[5, 15,20,25, 50], [5,15,20, 25, 50]],
+        "iDisplayLength": 5,
+    
+  "bAutoWidth": false, // Disable the auto width calculation
+ "bSort": false,
+         "bFilter": true,
+        "processing": true,
+        "serverSide": true,
+
+                        "ajax": {
+                        "url":'{!$Page.BLN_TicketSalesReportNew_HelperPage}?core.apexpages.devmode.url=1',
+ 
+ 
+                        "data": function ( pagedata ) { 
+                                var aa= j('#example_filter').find('input').val(); 
+                                pagedata["searchKey1"]=aa;
+       }
+},
+                      
+                         
+                          "columns": [ 
+                          {
+                data:   "active",
+                render: function ( data, type, row ) {
+                
+                var s=row.ItemType;
+                //alert(s);
+                <apex:variable value="" var="LabelName"/>   
+                if(s=='Admissions'){
+                    <apex:repeat value="{!RegList}" var="r">        
+                        <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Attendee'}"/>      
+                    </apex:repeat>
+                    s='{!LabelName}';
+                }
+            
+                if(s=='Exhibitor'){
+                    <apex:repeat value="{!RegList}" var="r">        
+                        <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Exhibitor'}"/>     
+                    </apex:repeat>
+                    s='{!LabelName}';
+                }
+                
+                if(s=='Sponsor'){
+                    <apex:repeat value="{!RegList}" var="r">        
+                        <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Sponsor'}"/>       
+                    </apex:repeat>
+                    s='{!LabelName}';
+                }
+                
+                if(s=='Speaker'){
+                    <apex:repeat value="{!RegList}" var="r">        
+                        <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Speaker'}"/>       
+                    </apex:repeat>
+                    s='{!LabelName}';
+                }
+    
+    
+                
+              //console.log(row);
+                var headers='<table class="ticktrec_tbl" cellpadding="0" cellspacing="0" width="100.1%" frame="box"><thead><tr id="ppp" style="border-collapse:collapse;"><th style="width:11%;">'+row.ItemName +'</th><th style="width:22%;" colspan="2">'+s+'</th><th style="width:11%;">'+row.SoldQuantity+'/'+row.ItemCount+'</th><th style="width:11%;" class="amount">'+row.Price+'</th><th style="width:11%;" class="amount">'+row.Tax+'</th><th style="width:11%;" class="amount"> '+row.Fee+'</th><th style="width:11%;" class="amount"> '+row.Discount+'</th><th style="width:11%; padding-right:5px;" class="amount">'+row.Amount+'</th></tr></thead><tbody>';
+ 
+ 
+ var tbody='';
+ if(row.Payment!=null)
+ for(i=0;i<row.Payment.length;i++){
+ tbody+='<tr style="font-style:italic;font-size:11px;"><td class="newst" style="padding-left:5px;"></td><td class="newst">&nbsp;</td><td class="newst">'+row.Payment[i].PaymentType+'</td><td class="newst">'+row.Payment[i].Quantity+'</td><td class="newst">&nbsp;</td><td class="amount newst">'+row.Payment[i].Tax+'</td><td class="amount newst">'+row.Payment[i].Fee+'</td><td class="amount newst"> '+row.Payment[i].Discount+'</td><td class="amount newst">'+row.Payment[i].Amount+'</td></tr>';          
+                  }
+                  
+                  
+                  
+                  tbody+='</tbody>';
+                  
+                  
+                  return headers+tbody;
+               
+                }
+            }
+               
+                                      
+                          ]
+    
+    } );
+    var tktName=[];
+    var tktType=[];
+    var tktbadge=[];
+    /*************for second tab table ***************/  
+     table = j('#example1').DataTable( {
+        
+        "pagingType": "full_numbers",
+        
+          "aLengthMenu": [[ 5, 15,20,25, 50], [ 5,15,20, 25, 50]],
+          "iDisplayLength": 5,
+                        "sDom": 'W<"clear">lfrtip', 
+          
+          /**default orderid in asc sorting**/
+           "order": [[0, "asc"]],
+      "bSort": false,
+      "bAutoWidth": false, // Disable the auto width calculation
+      "bFilter": true,
+      "searching" :"true",
+      "columnDefs": [
+    { "width": "6%", "targets": 11 }
+  ]  ,    "oColumnFilterWidgets": {
+      "aiExclude": [ 0,2,4,5,6,7,8,10 ]
+       
+      },
+      
+      //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+      
+      
+      "processing": true,
+          "serverSide": true,
+      
+                        "ajax": {
+                        "url":'{!$Page.BLN_tickets_report_helperpage_tab2}',
+                        
+                       
+                        "data": function ( pagedata ) { 
+                                pagedata["fdate"]=document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdfrdate}").value;   
+                                pagedata["tdate"]=document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdtdate}").value; 
+                                pagedata["searchValue"]=pagedata['search'].value;
+                                //console.log(pagedata); 
+                                
+                                
+                                  var tname=''; 
+                                j('[class$=widget-1]').parent().find('a').each(function(){
+      
+                                console.log($(this)[0].innerHTML);
+                                      tname +=$(this)[0].innerHTML+',';
+                                  });                                
+         
+                             //alert(tname );
+      
+     
+                                pagedata["tktName"]=tname;
+      tiname = tname;
+      
+      
+                                var ttype='';
+                                j('[class$=widget-3]').parent().find('a').each(function(){
+    
+                                console.log($(this)[0].innerHTML);
+                                      ttype+=$(this)[0].innerHTML+',';
+                                  });
+      
+                                pagedata["tktType"]=ttype;
+      titype = ttype;
+      
+     // console.log(ttype);
+                                var ttStatus='';
+                               j('[class$=widget-9]').parent().find('a').each(function(){
+      
+                                console.log($(this)[0].innerHTML);
+                                      ttStatus+=$(this)[0].innerHTML+',';
+                                  });
+                                pagedata["tktStatus"]=ttStatus; 
+      tistatus = ttStatus;
+      
+      //console.log(ttype);
+                                var tbadge='';
+                               j('[class$=widget-11]').parent().find('a').each(function(){
+      
+                                console.log($(this)[0].innerHTML);
+                                      tbadge+=$(this)[0].innerHTML+',';
+                                  });
+                                pagedata["tktbadge"]=tbadge; 
+                                tibadge = tbadge;
+ 
+      
+      $.ajax( {
+      "dataType": 'json',
+      "type": "GET",
+      "url": '{!$Page.BLN_tickets_report_helperpage_tab2}',
+                       // "data": aoData,
+                        //"success": fnCallback,
+      "error": function (e) {
+           //  console.log(e);
+         }
+      } );
+      
+                          }
+      },
+                           
+                    "fnDrawCallback": function(data) {
+                   
+                           
+                                    Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.BLN_TicketSalesReportCon.getTicketTypesForFilter}',
+                            '{!SelectedEvent}',
+                           function(resultstg1, eventd1){
+                           
+                           var select3 = j('[class$=widget-3]');      
+                           j('[class$=widget-3]').removeAttr( "disabled" );       
+                           select3.empty();  
+                           select3.append( '<option value>Ticket Type</option>' );  
+                           for(i=0;i<resultstg1.length;i++){
+                           for(x=0;x<resultstg1[i].ticketTypeFilterList.length;x++){
+                           select3.append( '<option value="'+resultstg1[i].ticketTypeFilterList[x].Name+'">'+resultstg1[i].ticketTypeFilterList[x].Name+'</option>' ); 
+                            }
+                           }
+                        
+                        
+                        
+                        var select2 = j('[class$=widget-1]');      
+                           j('[class$=widget-1]').removeAttr( "disabled" );       
+                           select2.empty();  
+                            select2.append( '<option value>Ticket Name</option>' ); 
+                        for(y=0;y<resultstg1.length;y++){
+                           for(z=0;z<resultstg1[y].getTicketNamesForFilter.length;z++){
+                           var ticnames = resultstg1[y].getTicketNamesForFilter[z].Item_Pool_Name__c;
+                           if(resultstg1[y].getTicketNamesForFilter[z].Addon_Count__c > 0){
+                               ticnames += '('+resultstg1[y].getTicketNamesForFilter[z].Addon_Parent__r.Item_Pool_Name__c +')';
+                           }
+                            select2.append( '<option value="'+ticnames+'">'+ticnames+'</option>' ); 
+                            //console.log('ticname/::'+resultstg1[y].getTicketNamesForFilter[z].Item_Pool_Name__c);
+                          
+                        }
+                        }
+                        
+                           });
+                        
+                        //third filter
+                        var select4 = j('[class$=widget-9]');
+                        j('[class$=widget-9]').removeAttr("disabled");
+                        select4.empty();
+                        select4.append('<option value>Status</option>');
+                        select4.append('<option value="Booked">Booked</option>');
+                        select4.append('<option value="Cancelled">Cancelled</option>');
+                        //4th filter
+                         var select5 = j('[class$=widget-11]');
+                        j('[class$=widget-11]').removeAttr("disabled");
+                        select5.empty();
+                        select5.append('<option value>Badge Status</option>');
+                        select5.append('<option value="B - Badge">Badgable</option>');
+                        select5.append('<option value="N - No Badge">Non Badgable</option>');
+                        
+                    
+                },
+      
+      
+     // --------------------------------------------------------------------------------------------------------------------------------------------------------------
+                
+                
+                            "columns": [{
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return data.Name;
+                             
+                              }
+                            },
+                            
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                if(data.Item_Type__r.Name!='Package'){
+                                return data.Item_Pool__r.Item_Pool_Name__c;
+                                }else{
+                               // alert('3  '+data.Item_Pool__r.Item_Pool_Name__c);
+                                var poolname = data.Item_Pool__r.Item_Pool_Name__c +'(' +data.Item__r.item_name__c+')';//Item_Pool__r.Item_Pool_Name__c+')';
+                                return poolname;
+                                }
+                               } 
+                             },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return data.Order__r.Name;
+        
+                              }
+                            },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  
+                                  var s=data.Item_Pool__r.Item_Type__r.Name;
+                                //alert(s);
+                                <apex:variable value="" var="LabelName"/>   
+                                if(s=='Admissions'){
+                                    <apex:repeat value="{!RegList}" var="r">        
+                                        <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Attendee'}"/>      
+                                    </apex:repeat>
+                                    s='{!LabelName}';
+                                }
+                            
+                                if(s=='Exhibitor'){
+                                    <apex:repeat value="{!RegList}" var="r">        
+                                        <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Exhibitor'}"/>     
+                                    </apex:repeat>
+                                    s='{!LabelName}';
+                                }
+                                
+                                if(s=='Sponsor'){
+                                    <apex:repeat value="{!RegList}" var="r">        
+                                        <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Sponsor'}"/>       
+                                    </apex:repeat>
+                                    s='{!LabelName}';
+                                }
+                                
+                                if(s=='Speaker'){
+                                    <apex:repeat value="{!RegList}" var="r">        
+                                        <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Speaker'}"/>       
+                                    </apex:repeat>
+                                    s='{!LabelName}';
+                                  }
+                                
+                                return s; 
+                              }
+                            },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return data.tkt_profile__r.First_Name__c;
+       
+                              }
+                            },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+
+                                 return data.tkt_profile__r.Last_Name__c;
+                              }
+                            },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return data.tkt_profile__r.Email__c;
+    
+                              }
+                            },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return data.tkt_profile__r.TKT_Job_Title__c;
+ 
+                              }
+                            },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return data.tkt_profile__r.TKT_Company__c;
+
+                              }
+                            },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return data.Ticket_Status__c;
+
+                              }
+},
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return row.createdon;
+                             
+                              }
+                            },
+                            {
+                            data:   "item",
+                              render: function ( data, type, row ) {
+                                  return data.Item_Pool__r.Badgable__c;
+                             
+                              }
+                            }
+                            ]
+      
+
+   } ); 
+  
+var frmdate = new Date(($("[id$='fdate']")).val());
+var ttdate = new Date(($("[id$='tdate']")).val());
+var frmdate1 = ($("[id$='fdate']")).val();
+var ttdate1 = ($("[id$='tdate']")).val();
+
+if(frmdate1.length != 0 && ttdate1.length != 0){
+
+document.getElementById("{!$Component.pg:comid:commoncomponent:fm:fdate}").value= changedate(frmdate);
+        
+document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdate}").value= changedate(ttdate);
+ }
+var tdatilfrmdate = new Date(($("[id$='tdfrdate']")).val());
+var tdatilttdate = new Date(($("[id$='tdtdate']")).val());
+var tdatilfrmdate1 = ($("[id$='tdfrdate']")).val();   
+var tdatilttdate1 = ($("[id$='tdtdate']")).val();
+ if(tdatilfrmdate1.length != 0 && tdatilttdate1.length != 0){
+
+document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdfrdate}").value=  changedate(tdatilfrmdate);
+document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdtdate}").value= changedate(tdatilttdate);
+ }
+  } );
+
+
+function exporder(){
+          constructstr();
+      } 
+      
+      function constructstr(){
+    
+          individualexport(document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdfrdate}").value,document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdtdate}").value,j('#example1_filter').find('input').val(),tiname,titype,tistatus,tibadge);
+      }
+      
+      function exporder1(){
+         var aaa=j('#example_filter').find('input').val();
+         //alert('aaa'+aaa);
+          individualexport1(document.getElementById("{!$Component.pg:comid:commoncomponent:fm:fdate}").value,document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdate}").value,j('#example_filter').find('input').val() );
+          
+      }
+
+    </script>    
+    
+    <!--------//end of datatable js component------------->
+    <!----/************************Datepicker js************************************************/-->
+    <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+    <script>
+var dt = jQuery.noConflict();        
+dt('.ED').datetimepicker({
+timepicker:false,
+format:'m/d/Y',
+formatDate: 'm/d/Y',
+
+});
+
+dt('.ED1').datetimepicker({
+timepicker:false,
+format:'m/d/Y',
+formatDate: 'm/d/Y',
+
+});
+</script>
+<!--<script>
+      /*******************************************************/
+      function exporder(){
+          constructstr();
+      } 
+      
+      function constructstr(){
+          individualexport(document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdfrdate}").value,document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdtdate}").value,document.getElementById("searchKey").value );
+      }
+      
+      function exporder1(){
+         var aaa=j('#example_filter').find('input').val();
+         //alert('aaa'+aaa);
+          individualexport1(document.getElementById("{!$Component.pg:comid:commoncomponent:fm:fdate}").value,document.getElementById("{!$Component.pg:comid:commoncomponent:fm:tdate}").value,j('#example_filter').find('input').val() );
+          
+      }
+   </script>-->
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+    <!-----------------tabs function calling-------------------------------------------------->
+ <script type="text/javascript">
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+        
+        /*************function calling for tab toggle showhide**************/   
+ $("#tab1clk").click(function(){
+     //alert("1");
+     showpackage("tab1topstats","tab2topstats");
+ 
+ })
+ $("#tab2clk").click(function(){
+     //alert("2");
+ 
+ showpackage("tab2topstats","tab1topstats");
+ 
+ })
+ 
+  $("#tab3clk").click(function(){
+    
+ showtotalsales();
+ showpackage("tab2topstats","tab1topstats");
+ 
+ })
+/***************************/   
+        
+        </script>
+ <c:currencyFormatting ></c:currencyFormatting>
+ <script>
+    function currencyformat()
+    {
+         //alert('cf');
+         rightJustificationOrders('{!currencySymbol}');
+    }    
+ </script>
+    <!-----/*********************End Java Script Section*******************/-->
+
+        
+</apex:page>

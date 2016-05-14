@@ -1,0 +1,495 @@
+<apex:page controller="BL_TransactionDetailsCon" showHeader="false" >
+ 
+ <head>
+<title>Boothleads</title>
+</head>
+
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/>  
+<apex:include pageName="dashboardicons"/>
+
+<style>
+.round 
+{
+-webkit-font-smoothing: subpixel-antialiased;
+
+-webkit-border-radius: 5px 5px 5px 5px;
+-moz-border-radius: 5px 5px 5px 5px;
+border-radius: 5px 5px 5px 5px;
+margin:0px auto;
+
+padding:8px;
+background-color:#FFF;
+width:100%;
+-moz-box-shadow: 0 0 5px #888;
+-webkit-box-shadow: 0 0 5px#888;
+box-shadow: 0 0 5px #888;
+border:1px solid #414141;
+border-bottom:1px solid #414141;
+}
+.h4green{color:#258d51; font-size:14px;}
+.h4lightblue{color:#00a2b1; font-size:14px;}
+.h4maroon{color:#ac1324; font-size:14px;}
+.h4lightgreen{ color:#94af0a; font-size:14px;}
+
+.grid{ 
+        width: 90%; 
+        border-collapse: collapse;
+        border:1px solid #91b5db; 
+       
+    }
+    /* Zebra striping */
+   .grid tr:nth-of-type(odd) { 
+        background: #eee; 
+        
+    }
+     .grid tr:hover{ 
+        background: #f3f3f3; 
+       
+    }
+   .grid th { 
+        background: #CCCCCC;
+       color: #414141; 
+        font-weight: bold; 
+        background: #eaeaea; /* Old browsers */
+background: -moz-linear-gradient(top,  #eaeaea 0%, #f3f3f3 39%, #f3f3f3 58%, #eaeaea 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eaeaea), color-stop(39%,#f3f3f3), color-stop(58%,#f3f3f3), color-stop(99%,#eaeaea)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* IE10+ */
+background: linear-gradient(to bottom,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#eaeaea',GradientType=0 ); /* IE6-9 */
+    }
+    .grid td{ 
+      
+        border-bottom:1px solid #91b5db; 
+        text-align: left;
+      border-right:0px;;
+      
+    }
+    .grid th { 
+       
+        padding-left:0px; 
+        border: 1px solid #D3D3D3; 
+        font-size:11px;
+        text-align: left; 
+        height:19px;
+    }
+    .grid1 td{
+    border-right:0px solid #F00; 
+  
+    }
+ .grid tr:nth-child(odd)     { background-color:#fafafa; }
+ .grid tr:nth-child(even)      { background-color:#fff; }
+ 
+ 
+  
+.glossy{background: #d8e5f5; /* Old browsers */
+background: -moz-linear-gradient(top,  #d8e5f5 0%, #cfdff3 45%, #c6d9f1 48%, #b6ceee 48%, #aec9ed 48%, #bed4f0 73%, #caddf3 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8e5f5), color-stop(45%,#cfdff3), color-stop(48%,#c6d9f1), color-stop(48%,#b6ceee), color-stop(48%,#aec9ed), color-stop(73%,#bed4f0), color-stop(100%,#caddf3)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e5f5', endColorstr='#caddf3',GradientType=0 ); /* IE6-9 */
+
+}
+.gridbottom{border-bottom:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;background-color:#d6e3f2; padding:3px; border-top:1px solid #91b5db;}
+.trwhite{ background-color: #FFFFFF; }
+.trwhite:hover { background-color: #FFFFFF; }
+</style>
+  
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/> 
+<!-- Start: page-top-outer -->
+<div id="page-top-outer">    
+<!-- Start: page-top -->
+<div id="page-top">
+
+<!-- Start logo -->
+<div id="logo">  
+</div>
+<!-- End logo -->
+
+<!--  start top-search -->
+<div id="top-search">
+ <table border="0" cellpadding="0" cellspacing="0">
+  <tr>
+   <td class="welcome"> Welcome  :
+   <span class="username">{!$User.Firstname}&nbsp;{!$User.Lastname}</span>
+   <!--<apex:area/>inputText value="{!searchstr}" styleClass="top-search-inp" />-->  </td>
+  </tr>
+ </table>
+</div>
+<!--  end top-search -->
+
+<div class="clear"></div>
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+<div class="clear">&nbsp;</div>
+<!--  start nav-outer-repeat...........START -->
+<div class="nav-outer-repeat"> 
+
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+<div id="nav-right">
+        
+               
+<!----LOGOUT ACTION START-->
+<div class="nav">
+ <div class="table">
+
+<apex:form >
+<div class="nav-divider">&nbsp;</div>
+ <!--<apex:commandLink action="{!profileaction}"  style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:commandLink>-->
+ <apex:outputLink value="/apex/BL_Eventadmin_Profile?id={!selectedEVent}" id="profile" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:outputLink>
+<div class="nav-divider">&nbsp;</div>
+ <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+<!-- <div class="nav-divider">&nbsp;</div>
+  <apex:outputLink target="_new" value="/apex/BL_EventAdmin_Help" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" >Help</apex:outputLink> -->
+</apex:form>
+
+ </div>
+</div>
+   
+<!----LOGOUT ACTION END--->
+
+ <div class="clear">&nbsp;</div>
+ </div>
+ <!-- end nav-right -->
+
+
+<!--  start nav -->
+<div class="nav">
+<div class="table">
+  
+<!--<div class="nav-divider">&nbsp;</div>-->
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_EA_Dashboard?id={!selectedEVent}" id="Dashboard"><b>Dashboard</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>                    
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_EventAdmin_Events?id={!selectedEVent}" id="Events"><b>Events</b></apex:outputLink></li></ul>
+ 
+          
+ <ul class="select"><li>
+ <div class="nav-divider">&nbsp;</div>
+ <apex:outputLink value="/apex/BL_Eventadmin_BoothAdmins?id={!selectedEVent}" id="Booths"><b>Booths</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_Eventadmin_Attendees?id={!selectedEVent}" id="Attendees"><b>Attendees</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>
+ <ul class="current"><li>
+ <apex:outputLink value="/apex/BL_EA_Reports?id={!selectedEVent}" id="Reports"><b>Reports</b> </apex:outputLink></li></ul>
+        
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+</div>
+<!--  start nav -->
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................ END -->
+ 
+ 
+  
+ 
+ 
+ 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+  <script>
+    function display(vax){
+      var p = document.getElementById(vax.id+'dic'); 
+      if(p.style.display=='none'){
+         p.style.display='block'
+      }else{
+        p.style.display='none'
+      }
+    }
+    
+   function expandAll(v){
+       if(v.id=='exp'){
+          v.style.display='none';
+          document.getElementById('col').style.display='block';
+          var ele = document.getElementsByTagName('div');
+           
+            for(var t=0;t<ele.length;t++){
+             var p = ele[t].id;
+               if(""==ele[t].id){
+                  
+              }else{
+              
+                if(p.indexOf('dic')!=-1){
+                   ele[t].style.display='block';
+                  }
+              }
+           }
+          
+          
+       }else{
+          v.style.display='none';
+          document.getElementById('exp').style.display='block';
+          
+            var ele = document.getElementsByTagName('div');
+           for(var t=0;t<ele.length;t++){
+             var p = ele[t].id;
+               if(""==ele[t].id){
+                  
+              }else{
+                 if(p.indexOf('dic')!=-1){
+                   ele[t].style.display='none';
+                  }
+              }
+           }
+          
+       }
+   } 
+    
+    
+    
+    
+     function searchSel() {
+          var searchText=document.getElementById('searchTxt').value.toLowerCase();
+           var targetTable = document.getElementById('dataTable12');
+             var rows = targetTable.rows;
+               for (var rowIndex = 1; rowIndex < targetTable.rows.length; rowIndex++) {
+                // var fullname = rows[rowIndex].getElementsByTagName("td");
+                 var fullname = rows[rowIndex].getElementsByClassName("cpkn"); 
+                  var searchval='';
+                  for(var g=0;g<fullname.length;g++){
+                    searchval += fullname[g].innerHTML.toLowerCase();
+                  }
+                 
+                  if(searchval.indexOf(searchText)!=-1){
+                         rows[rowIndex].style.display ='';
+                      }else{
+                        rows[rowIndex].style.display ='none';
+                      }
+                 
+                 
+                }
+               
+           }
+    
+    
+    
+   </script> 
+
+  <style>
+    th{
+      color:#717171;
+      padding:5px;
+      text-align:left;
+    }
+   </style>
+
+   <apex:form id="myForm">
+   <apex:outputPanel >
+     <apex:variable value="{!0}" var="TotalAttendees"/>  
+    <apex:variable value="{!0}" var="TicsSold"/>
+   <div style="width:98%;margin-top:10px;border:0px solid red;"> 
+      <div style="width:49%;text-align:left;border:0px solid red;float:left;"> 
+       <span style="color: #247dba;font-weight:bold;font-size:14px;"> 
+          <apex:commandLink action="/apex/BL_EA_Reports?event={!selectedEVent}" value="Back" styleclass="awesome" style="color:#FFFFFF; text-decoration:none;" ></apex:commandLink>
+     </span> 
+     </div>
+       <div style="width:49%;text-align:right;border:0px solid red;float:right;"> 
+         <span style="color: #247dba;font-weight:bold;font-size:14px;"> 
+         <apex:commandLink value="Export" action="{!exportTransactions}" styleclass="awesome"/>   </span> 
+        </div> 
+      </div><br /><br />
+   
+  
+    
+        
+         <div style="width:98%;text-align:right;margin-top:10px;margin-right:20px;border:0px solid blue;"> 
+          <div style="width:49%;text-align:left;border:0px solid red;float:left;"> 
+           <span style="color: #247dba;font-weight:bold;font-size:14px;"> 
+            Start Date : <apex:inputField value="{!dumForCalender.Start_Date__c}" id="demo" /> &nbsp;
+            End Date : <apex:inputField value="{!dumForCalender.End_Date__c}"  id="demo1"  /> &nbsp;
+             <apex:commandLink value="Go" action="{!transactionFilter}" styleclass="awesome"  reRender="myForm"/>
+          </span> 
+         </div> 
+     
+        <div style="width:49%;text-align:right;border:0px solid red;float:right;"> 
+      
+          <span style="color: #247dba;font-weight:bold;font-size:14px;"> Search :</span> 
+           <input type="text" id="searchTxt" onkeyup="searchSel();"/> &nbsp;
+          </div> </div> <br /> <br />
+   
+      
+        
+        
+        
+   <div style="width:98%;margin-top:10px;margin-right:0px;border:0px solid red;height:auto;margin-bottom:10px;"> 
+    <div style="text-align:left;width:10%;border:0px solid red;float:left;"> 
+       <a href="" id="exp" onclick="expandAll(this);" style="color:blue;cursor:pointer;"> Expand All </a>
+       <a href="" id="col" onclick="expandAll(this);" style="display:none;color:blue;cursor:pointer;"> Collapse All </a>
+    </div>
+    
+    <div style="text-align:right;width:90%;border:0px solid red;float:right;"> 
+    
+     <span style="color: #247dba;font-weight:bold;font-size:14px;"> Total # of Transactions :</span>{!transactions.size} &nbsp;
+      
+      
+       <span style="color: #247dba;font-weight:bold;font-size:14px;"> Total # of Tickets Sold: </span>   
+     <apex:variable value="{!0}" var="totalticssold"/>
+     
+        <apex:repeat value="{!transactions}" var="trn1"> 
+          <apex:repeat value="{!trn1.Dummays__r}" var="dy1">
+                    <apex:variable value="{!totalticssold+dy1.Tickets_Quantty__c}" var="totalticssold"/>
+             </apex:repeat>   
+          </apex:repeat>     
+        {!totalticssold} &nbsp;
+    
+       
+     <span style="color: #247dba;font-weight:bold;font-size:14px;"> Total # of Attendees Registered : </span>  
+            <apex:repeat value="{!transactions}" var="trn1"> 
+              <apex:variable value="{!TotalAttendees+trn1.Dummays__r.size}" var="TotalAttendees"/> 
+             </apex:repeat>    
+        {!TotalAttendees}&nbsp;
+    
+    <span style="color: #247dba;font-weight:bold;font-size:14px;"> Cash Amount :</span>
+       $<apex:outputtext value="{0, number, ###,###,###,###.00}"> 
+              <apex:param value="{!cashamount}"/>
+          </apex:outputText>
+       &nbsp;
+    
+      <span style="color: #247dba;font-weight:bold;font-size:14px;"> Check Amount :</span>
+       $<apex:outputtext value="{0, number, ###,###,###,###.00}"> 
+              <apex:param value="{!checkAmount}"/>
+          </apex:outputText>
+       &nbsp;
+     <span style="color: #247dba;font-weight:bold;font-size:14px;"> Card Amount :</span> 
+     $<apex:outputtext value="{0, number, ###,###,###,###.00}">
+         <apex:param value="{!creditCardAmount}"/>
+      </apex:outputText>
+      &nbsp;<span style="color: #247dba;font-weight:bold;font-size:14px;"> Total Amount :
+       $<apex:outputtext value="{0, number, ###,###,###,###.00}"> 
+         <apex:param value="{!Total}"/></apex:outputText> </span> </div>
+      
+      </div><br />
+      
+    
+      <br />
+   
+     <table style="width:100%;line-height:20px;border:0px solid blue;" border="0" cellpadding="0" cellspacing="0" class="display" id="dataTable12" >
+     
+      <tr >
+               <th style="width:1%;background-color:#2486c3;color:#FFFFFF;"  valign="top">S.No </th> 
+               <th style="width:20%;background-color:#2486c3;color:#FFFFFF;"  valign="top">Transaction Details </th> 
+               <th style="width:76%;background-color:#2486c3;" valign="top"> 
+                <table style="width:100%;border:0px;line-height:20px;vertical-align:top;" cellpadding="0" cellspacing="0" border="0" >
+                   <tr>
+                         <th style="width:22%;border:0px;background-color:#2486c3;color:#FFFFFF;">Attendee Name</th> 
+                         <th style="width:22%;border:0px;background-color:#2486c3;color:#FFFFFF;">Email Id</th>
+                         <th style="width:22%;border:0px;background-color:#2486c3;color:#FFFFFF;">Company</th> 
+                          <th style="width:22%;border:0px;background-color:#2486c3;color:#FFFFFF;">Ticket</th> 
+                          <!-- <th style="width:5%;border:0px;">Quantity</th> -->
+                      </tr>
+                   
+                 </table>
+               </th>
+          </tr>
+        <apex:variable value="{!0}" var="w"/>  
+       
+        
+       <apex:repeat value="{!transactions}" var="trn">
+           <tr style="background-color:#FFFFFF">
+               <th style="width:1%;color: #247dba;border-bottom:1px solid #CCC;"   valign="top">
+                  <apex:variable var="w" value="{!w+1}"/>
+                  {!w}.
+                </th> 
+           
+               <td style="padding-right:15px;" valign="top"> 
+               <p style="display:none;" class="cpkn" >{!trn.Name},{!trn.Email__c},{!trn.Payment_Type__c}, {!trn.paykey__c}</p>              
+               
+                 <span style="color: #247dba;">Order Id:</span> {!trn.Name} &nbsp;
+                  <span style="color: #247dba;">Amount Paid :
+                  </span> 
+                  
+                   <apex:outputPanel rendered="{!if(trn.Payment_Type__c=='Check',TRUE,FALSE)}">
+                      $ &nbsp;<apex:inputField value="{!trn.Total_Amount__c}" style="width:60px;"/> &nbsp; 
+                   </apex:outputPanel>
+                    
+                    <apex:outputPanel rendered="{!if(trn.Payment_Type__c!='Check',TRUE,FALSE)}">
+                     ${!trn.Total_Amount__c} &nbsp; 
+                    </apex:outputPanel><br />
+                 
+                  
+                   <span style="color: #247dba;">Order By : </span>{!trn.Dummays__r[0].Email__c}<br />
+                 <span style="color: #247dba;">Order Date : </span>
+                 <apex:outputText value="{0,date,M/d/yyyy hh:mm a}">
+                <apex:param value="{!trn.createdDate-0.16666666}"/>
+                </apex:outputText>
+              <!--  <apex:outputText value="{!trn.createdDate}"></apex:outputText>-->
+                 <br />
+                 <apex:variable value="{!0}" var="ordQuan"/>
+                 <apex:outputPanel >
+                  <apex:repeat value="{!trn.Dummays__r}" var="dy">
+                    <apex:variable value="{!ordQuan+dy.Tickets_Quantty__c}" var="ordQuan"/>
+                  </apex:repeat>
+                 
+                 
+                    <!--<span style="color: #247dba;">Order Qty : </span> 
+                     {!ordQuan}-->
+                    </apex:outputPanel>
+                
+                
+                 <br />
+                
+                 <div id="{!trn.id}" onclick="display(this);" style="color:blue;cursor:pointer;width:100%;text-align:right;"> More Info</div>
+                 <div style="display:none;" id="{!trn.id}dic">
+                     <span style="color: #247dba;">Payment Type :</span> {!trn.Payment_Type__c}<br />
+                    <span style="color: #247dba;"> Transaction Key :</span> {!trn.paykey__c}<br />
+                    <span style="color: #247dba;"> Payment Status :</span>
+                    
+                     <apex:outputPanel rendered="{!if(trn.Payment_Type__c=='Check',TRUE,FALSE)}">
+                      <apex:inputField value="{!trn.Payment_Status__c}"/> &nbsp; 
+                      
+                      <apex:commandLink value="Save" style="color:blue;" action="{!updatePaymentDetails}">
+                         <apex:param value="{!trn.id}"  name="selectedInn"/>
+                      </apex:commandLink>
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel rendered="{!if(trn.Payment_Type__c!='Check',TRUE,FALSE)}">
+                      {!trn.Payment_Status__c} &nbsp; 
+                    </apex:outputPanel>
+                    
+                </div> 
+               </td>
+                <td valign="top">
+                <table style="width:100%;border:0px;line-height:20px;background-color:#FFFFFF" cellpadding="0" cellspacing="0" border="0" >
+                 <apex:repeat value="{!trn.Dummays__r}" var="d" > 
+                     <apex:variable value="{!TicsSold+1}" var="TicsSold"/>
+                         <tr style="background-color:#FFFFFF">
+                         <p  style="display:none;" class="cpkn" >{!d.First_Name__c},{!d.Last_Name__c},{!d.Email__c},{!d.Company__c},{!d.TicketTypes__r.TT_Name__c}</p>           
+                        
+                         <td style="width:22%;border:0px;">{!d.First_Name__c} {!d.Last_Name__c}</td>
+                           <td style="width:22%;border:0px;">{!d.Email__c}</td> 
+                           <td style="width:22%;border:0px;">{!d.Company__c}</td>
+                           <td style="width:22%;border:0px;">{!d.TicketTypes__r.TT_Name__c}</td>
+                         <!-- <td style="width:5%;border:0px;">{!d.Tickets_Quantty__c}</td> -->
+                      </tr>
+                   
+                    </apex:repeat>  
+                  </table> 
+               </td>           
+            </tr>
+       </apex:repeat>
+     </table>
+     </apex:outputPanel>
+  </apex:form>
+</apex:page>

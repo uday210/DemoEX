@@ -1,0 +1,1039 @@
+<apex:page controller="BL_Eventadmin_RegisterCon" sidebar="false" showHeader="false" standardStylesheets="false" id="Thepage">
+<head>
+<title>Boothleads</title>
+</head>
+<apex:stylesheet value="{!URLFOR($Resource.Attendee_Portal_SelfRegistration_CSS,"AttendeeArrowCSSBradcom.css")}"/>
+   
+  <apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+ 
+   
+   
+<!--<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/screen.css")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/pro_dropline_ie.css")}"/>-->
+<!-- CSS For The Page Start's From Here -->
+<!-- Alerts Start-->
+
+<!--css-->
+
+
+<!--
+
+<apex:stylesheet value="{!URLFOR($Resource.bldashboard2,"menu_assets/styles.css")}"/>
+-->
+
+<!--css-->
+<!-----Dynamic Fields Adding in table----->
+    <SCRIPT language="javascript"> 
+        function addRow(tableID){ 
+            var table = document.getElementById(tableID); 
+            var rowCount = table.rows.length; 
+            var row = table.insertRow(rowCount);
+            
+            row.style.height= "35px";
+            var cell1 = row.insertCell(0); 
+            
+            var element1 = document.createElement("input"); 
+            element1.type = "checkbox"; 
+            cell1.appendChild(element1); 
+            
+           // var cell2 = row.insertCell(1); 
+           // cell2.innerHTML = rowCount + 1; 
+           
+            
+           
+            
+            var cell3 = row.insertCell(1); 
+                var element2 = document.createElement("input"); 
+                element2.type = "text"; element2.name = "txt[]"; 
+             cell3.appendChild(element2);
+             
+             
+            var cell4 = row.insertCell(2); 
+                var element3 = document.createElement("input"); 
+                element3.type = "number"; 
+                element3.name = "amt[]"; 
+            cell4.appendChild(element3);
+            
+            var cell5 = row.insertCell(3); 
+                var element4 = document.createElement("input"); 
+                element4.type = "number"; 
+                element4.name = "lit[]"; 
+            cell5.appendChild(element4);
+            
+           var cell6 = row.insertCell(4); 
+                var element5 = document.createElement("input"); 
+                element5.type = "checkbox"; 
+                element5.name = "avi"; 
+            cell6.appendChild(element5);
+            
+            
+            
+         } 
+        function deleteRow(tableID) { 
+            try { var table = document.getElementById(tableID); 
+            var rowCount = table.rows.length; 
+                for(var i=0; i<rowCount; i++) { 
+                    var row = table.rows[i]; 
+                    var chkbox = row.cells[0].childNodes[0]; 
+                        if(null != chkbox && true == chkbox.checked) { 
+                            table.deleteRow(i); rowCount--; i--; 
+                            } 
+                } 
+                
+                }catch(e) { alert(e); } 
+        } 
+        function validationFields(){ 
+            count = document.getElementsByName("txt[]").length; 
+           // alert(count); 
+            ips=document.getElementsByName('txt[]');
+            amount = document.getElementsByName('amt[]'); 
+            var reVal=true;
+            
+                for(i=0;i<count;i++){ 
+                   
+                    if(ips[i].value==""){ 
+                        alert("Please Enter Ticket Name on Row No "+ (i+1) );
+                        ips[i].focus();
+                       reVal= false;
+                        break;
+                        
+                    }                   
+                   else if(amount[i].value==""){
+                        alert('Please Enter Ticket Price on Row No '+ (i+1) );
+                        amount[i].focus();
+                        reVal = false;
+                        break;
+                        
+                    }
+                    
+                } 
+                
+             return reVal;   
+        } 
+        
+        function readjsValues()
+        {
+            count = document.getElementsByName("txt[]").length; 
+          
+            ips=document.getElementsByName('txt[]');
+            amount = document.getElementsByName('amt[]'); 
+            limita = document.getElementsByName('lit[]'); 
+            avila = document.getElementsByName('avi[]'); 
+            
+            var reVal="";
+            
+                for(i=0;i<count;i++){ 
+                   
+                   var localvar;
+                   
+                    if(ips[i].value!=""){ 
+                        
+                       localvar = ips[i].value + "*@!:";
+                       localvar = localvar+ amount[i].value + "*@!:";
+                       localvar = localvar+ limita[i].value + "*@!:";
+                       localvar = localvar+ avila[i].value + "*@!:";
+                    
+                    }
+                    
+                    localvar = localvar+ "Che5ckM4adiT3oRow";
+                    
+                } 
+                
+            loaddatafunction(reVal);
+        }
+        
+        function validatedelete(){
+        
+            
+            
+            var reval = confirm("Are you sure want to delete Ticket Type");
+            
+            if(reval == true)
+            {
+                return true;
+            }else{
+                return false;
+            }    
+            
+        
+        }
+        
+        function ValidateForm(){
+            
+           var lvSiteId = document.getElementById('{!$Component.Thepage:publish:siteLoc}');
+            
+            lvSiteId.value=lvSiteId.value.trim();
+
+            if(lvSiteId.value == ''){
+                alert('Site URL is required ');
+                lvSiteId.focus();
+                return false;
+            }else{
+                re = /^[A-Za-z0-9]+$/;
+                if(re.test(lvSiteId.value))
+                {
+                    return true;
+                }else{
+                   alert('Site URL allows only Numerics and Characters');
+                   return false;
+                }
+            }
+        }
+    </SCRIPT> 
+
+    <style>
+        .even{ background-color:#F3F3F3; height:30px; }
+        
+        .odd{ background-color:#EAEAEA; height:30px; }
+        
+        #round {
+            border:1px solid #CCCCCC;
+            
+            -webkit-border-radius: 12px;
+            
+            -moz-border-radius: 12px;
+            
+            border-radius: 12px;
+            border-width:2px;
+            width:500px;
+            text-align:center;
+            vertical-align: middle;
+            height:120px;
+           
+            
+        }
+        
+       
+        
+            
+    </style>
+
+
+
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}" />
+
+
+
+<!--header-->
+<!-- Start: page-top-outer -->
+<div id="page-top-outer">    
+
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    <div id="logo">
+   
+      
+    </div>
+    <!-- end logo -->
+    
+    <!--  start top-search -->
+    <div id="top-search">
+    <table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+    <td>
+     <font  class="welcome">Welcome  :</font>
+     <font  class="username">{!$User.Firstname}&nbsp;{!$User.Lastname}    </font> 
+    </td> 
+    </tr>
+    </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+        <div id="nav-right">
+        
+               
+       <!----LOGOUT ACTION -->
+       <div class="nav">
+        <div class="table">
+        
+       <apex:form >
+        
+       
+        <div class="nav-divider">&nbsp;</div>
+        
+       <apex:commandLink action="{!ProfileSettings}"  style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:commandLink> 
+      
+       <div class="nav-divider">&nbsp;</div>
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+        </apex:form>
+
+            </div></div>
+           
+           <!----LOGOUT ACTION END--->
+           
+           
+            <div class="clear">&nbsp;</div>
+        
+            <!--  start account-content --> 
+            <div class="account-content">
+            <div class="account-drop-inner">
+                <a href="" id="acc-settings">Settings</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-details">Personal details </a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-project">Project details</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-inbox">Inbox</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-stats">Statistics</a> 
+            </div>
+            </div>
+            <!--  end account-content -->
+        
+        </div>
+        <!-- end nav-right -->
+
+
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">
+        
+        <ul class="select"><li>
+        <apex:form >
+         <apex:commandLink action="{!DashboardAction}" ><b>Dashboard</b></apex:commandLink>
+        </apex:form>
+        </li>
+        </ul>
+        
+        <div class="nav-divider">&nbsp;</div>
+                            
+        <ul class="current"><li>
+        <apex:form >
+        <apex:commandLink action="{!EventAction}"><b>Events</b></apex:commandLink>
+        </apex:form>
+      
+        </li>
+        </ul>
+        
+        
+        
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li>
+        <apex:form >
+         <apex:commandlink action="{!BoothAction}"><b>Booths</b></apex:commandlink> 
+        </apex:form>
+       
+        </li>
+        </ul>
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li>
+        <apex:form >
+        <apex:commandLink action="{!AttendeesAction}" ><b>Attendees </b> </apex:commandLink>
+        </apex:form>
+       
+        </li>
+        </ul>
+        
+        
+        
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li>
+        <apex:form ><apex:commandlink action="{!Reportsaction}"><b>Reports</b></apex:commandlink>
+        </apex:form>
+        
+        </li>
+        </ul>
+        
+      
+        
+        
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <!--  start nav -->
+        
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+
+
+<!--  start nav-outer-repeat................................................... END -->
+<div class="clear"></div> 
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+<!-- start content -->
+<div id="content">
+    <!--  start page-heading -->
+    <div id="page-heading" >
+        <h1 style="font-size:20px;">Registration Settings for {!events.EV_Title__c} </h1>   
+        
+        <H2> <apex:outputLink value="BL_EventAdmin_Events" style="padding-left:15px;padding-right:10px;font-size:16px;" >Events</apex:outputLink></H2>
+       
+       
+                    <H3  style="padding-right:50px;"><apex:outputText value=">"/> 
+                    <apex:OutputText value=" Event Detail" /></H3>
+                              
+    </div>
+    <!-- end page-heading -->
+    
+     <table border="0" width="100%" height="45px;"><tr><td width="80%" style="text-align:right" >
+          <apex:form > <!-- <apex:commandLink style="width:150px;height:32px; "   action="{!customToQuick}"> 
+                             <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"custom.png")}" rendered="{!QuickRegBool}"/>
+                             <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"custom-select.png")}" rendered="{!NOT(QuickRegBool)}"/>
+                              <apex:param value="quickToCustom" name="cust"/>
+                            </apex:commandLink>  -->
+                            <apex:commandLink style="width:150px;height:32px; "   action="{!customToQuick}" > 
+                             <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"custom.png")}" rendered="{!QuickRegBool}"/>
+                             <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"custom-select.png")}" rendered="{!NOT(QuickRegBool)}"/> 
+                             
+                              <apex:param value="quickToCustom" name="cust"/>
+                            </apex:commandLink>
+                           
+            </apex:form> 
+                           </td><td width="20%" style="padding-left:20px;">
+                           
+                           
+                            <apex:form > 
+                         
+                            <apex:commandLink action="{!customToQuick}"> 
+                             <apex:image style="width:150px;height:32px;" url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"quick.png")}" rendered="{!NOT(QuickRegBool)}"/>
+                             <apex:image style="width:150px;height:32px;" url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"quick-select.png")}" rendered="{!QuickRegBool}"/>
+                              <apex:param value="customtoquick" name="cust"/>
+                            </apex:commandLink> 
+                            
+                        </apex:form></td> </tr></table>  
+    
+    
+    
+    
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">        
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt=""  /></th>
+        <th class="topleft"></th>
+        <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        <!--  start content-table-inner ...................................................................... START -->
+        <div id="content-table-inner" style="margin:0px;padding:0px;">        
+            <!--  start table-content  -->
+            <div  id="table-content" style="margin:0px;padding:0px;">            
+<!-- Hearder Part Ends Here    -->
+    
+ 
+     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #cccccc; margin:0px auto;">
+      
+     <!--   <tr>
+        <td width="13%" rowspan="2" align="center" valign="top" style="border-right:1px solid #CCC; background-color:#f1f1f1;">
+        <table width="150px" border="0" cellpadding="0" cellspacing="5">
+          <tr>
+            <td height="30" align="left" valign="middle">&nbsp;</td>
+            </tr>
+          <tr>
+            <td align="left" valign="middle">&nbsp;</td>
+            </tr>
+          <tr>
+            <td height="35" align="right" valign="middle" bgcolor="#f1f1f1">
+           <apex:form >  <apex:commandLink style="width:150px;height:32px; "   action="{!customToQuick}"> 
+                             <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"custom.png")}" rendered="{!QuickRegBool}"/>
+                             <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"custom-select.png")}" rendered="{!NOT(QuickRegBool)}"/>
+                              <apex:param value="quickToCustom" name="cust"/>
+                            </apex:commandLink>  
+                            <apex:outputText value="http://boothleads.force.com/BL_Attendee_Register?event="></apex:outputText>
+            </apex:form> 
+               </td>
+            </tr> 
+        <tr>
+            <td align="right" valign="middle" bgcolor="#f1f1f1">&nbsp;</td>
+            </tr>
+          <tr>
+            <td height="35" align="right" valign="middle" bgcolor="#f1f1f1"> <apex:form > 
+                         
+                            <apex:commandLink action="{!customToQuick}"> 
+                             <apex:image style="width:150px;height:32px;" url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"quick.png")}" rendered="{!NOT(QuickRegBool)}"/>
+                             <apex:image style="width:150px;height:32px;" url="{!URLFOR($Resource.Attendee_Portal_Images_CustomQuick,"quick-select.png")}" rendered="{!QuickRegBool}"/>
+                              <apex:param value="customtoquick" name="cust"/>
+                            </apex:commandLink> 
+                            
+                        </apex:form> </td>
+            </tr> 
+          </table> </td>
+        
+      </tr>-->
+      
+      
+      <tr>
+        <td align="center" bgcolor="#FFFFFF"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td height="35" bgcolor="#999999" class="gradiant" style="padding-left:20px;padding-top:5px;">
+                <div id="breadcrumb"> <!--  -->
+                <ul class="crumbs">
+                <apex:outputPanel rendered="{!contBool}">
+                <li style=""> <a href="#" style="z-index:9;font-style:italic;font-weight:600;color:#fff000;">Contact Info</a></li> </apex:outputPanel> 
+                <apex:outputPanel rendered="{!NOT(contBool)}">
+                <li style=""> <a href="#" style="z-index:9;">Contact Info</a></li> </apex:outputPanel> 
+               
+            <apex:outputPanel rendered="{!NOT(QuickRegBool)}"> 
+               <apex:outputPanel rendered="{!demographBool}">
+                <li style=""> <a href="#" style="z-index:8;font-style:italic;font-weight:600;color:#fff000;">Demographics</a></li> 
+               </apex:outputPanel> 
+                
+               <apex:outputPanel rendered="{!NOT(demographBool)}">
+                   <li ><a href="#" style="z-index:8;">Demographics</a></li> 
+               </apex:outputPanel>
+           </apex:outputPanel>
+           
+           <apex:outputPanel rendered="{!ticketBool}">
+                <li style=""> <a href="#" style="z-index:7;font-style:italic;font-weight:600;color:#fff000;">Ticket Type</a></li> 
+               </apex:outputPanel> 
+               
+           <apex:outputPanel rendered="{!NOT(ticketBool)}">
+                <li ><a href="#" style="z-index:7;">Ticket Type</a></li>
+           </apex:outputPanel>  
+           
+           <apex:outputPanel rendered="{!paymentBool}">
+                <li style=""> <a href="#" style="z-index:6;font-style:italic;font-weight:600;color:#fff000;">Payment Options</a></li> 
+               </apex:outputPanel> 
+               
+           <apex:outputPanel rendered="{!NOT(paymentBool)}">
+                <li ><a href="#" style="z-index:6;">Payment Options</a></li>
+           </apex:outputPanel>    
+            
+            <apex:outputPanel rendered="{!publishBool}">
+                <li style=""> <a href="#" style="z-index:5;font-style:italic;font-weight:600;color:#fff000;">Publish</a></li> 
+               </apex:outputPanel> 
+               
+           <apex:outputPanel rendered="{!NOT(publishBool)}">
+                <li ><a href="#" style="z-index:5;">Publish</a></li>
+           </apex:outputPanel> 
+
+           </ul>
+        </div>
+            </td>
+            </tr>
+         
+          <tr>
+            <td height="35" align="center" valign="top"><table width="98%" border="0" cellspacing="0" cellpadding="0">
+              
+              <tr>
+                <td  align="center" valign="top"> 
+              <apex:form id="cont" rendered="{!contBool}" >  
+                <apex:outputPanel id="contop" >
+                
+                <table width="100%" valign="top" border="0" cellspacing="0" cellpadding="0">
+              
+                  <apex:outputPanel rendered="{!NOT(QuickRegBool)}">  <!-- For custom Access  (QUICK Access No 504)-->
+                  <tr >
+                    <td colspan="2" height="50" align="left"><b>Select the fields, which you want to display  in Contact Information of Attendee</b></td>
+                    
+                    </tr>
+               
+                  <tr>
+                      <td>
+                         
+                      
+                         
+                          <table style="margin-top:0px;margin-left:3%;font-size:12px;" border="0" width="98%" >
+                                
+                                <tr><td width="40%">&nbsp; </td><td width="30%" rowspan="2"> <apex:image value="{!$Resource.Attendeesetting_Include}"/> </td> <td width="30%" rowspan="2"><apex:image value="{!$Resource.Attendeesetting_Required}"/> </td> </tr>
+                                <tr><td><B>Basic Information</B></td></tr>
+                                
+                                <tr height="30px"><td width="80px">
+                                Prefix </td> <td width="25px"> <apex:inputCheckbox value="{!attendeeSetting.Prefix}" id="preinc" onchange="if(document.getElementById('{!$Component.preinc}').checked == false){ document.getElementById('{!$Component.prereq}').checked = false }"/> </td>
+                                <td width="25px"> <apex:inputCheckbox value="{!attendeeSetting.ReqPrefix}" id="prereq" onclick="document.getElementById('{!$Component.preinc}').checked = true;" title="Required while Adding"/> </td>
+                                </tr> <tr height="30px"><td>
+                                First Name </td><td> <apex:inputCheckbox value="{!attendeeSetting.ReqFields}" selected="true" disabled="true"/> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqReqFields}" selected="true" disabled="true"/> </td> </tr> <tr height="30px"><td>
+                                Last Name</td><td> <apex:inputCheckbox value="{!attendeeSetting.LastName}" selected="true" disabled="true"/> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.LastName}" selected="true" disabled="true"/> </td> </tr> <tr height="30px"><td>
+                                Suffix </td><td> <apex:inputCheckbox value="{!attendeeSetting.sufix}" id="sufinc" onchange="if(document.getElementById('{!$Component.sufinc}').checked == false){ document.getElementById('{!$Component.sufreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.Reqsufix}" id="sufreq" onclick="document.getElementById('{!$Component.sufinc}').checked = true;" /> </td> </tr> <tr height="30px"><td>
+                                Email ID </td><td> <apex:inputCheckbox value="{!attendeeSetting.emailID}" selected="true" disabled="true"/> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.emailID}" selected="true" disabled="true"/> </td></tr> <tr height="30px"><td>
+                                Company Name </td><td> <apex:inputCheckbox value="{!attendeeSetting.comp}" id="cominc" onchange="if(document.getElementById('{!$Component.cominc}').checked == false){ document.getElementById('{!$Component.comreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.Reqcomp}" id="comreq" onclick="document.getElementById('{!$Component.cominc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Designation </td><td> <apex:inputCheckbox value="{!attendeeSetting.Degi}" id="deginc" onchange="if(document.getElementById('{!$Component.deginc}').checked == false){ document.getElementById('{!$Component.degreq}').checked = false }"/> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqDegi}" id="degreq" onclick="document.getElementById('{!$Component.deginc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Mobile Number </td><td> <apex:inputCheckbox value="{!attendeeSetting.mobile}" id="mobinc" onchange="if(document.getElementById('{!$Component.mobinc}').checked == false){ document.getElementById('{!$Component.mobreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.Reqmobile}" id="mobreq" onclick="document.getElementById('{!$Component.mobinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Age </td><td> <apex:inputCheckbox value="{!attendeeSetting.age}" id="ageinc" onchange="if(document.getElementById('{!$Component.ageinc}').checked == false){ document.getElementById('{!$Component.agereq}').checked = false }"/> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.Reqage}" id="agereq" onclick="document.getElementById('{!$Component.ageinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Gender </td><td> <apex:inputCheckbox value="{!attendeeSetting.gen}" id="geninc" onchange="if(document.getElementById('{!$Component.geninc}').checked == false){ document.getElementById('{!$Component.genreq}').checked = false }"/> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.Reqgen}" id="genreq" onclick="document.getElementById('{!$Component.geninc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                DOB </td><td> <apex:inputCheckbox value="{!attendeeSetting.dob}" id="dobinc" onchange="if(document.getElementById('{!$Component.dobinc}').checked == false){ document.getElementById('{!$Component.dobreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.Reqdob}" id="dobreq" onclick="document.getElementById('{!$Component.dobinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Picture </td><td> <apex:inputCheckbox value="{!attendeeSetting.AttendeePic}" id="picinc" onchange="if(document.getElementById('{!$Component.picinc}').checked == false){ document.getElementById('{!$Component.picreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqAttendeePic}" id="picreq" onclick="document.getElementById('{!$Component.picinc}').checked = true;"/> </td> </tr>
+                                
+                                
+                           </table>
+                      </td>
+                      <td valign="top">
+                         <table style=" margin-top:0px; margin-left:0%;font-size:12px;"  width="100%" border="0" >
+                                
+                             <tr><td>&nbsp;</td><td colspan="1" rowspan="2" width="30%" valign="top"><apex:image value="{!$Resource.Attendeesetting_Include}"/>  </td><td rowspan="2" width="30%" valign="top"><apex:image value="{!$Resource.Attendeesetting_Required}"/></td></tr>
+                            <tr><td colspan="1" width="40%"> <b> Address Information </b></td></tr>
+
+                                <tr height="30px"><td> Home Address </td><td> <apex:inputCheckbox value="{!attendeeSetting.homeinfo}" id="homeinclude" onchange="if(document.getElementById('{!$Component.homeinclude}').checked == false){ document.getElementById('{!$Component.homereq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.Reqhomeinfo}" id="homereq" onclick="document.getElementById('{!$Component.homeinclude}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Shipping Address </td><td> <apex:inputCheckbox value="{!attendeeSetting.Shippinginfo}" id="shiinc" onchange="if(document.getElementById('{!$Component.shiinc}').checked == false){ document.getElementById('{!$Component.shireq}').checked = false }"/> </td> <!-- checkedAll('{!$Component.sett.setting.homeinclude}');-->
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqShippinginfo}" id="shireq" onclick="document.getElementById('{!$Component.shiinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Work Address </td><td> <apex:inputCheckbox value="{!attendeeSetting.workinfo}" id="worinc" onchange="if(document.getElementById('{!$Component.worinc}').checked == false){ document.getElementById('{!$Component.worreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.Reqworkinfo}" id="worreq" onclick="document.getElementById('{!$Component.worinc}').checked = true;"/> </td></tr>
+                         
+                                 <tr height="30px"><td valign="2"><b> NAICS Codes Information</b></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                            <tr height="30px"><td>
+                            NAICS Code1 </td><td> <apex:inputCheckbox value="{!attendeeSetting.NAICSCode1}" id="na1inc" onchange="if(document.getElementById('{!$Component.na1inc}').checked == false){ document.getElementById('{!$Component.na1req}').checked = false }"/> </td>
+                            <td> <apex:inputCheckbox value="{!attendeeSetting.ReqNAICSCode1}" id="na1req" onclick="document.getElementById('{!$Component.na1inc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                            NAICS Code2 </td><td> <apex:inputCheckbox value="{!attendeeSetting.NAICSCode2}" id="na2inc" onchange="if(document.getElementById('{!$Component.na2inc}').checked == false){ document.getElementById('{!$Component.na2req}').checked = false }"/> </td>
+                            <td> <apex:inputCheckbox value="{!attendeeSetting.ReqNAICSCode2}" id="na2req" onclick="document.getElementById('{!$Component.na2inc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                            NAICS Code3 </td><td> <apex:inputCheckbox value="{!attendeeSetting.NAICSCode3}" id="na3inc" onchange="if(document.getElementById('{!$Component.na3inc}').checked == false){ document.getElementById('{!$Component.na3req}').checked = false }"/> </td>
+                            <td> <apex:inputCheckbox value="{!attendeeSetting.ReqNAICSCode3}" id="na3req" onclick="document.getElementById('{!$Component.na3inc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                            NAICS Code4 </td><td> <apex:inputCheckbox value="{!attendeeSetting.NAICSCode4}" id="na4inc" onchange="if(document.getElementById('{!$Component.na4inc}').checked == false){ document.getElementById('{!$Component.na4req}').checked = false }"/> </td>
+                            <td> <apex:inputCheckbox value="{!attendeeSetting.ReqNAICSCode4}" id="na4req" onclick="document.getElementById('{!$Component.na4inc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                            NAICS Code5 </td><td> <apex:inputCheckbox value="{!attendeeSetting.NAICSCode5}" id="na5inc" onchange="if(document.getElementById('{!$Component.na5inc}').checked == false){ document.getElementById('{!$Component.na5req}').checked = false }"/> </td>
+                            <td> <apex:inputCheckbox value="{!attendeeSetting.ReqNAICSCode5}" id="na5req" onclick="document.getElementById('{!$Component.na5inc}').checked = true;"/> </td> </tr>
+                            
+                            <tr height="90px"><td colspan="3"  valign="middle" align="right" style="padding-right:35px;"> 
+                                <apex:commandButton value="Next" styleClass="awesome"  action="{!conTodemo}" />
+                                
+                               <br/>
+                             </td> </tr>  
+                                
+                         </table>   
+                      
+                      
+                      </td> 
+                  </tr>
+                  
+                  </apex:outputPanel>  
+                  <apex:outputPanel rendered="{!QuickRegBool}" >
+                        
+                        <table width="98%" >
+                            <tr>
+                              <td colspan="2">
+                                 &nbsp;
+                              </td>
+                            </tr>
+                            <tr><td width="50%" valign="top">
+                                 <table width="75%"  valign="top">
+                                     <tr height="30px"><td>
+                                        First Name </td><td> <apex:inputCheckbox value="{!attendeeSetting.ReqFields}" selected="true" disabled="true"/> </td> </tr> <tr height="30px"><td>
+                                        Last Name</td><td> <apex:inputCheckbox value="{!attendeeSetting.ReqFields}" selected="true" disabled="true"/> </td> </tr> <tr height="30px"><td>
+                                        Email ID  </td><td> <apex:inputCheckbox value="{!attendeeSetting.ReqFields}" selected="true" disabled="true"/>  </td> </tr> <tr height="30px"><td>
+                                         Company Name  </td><td> <apex:inputCheckbox value="{!attendeeSetting.Reqcomp}" />  </td> </tr> <tr height="30px"><td>
+                                          Phone </td><td> <apex:inputCheckbox value="{!attendeeSetting.Reqmobile}" />  </td> </tr> 
+                                          
+                                     </table>
+                                </td>
+                                <td width="50%" valign="top">
+                                     <table width="75%">
+                                      <tr height="30px"><td> Work
+                                        Address 1  </td><td> <apex:inputCheckbox value="{!attendeeSetting.workAdd1}" /> </td> </tr> <tr height="30px"><td>
+                                        Address 2 </td><td> <apex:inputCheckbox value="{!attendeeSetting.workAdd2}" /> </td> </tr> <tr height="30px"><td>
+                                        City </td><td> <apex:inputCheckbox value="{!attendeeSetting.workcity}" /> </td> </tr> <tr height="30px"><td>
+                                        State </td><td> <apex:inputCheckbox value="{!attendeeSetting.workstate}" /> </td> </tr><tr height="30px"><td>
+                                        Country </td><td> <apex:inputCheckbox value="{!attendeeSetting.workCountry}" /> </td> </tr> <tr height="30px"><td>
+                                        Zip Code </td><td> <apex:inputCheckbox value="{!attendeeSetting.workzip}" /> </td>
+                                    </tr>  
+                                    
+                                   <tr height="90px"><td colspan="2"  valign="bottom" align="right"> 
+                                <apex:commandButton value="Next" styleClass="awesome"  action="{!conTodemo}"/>
+                                
+                               <br/>
+                                
+                               
+                             </td> </tr>  
+                                    
+                                    
+                                    
+                                     </table>
+                                 </td> 
+                            </tr>        
+                        </table>
+                                          
+                  </apex:outputPanel>
+                  
+                  </table>
+                  
+                  </apex:outputPanel>
+               </apex:form>  
+               
+               <apex:form id="demo" rendered="{!demographBool}"> 
+                  <apex:outputPanel id="demoOP" >
+                  
+                         <table border="0" cellpadding="0" cellspacing="0" width="98%">
+                         <tr>
+                            <td colspan="2" height="50" align="left"><b>Select the fields,which you want to display  in Contact Information of Attendee</b></td>
+                         </tr>
+                    
+                             <tr><td>&nbsp;</td><td colspan="1" rowspan="2" width="30%" valign="top"><apex:image value="{!$Resource.Attendeesetting_Include}"/>  </td><td rowspan="2" width="30%" valign="top"><apex:image value="{!$Resource.Attendeesetting_Required}"/></td></tr>
+                            <tr><td colspan="1" width="40%"> <b> Work Information </b></td></tr>
+ 
+                          <tr height="30px"><td width="345">
+                                Primary Business Category </td><td width="137"> <apex:inputCheckbox value="{!attendeeSetting.PBC}" id="pbcinc" onchange="if(document.getElementById('{!$Component.pbcinc}').checked == false){ document.getElementById('{!$Component.pbcreq}').checked = false }" /> </td>
+                                <td width="130"> <apex:inputCheckbox value="{!attendeeSetting.ReqPBC}" id="pbcreq" onclick="document.getElementById('{!$Component.pbcinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Secondary Business Category </td><td> <apex:inputCheckbox value="{!attendeeSetting.SBC}" id="sbcinc" onchange="if(document.getElementById('{!$Component.sbcinc}').checked == false){ document.getElementById('{!$Component.sbcreq}').checked = false }"/> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqSBC}" id="sbcreq" onclick="document.getElementById('{!$Component.sbcinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                No. Of Employees </td><td> <apex:inputCheckbox value="{!attendeeSetting.NOEmp}" id="noeinc" onchange="if(document.getElementById('{!$Component.noeinc}').checked == false){ document.getElementById('{!$Component.noereq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqNOEmp}" id="noereq" onclick="document.getElementById('{!$Component.noeinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Business Established Date </td><td> <apex:inputCheckbox value="{!attendeeSetting.BEDate}" id="bedinc" onchange="if(document.getElementById('{!$Component.bedinc}').checked == false){ document.getElementById('{!$Component.bedreq}').checked = false }"/> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqBEDate}" id="bedreq" onclick="document.getElementById('{!$Component.bedinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Business Revenue </td><td> <apex:inputCheckbox value="{!attendeeSetting.BRev}" id="breinc" onchange="if(document.getElementById('{!$Component.breinc}').checked == false){ document.getElementById('{!$Component.brereq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqBRev}" id="brereq" onclick="document.getElementById('{!$Component.breinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Business Tax ID </td><td> <apex:inputCheckbox value="{!attendeeSetting.BTaxID}" id="btainc" onchange="if(document.getElementById('{!$Component.btainc}').checked == false){ document.getElementById('{!$Component.btareq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqBTaxID}" id="btareq" onclick="document.getElementById('{!$Component.btainc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Business Duns Number </td><td> <apex:inputCheckbox value="{!attendeeSetting.BDN}" id="bdninc" onchange="if(document.getElementById('{!$Component.bdninc}').checked == false){ document.getElementById('{!$Component.bdnreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqBDN}" id="bdnreq" onclick="document.getElementById('{!$Component.bdninc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                WebSite URL </td><td> <apex:inputCheckbox value="{!attendeeSetting.webUrl}" id="webinc" onchange="if(document.getElementById('{!$Component.webinc}').checked == false){ document.getElementById('{!$Component.webreq}').checked = false }" /> </td> 
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqwebUrl}" id="webreq" onclick="document.getElementById('{!$Component.webinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Blog URL </td><td> <apex:inputCheckbox value="{!attendeeSetting.blogURL}" id="bloinc" onchange="if(document.getElementById('{!$Component.bloinc}').checked == false){ document.getElementById('{!$Component.bloreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqblogURL}" id="bloreq" onclick="document.getElementById('{!$Component.bloinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Diversity Type </td><td> <apex:inputCheckbox value="{!attendeeSetting.DT}" id="divinc" onchange="if(document.getElementById('{!$Component.divinc}').checked == false){ document.getElementById('{!$Component.divreq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqDT}" id="divreq" onclick="document.getElementById('{!$Component.divinc}').checked = true;"/> </td> </tr> <tr height="30px"><td>
+                                Business Description </td><td> <apex:inputCheckbox value="{!attendeeSetting.BDesc}" id="bdeinc" onchange="if(document.getElementById('{!$Component.bdeinc}').checked == false){ document.getElementById('{!$Component.bdereq}').checked = false }" /> </td>
+                                <td> <apex:inputCheckbox value="{!attendeeSetting.ReqBDesc}" id="bdereq" onclick="document.getElementById('{!$Component.bdeinc}').checked = true;"/> </td> </tr>
+                                
+                                
+                                <tr height="50px" ><td colspan="3"  valign="middle" align="right"> 
+                                
+                                <apex:commandLInk action="{!previousAll}" value="Previous" styleClass="awesome" style=" text-decoration:none;">
+                                        <apex:param assignTo="{!paramassign}" value="{!paramval}" />
+                                </apex:commandLink>
+                                &nbsp; &nbsp;
+                                    <apex:commandButton value="Next " action="{!demoToTicket}" styleClass="awesome" />
+                                    
+                                    
+                                    
+                                    <br/>
+                                    
+                                    
+                                </td></tr>
+                                
+                                
+                        </table>        
+                  
+                  </apex:outputPanel>
+                  
+                </apex:form>  
+                  
+                  <!----------------------------End of 2nd Tab(Demograph) ---------------------------->
+                  <!----------------------------Start Of 3rd Tab(Ticket Types) -------------------------->
+                  <apex:form id="ticket" rendered="{!ticketBool}" >
+                     <table class="even,odd" width="98%" style="padding-bottom:30px;">    
+                         <tr height="50px" style="background-color:#CCCCCC; height:30px; ">
+                              <td width="250px;">
+                                  Ticket Name
+                              </td >
+                              
+                              <td width="150px;">
+                                  Ticket Price
+                              </td>
+                              
+                              <td width="150px;">
+                                  Max No Tickets
+                              </td>
+                              
+                               <td width="150px;">
+                                  Active in Attendee Portal
+                              </td>
+                              
+                              <td width="70px;">
+                                  Action
+                              </td>
+                              
+                             </tr> 
+                         
+                         <apex:repeat value="{!innerTickets}" var="t">
+                             <tr height="50px" >
+                              <td width="250px;">
+                                  <apex:inputField value="{!t.ticket.TT_Name__c}" required="true"  style="width:200px;"/>
+                              </td >
+                              
+                              <td width="150px;">
+                                  <apex:inputField value="{!t.ticket.TT_Amount__c}" style="width:50px;"/>
+                              </td>
+                              
+                              <td width="150px;">
+                                  <apex:inputField value="{!t.ticket.TT_Limit__c}" style="width:50px;"/>
+                              </td>
+                              
+                               <td width="150px;">
+                                  <apex:inputField value="{!t.ticket.Avilable_for_Portal__c}"/>
+                                  <apex:inputHidden value="{!t.ticket.EV_id__c}"/>
+                              </td>
+                              <td width="70px;">
+                                  <apex:commandLink action="{!delTicketType}" immediate="true" onclick="return validatedelete()"> 
+                                     <apex:image url="{!URLFOR($Resource.DeleteIconForQrcode)}"/>
+                                      <apex:param value="{!t.tno}" name="deleteTicketType"/>
+                                      <apex:param value="{!t.ticId }" name="deleteTicketTypeid"/>
+                                  </apex:commandLink> 
+                               </td>   
+                             </tr> 
+                         </apex:repeat>
+                         
+                         <apex:outputPanel rendered="{!noTicketTypeBool}">
+                             <tr>
+                              <td colspan="5" align="center" style="padding-top:20px;">
+                                  <div id="round"  width="75%" align="center" style="padding-top:100px;">
+
+                                       No Tickets Found. <br/> To create Ticket Please click on <B> Add Ticket </B>
+                                  </div>
+                              </td>
+                             </tr> 
+                         
+                         </apex:outputPanel>
+                         
+                         <tr>
+                              <td colspan="5" align="center" style="padding-top:20px;padding-bottom:20px;">
+                                      
+                                 <apex:commandButton value="Add Ticket" action="{!moreTickets}"  styleClass="awesome" rendered="{!IF(innerTickets.size >= 10, FALSE, TRUE)}"/>
+                                  &nbsp;&nbsp;
+                                 
+                                 
+                                 <apex:commandLink action="{!previousAll}" value="Previous" styleClass="awesome" style=" text-decoration:none;">
+                                                <apex:param assignTo="{!paramassign}" value="{!paramval}" />
+                                      </apex:commandLink>
+                                            &nbsp;&nbsp;
+                                 
+                                  <apex:commandButton value="Next" action="{!ticketTopayment}" onclick="return validationFields()" styleClass="awesome" />
+                                  
+                          
+                              <br/>
+                              </td>
+                             </tr>
+                         
+                     </table>
+                          
+                              
+                     
+                  
+                  </apex:form>
+
+                  <!----------------------------End of 3rd Tab ------------------>
+                  <!----------------------------Start of 4rd Tab(Payment Option) ------------------>
+                      <apex:form id="payment" rendered="{!paymentBool}">
+                          <apex:outputPanel >
+ <div style="width:100%;  text-align:left;">                             
+                             
+   <apex:outputPanel style="margin-left:600px;text-align:left;"  id="paymentPanel">
+   
+      <br />
+       <!--<apex:pageBlock > -->
+      <apex:outputText style="font-weight:bold" value="Choose an online credit card payment provider"></apex:outputText>
+       <br/> <br/>
+       <apex:outputText style="padding-left:5px;font-weight:bold" value="Credit Card Processing" /> 
+       <br/> <br/>
+   <apex:inputCheckbox id="chek" title="Paypal" value="{!paypalbool}" style="padding-left:5px;font-weight:bold" onclick="activateEmail()"/><apex:outputLabel >Paypal</apex:outputLabel> 
+   <br/><br/>
+           <apex:outputText rendered="{!paypalEmailNotify}">Paypal Username:</apex:outputText> 
+   <br/><br/>
+   <apex:inputText value="{!paypalEmail}" id="payEmail"  rendered="{!paypalEmailNotify}"/> <br/><br/>
+   
+   <apex:outputText rendered="{!paypalEmailNotify}">Paypal Password:</apex:outputText> 
+   <br/><br/>
+   <apex:inputText value="{!paypalPassword}" id="payPass"  rendered="{!paypalEmailNotify}"/>
+   
+   <br/><br/>
+   
+   <apex:outputText rendered="{!paypalEmailNotify}">Paypal Signature:</apex:outputText> 
+   <br/><br/>
+   <apex:inputText value="{!paypalSignature}" id="paySig"  rendered="{!paypalEmailNotify}"/>  <br/><br/>
+   
+   
+   <apex:outputLabel >Set up your PayPal merchant account. You can set up your free PayPal account at anytime,even after your event is published.</apex:outputLabel>
+   <br/><br/>
+   <apex:outputLabel style="font-weight:bold">Choose offline payment methods (optional):</apex:outputLabel> 
+   <br/><br/>
+   <apex:inputCheckbox id="chk1" value="{!chk1}" />&nbsp;&nbsp;<apex:outputText >Accept Pay by Check Payments</apex:outputText><br/><br/>
+   <apex:inputCheckbox id="chk2" value="{!chk2}"/>&nbsp;&nbsp;<apex:outputText >Accept Pay at the Door Payments </apex:outputText><br/><br/>
+   <apex:inputCheckbox id="chk3" value="{!chk3}"/>&nbsp;&nbsp;<apex:outputText >Accept Send an Invoice Payments</apex:outputText><br/><br/>
+   <!--</apex:pageBlock> -->
+  </apex:outputPaneL> 
+  
+    <apex:actionFunction name="activateEmail" action="{!payPalNotifier}" rerender="paymentPanel"/>
+  
+  
+   </div>                           
+                              <br/>
+                              
+                              <table width="20%" cellpadding="0" cellspacing="0" border="0">
+                              <tr>
+                              <td>
+                              <apex:commandLink action="{!previousAll}" value="Previous" styleClass="awesome" style=" text-decoration:none;">
+                                        <apex:param assignTo="{!paramassign}" value="{!paramval}" />
+                              </apex:commandLink>
+                              &nbsp;&nbsp; 
+                              
+                              <apex:commandButton value="Next" action="{!paymentTopublish}" styleClass="awesome" onclick="return validatePaypal();"/>
+                              <br/>
+                              </td></tr>
+                              <tr>
+                              <td>&nbsp;
+                              </td></tr></table>
+                              
+                              
+                              
+                         </apex:outputPanel>
+                      </apex:form>
+                  
+                  <!----------------------------End of 4rd Tab ------------------>
+                  <!----------------------------Start of 5rd Tab(Publish) ------------------>
+                       <apex:form id="publish" rendered="{!publishBool}">
+                          <apex:outputPanel >
+                              <br />
+                             <apex:outputText value="Your Event Registration Link on Boothleads " style="color:#FF0000;font-weight:bold;font-family:Arial;"> </apex:outputText> <br/>
+                            <br /><br /> &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 
+                            <apex:outputText value="http://boothleads.force.com/BL_Attendee_Register?event="></apex:outputText>
+                             <apex:inputText value="{!events.EV_SiteLocation__c}" id="siteLoc" size="30" required="true"/>
+                              &nbsp;&nbsp;
+                              <apex:commandButton styleClass="awesome" action="{!checkExiestance}" value="Check" onclick="return ValidateForm();"/>
+                              
+                              <br/>
+                                  <apex:outputText rendered="{!siteStringErrorBool}" value="http://boothleads.force.com/BL_Attendee_Register?event={!events.EV_SiteLocation__c}" ></apex:outputText>
+                              <br/> <apex:outputText value="{!siteStringError}" style="color:{!siteStringErrorstyle};font-family:Arial;"></apex:outputText>
+                              <br/>
+                              <apex:commandLink action="{!previousAll}" value="Previous" styleClass="awesome" style=" text-decoration:none;">
+                                        <apex:param assignTo="{!paramassign}" value="{!paramval}" />
+                              </apex:commandLink>
+                              
+                              &nbsp;&nbsp;
+                              <apex:commandButton value="Save" action="{!SaveAllFields}" onclick="return ({!siteStringErrorBool}&& ValidateForm());" styleClass="awesome"/>
+                              
+                              <br/><br/>
+                              
+                          
+                         </apex:outputPanel>
+                      </apex:form>
+                  
+                  <!----------------------------End of 5rd Tab ------------------>
+                  
+                  </td>
+                </tr>
+              </table></td>
+            </tr>
+          </table></td>
+      </tr>
+   </table>
+    
+       
+    
+    <apex:outputPanel styleClass="Popupbackground" rendered="{!successBool}"/>
+      <apex:outputPanel styleClass="customPopup" rendered="{!successBool}">
+          <apex:outputText value="Your Attendee Portal created Successfully."></apex:outputText>
+          <br/><br/>
+              <apex:outputLink value="BL_Eventadmin_Events" styleClass="awesome"> OK </apex:outputLink>
+          
+     
+   </apex:outputPanel>
+  
+  <style type="text/css">
+       .customPopup{
+            background-color: white;
+            border-style: solid;
+            border-width: 2px;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            z-index: 9998;
+            width: 300px;
+            margin-left: -250px;
+            top:200px;
+            
+        }
+        .Popupbackground{
+            background-color: #000000;
+            width:100%;
+            height:150%;
+            z-index: 9995;
+            position: absolute ;
+            top:0px;
+            left:0px;
+            Opacity:0.50; 
+
+        }
+    </style>
+
+    
+    
+
+  
+    
+    
+    
+    
+    
+   
+
+<!-- Middle Part Of the SCC Starts Here -->
+
+ </div>
+            <!--  end content-table  -->
+        
+           
+            
+            
+            <div class="clear"></div>
+         
+        </div>
+        <!--  end content-table-inner ............................................END -->
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+
+</div>
+<!--  end content -->
+<div class="clear">&nbsp;</div>
+</div>
+<!--  end content-outer........................................................END-->
+
+<div class="clear">&nbsp;</div>
+    
+  <script>
+  function validatePaypal(){
+  var checkValue= document.getElementById('{!$component.Thepage:payment:chek}').checked;
+  var emailValue= document.getElementById('{!$component.Thepage:payment:payEmail}').value;
+    if(checkValue == true && emailValue.length==0){
+    alert('Please provide the Paypal registered Email');
+    document.getElementById("Thepage:payment:payEmail").focus();
+    return false;
+   }
+  }
+  
+  </script>
+  
+  
+ 
+<!-- start footer -->        
+<apex:include pageName="QRCode_Footertemplate"/>   
+</apex:page>

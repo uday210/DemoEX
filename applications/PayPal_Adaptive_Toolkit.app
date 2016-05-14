@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultLandingTab>PPAPICredential__c</defaultLandingTab>
+    <label>PayPal Adaptive Toolkit</label>
+    <logo>Logos04tA00000001fbC/PayPalX_Small_Logo04tA00000001fbC.png</logo>
+    <tab>PPAPICredential__c</tab>
+    <tab>About_PayPal_Adaptive_Toolkit</tab>
+    <tab>PPCommonRequestParameters__c</tab>
+    <tab>PayDetailTest</tab>
+    <tab>PreapprovalApiTest</tab>
+    <tab>PreapprovalDetailTest</tab>
+    <tab>CancelPreapprovalTest</tab>
+    <tab>RefundApiTest</tab>
+    <tab>ConvertCurrencyTest</tab>
+    <tab>ExecutePaymentTest</tab>
+    <tab>Dummay__c</tab>
+    <tab>Ticket_Eam__c</tab>
+    <tab>Constomer__c</tab>
+    <tab>Non_Attendee__c</tab>
+    <tab>Survey_Questions__c</tab>
+    <tab>Survey__c</tab>
+    <tab>Ticket_Mapswith_Survey__c</tab>
+    <tab>Promocodes__c</tab>
+    <tab>Tickets_Mapswith_Promocode__c</tab>
+    <tab>Registration_ticket_settings__c</tab>
+    <tab>Registration_Settings__c</tab>
+    <tab>Event_Registration_jun__c</tab>
+    <tab>Track__c</tab>
+    <tab>Seminar__c</tab>
+    <tab>Scheduled_Fields__c</tab>
+    <tab>Ticket_iteam_jun__c</tab>
+    <tab>Event_Breaks__c</tab>
+    <tab>MatchLeads_Days__c</tab>
+    <tab>NAICS_Code__c</tab>
+    <tab>BadgeTemplate_Styles__c</tab>
+    <tab>Floor_Map__c</tab>
+    <tab>Tags__c</tab>
+    <tab>Ticket_Session_Mapping__c</tab>
+    <tab>Commodities__c</tab>
+    <tab>Profile_Settings__c</tab>
+    <tab>Custom_Widget__c</tab>
+    <tab>MBE_Profile__c</tab>
+    <tab>MMQuestion__c</tab>
+    <tab>Qaj__c</tab>
+</CustomApplication>

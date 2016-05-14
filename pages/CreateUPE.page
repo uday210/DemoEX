@@ -1,0 +1,68 @@
+<apex:page controller="CreateUPECon" sidebar="false" >
+ 
+ <apex:form >
+ <apex:pageBlock >
+ 
+ <table width="98%" border="0" cellspacing="0" cellpadding="0">
+                   <tr>
+                     <td height="30" align="left" valign="middle" style="padding-left:10px;vertical-align:middle; width:20%;">Selected Event :</td>
+                     <td height="30" align="left" valign="middle" style="padding-left:10px;padding-top:5px;vertical-align:middle; width:20%;"><apex:outputText value="{!EventName[0].EV_Title__c}" style="font-weight:bold;"></apex:outputText></td>
+                     <td height="30" align="left" valign="middle" style="padding-left:10px;vertical-align:middle; width:20%;">Event Admin :&nbsp;</td>
+                     <td height="30" align="left" valign="middle" style="padding-left:10px;padding-top:5px;vertical-align:middle; width:20%;"><apex:outputText style="font-weight:bold;" value="{!EventName[0].owner.name}"> </apex:outputText></td>
+                     <td height="30" align="left" valign="middle" style="padding-left:10px;vertical-align:middle; width:10%;"></td>
+                     <td height="30" align="left" valign="middle" style="padding-left:10px;padding-top:5px;vertical-align:middle; width:10%;"> </td>
+                    
+                    </tr>
+  </table>    
+ <br/><br/>
+ <apex:pageBlockTable value="{!NoUPEExistEAMs}" var="EAM">
+ <apex:facet name="header">No UPE Exist For Attendee</apex:facet>
+ <apex:column value="{!EAM.AS_id__r.AS_FirstName__c} {!EAM.AS_id__r.AS_LastName__c}" headerValue="Attendee Name"/>
+ <apex:column value="{!EAM.AS_id__r.AS_Email__c}" headerValue="Email"/>
+ <apex:column headerValue="Action">
+ <apex:commandLink value="Create UPE" action="{!UPECreation}">
+ <apex:param value="{!EAM.id}" name="EAMName" assignTo="{!EAMId}"/>
+ </apex:commandLink>
+ </apex:column>
+ </apex:pageBlockTable>
+ 
+ <br/><br/>
+ <apex:pageBlockTable value="{!NoneExistUPEs}" var="UPE">
+ <apex:facet name="header">No Booth and Profile Exist for UPE</apex:facet>
+ <apex:column value="{!UPE.Attendee_Summary__r.AS_FirstName__c} {!UPE.Attendee_Summary__r.AS_LastName__c}" headerValue="Attendee Name"/>
+ <apex:column value="{!UPE.Attendee_Summary__r.AS_Email__c}" headerValue="Email"/>
+ <apex:column headerValue="Action">
+ <apex:commandLink value="Assign Booth & Profile" action="{!BoothProfileCreation}">
+ <apex:param value="{!UPE.id}" name="UPEName" assignTo="{!UPEId}"/>
+ </apex:commandLink>
+ </apex:column>
+ </apex:pageBlockTable>
+ 
+ <br/><br/>
+ <apex:pageBlockTable value="{!NoBoothExistEAMs}" var="UPE">
+ <apex:facet name="header">No Booth Exist For UPE</apex:facet>
+ <apex:column value="{!UPE.Attendee_Summary__r.AS_FirstName__c} {!UPE.Attendee_Summary__r.AS_LastName__c}" headerValue="Attendee Name"/>
+ <apex:column value="{!UPE.Attendee_Summary__r.AS_Email__c}" headerValue="Email"/>
+ <apex:column headerValue="Action">
+ <apex:commandLink value="Assign Booth" action="{!BoothCreation}">
+ <apex:param value="{!UPE.id}" name="UPEBoothName" assignTo="{!UPEBoothId}"/>
+ </apex:commandLink>
+ </apex:column>
+ </apex:pageBlockTable>
+ 
+ <br/><br/>
+ <apex:pageBlockTable value="{!NoProfileExistEAMs}" var="UPE">
+ <apex:facet name="header">No Profile Exist For UPE</apex:facet>
+ <apex:column value="{!UPE.Attendee_Summary__r.AS_FirstName__c} {!UPE.Attendee_Summary__r.AS_LastName__c}" headerValue="Attendee Name"/>
+ <apex:column value="{!UPE.Attendee_Summary__r.AS_Email__c}" headerValue="Email"/>
+ <apex:column headerValue="Action">
+ <apex:commandLink value="Assign Profile" action="{!ProfileCreation}">
+ <apex:param value="{!UPE.id}" name="UPEProfileName" assignTo="{!UPEProfileId}"/>
+ </apex:commandLink>
+ </apex:column>
+ </apex:pageBlockTable>
+ </apex:pageBlock>
+ 
+ 
+ </apex:form>
+</apex:page>

@@ -1,0 +1,334 @@
+<apex:page controller="BL_EventAdmin_AttendeesCon"  showHeader="false"  standardStylesheets="false" action="{!checkUserId}" renderAs="pdf">
+ <head>
+     <title>AttendeeBadges</title>
+ </head>
+<!--  QRCode_viewbadge  -->
+
+ 
+ <!--
+ <apex:stylesheet value="{!URLFOR($Resource.advancedpdfresource, 'stylefor5392.css')}"/>-->
+ <html>
+ <head>
+     <title>BoothLeads</title>
+ </head>
+ </html>
+<!--             QRCode_viewbadge  ,              -->
+<!--body onload="window.print();window.close();"-->
+<table width="100%"   cellspacing="0" cellpadding="0" style="margin:0px 2px 0px -17px" border="0"> 
+ <tr>
+
+ <td width="50%" align="left" style="padding-top:3px;">
+ 
+ <apex:repeat value="{!LeftValues}" var="Left">
+     
+     
+     <table style="page-break-inside:avoid;" width="100%"  cellspacing="0" cellpadding="0" border="0" valign="top">  
+     <tr><td>
+     
+ <apex:repeat value="{!Left}" var="ss1">
+
+             
+            
+
+<table cellspacing="0" cellpadding="0" width="3.8in" height="3in" border="0" style=" margin-bottom:0px;margin-top:10px;">
+
+<tr>
+<td colspan="3" align="center">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+
+<tr>
+<td colspan="3" align="left">
+
+
+<table border="0" cellspacing="0" cellpadding="0" align="center" style="width:100%; margin-top:55px;">
+
+    <tr style="height:2.5cm;">
+        <td width="30%" height="100px" style="padding-Left:10px;" valign="top"><apex:outputpanel rendered="{!logo}">
+<!--
+<apex:image url="/servlet/servlet.FileDownload?file={!attach.EV_EventLogo__c}"   style="width:200px;height:100px;"/>
+-->
+</apex:outputpanel></td>
+        <td width="70%" style="text-align:center; width:80%;padding-right:8px;font-size:15px">
+        
+        <div style="z-index:-17; text-align:center;width:125px; margin:0px auto; margin-top:-20px;position:relative; height:2.3cm;">
+<apex:image value="https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl={!ss1.barCode}" style="padding-right:-20px;"/>
+</div>
+        
+        
+        
+        </td>
+             </tr>  
+             
+</table>
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+
+<tr style="height:1.3cm;padding-top:30px;">
+<td align="center" colspan="2" valign="top">
+
+<apex:outputPanel rendered="{!if(contains(ss1.Ttype,'Attendee'),true,false)}">
+
+ <div style=" position:absolute; text-align:center; margin:15px 0px 0px 0px ; width:50%;">
+ 
+<font  style="color:{!selectedcolor}; font-size:32px;font-family:{!selectedfaceFir}; margin-bottom:10px; text-align:center">
+          
+            <b>{!ss1.fname} {!ss1.sname}</b>
+
+             </font>            </div>
+             </apex:outputPanel>
+           
+             <apex:outputPanel rendered="{!if(contains(ss1.Ttype,'Attendee'),false,true)}">
+             <font  style="color:{!selectedcolor};font-size:22pt;font-family:{!selectedfaceFir};">
+            <b>{!ss1.fname} {!ss1.sname}</b>
+             </font>
+             </apex:outputPanel>
+            
+</td>
+</tr>
+
+<!--
+<tr>
+<td align="center" colspan="3">
+ 
+ <font  style="color:{!selectedcolorS};font-size:18pt;font-family:{!selectedfacesec}">
+                     {!ss1.sname}
+                 </font>
+</td>
+</tr>
+-->
+<tr>
+<td align="center" valign="top" style="height:1.1cm" > 
+
+<div style="padding-top:0.3cm;text-align:center;">
+<font  style="color:{!selectedcolor};font-size:15pt;font-family:{!selectedfaceFir}; padding-left:2px; padding-right:2px;">
+<apex:outputPanel rendered="{!if(contains(ss1.Ttype,'Attendee'),false,true)}">
+{!ss1.lname}
+</apex:outputPanel>
+</font>
+</div>
+
+</td>
+
+<!--
+<img src="http://qrfree.kaywa.com/?l=1&s=3&d={!ss1.barCode}" alt="QRCode" style="padding-Left:5px;"/>{!ss1.lname} 
+
+</td>
+<td width="76%" colspan="2" align="left" valign="middle" style="padding-right:40px;">
+ <font  face="TimesNewRoman" color="red" style="color:{!selectedcolorT};font-size:15pt;font-family:{!selectedfaceThr}">{!ss1.fname}   {!ss1.sname}</font>
+</td>
+-->
+
+</tr>
+<tr>
+<td style="height:0.5cm">
+  <div style="width:98%;height:auto; position:relative; margin:10px 0px -17px 0px ;">
+        <apex:outputPanel rendered="{!if(AND((contains(ss1.Ttype,'SPONSOR')),(NOT(contains(ss1.ticket,'Lunch with the Lenders'))),(NOT(contains(ss1.ticket,'Retail Long Island Attendee Admission'))),(NOT(contains(ss1.ticket,'All-Access Pass'))),(NOT(contains(ss1.ticket,'Executive Business Breakfast')))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#ff0000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> SPONSOR </font>
+        </apex:outputPanel>
+        
+         <apex:outputPanel rendered="{!if(AND((contains(ss1.Ttype,'SPONSOR')),(OR((contains(ss1.ticket,'Lunch with the Lenders')),(contains(ss1.ticket,'Retail Long Island Attendee Admission')),(contains(ss1.ticket,'All-Access Pass')),(contains(ss1.ticket,'Executive Business Breakfast'))))),true,false)}">
+        <font style="valign:bottom;text-align:left;background-color:#ff0000;display:block;font-size:25px;color:#ffffff;font-face:Arial-BoldMT;padding-left:10px;"> SPONSOR 
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Lunch with the Lenders'),true,false)}">Lunch</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Retail Long Island Attendee Admission'),true,false)}">RLI</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Executive Business Breakfast'),true,false)}">Breakfast</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'All-Access Pass'),true,false)}">All-Access Pass</apex:outputText>
+        </font>
+
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(ss1.Ttype,'Exhibitor')),(NOT(contains(ss1.ticket,'Lunch with the Lenders'))),(NOT(contains(ss1.ticket,'Retail Long Island Attendee Admission'))),(NOT(contains(ss1.ticket,'All-Access Pass'))),(NOT(contains(ss1.ticket,'Executive Business Breakfast')))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#008000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> EXHIBITOR </font>
+        </apex:outputPanel>
+         <apex:outputPanel rendered="{!if(AND((contains(ss1.Ttype,'Exhibitor')),(OR((contains(ss1.ticket,'Lunch with the Lenders')),(contains(ss1.ticket,'Retail Long Island Attendee Admission')),(contains(ss1.ticket,'All-Access Pass')),(contains(ss1.ticket,'Executive Business Breakfast'))))),true,false)}">
+        <font style="valign:bottom;text-align:left;background-color:#ff0000;display:block;font-size:25px;color:#ffffff;font-face:Arial-BoldMT;padding-right:10px;"> Exhibitor
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Lunch with the Lenders'),true,false)}">Lunch</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Retail Long Island Attendee Admission'),true,false)}">RLI</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Executive Business Breakfast'),true,false)}">Breakfast</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'All-Access Pass'),true,false)}">All-Access Pass</apex:outputText>
+        </font>
+
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((OR((contains(ss1.Ttype,'Attendee')),(contains(ss1.Ttype,'Retail Long Island')))),(OR((contains(ss1.ticket,'Lunch with the Lenders')),(contains(ss1.ticket,'Retail Long Island Attendee Admission')),(contains(ss1.ticket,'All Access Pass')),(contains(ss1.ticket,'Executive Business Breakfast'))))),true,false)}">
+        <font style="valign:bottom;text-align:right;background-color:#82D2FD;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;padding-right:15px;"> 
+       
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Lunch with the Lenders'),true,false)}">Lunch</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Retail Long Island Attendee Admission'),true,false)}">RLI</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'Executive Business Breakfast'),true,false)}">Breakfast</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss1.ticket,'All Access Pass'),true,false)}">All-Access Pass</apex:outputText>
+        </font>
+
+        </apex:outputPanel>
+   </div>
+</td>
+</tr>
+</table>
+</apex:repeat> 
+</td></tr></table>
+
+</apex:repeat>
+ 
+ </td>
+ 
+
+ <!------------------------ SECOEND TABLE START---------------------------------->
+ <td width="50%" valign="top" style="padding-left:10px;padding-top:3px;"> 
+ 
+ 
+ <apex:repeat value="{!RightValues}" var="Right">
+   
+    <table style="page-break-inside:avoid;" width="100%"  cellspacing="0" cellpadding="0" border="0" valign="top">  
+     <tr><td>
+     
+ <apex:repeat value="{!Right}" var="ss2">
+
+             
+            
+<table cellspacing="0" cellpadding="0" width="3.8in" height="3in" border="0" style=" margin-bottom:0px;margin-top:10px;">
+
+<tr>
+<td colspan="3" align="center">
+
+
+
+<table width="100%" border="" cellspacing="0" cellpadding="0" style="width:100%;">
+
+<tr>
+<td colspan="3" align="left"  style="padding-left:13px;">
+
+
+<table border="" cellspacing="0" cellpadding="0" align="center" style="width:100%;  margin-top:55px;" height="1.7cm">
+
+    <tr style="height:2.5cm">
+        <td width="30%" height="100px" valign="top"><apex:outputpanel rendered="{!logo}">
+<!--
+<apex:image url="/servlet/servlet.FileDownload?file={!attach.EV_EventLogo__c}"  style="width:200px;height:100px;"/>
+-->
+</apex:outputpanel></td>
+        <td style="text-align:center; width:80%;padding-right:8px;font-size:15px">
+        
+        <div style="z-index:-17; text-align:center;  width:125px; margin:0px auto; margin-top:-20px;position:relative; height:2.3cm; ">
+            <apex:image value="https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl={!ss2.barCode}" style="padding-right:-20px;"/>
+        </div>
+        
+        </td>
+             </tr>  
+             
+</table>
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+
+<tr style="height:1.3cm;padding-top:30px;">
+<td align="center" colspan="3" valign="top">
+<apex:outputPanel rendered="{!if(contains(ss2.Ttype,'Attendee'),true,false)}">
+<div style="align:right; position:absolute; margin:15px 0px 0px 4.5in ;">
+<font  style="color:{!selectedcolor};font-size:32px;font-family:{!selectedfaceFir};margin-bottom:10px;">
+          
+            <b>{!ss2.fname} {!ss2.sname}</b>
+
+             </font>            </div>
+             </apex:outputPanel>
+             <apex:outputPanel rendered="{!if(contains(ss2.Ttype,'Attendee'),false,true)}">
+             <font  style="color:{!selectedcolor};font-size:22pt;font-family:{!selectedfaceFir};">
+            <b>{!ss2.fname} {!ss2.sname}</b>
+             </font>
+             </apex:outputPanel>
+</td>
+
+</tr>
+
+
+<!--<tr>
+<td align="center" colspan="3">
+ 
+ <font  style="color:{!selectedcolorS};font-size:18pt;font-family:{!selectedfacesec}">
+                     {!ss2.sname}
+                 </font>
+</td>
+</tr>
+-->
+
+<tr>
+<td align="center" valign="top" style="padding-left:10px; height:1.1cm; " > 
+
+<div style="padding-top:0.3cm;">
+<font  face="TimesNewRoman" color="red" style="color:{!selectedcolorT};font-size:15pt;font-family:{!selectedfaceThr};">
+<apex:outputPanel rendered="{!if(contains(ss2.Ttype ,'Attendee'),false,true)}">
+{!ss2.lname}
+</apex:outputPanel> </font>
+</div>
+
+</td>
+
+
+</tr>
+<tr>
+<td style="height:0.3cm">
+ <div style="width:98%;height:auto; position:relative; margin:10px 0px -17px 0px ;">
+        <apex:outputPanel rendered="{!if(AND((contains(ss2.Ttype,'SPONSOR')),(NOT(contains(ss2.ticket,'Lunch with the Lenders'))),(NOT(contains(ss2.ticket,'Retail Long Island Attendee Admission'))),(NOT(contains(ss2.ticket,'All-Access Pass'))),(NOT(contains(ss2.ticket,'Executive Business Breakfast')))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#ff0000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> SPONSOR </font>
+        </apex:outputPanel>
+        
+         <apex:outputPanel rendered="{!if(AND((contains(ss2.Ttype,'SPONSOR')),(OR((contains(ss2.ticket,'Lunch with the Lenders')),(contains(ss2.ticket,'Retail Long Island Attendee Admission')),(contains(ss2.ticket,'All-Access Pass')),(contains(ss2.ticket,'Executive Business Breakfast'))))),true,false)}">
+        <font style="valign:bottom;text-align:left;background-color:#ff0000;display:block;font-size:25px;color:#ffffff;font-face:Arial-BoldMT;padding-left:10px;"> SPONSOR 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Lunch with the Lenders'),true,false)}">Lunch</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Retail Long Island Attendee Admission'),true,false)}">RLI</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Executive Business Breakfast'),true,false)}">Breakfast</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'All-Access Pass'),true,false)}">All-Access Pass</apex:outputText>
+        </font>
+
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(ss2.Ttype,'Exhibitor')),(NOT(contains(ss2.ticket,'Lunch with the Lenders'))),(NOT(contains(ss2.ticket,'Retail Long Island Attendee Admission'))),(NOT(contains(ss2.ticket,'All-Access Pass'))),(NOT(contains(ss2.ticket,'Executive Business Breakfast')))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#008000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> EXHIBITOR </font>
+        </apex:outputPanel>
+         <apex:outputPanel rendered="{!if(AND((contains(ss2.Ttype,'Exhibitor')),(OR((contains(ss2.ticket,'Lunch with the Lenders')),(contains(ss2.ticket,'Retail Long Island Attendee Admission')),(contains(ss2.ticket,'All-Access Pass')),(contains(ss2.ticket,'Executive Business Breakfast'))))),true,false)}">
+        <font style="valign:bottom;text-align:left;background-color:#ff0000;display:block;font-size:25px;color:#ffffff;font-face:Arial-BoldMT;padding-left:10px;"> Exhibitor
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Lunch with the Lenders'),true,false)}">Lunch</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Retail Long Island Attendee Admission'),true,false)}">RLI</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Executive Business Breakfast'),true,false)}">Breakfast</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'All-Access Pass'),true,false)}">All-Access Pass</apex:outputText>
+        </font>
+
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((OR((contains(ss2.Ttype,'Attendee')),(contains(ss2.Ttype,'Retail Long Island')))),(OR((contains(ss2.ticket,'Lunch with the Lenders')),(contains(ss2.ticket,'Retail Long Island Attendee Admission')),(contains(ss2.ticket,'All Access Pass')),(contains(ss2.ticket,'Executive Business Breakfast'))))),true,false)}">
+        <font style="valign:bottom;text-align:right;background-color:#82D2FD;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;padding-right:15px;"> 
+       
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Lunch with the Lenders'),true,false)}">Lunch</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Retail Long Island Attendee Admission'),true,false)}">RLI</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'Executive Business Breakfast'),true,false)}">Breakfast</apex:outputText>
+        <apex:outputText rendered="{!if(contains(ss2.ticket,'All Access Pass'),true,false)}">All Access Pass</apex:outputText>
+        </font>
+
+        </apex:outputPanel>
+   </div>
+</td></tr>
+</table>
+
+</apex:repeat> 
+</td></tr></table>
+
+
+ </apex:repeat>
+ 
+ 
+
+ </td> 
+ 
+ </tr>
+ 
+</table>
+       
+</apex:page>

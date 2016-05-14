@@ -1,0 +1,269 @@
+<apex:page controller="DupliacetsprintCon" standardStylesheets="false" sidebar="false" showHeader="false">
+ <script type="text/javascript">
+    function checkAll(cb,cbid)
+    {
+    var inputElem = document.getElementsByTagName("input");                    
+    for(var i=0; i<inputElem.length; i++)
+    {            
+    if(inputElem[i].id.indexOf(cbid)!=-1)
+    {                                       
+    inputElem[i].checked = cb.checked;
+    }
+    }
+    }
+    
+    </script>
+    
+    <style>
+ .odd     { background-color:#fafafa; }
+ .even      { background-color:#fff; }
+ </style>
+ 
+ <style>
+     .odd{
+       background-color:#FFFFFF;
+     }
+    .even{
+      background-color:#e8edff;
+    }
+    
+     .even:hover{
+      background-color:#A6B5E5;
+    }
+    
+     .odd:hover{
+       background-color:#A6B5E5;
+     }
+     
+    .headval{
+      font-weight:bold;
+      height:35px;
+     background-color:#b9c9fe;
+       padding-left:10px;
+    }
+  </style>
+  <table width="90%" align="center">
+ <tr>
+ <td>
+    <table> 
+    <tr>
+    <td>
+    <apex:image value="{!$Resource.Booth_Leads_PhaniLogo}" style="padding-left:50px;"/> 
+    </td>
+    <td>
+      <font style="font-size:30px;font-weight:bold;font-family:verdana">  Welcome to</font>
+      <font style="font-size:30px;font-weight:bold;font-family:verdana;color:#2E9AFE;">  Booth Leads</font>
+      </td>
+    </tr>
+    </table>
+ </td>
+ </tr>
+ </table>
+ 
+<apex:form >
+<apex:inputCheckbox onclick="checkAll(this,'checkedone');checkallrecs(this.checked,'divcheck');" id="all"/>&nbsp;&nbsp;&nbsp;&nbsp;{!dummyinn.size}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<apex:CommandLink value="Print Badge" onclick="Alert1.render();return false;"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<apex:CommandLink value="EXPORT" action="{!exportduplicates}" style="button"/>
+
+<apex:dataTable value="{!dummyysdisp}" var="x" style="width:100%;line-height:30px;"  rowClasses="odd,even">
+
+<apex:column >
+
+<!--<apex:inputCheckbox value="{!x.selected}"  id="checkedone" onclick="selectAll(this,'all')" rendered="{!if(x.First_Name__c+x.Last_Name__c+x.Email__c == x.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c+x.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c+x.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c ,false,true)}"/>-->
+</apex:column>
+<apex:column headerValue="Name"  >
+{!x.First_Name__c} {!x.Last_Name__c}
+</apex:column>
+<apex:column headerValue="Company"  >
+{!x.Company__c}
+</apex:column>
+
+<apex:column headerValue="Email" >
+ {!x.Email__c}
+ </apex:column>
+ <apex:column headerValue="Ticket Name" >
+ {!x.TicketTypes__r.TT_Name__c}
+ </apex:column>
+ <apex:column headerValue="Type">
+ {!x.TicketTypes__r.Ticket_Category__c}
+ </apex:column>
+ 
+ </apex:dataTable>
+ 
+ 
+ <!--popup for print badge--->
+<script type="text/javascript">
+function CustomAlert(){
+    this.render =function(dialog){
+        var winW = window.innerWidth;
+        var winH = window.innerHeight;
+        var dialogoverlay =document.getElementById('dialogoverlay');
+        var dialogbox = document.getElementById('dialogbox1');
+        dialogoverlay.style.display="block";
+        /*dialogoverlay.style.height = winH +"px";*/
+    /*  dialogbox.style.left=(winW/2) -(1160*.5)+"px";*/
+        dialogbox.style.top="180px";
+        dialogbox.style.display="block";
+        /*document.getElementById('dialogboxhead') .innerHTML="Confirrmation";
+        document.getElementById('dialogboxbody') .innerHTML= dialog;
+        document.getElementById('dialogboxfoot') .innerHTML ='<button class="abc" onclick="Alert.ok()">ok</button>'
+        document.getElementById('dialogboxfoot1') .innerHTML ='<button class="abc" onclick="Alert.Cancel()">cancel</button>'*/
+    }
+    
+    this.ok = function(){
+        document.getElementById('dialogbox1').style.display ="none";
+                document.getElementById('dialogoverlay').style.display ="none";
+            <!--    document.getElementById('abcd') .innerHTML= "rahil";-->
+                
+                return true;
+        
+        }
+        
+        
+    this.Cancel = function(){
+        document.getElementById('dialogbox1').style.display ="none";
+                document.getElementById('dialogoverlay').style.display ="none";
+            
+                
+                return false;
+        
+        }
+    
+    }
+    
+    var Alert1 = new CustomAlert(); 
+
+</script>
+<div id="dialogoverlay"></div><!--close of dialogoverlay-->
+<div id="dialogbox1">
+<a href="#" id="close" onclick="Alert1.Cancel()" style="margin-top:-8px;" >×</a>
+<style>
+#printbadge td{ padding:5px;}
+
+</style>
+
+ 
+  
+
+<div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+    <div class="title-grid">Print Badge</div>
+    <div class="content-gird" >
+       <table id="printbadge" width="100%" border="0" style="font-size:14px;">
+  <tr>
+    <td width="30%" style="text-align:right;">Select Printer:</td>
+    <td>
+    <apex:selectList value="{!selectedprinter}" multiselect="false" size="1">   
+    <apex:selectOptions value="{!printerlist}">
+    </apex:selectOptions>
+      <apex:actionSupport event="onchange" reRender="bpop,printbadgepanel" action="{!findtemplate}"/>
+    </apex:selectList>
+    </td>
+  </tr>
+  <tr id="zebratemp" style=" display:;">
+    <td style="text-align:right;">Select Template:</td>
+   <td>
+   <apex:outputPanel id="bpop">
+   <apex:selectList value="{!selectedbdtemname}" multiselect="false" size="1">   
+    <apex:selectOptions value="{!bdstyleslist}">
+    </apex:selectOptions>
+    </apex:selectList>
+    </apex:outputpanel>
+    </td>
+  </tr>
+  
+   <tr>
+    <td colspan="2" style="padding:5px; padding-top:10px; text-align:center;">
+    <apex:outputpanel id="printbadgepanel">
+    <apex:commandbutton styleClass="button-a blue" value="Print" action="{!Print}" rendered="{!IF(bdstyleslist.size==0,false,true)}" />
+    </apex:outputpanel>
+                        &nbsp;&nbsp;
+                        
+     <button class="button-a dark-blue" onclick="Alert1.Cancel()" >Cancel</button>
+    
+    </td>
+  
+  </tr>
+  
+</table>
+ 
+    </div><!--close of contentgrid-->
+
+    </div><!--close of grid1-->
+</div><!--close of dialogbox-->
+
+<!--close of print badge---->
+ <!----------------close of popup script----> 
+ <style>
+#dialogoverlay{
+    display:none;
+    opacity:.8;
+    position:fixed;
+    top:0px; 
+    left:0px;
+    background-color: #484848;
+    width:100%; 
+    z-index:1000;
+    height:100%;
+    }
+#dialogoverlay2{
+    display:none;
+    opacity:.8;
+    position:fixed;
+    top:0px; 
+    left:0px;
+    background-color: #fff;
+    width:100%; 
+    z-index:1000;
+    height:100%;
+    } 
+    #dialogoverlay3{
+    display:none;
+    opacity:.8;
+    position:fixed;
+    top:0px; 
+    left:0px;
+    background-color: #fff;
+    width:100%; 
+    z-index:1000;
+    height:100%;
+    }  
+     #dialogoverlay4{
+    display:none;
+    opacity:.8;
+    position:fixed;
+    top:0px; 
+    left:0px;
+    background-color: #fff;
+    width:100%; 
+    z-index:1000;
+    height:100%;
+    }
+#dialogbox{ display:none; background-color:; position:fixed; padding:5px;
+ width:40%; z-index:1000;  padding-top:30px;border-radius:3px; margin-left:30%;}
+ #dialogbox1{ display:none; background-color:; position:fixed; padding:5px;
+ width:40%; z-index:1000; margin-left:30%;  padding-top:30px;
+ border-radius:3px;}
+  #dialogbox4{ display:none; background-color:; position:fixed; padding:5px;
+ width:40%; z-index:1000; margin-left:30%;  padding-top:30px;
+ border-radius:3px;}
+ #dialogbox2{ display:none; width:36%;background-color: #a6ca8a ; border-radius:3px; position:fixed; padding:1px;
+  z-index:1000; border-radius:2px; margin-left:32.5%;}
+  #dialogbox3{ display:none; width:36%;background-color: #a6ca8a ; border-radius:3px; position:fixed; padding:1px;
+  z-index:1000; border-radius:2px; margin-left:32.5%;}
+ #close{ font-size:22px; font-weight:bold; color:#fff; text-decoration:none; float:right; margin-right:.2%; margin-top:-27px;}
+  #close:hover{ font-size:22px; text-decoration:underline; font-weight:bold; color:#fff; float:right; margin-right:.2%; margin-top:-27px;}
+  #close1{ font-size:22px; font-weight:bold; color:#000; text-decoration:none; float:right; margin-right:.2%; margin-top:-22px;}
+  #close1:hover{ font-size:22px; text-decoration:underline; font-weight:bold; color:#000; float:right; margin-right:.2%; margin-top:-22px;}
+  #close2{ font-size:22px; font-weight:bold; color:#000; text-decoration:none; float:right; margin-right:.2%; margin-top:-22px;}
+  #close2:hover{ font-size:22px; text-decoration:underline; font-weight:bold; color:#000; float:right; margin-right:.2%; margin-top:-22px;}
+  #dialogbox > div  { margin:0px;}
+ #dialogboxhead{ font-size:17px; padding:5px; color:#3ca641; background-color:#d4f7ba;}
+
+ #dialogboxbody{ background:#fff; padding:20px; color:#3ca641; font-size:14px; font-weight:300;}
+#dialogboxfoot{  background:#fff; width:100%; border:0px solid #F00; padding-bottom:5px; float:left; text-align:center;}
+/*#dialogboxfoot1{ background:#fff; ; width:47.8%; border:0px solid #F00; float:left; padding:10px; padding-right:0px; padding-left:2px; text-align:left;}*/
+.abc{ background-color:#F4F4F4; border:0px;  padding-top:5px;padding-bottom:5px;padding-right:15px;padding-left:15px; cursor:pointer;}
+ </style>
+ </apex:form>
+ 
+</apex:page>

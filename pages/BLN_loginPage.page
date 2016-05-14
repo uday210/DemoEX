@@ -1,0 +1,364 @@
+<apex:page showHeader="false" controller="BLN_RegistrationnewCon3" cache="true"  standardStylesheets="false" id="loginpage">
+<apex:form >
+                   <!-- Registration  Information table start -->
+           <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"> Registration Information </h3>
+          </div><!--close of panel heading--->
+         <!------------> 
+          <div class="panel-body LogInUserPanel">
+            <p id='loginbutton'>
+
+            Are you a Eventdex User? 
+       
+            <a id="edsignin" onclick="toggle_visibility1('login');" class="sign_anchor" style="font-weight:bold; text-decoration:underline">Signin</a> 
+            or
+            <a id="edsignup" onclick="toggle_visibility1('signupsec');" class="sign_anchor" style="font-weight:bold; text-decoration:underline">Sign up</a>
+            
+            </p>
+             <!-----sign up---->  
+          <div id="login" class="col-lg-12  col-xs-12 col-sm-12 sign_box tohide1" style="display:none">
+           <!--------------->
+           <div class="col-lg-8 col-lg-offset-2">
+           <form role="form">
+             
+            <hr class="colorgraph"></hr>
+            
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="form-group">
+                       <apex:inputText value="{!EmailAddress}" onkeyup="tolower(this);"  id="LoginEmailAddress" onchange="setCookie('apex__loginemailaddress', this.value, 3);" styleClass="form-control" html-placeholder="Username"/>
+                                     
+                       <!-- <input type="text" name="fname" id="fname" class="form-control" placeholder="First Name*" />-->
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="form-group">
+                    <apex:inputSecret id="loginPassword" value="{!Password}" styleClass="form-control" html-placeholder="Password" />
+                    </div>
+                </div>
+                <div>  <apex:commandLink value="Login" id="loginbut" onclick="loginAction1('a','a');" styleClass="btn btn-primary" reRender="buyerid"/>
+                                        </div>
+                                        
+            </div>
+           </form>
+        </div>
+           <!-------------------->     
+         </div><!--close of signupbox--->
+          <!-------->
+              <!-----sign up---->  
+          <div id="signupsec" class="col-lg-12  col-xs-12 col-sm-12 sign_box tohide1" style="display:none">
+           <!--------------->
+           <div class="col-lg-8 col-lg-offset-2">
+           <form role="form">
+             
+            <hr class="colorgraph"></hr>
+            
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="form-group">
+                        <input type="text" name="fname" id="fnamesu" class="form-control" placeholder="First Name*" tabindex="5"/>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="form-group">
+                        <input type="text" name="lname" id="lnamesu" class="form-control" placeholder="Last Name*" tabindex="6"/>
+                    </div>
+                </div>
+            </div>
+             
+            <div class="form-group">
+                <input type="text" name="display_name" id="cnamesu" class="form-control" placeholder="Company" tabindex="3"/>
+            </div>
+            <div class="form-group">
+                <input type="email" name="email" id="emailsu" class="form-control" placeholder="Email Address*" tabindex="4"/>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" name="password" id="passwordsu" class="form-control " placeholder="Password*" tabindex="4"/>
+                    </div>
+             
+            <div class="row">
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-12">
+                    
+                        
+                        <input type="checkbox" name="t_and_c" id="t_and_c" class="hidden" value="1"/>
+                    
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 text-center signupbox" style="font-size:13px; margin-bottom:5px;">
+                    <input type="checkbox" />I have read and agree to the Eventdex <a href="#" style="text-decoration:underline;">Terms and Conditions</a> and <a href="#" style=" text-decoration:underline;">Privacy Policy</a><br />
+                    
+                    <input type="button" value="Signup" class="btn btn-blue" onclick='createuser()' />
+                                        </div>
+            </div>
+           </form>
+        </div>
+           <!-------------------->     
+         </div><!--close of signupbox--->
+          <!-------->
+         
+  </div>
+        <div id='loginuser' style="display:none"> 
+         <div class="row">
+         <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="form-group">
+                <div id='loginusermsg'></div>
+                </div></div>
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="form-group">
+                <span>
+                    <div><a value="Logout" id="logoutbtn" onclick="loutaction();" class='btn btn-primary'>Logout</a></div>
+                </span> 
+  </div>
+  </div>
+                </div>
+        </div>
+        </div>
+  
+    <script>
+     function loutaction(){
+                                
+                                   document.getElementById('loginuser').style.display='none';
+                                   var cls=  document.getElementsByClassName('LogInUserPanel');
+                                       cls[0].style.display='';                                            
+                          //        document.getElementById('#loginbutton').style.display='';            
+                                  // document.getElementById('namefrm').innerHTML= '';
+                                 //  document.getElementById('logoutbtn').style.display='none';
+                                 //   document.getElementById('myPage:OrderNowForm:LogInUserPanel').style.display='';
+                                 //  clearPreviousValues('Onchange','Email',0);
+                                 var cls=  document.getElementsByClassName('bufname');
+                                               cls[0].value='';
+                                           
+                                 var cls=  document.getElementsByClassName('bulname');
+                                    cls[0].value = '';                                            
+                                            
+                                 var cls=  document.getElementsByClassName('buemail');
+                                    cls[0].value = '';    
+                                
+                                               
+                                                         
+                                 //  document.getElementById('myPage:OrderNowForm:FirstName').value =''; 
+                                 //  document.getElementById('myPage:OrderNowForm:LastName').value =''; 
+                                 //  document.getElementById('myPage:OrderNowForm:Email').value =''; 
+                                 //  document.getElementById('myPage:OrderNowForm:Prefix').value ='--None--'; 
+                               }
+                                    
+    function toggle_visibility1(id) {
+    $('.tohide1').hide();
+       var e = document.getElementById(id);
+       if(e.style.display == 'block')
+          e.style.display = 'none';
+       else
+          e.style.display = 'block';
+    }
+    
+      function loginAction1(i,j ) {
+      var emailstr;
+      var pwdstr;
+                                    
+                            //      $('#loginbutton').hide();
+                                 if(i =='a' && j=='a') { var eid=$("[id$='LoginEmailAddress']").val();//document.getElementById('{!$Component.myPage:OrderNowForm:LoginEmailAddress}');
+                                    var pwd=$("[id$='loginPassword']").val()//document.getElementById('{!$Component.myPage:OrderNowForm:LoginPassword}');
+                                     emailstr = eid;//.value;
+                                     pwdstr=pwd;//.value;
+                                    }
+                                    else{
+                                     emailstr = i;
+                                     pwdstr=j;
+                                    
+                                    
+                                    }
+                                     
+                                    //----------------------------- Calling login action backend ------------------------------- 
+                                     Visualforce.remoting.Manager.invokeAction(
+                                        'BLN_RegistrationnewCon3.login', 
+                                        emailstr,pwdstr,
+                                     function(result, event){
+                                     console.log(result);
+                                      if(event.status) {
+                                     // alert(event.status);
+                                           var cls=  document.getElementsByClassName('bufname');
+                                               cls[0].value= result.First_Name__c;
+                                           
+                                            var cls=  document.getElementsByClassName('bulname');
+                                               cls[0].value = result.Last_Name__c;                                            
+                                            
+                                            var cls=  document.getElementsByClassName('buemail');
+                                               cls[0].value = result.Email__c;                                           
+                                            
+                                                                                        
+                                           isBuyerLoggedIn =true;
+                                          // var rowno =0;                                     
+                                            var cls=  document.getElementsByClassName('buage');
+                                               if(cls.length>0 && result.Age__c!=undefined)
+                                               cls[0].value= result.Age__c;
+                                                                   
+                                               
+                                           var cls = document.getElementsByClassName('bublog'); 
+                                             if(cls.length>0 && result.Blogger__c!=undefined)
+                                              cls[0].value= result.Blogger__c;
+                                           
+                                           var cls=  document.getElementsByClassName('budob');
+                                               if(cls.length>0 && result.DOB__c!=undefined)
+                                               cls[0].value= result.DOB__c;
+                                               
+                                           var cls = document.getElementsByClassName('buSpeakerFaceBookId');
+                                              if(cls.length>0 && result.FaceBookId__c!=undefined)
+                                              cls[0].value = result.FaceBookId__c; 
+                                           
+                                           var cls=  document.getElementsByClassName('bugender')
+                                             if(cls.length>0 && result.Gender__c!=undefined)
+                                              cls[0].value= result.Gender__c; 
+                                          
+                                           var cls = document.getElementsByClassName('bulin');
+                                             if(cls.length>0 && result.LinkedInId__c!=undefined)
+                                              cls[0].value= result.LinkedInId__c; 
+                                          
+                                           var cls=  document.getElementsByClassName('bumobile')
+                                            if(cls.length>0 && result.Mobile__c!=undefined)
+                                             cls[0].value= result.Mobile__c; 
+                                          
+                                           var cls=  document.getElementsByClassName('buprefix')
+                                             if(cls.length>0 && result.Prefix__c!=undefined)
+                                             cls[0].value= result.Prefix__c; 
+                                             
+                                           var cls=  document.getElementsByClassName('busuffix')
+                                            if(cls.length>0 && result.Suffix__c!=undefined)
+                                             cls[0].value= result.Suffix__c; 
+                                          
+                                          var cls = document.getElementsByClassName('buframelinkval buSpeakerVideo');
+                                             if(cls.length>0 && result.Video__c!=undefined)
+                                             cls[0].value= result.Video__c; 
+                                          
+                                           var cls = document.getElementsByClassName('buhomephone');
+                                           if(cls.length>0 && result.Home_Phone__c!=undefined)
+                                            cls[0].value= result.Home_Phone__c; 
+                                          
+                                           var cls = document.getElementsByClassName('butwitter');
+                                             if(cls.length>0 && result.TwitterId__c!=undefined)
+                                             cls[0].value=  result.TwitterId__c;
+                                          
+                                          
+                                           var cls = document.getElementsByClassName('buSpeakerBiography');
+                                             if(cls.length>0 && result.Biography__c!=undefined)
+                                               cls[0].value=  result.Biography__c;   
+                                           //-----------------------------------------------------------------------------------
+                                             var cls = document.getElementsByClassName('buHomeAddress1');
+                                       //      if(cls.length>0 && result.Home_Address__r.Address1__c!=undefined)
+                                       //        cls[0].value=  result.Home_Address__r.Address1__c;
+                                      
+                                            var cls = document.getElementsByClassName('buHomeAddress2');
+                                      //       if(cls.length>0 && result.Home_Address__r.Address2__c!=undefined)
+                                      //         cls[0].value=  result.Home_Address__r.Address2__c;
+                                      
+                                            var cls = document.getElementsByClassName('buHomeCity');
+                                      //       if(cls.length>0 && result.Home_Address__r.City__c!=undefined)
+                                      //         cls[0].value=  result.Home_Address__r.City__c;
+                                               
+                                            var cls = document.getElementsByClassName('buHomeCountry');
+                                      //       if(cls.length>0 && result.Home_Address__r.Country__c!=undefined)
+                                      //         cls[0].value=  result.Home_Address__r.Country__c;
+                                     
+                                            var cls = document.getElementsByClassName('buHomeState');
+                                      //       if(cls.length>0 && result.Home_Address__r.State__c!=undefined)
+                                      //         cls[0].value=  result.Home_Address__r.State__c;         
+                                                   
+                                            var cls = document.getElementsByClassName('buHomeZip');
+                                      //       if(cls.length>0 && result.Home_Address__r.Zipcode__c!=undefined)
+                                      //         cls[0].value=  result.Home_Address__r.Zipcode__c;           
+                                                                                                                   
+                                           
+                                                                                                                   
+                                           //LogInUserPanel
+                                           var cls = document.getElementsByClassName('LogInUserPanel');
+                                           cls[0].style.display='none';
+                                         document.getElementById('loginuser').style.display='';
+                                           document.getElementById('loginusermsg').innerHTML= 'Welcome ,'+result.First_Name__c+' '+result.Last_Name__c;
+                                         //  document.getElementById('loginbut').style.display='none';
+                                      //       document.getElementById('myPage:OrderNowForm:LogInUserPanel').style.display='none';
+                                      //       document.getElementById('logoutbtn').style.display='';
+                                      //       if( result.Default_Company_ID__c!=""){
+                                      //          getCompwithid(result.Default_Company_ID__c);
+                                      //       }
+                                      //       document.getElementById('LogInUserPanel').style.display = 'none';
+                                              } else
+                                              if (event.type === 'exception') {
+                                                 alert('User Name/ Password is incorrect');
+                                             } else {
+                                              alert('User Doesnot Exist');
+                                            }
+                                        }, 
+                                        {escape: true}
+                                    );
+                                    
+                                } 
+                                
+                                function setCookie(cookiename,cookievalue,cookieexpiry){
+        var expirydate=new Date();
+        expirydate.setDate(expirydate.getDate() + cookieexpiry);
+        var cookie_value=escape(cookievalue) + ((cookieexpiry==null) ? "" : "; expires="+expirydate.toUTCString());
+        document.cookie=cookiename+ "=" + cookie_value;
+    }
+    
+    function createuser()
+    {
+    var datavalid = false;
+    var fname = $('#fnamesu').val();
+    var lname = $('#lnamesu').val();
+    var comname = $('#cnamesu').val();
+    var email = $('#emailsu').val();
+    var pass = $('#passwordsu').val();
+    if(comname == '' || comname == undefined)
+    comname = '0668A000000090V';//just send a dummy variable method if company name is empty 
+    if(fname !='' || lname !='' ||  email !='' || pass !='' || comname !='')
+    {
+   // alert('valid data');
+    datavalid = false;
+    }
+    if(email !='' ) {
+    
+        var x= email;
+        
+        var atpos=x.indexOf("@");
+        var dotpos=x.lastIndexOf(".");
+        if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length){
+            alert("Please enter a valid Email ID");
+            datavalid = false;
+        }else{
+            datavalid = true;
+        }
+    }/*
+    else {
+    datavalid = false;
+    }
+    }*/
+    
+   // alert(datavalid);
+    
+    
+    if(datavalid){
+    Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_RegistrationnewCon3.signupfromregpage}',fname,lname,comname,email,pass,function(event,result){
+    console.log(result.status);
+    if(result.status)
+    {
+    loginAction1(email,pass);
+   // alert('user created succcessfully');
+    }
+    });
+    }
+    
+    
+    }
+</script>
+<script>
+$(".sign_anchor").click(function(e) {
+                $(".tohide1").hide();
+            $("#reg_"+$(this).attr('id') ).show();  
+             });
+
+</script>
+
+  
+    
+    </apex:form>
+</apex:page>

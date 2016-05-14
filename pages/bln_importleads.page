@@ -1,0 +1,104 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" title="Eventdex" controller="Imortleadscon">
+<c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+<apex:form >
+   <c:ed_commonstyles ></c:ed_commonstyles>
+   <font color="red"><apex:pagemessages /></font>
+    <table width="100%"  style=" border:3px solid #F7F7F7;  border-collapse:collapse; margin:0px auto;" border="1">
+ <thead>
+ <tr>
+     <td style="padding:5px; background-color:#f7f7f7;" colspan="4"><h2  style="color:#3C3C3C; padding:0px; margin:0px;">Select file to import</h2></td>
+ </tr>
+ 
+    <tr >
+    <td width="25%" style="padding:8px;" > <apex:inputFile value="{!csvFileBody}"   filename="{!csvAsString}" accept=".csv" id="inpfile"/></td>
+   
+                        
+
+     <td style="padding:8px;"><apex:commandButton value="Next" action="{!importCSVFile}" styleclass="button-a blue" onclick="return extValidation()"></apex:commandButton></td>
+
+     </tr>
+  </thead>
+</table>
+
+ <br />      
+                    
+<div style="padding:3px;"><br/>
+         <table width="100%"  style=" border:3px solid #F7F7F7;  border-collapse:collapse; margin:0px auto;" border="1">
+         <thead>
+         
+        <tr>
+            <td style="padding:3px; text-align:left; background-color:#f7f7f7;" colspan="2"><h2 style="color:#414141; padding:0px; margin:0px;">Create/Edit Mapping  ( Unmapped columns will be skipped during actual load )</h2></td>
+        </tr> 
+         <tr>
+         <td style="padding:8px; text-align:left;" >Csv Header</td>
+         <td style="padding:8px; text-align:left;" >Map To</td>
+         </tr>
+     
+          </thead>
+          
+          <tbody>
+          <apex:repeat value="{!gridrows}" var="r" >
+             <tr>
+    <td style="padding:8px;"><span id="mandatory">*</span><apex:outputText value="{!r.csvheader}"/></td>
+    <td style="padding:8px;"><apex:selectList value="{!r.field}" multiselect="false" size="1"  >
+          <apex:selectOptions value="{!fieldsoptions}"/>
+          </apex:selectList></td>
+     </tr>     
+          </apex:repeat>
+          </tbody>
+</table>
+
+</div>
+
+<div style="width:95%; padding:8px; margin:0px auto; text-align:right"><apex:commandButton value="Import" action="{!Import}" styleclass="button-a blue"/>
+ <apex:commandButton value="Cancel" onclick="window.location.href='{!$Label.SiteURL}/apex/BLN_LeadRetrieval';return false;" styleclass="button-a blue"/>
+ 
+ </div>
+ <div style="width:100%; margin:0px auto; border:1px solid #f7f7f7; line-height:25px; padding:8px;">
+         
+                     <b>Notes:</b>
+                <ul style="line-height:25px; margin-left:35px;">
+                 <li>Custom barcode should be unique</li>
+                <li>Date should be entered in mm/dd/yyyy format</li>
+                <li>Time should be in HH:MM:SS 24 Hours format</li>
+                <li>
+                Please use a CSV file or the standard template to upload Leads.   
+                </li>
+                <li>You will receive a Email incase is there any Lead Insertion Fails, to your Registered Email Id</li>
+                </ul>
+                <font color="#FFFF00"> <b><u><apex:commandLink value=" Click here "  action="{!exportToCSV}" title=" Click here " target="_blank"/></u></b></Font> to download the template.  
+
+                </div>
+ </apex:form>
+ </c:ed_basictemplate>
+  <c:ed_commonjs ></c:ed_commonjs>
+ <c:ed_popupbox ></c:ed_popupbox>
+ <script>
+ function extValidation()
+       {
+         // alert('aa');
+          var fileName = jQuery('[id$=inpfile]').val();
+          var Extension=".csv";
+          
+         
+          
+         // alert('bbb');
+          if(fileName.substr(fileName.length - Extension.length, Extension.length).toLowerCase()!=Extension)
+          {
+              Alert.render('Please choose <b>.csv</b> file only','Alert','OK');
+              return false;
+          }                    
+       }
+       
+       function check(obj){ 
+           var path = obj.value;
+           var filesize= obj.files[0].size;
+           if(filesize > 102400){
+            obj.value = null;
+            Alert.render('You cannot upload greater than 100kb file!','Alert','OK');
+            return false;
+           }
+           }
+ </script>
+ 
+</apex:page>

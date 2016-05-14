@@ -1,0 +1,42 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" controller="BL_TransactionDetailsCon" contentType="application/vnd.ms-excel#TransactionDetails.xls">
+<style>
+table, th {
+   text-align:left;
+}
+  .cls{
+     text-align:left;
+  }
+</style>
+    <apex:variable value="{!0}" var="q"/>
+    <apex:variable value="{!0}" var="z"/>
+    
+   <apex:DataTable value="{!transactions}" var="trn" style="border:0px solid black;" border="1">
+        <apex:column style="vertical-align:top;" headerValue="S.NO">
+           <apex:variable value="{!q+1}" var="q"/>
+           {!q}
+       </apex:column>
+       <apex:column >
+          
+          Order Name: {!trn.Name} <br />
+           Order Date : <apex:outputText value="{0, date, MMMM d','  yyyy hh:mm a}">
+               <apex:param value="{!trn.createdDate-0.1666666667}"/>
+            </apex:outputText><br />
+            Order Amount : ${!trn.Total_Amount__c}  <br />
+            Order By : {!trn.Email__c}  <br />
+            Payment Type : {!trn.Payment_Type__c}  <br />
+            Payment Status : {!trn.Payment_Status__c}  <br /> <br />
+            Transaction Key:{!trn.payKey__c}
+         </apex:column>  
+        <apex:column >
+                 
+           <apex:DataTable value="{!trn.Dummays__r}" var="d" style="text-align:left;" border="1"> 
+              <apex:column > <apex:variable value="{!z+1}" var="z"/>{!z} </apex:column>
+              <apex:column headerValue="Attendee Name" headerClass="cls" value="{!d.First_Name__c} {!d.Last_Name__c}"> </apex:column> 
+              <apex:column headerValue="Email" headerClass="cls" value="{!d.Email__c}"></apex:column> 
+              <apex:column headerValue="Company" headerClass="cls" value="{!d.Company__c}"> </apex:column> 
+              <apex:column headerValue="Ticket Name" headerClass="cls" value="{!d.TicketTypes__r.TT_Name__c}"> </apex:column> 
+           </apex:DataTable><br /> <br />     
+       </apex:column> 
+   
+     </apex:DataTable>
+   </apex:page>

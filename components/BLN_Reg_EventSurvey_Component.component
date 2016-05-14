@@ -1,0 +1,137 @@
+<apex:component controller="BLN_RegComponentController">
+<apex:attribute name="ThePageControler" type="BLN_RegistrationnewCon3" description="The main page controller" assignTo="{!ThePageController}"/>  
+
+
+  <!----Event  Level Survey Questions---->
+        <apex:outputPanel rendered="{!IF(ThePageControler.buyerTicketInn.UserAnswer.size <=0 ,false,true)}">
+                                  <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"> 
+             <apex:outputText value="Survey Questions"/>
+            </h3>
+            
+          </div>
+          <div class="panel-body">
+            <apex:variable var="i" value="{!1}"/>
+            <div class="surveyquest section_box">
+             <p class="bg-font" style=" padding-bottom:10px;"><strong>Event Level Survey Questions</strong></p>
+             <apex:repeat value="{!ThePageControler.buyerTicketInn.UserAnswer}" var="uea">
+             <!---------question type text-------->
+             <div id="{!uea.question.BLN_Parent_Answer__c}" style="display:{!IF(uea.question.BLN_Parent_Answer__c==null,'','none')}">
+             <div class="formelem_boxfull">
+              <ul class="stdul">
+              <li>
+              <div class="form_quest">
+              
+              <div class="qno">Q{!i}.</div>
+               <apex:variable var="i" value="{!i+1}"/>
+              <div class="q_txt">{!uea.Question.Question_Text__c} ?
+              <apex:outputText rendered="{!IF(uea.itq.isRequired__c == TRUE, TRUE , FALSE)}"><span id="mandatory" style="color:#F00; font-size:15px;">*</span></apex:outputText>
+              </div>
+              
+               <div class="clear"></div>
+              </div><!---close of form_quest--->
+               <div class="form_answer">
+              <!------->   
+             <div class="ans_lbl">Ans.</div>
+              <div class="qans">
+              <div class="{!IF(uea.Question.Answer_Type__c=='Paragraph text' || uea.Question.Answer_Type__c=='Text' || uea.Question.Answer_Type__c=='Selectlist','','radio_chk_box')}">
+               <apex:inputText value="{!uea.SelectedAnswer}"  rendered="{!IF(uea.Question.Answer_Type__c=='Text',TRUE,FALSE)}" styleClass="{!IF(uea.Question.Answer_Type__c=='Paragraph text' || uea.Question.Answer_Type__c=='Text' ,'form-control valid_txt','form-control valid_txt')}  {!IF(uea.itq.isRequired__c == TRUE, ' required', '')}" style="float:left;width: 90%;" />
+               <apex:inputTextarea value="{!uea.SelectedAnswer}"  rendered="{!IF(uea.Question.Answer_Type__c=='Paragraph text',TRUE,FALSE)}" styleClass="{!IF(uea.Question.Answer_Type__c=='Paragraph text' || uea.Question.Answer_Type__c=='Text' ,'form-control valid_txt','form-control valid_txt')}  {!IF(uea.itq.isRequired__c == TRUE, ' required', ' ')}" style="width: 90%;"/> 
+            
+        
+                                    
+                <apex:selectList onfocus="this.oldvalue = this.value;" styleClass="form-control valid_select {!IF(uea.itq.isRequired__c == TRUE, ' required', ' ')}" onchange="showsubquestionpicklist(this,'');this.oldvalue = this.value;" value="{!uea.SelectedAnswer}" multiselect="false" size="1"  rendered="{!IF(uea.Question.Answer_Type__c=='Choose from a list',TRUE,FALSE)}" style="float:left;width: 90%;">
+                                                <apex:selectOption itemlabel="--None--" itemValue=""/>
+                                                    <apex:selectOptions value="{!uea.Answers}"/> 
+                                                </apex:selectList>
+                                                
+                <div style="display:{!IF(uea.Question.Answer_Type__c=='Single Selection','','none')}">
+                                                <apex:selectRadio value="{!uea.SelectedAnswer}" onchange="showsubquestionradio($(this).attr('name'),'');"  layout="pageDirection"  rendered="{!IF(uea.Question.Answer_Type__c=='Single Selection',TRUE,FALSE)}">
+                                                    <apex:selectOptions value="{!uea.Answers}"/>
+                </apex:selectRadio>
+              <!--  <strong>{!uea.Answers}</strong>-->
+                 </div>
+                                                    
+                <div style="display:{!IF(uea.Question.Answer_Type__c=='Checkboxes','','none')}">
+                                                <div class="maxanswercount" a="{!uea.Question.Max_Answer_count__c}">
+                                                <br/><apex:outputText value="You can choose maximum {!uea.Question.Max_Answer_count__c} answers" rendered="{!If(uea.Question.Max_Answer_count__c==0 || uea.Question.Max_Answer_count__c==null,false,true)}"/>
+                                                <apex:selectCheckboxes layout="pageDirection" value="{!uea.SelectedAnswerCheck}"  rendered="{!IF(uea.Question.Answer_Type__c=='Checkboxes',TRUE,FALSE)}" >
+                                                    <apex:selectOptions value="{!uea.Answers}"/>
+                                                </apex:selectCheckboxes>
+                                                </div>
+               <!-- <strong>{!uea.Answers}</strong>-->
+                </div>
+                                                
+                <div style="display:{!IF(uea.Question.Answer_Type__c=='Scale','','none')}">
+                <apex:selectRadio value="{!uea.SelectedAnswer}" layout="lineDirection"  rendered="{!IF(uea.Question.Answer_Type__c=='Scale',TRUE,FALSE)}" id="SQScale2">
+                                                        <apex:selectOptions value="{!uea.Answers}"/>
+                                                    </apex:selectRadio>
+             <!--    <strong>{!uea.Answers}</strong>-->
+                 </div>
+
+
+              </div>
+              <!---------->
+               <div class="clear"></div>
+              </div><!---close of form_ans---->
+              </div><!--form ans--->
+              </li>
+              </ul>
+            </div>
+            <!---close of formelem_box--->
+             <!--------//question type text------->
+                                 
+             </div>
+                                
+            </apex:repeat> 
+          <!----->   
+          </div>
+          </div>
+        </div>
+        </apex:outputPanel>
+                                                          
+     <!---//End of Event Level Survey Questions--->  
+  
+                        
+    <script>
+                                 function showsubquestionradio(ans,tid)
+                                 {
+                                 var radioid='';
+                                var o_radio_group = document.getElementsByName(ans);
+                                 for(var i = 0; i < o_radio_group .length; i++){
+                                    if(o_radio_group [i].checked){
+                                      radioid=o_radio_group[i].value+tid;
+                                      //document.getElementById(radioid).style.display='';
+                                      $('[id^="'+radioid+'"]').show();
+                                    }
+                                    else
+                                    {
+                                       radioid=o_radio_group[i].value+tid;
+                                       //document.getElementById(radioid).style.display='none'; 
+                                       $('[id^="'+radioid+'"]').hide();
+                                    }
+                                      }
+                                   
+                                 }
+                                  function showsubquestionpicklist(ans,tid)
+                                 {
+                                var radioid='';
+                                try{
+                                radioid=ans.value+tid;
+                                      //document.getElementById(radioid).style.display='';
+                                      $('[id^="'+radioid+'"]').show();
+                                    }catch(e){}
+                                   try{ 
+                                   radioid=ans.oldvalue+tid;
+                                   //document.getElementById(radioid).style.display='none';
+                                   $('[id^="'+radioid+'"]').hide();
+                                   }catch(e){}
+                                 }
+                                 </script>         
+                                 <style>
+                                 div td {
+                                    padding-left: 15px;
+                                    }
+                                 </style>
+</apex:component>

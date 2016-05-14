@@ -1,0 +1,442 @@
+<apex:page controller="BL_PortalHealthCheckCon" showHeader="false">
+  
+  <apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+  
+  <script> 
+  function searchSel() {
+          var searchText=document.getElementById('searchTxt').value.toLowerCase();
+           var targetTable = document.getElementById('dataTable12');
+             var rows = targetTable.rows;
+               for (var rowIndex = 1; rowIndex < targetTable.rows.length; rowIndex++) {
+                // var fullname = rows[rowIndex].getElementsByTagName("td");
+                 var fullname = rows[rowIndex].getElementsByClassName("cpkn"); 
+                  var searchval='';
+                  for(var g=0;g<fullname.length;g++){
+                    searchval += fullname[g].innerHTML.toLowerCase();
+                  }
+                 
+                  if(searchval.indexOf(searchText)!=-1){
+                         rows[rowIndex].style.display ='';
+                      }else{
+                        rows[rowIndex].style.display ='none';
+                      }
+                 }
+               }
+               
+               
+            function display(vax,st){
+               if(st==='show'){
+                 document.getElementById(vax+'update').style.display='none';
+                 document.getElementById(vax+'signup').style.display='none';
+                 document.getElementById(vax+'chemail').style.display='none';          
+              }else if(st==='update'){
+                document.getElementById(vax+'signup').style.display='none';
+                document.getElementById(vax+'show').style.display='none'; 
+              document.getElementById(vax+'chemail').style.display='none';
+              }else if(st ==='signup'){
+                document.getElementById(vax+'show').style.display='none';
+                document.getElementById(vax+'update').style.display='none';
+                document.getElementById(vax+'chemail').style.display='none';
+               }else if(st== 'chemail'){
+               
+                document.getElementById(vax+'show').style.display='none';
+                document.getElementById(vax+'update').style.display='none';
+                document.getElementById(vax+'signup').style.display='none';
+               } 
+               
+                
+               
+                 if(document.getElementById(vax+st).style.display =='block'){
+                   document.getElementById(vax+st).style.display ='none';
+               }else{
+                 document.getElementById(vax+st).style.display ='block';
+               }
+            }   
+               
+       var timeoutReference;
+               
+       function keyUpaction(){
+         if (timeoutReference) clearTimeout(timeoutReference);
+           timeoutReference = setTimeout(function() {
+               onchangeEvet();
+          }, 1000);
+       }   
+               
+               
+   </script> 
+  
+  
+  
+  <style>
+  table td {
+     color: #807f7f;
+  }
+  
+  a{
+   color:blue;
+  }
+  </style>
+  
+  
+  
+  
+   <apex:outputPanel rendered="{!reportPage}"> 
+  
+  <apex:form >
+  <apex:actionFunction action="{!onchangeEvent}" name="onchangeEvet" reRender="frm" status="sts"> 
+   </apex:actionFunction>
+   
+  <div style="width:100%;padding:5px;margin-top:5px;"><br />
+      <span style="color: #247dba;font-weight:bold;font-size:14px;"> Global Search :</span> 
+      <apex:inputText value="{!globalSearch}" id="globalsearch"  onkeyup="keyUpaction();" html-placeholder="Global search" style="width:300px;height:20px;"/> &nbsp;
+        
+                                 <apex:actionStatus id="sts" >         
+                                        <apex:facet name="start">         
+                                              <apex:image url="{!$Resource.LoaderImage}" style="margin-top:17px;"/>
+                                        </apex:facet>         
+                                    </apex:actionStatus>
+                  
+    </div>
+  
+  </apex:form>
+  
+  
+  
+  
+  <apex:form style="padding-top:20px;" id="frm">
+  
+ 
+  <script>
+    function updateValue(val1,val2){
+    var f1 =document.getElementById(val1);
+       if(f1.value!=""){
+        updatePass(val2,f1.value);
+       }else{
+         alert('Please enter password');
+       }     
+    }
+    
+    
+     function signupValue(val1,val2){
+       var f1 =document.getElementById(val1);
+       if(f1.value!=""){
+         userSignupin(val2,f1.value);
+       }else{
+         alert('Please enter password');
+       }     
+    }
+    
+    
+ function chgEmail(val1,val2){
+      var f1 =document.getElementById(val1);
+      
+       if(f1.value!=""){
+        updateEmail(val2,f1.value);
+       }else{
+         alert('Please enter Email');
+       }     
+    }   
+    
+    
+    
+    
+    function selectAll(thw){
+  
+     if(thw.checked){
+       var cl = document.getElementsByClassName('stycls');
+       
+        for(var r=0;r < cl.length;r++){
+          cl[r].checked=true;   
+        }
+     }else{
+      var cl = document.getElementsByClassName('stycls');
+        for(var r=0;r<cl.length;r++){
+          cl[r].checked=false;   
+        }   
+     }
+        
+    }
+    
+  function updateusersList(){
+     
+     var macteve ='{!eve.Is_MatchMaking_Event__c}';
+       var r =false;
+       
+       if(macteve=='false'){ 
+         r= confirm("are they matchmaking users?");
+       }
+        if (r == true) {
+            createupes('true');
+        } else {
+            createupes('false');
+        }
+  }  
+    
+  </script>
+  
+  <apex:actionFunction action="{!updateEmail}" name="updateEmail" reRender="frm"> 
+      <apex:param value="" name="emValue"/>
+      <apex:param value="" name="index"/>
+   </apex:actionFunction>
+  
+  
+   <apex:actionFunction action="{!updatePassword}" name="updatePass" reRender="frm"> 
+      <apex:param value="" name="emValue"/>
+      <apex:param value="" name="index"/>
+   </apex:actionFunction>
+   
+   <apex:actionFunction action="{!createUpes}" name="createupes" reRender="frm"> 
+      <apex:param value="" name="match"/>
+   </apex:actionFunction>
+   
+  <apex:actionFunction action="{!userSignup}" name="userSignupin" reRender="frm"> 
+      <apex:param value="" name="emValue"/>
+      <apex:param value="" name="index"/>
+   </apex:actionFunction>
+   
+   
+     <!-- <div style="width:100%;padding-bottom:5px;text-align:center;">
+    
+       <span style="font-size:18px;color:#fb4171;font-weight:bold;text-decoration:underline;">
+           {!eve.EV_Title__c}      
+           
+                            <apex:actionStatus id="counterStatus" >         
+                                        <apex:facet name="start">         
+                                              <apex:image url="{!$Resource.LoaderImage}" style="margin-top:17px;"/>
+                                        </apex:facet>         
+                                    </apex:actionStatus>
+           
+       
+        </span>
+          <span style="float:right;padding-left:10px;"><apex:commandLink value="Refresh" action="{!onchangeEvent}" styleClass="awesome"/> </span>
+      
+        <apex:outputPanel rendered="{!isPortalAdmin}">
+           <div style="float:right;" >
+          &nbsp;&nbsp;&nbsp; <apex:commandLink value="Show Payments statusPage" action="{!showhidePanel}" styleClass="awesome"/> </div>
+            </apex:outputPanel>
+      </div>
+   
+   <div style="width:100%;padding-bottom:5px;">
+   <div style="width:48%;text-align:left;border:0px solid red; float:left;">
+   
+  Events :
+     <apex:selectList value="{!selectedValue}" size="1" multiselect="false" style="color: #807f7f;" disabled="{!NOT(isPortalAdmin)}">
+      <apex:selectOptions value="{!options}"/>
+       <apex:actionSupport action="{!getchangedeventvalue}" event="onchange" status="counterStatus"/>
+    </apex:selectList> 
+    
+    </div>
+    
+        </div> <br />-->
+          
+          <div style="width:100%;padding-bottom:5px;">
+         <div style="width:50%;float:left;text-align:left;">
+        <div data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" data-icon="arrow-d" data-iconpos="right" data-theme="b" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-icon-right ui-btn-up-b"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text"><span>Global Test</span></span><span class="ui-icon ui-icon-arrow-d ui-icon-shadow">&nbsp;</span></span>
+            <apex:selectList value="{!selectedValue}" size="1" multiselect="false" style="color: #807f7f;" disabled="{!NOT(isPortalAdmin)}">
+              <apex:selectOptions value="{!options}"/>
+               <apex:actionSupport action="{!getchangedeventvalue}" event="onchange" status="counterStatus"/>
+            </apex:selectList> 
+    </div>
+         
+          </div>
+         <div style="width:48%;float:right;text-align:right;"> 
+          <span style="float:right;padding-left:10px;"><apex:commandLink value="Refresh" action="{!onchangeEvent}" styleClass="awesome"/> </span>
+      
+        <apex:outputPanel rendered="{!isPortalAdmin}">
+         <apex:commandLink value="Show Payments statusPage" action="{!showhidePanel}" styleClass="awesome"/> 
+            </apex:outputPanel>
+        </div>
+        
+      </div>
+          
+          
+          
+           <div style="width:100%;padding-bottom:5px;text-align:center;padding-top:10px;">
+              <div style="width:100%;text-align:left;border:0px solid red; float:left;">
+                 <input type="checkbox" onclick="selectAll(this)">Select All</input> &nbsp;&nbsp;&nbsp;
+                  <apex:outputPanel rendered="{!isPortalAdmin}">
+                  <a value="Create Upe" onclick="updateusersList();" style="cursor:pointer;" >Create Upe</a>
+                  </apex:outputPanel>  
+              </div>
+             </div> 
+              
+            <div  style="width:100%;margin-top:15px;text-align:center;padding-top:10px;">
+              
+               <div style="width:49%;text-align:left;border:0px solid red; float:left;">
+                       
+                   <span style="color: #247dba;font-weight:bold;font-size:14px;"> Search :</span> 
+                      <input type="text" id="searchTxt" onkeyup="searchSel();" placeholder="Search with email,firstname,lastname" style="width:80%;height:20px;"/> &nbsp;
+                  
+                </div>
+              
+              
+              <div style="width:49%;text-align:right;border:0px solid red;float:right;padding-right:20px;;"> 
+             <span style="color: #247dba;"> Total Attendees : </span> <span style="font-weight:bold;" >{!total_size} </span> &nbsp;&nbsp;
+                          
+             <span style="color: #247dba;"> Records Displyed : </span>
+             <apex:selectList size="1" value="{!selectednumber}" multiselect="false">
+                 <apex:selectOptions value="{!NumberPickList}"> </apex:selectOptions>
+                 <apex:actionSupport event="onchange" action="{!onchangeEvent}" status="counterStatus"/>
+               </apex:selectList>
+              </div>
+         </div>
+          
+          <br  /> <br />
+  
+  <div style="width:100%;padding-bottom:5px;text-align: center;display: table; border:0px solid red;">
+  
+        <span style="color:{!IF(contains(error,'success'),'#00CC00','red')};font-size:16px;" > {!error}</span>
+  </div>
+  
+    <table style="width:100%;line-height:20px;border:0px solid #CCC;" cellpadding="0" cellspacing="0" border="1" class="display" id="dataTable12">
+     
+         <tr style="line-height:30px;">
+          <th style="width:2%;background-color:#2486c3;color:#FFFFFF;padding-left:5px;"  valign="top">S.no </th>
+               <th style="width:20%;background-color:#2486c3;color:#FFFFFF;padding-left:5px;"  valign="top">Eam Details </th> 
+               <th style="width:40%;background-color:#2486c3;color:#FFFFFF;padding-left:5px;" valign="top"> Upe Details </th>
+               <th style="background-color:#2486c3;color:#FFFFFF;padding-left:5px;"  valign="top">Reg Details </th>
+          </tr> 
+    <apex:variable value="{!0}" var="index"/>     
+     <apex:repeat value="{!innList}" var="inn">
+       <tr>
+       <th style="width:2%;font-size:15px;font-weight:bold;;color:#2486c3;padding-left:5px;"  valign="top">{!inn.rowcountInn}. </th>
+         <td style="width:30%;padding-left:10px;" valign="top">
+           <span > <apex:inputCheckbox value="{!inn.chk}" styleclass="stycls"/> </span> &nbsp;
+           
+          <p style="display:none;" class="cpkn" >{!inn.eamsInn.AS_Id__r.AS_firstName__c}, {!inn.eamsInn.AS_Id__r.AS_LastName__c},{!inn.eamsInn.AS_Id__r.AS_Email__c},{!inn.eamsInn.GuestType__c},{!inn.eamsInn.as_id__r.AS_company__c}</p>
+           <span style="color: #247dba;">User Name :</span>{!inn.eamsInn.AS_Id__r.AS_firstName__c} {!inn.eamsInn.AS_Id__r.AS_LastName__c} <br />
+           <span style="color: #247dba;">Email : </span>{!inn.eamsInn.AS_Id__r.AS_Email__c}<br />
+           <span style="color: #247dba;">Guest Type : </span>{!inn.eamsInn.GuestType__c}<br />
+           <span style="color: #247dba;">Ticket Type : </span>{!inn.eamsInn.TicketTypes__c} <br />
+            <span style="color: #247dba;">Is userExists : </span>{!IF(inn.uInn.userName!=null,true,false)} <br />
+         
+            
+             <div style="width:100%;border:0px solid red;"> 
+             
+             <apex:outputPanel rendered="{!isPortalAdmin}">
+              <div style="width:25%;float:left;color:blue;" > <a href="" onclick="display('{!inn.eamsInn.AS_Id__r.AS_Email__c}','show');">Show Password </a></div> </apex:outputPanel>
+              <div style="width:25%;float:left;"><a href="" onclick="display('{!inn.eamsInn.AS_Id__r.AS_Email__c}','update');">Update Password </a></div>
+              <div style="width:25%;float:right;color:blue;"> <a href="" onclick="display('{!inn.eamsInn.AS_Id__r.AS_Email__c}','signup');">Sign Up </a></div> 
+              <div style="width:24%;float:right;color:blue;"> <a href="" onclick="display('{!inn.eamsInn.AS_Id__r.AS_Email__c}','chemail');">Change email </a></div> 
+              
+               </div>
+             
+             
+             <div style="width:100%;border:0px solid red;display:none" id="{!inn.eamsInn.AS_Id__r.AS_Email__c}show"> 
+                {!inn.uInn.password__c}
+               </div>
+          
+              <div style="width:100%;border:0px solid red;display:none" id="{!inn.eamsInn.AS_Id__r.AS_Email__c}update"> 
+               
+                 <input type="password" value="{!inn.passInn}" id="{!inn.eamsInn.AS_Id__r.AS_Email__c}update1"/> &nbsp; 
+                  <a value="Update" class="awesome" onclick="updateValue('{!inn.eamsInn.AS_Id__r.AS_Email__c}update1','{!inn.eamsInn.AS_Id__r.AS_Email__c}');">
+                  Update</a>                  
+                 
+               </div> 
+               
+               <div style="width:100%;border:0px solid red;display:none" id="{!inn.eamsInn.AS_Id__r.AS_Email__c}signup"> 
+                 
+                 <input type="password" value="{!inn.passInn}" id="{!inn.eamsInn.AS_Id__r.AS_Email__c}signup1"/> &nbsp; 
+                  <a value="Update" class="awesome" onclick="signupValue('{!inn.eamsInn.AS_Id__r.AS_Email__c}signup1','{!inn.eamsInn.AS_Id__r.AS_Email__c}');">
+                  Sign Up</a> 
+                 
+               </div>
+               
+               
+               
+               <div style="width:100%;border:0px solid red;display:none" id="{!inn.eamsInn.AS_Id__r.AS_Email__c}chemail"> 
+                 
+                 <input type="text" value="{!inn.passInn}" id="{!inn.eamsInn.AS_Id__r.AS_Email__c}clsemail1"/> &nbsp; 
+                  <a value="Update" class="awesome" onclick="chgEmail('{!inn.eamsInn.AS_Id__r.AS_Email__c}clsemail1','{!inn.eamsInn.AS_Id__r.AS_Email__c}');">
+                  Update Email</a> 
+                 
+               </div>
+               
+          
+          </td> 
+          <td valign="top" style="padding-left:10px;width:40%;"> 
+             <apex:outputPanel rendered="{!IF(inn.upeInn.size>0,true,false)}">
+             <table cellpadding="0" cellspacing="0" style="width:100%;line-height:30px;" border="0">
+             <apex:repeat value="{!inn.upeInn}" var="upe">
+              <tr><td> <span style="color: #247dba;"> BL Profile :</span>  
+                <apex:inputField value="{!upe.Profile_id__c}" style="width:20%;"/>  &nbsp;{!upe.Profile_id__r.Pr_name__c}
+              </td> 
+              <td><span style="color: #247dba;"> User Status :</span>  <apex:outputField value="{!upe.User_id__r.isActive}" /> </td></tr>
+              
+              <tr><td><span style="color: #247dba;"> ML Profile : </span> <apex:inputField value="{!upe.MAtchMakingProfile__c}"/> </td>
+               <td> <span style="color: #247dba;">  Signup Status :</span> 
+                <apex:outputField value="{!upe.User_id__r.isSignup__c}" /></td></tr>
+              
+              <tr><td>  <span style="color: #247dba;"> Owner Name :</span>  {!upe.Owner.Name}  </td>
+               <td>  <span style="color: #247dba;"> Is matchMaking : </span> 
+                 
+                  <apex:inputField value="{!upe.IsMatchMakingUser__c}" rendered="{!eve.Is_MatchMaking_Event__c}"/>
+                  <apex:outputField value="{!upe.IsMatchMakingUser__c}" rendered="{!NOT(eve.Is_MatchMaking_Event__c)}"/>
+               
+               </td></tr>
+              
+              <tr><td>  <span style="color: #247dba;"> Booth :</span> 
+               
+               {!upe.BT_id__r.BT_Name__c}, {!upe.BT_id__c}</td>
+               <td>  &nbsp;</td></tr>
+              
+              
+              
+              <tr style="padding-bottom:5px;">
+              
+              <td colspan="2" style="text-align:right;padding-right:20px;"> 
+               <apex:outputPanel rendered="{!isPortalAdmin}">
+               
+                 <apex:commandLink value="Insert Booth" action="{!insertBooth}" style="color:blue;" rendered="{!IF(upe.BT_id__c==null,true,false)}">
+                   <apex:param name="upeValue" value="{!upe.id}"/> 
+                 </apex:commandLink>  &nbsp;&nbsp;&nbsp;
+               
+               
+                 <apex:commandLink value="Save" action="{!updateIndUpeValues}" style="color:blue;" >
+                   <apex:param name="upeValue" value="{!upe.id}"/> 
+                 </apex:commandLink>  &nbsp;&nbsp;&nbsp;
+                 
+                 <apex:commandLink value="Delete"  onclick="return confirm('Are you sure?');"  action="{!deleteUpe}" style="color:blue;" >
+                   <apex:param name="upeValue" value="{!upe.id}"/> 
+                 </apex:commandLink>
+                </apex:outputPanel>
+                </td></tr>
+               
+            </apex:repeat>   </table></apex:outputPanel>
+            
+            
+              <apex:outputPanel rendered="{!IF(inn.upeInn.size<=0,true,false)}">
+                  User Not Signed Up
+             </apex:outputPanel>
+            
+          
+          </td>
+          
+          
+          <td valign="top" style="padding-left:10px;"> 
+            <apex:repeat value="{!inn.dumsList}" var="du">
+               {!du.TicketTypes__r.TT_Name__c} ({!du.TicketTypes__r.Ticket_Category__c}),
+           </apex:repeat>
+          
+          </td>
+          
+       </tr>    
+     </apex:repeat>
+  </table>
+  </apex:form>
+   </apex:outputPanel>
+  
+  
+ <apex:outputPanel rendered="{!NOT(reportPage)}"> 
+  <apex:form >
+     <div style="width:100%;padding-bottom:5px;text-align:center;">
+        <span style="font-size:18px;color:#fb4171;font-weight:bold;text-decoration:underline;"> Report By Phani </span>
+           <div style="float:right;" ><apex:commandLink value="Show Payments statusPage" action="{!showhidePanel2}" styleClass="awesome"/> </div>
+      </div>
+    </apex:form>
+    
+    <apex:include pageName="BL_RegInfodetails"/>
+      
+   </apex:outputPanel> 
+  
+</apex:page>

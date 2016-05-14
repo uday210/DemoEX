@@ -1,0 +1,1990 @@
+<apex:page showHeader="false" controller="BLN_Profilecon" standardStylesheets="false" id="pageid">
+    
+  <!--- css component ---->
+    <c:ed_commonstyles ></c:ed_commonstyles>
+  <c:ValidationsCommon ></c:ValidationsCommon>
+  <c:ed_popupbox ></c:ed_popupbox>
+  <!--//css component -->
+  <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+  <!--custom styles--->
+  <style>
+        .formelem_boxsmall .formelement-ryt .selectlist {
+            width: 77% !important;
+        }
+        .chzn-container {
+            width: 240px !important;
+        }
+        .search-field input[type="text"] {
+            width: 130% !important;
+        }
+        .cke_reset {
+            width: 100%;
+        }
+        .cke_contents {
+            height: 100px !important;
+}
+  </style>
+  <!-- end of custom styles--->
+  <!---Basic template component---->
+  <!--<c:ed_fullbodybasictemplate BLN_UtillDisplayLinks="{!myticket}" id="thecomp">-->
+    <c:mycomponentfortablewithnoside BLN_UtillDisplayLinks="{!myticket}" id="thecomp">
+  
+  
+  <!---form started---->
+  <apex:form id="myForm">  
+   
+  <!---------action functions------->
+
+    <apex:actionFunction name="naicsCodesFunction" reRender="garbage1" action="{!sendNaicsCodes}">
+        <apex:param name="naicsCodes" value="" />
+    </apex:actionFunction>
+
+    <apex:actionFunction name="diversitiesFunction" reRender="garbage2" action="{!sendDiversities}">
+        <apex:param name="diversities" value="" />
+    </apex:actionFunction>
+ 
+    <apex:actionFunction name="CommoditiesFunction" reRender="garbage3" action="{!sendCommodities}">
+        <apex:param name="Commodities" value="" />
+    </apex:actionFunction>
+
+    <apex:actionFunction name="deleteCompany" reRender="actreg" action="{!delCompany}" status="AjaxLoader" oncomplete="currTabIndex();Alert.render('company deleted successfully' , 'Alert !','ok','Alertconfirm');">
+        <apex:param value="" name="companyid" />
+    </apex:actionFunction>
+    
+    <apex:actionFunction name="addCompany" reRender="actreg" action="{!addCompany}" status="AjaxLoader" oncomplete="currTabIndex();Alert.render('company added successfully' , 'Alert !','ok','Alertconfirm');">
+        <apex:param name="newcmpany" value="" />
+    </apex:actionFunction>
+        
+     <apex:actionFunction name="inlinesavedefaultcomp" reRender="garbage7" action="{!defaultCompanyInlineSave}" status="AjaxLoader">
+        <apex:param name="inlineCurrentcompany" value="" />
+    </apex:actionFunction>
+
+    <apex:actionFunction name="currenttabindexp" reRender="garbage6" action="{!redirectToCurrentTab}" status="AjaxLoader">
+        <apex:param name="currindex" value="" assignTo="{!currenttabindex}" />
+    </apex:actionFunction>
+        
+        
+    <!---------//close of action functions---->
+        
+  <!------------>
+  <div class="form-embed-div" style=" width:90%; margin-top:20px;"> 
+    <!----------->
+    <div class="form-content-div" style="padding:0px;"> 
+      <!------------------->
+      <div id="TabbedPanels1" class="TabbedPanels" style="border:none;">
+        <ul class="TabbedPanelsTabGroup">
+          <li class="TabbedPanelsTab" id="tFirst">Basic Information</li>
+          <li class="TabbedPanelsTab" id="tSecond">Company Information</li>
+        </ul>
+        <div class="TabbedPanelsContentGroup"> 
+          <!--------------------start of 1st tab------------------>
+          <div class="TabbedPanelsContent" style="padding:5px;"> 
+            <!--------------------->
+            <div style="margin:30px 20px;" > 
+              <!--------------> 
+              <!------>
+              <div class="formelem_boxsmall  right" style="margin-right:2%;">
+                <div class="formlabel-left textright">
+                  <label class="strong_700">Default Company:</label>
+                </div>
+                <!---close of formlabel--->
+                <div class="formelement-ryt textleft"> 
+                  <!-------->
+   
+                 <apex:outputPanel id="currdefault">
+                    <apex:selectList value="{!Currentcompany}" size="1" styleClass="selectlist" id="idDefaultComp">
+                      <apex:selectOptions value="{!seloptcurrent}" />
+                      <apex:actionSupport action="{!defaultCompanyInlineSave}" event="onchange" oncomplete="inlinesave();" rerender="" status="AjaxLoader"  >
+   
+                    </apex:actionSupport>
+        
+                </apex:selectList>
+                  </apex:outputPanel>
+                  <!----------> 
+                </div>
+                <!---close of formelement-ryt---->
+                <div class="clear"></div>
+              </div>
+              <div class="clear"></div>
+              <!---close of formelem_box--->
+              <p class="bg-font" style=" padding-bottom:10px;"> Basic Information</p>
+              <!-------Basic Information------->
+        
+              <div class="section_box" > 
+                <!------> 
+                <!---prefix--->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Prefix:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft"> 
+                    <!-------->
+                    <apex:inputField value="{!GNUSER.Prefix__c}" styleClass="selectlist"/>
+                    <!----------> 
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+        
+                <!------email----->
+                <div class="formelem_boxsmall" >
+                  <div class="formlabel-left textright" >
+                    <label>Email</label>
+                    : </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!-------->
+                    <input type="text" readonly='true' value="{!GNUSER.Email__c}" />
+                    <!----------> 
+        
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+        
+                <!----fname-------->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright" >
+                    <label>First Name</label>
+                    <label class="mandatory">*</label>
+                    : </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft"> 
+                    <!------->
+                    <apex:inputField value="{!GNUSER.First_Name__c}" styleClass="required valid_txt" />
+                    <!----------> 
+        
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+    
+                <!---Mobile number--->
+                <div class="formelem_boxsmall" >
+                  <div class="formlabel-left textright" >
+                    <label>Mobile Number:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft"> 
+                    <!-------->
+                    <apex:inputField value="{!GNUSER.Mobile__c}" id="ph2" styleClass="notreq valid_phoneno"/>
+                    <!----------> 
+    
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+    
+                <!--lname--->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Last Name</label>
+                    <label class="mandatory">*</label>
+                    : </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft"> 
+                    <!-------->
+                    <apex:inputField value="{!GNUSER.Last_Name__c}" styleClass="required valid_txt"/>
+                    <!----------> 
+
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+
+                <!--phone number------->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright" >
+                    <label>Home Phone Number:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!-------->
+                    <apex:inputField value="{!GNUSER.Home_Phone__c}" id="ph1" styleClass="notreq valid_phoneno"/>
+                    <!----------> 
+
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+                <!----suffix-------->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Suffix:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!------->
+                    <apex:inputField value="{!GNUSER.Suffix__c}" styleClass="selectlist"/>
+                    <!----------> 
+
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+ 
+                <!------dob-----> 
+                <!---close of formelem_box--->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright" >
+                    <label>DOB:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!-------->
+                    <apex:inputField value="{!GNUSER.DOB__c}" styleClass="jqdatepicker" />
+                    <!----------> 
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box--->
+  
+                <!---gender--->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright" >
+                    <label>Gender:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!-------->
+                    <apex:inputField value="{!GNUSER.Gender__c}"  styleClass="selectlist"/>
+                    <!----------> 
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+                <!----------> 
+  
+                <!----age------>
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright" >
+                    <label>Age:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!-------->
+                    <apex:inputText value="{!GNUSER.Age__c}" id="ageresult"  styleClass="notreq valid_num"/>
+                    <!----------> 
+
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+
+                <!------upload image----->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Profile Picture:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft"> 
+                    <!-------> 
+                <div class="dropzone">
+                    <i title="Remove Image" class="clr_dropzone fa fa-times" style="display:none;" onclick="RemoveProfilePic()"></i>
+
+                <div id="simagediv">
+                    <apex:image url="/servlet/servlet.ImageServer?id={!GNUSER.User_Pic__c}&oid={!$Organization.Id}" style="width: 180px;" />
+                </div>
+
+                    <input type="file" id="simage" onchange="checkuserImage()" accept="image/png,image/jpeg" />
+  
+                </div>
+  
+                    <!----------> 
+  
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+    
+                <!----------Youtube Videos-------------->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label> <i title="twitter" class="fa  fa-youtube-square fa-social-20x" style="color:#cc181e;"></i> Embed Link:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft">
+                    <input class="framelinkval" type="text" />
+                    <input type="hidden" id="hidtext" />
+                    <apex:inputHidden id="speakervideohidden" value="{!GNUSER.Video__c}" />
+                    <apex:inputHidden id="IsUploadProfilePic1" value="{!IsUploadProfilePic}" />
+                    <apex:inputHidden id="imageData1" value="{!imageData}" />
+                    <apex:inputHidden id="IsUploadComLogo1" value="{!IsUploadComLogo}" />
+                    <apex:inputHidden id="comimageData1" value="{!comimageData}" />
+                    <i class="fa fa-save  fa-save20px ytsave_btn " title="Save">&nbsp;</i> </div>
+                  <!---close of formelement-ryt----> 
+                  <!-----End of Youtube Embed Link-------> 
+                  <!--------> 
+                </div>
+  
+   <!----------------------------------------------------->
+                <div class="ytwraper">
+                  <p class="bg-font" >Youtube Links</p>
+                </div>
+                <!------------------------------------------------------> 
+                <!-----------//Youtube Videos------------> 
+                
+                <!------------Biography----------------------->
+                <div class="formelem_boxsmall" style="width:100%;margin-top: 8px;">
+                  <div class="formlabel-left textright" style="width:21%;" >
+                    <label>Biography:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" style="float:left;" > 
+                    <!-------->
+                    <apex:inputField value="{!GNUSER.Biography__c}"  />
+                    <!----------> 
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!-------------//Biography----------------------> 
+                
+                <!---Home Address----->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright" >
+                    <label>Home Address:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" style="padding-top:8px;" > 
+                    <!-------->
+                    <input type="checkbox" class="homeaddchk" />
+                    <!----------> 
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+                
+              </div>
+              <!---close of section box-----> 
+              <!-------home address Expand---->
+              <div class="section_box homeaddsect" style="display:none;">
+                <p class="bg-font" style=" padding-bottom:10px;"> Home Address</p>
+                <apex:actionRegion > 
+                  <!------>
+                  <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright">
+                      <label>Home Address1:</label>
+                      <!--<label class="mandatory">*</label>--> 
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft"> 
+                      <!-------->
+                      <apex:inputField value="{!Homeadd.Address1__c}"  styleClass="notreq valid_txt"/>
+                      <!----------> 
+                      
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+                  
+                  <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright" >
+                      <label>Home Address2:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft"> 
+                      <!-------->
+                      <apex:inputField value="{!Homeadd.Address2__c}"  styleClass="notreq valid_txt"/>
+                      <!----------> 
+                      
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+                  
+                  <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright">
+                      <label>City:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft"> 
+                      <!-------->
+                      <apex:inputField value="{!Homeadd.City__c}"  styleClass="notreq valid_txt"/>
+                      <!----------> 
+                      
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  
+                  <div class="formelem_boxsmall" >
+                    <div class="formlabel-left textright" >
+                      <label>State:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" > 
+                      <!--------> 
+                      
+                       
+                          <apex:selectList value="{!Homeadd.State__c}" multiselect="false" size="1" styleClass="selectlist" id="HomeState" >
+                    <apex:selectOptions value="{!stateOptions}"></apex:selectOptions>
+                        </apex:selectList>
+                      
+                      <!----------> 
+ 
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+                  <div  class="cz_wrapper"> 
+                  <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright" >
+                      <label>Country:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" > 
+                      <!-------->
+                      <!-------->
+                        <apex:actionRegion >
+                        <apex:selectList value="{!Homeadd.Country__c}" id="HomeCountry" onchange="getstatejs(this.id,this.value);" multiselect="false" size="1" styleClass="country_onchange selectlist" >
+                          <apex:selectOptions value="{!countryOptions}"/>
+                          <!---<apex:actionSupport event="onchange" action="{!HomestatesBasedOnCountry}" reRender="HOmestate" >
+                            <apex:param name="selectedCountry" value="{!$Component.cntry1}" assignTo="{!statecontry}"/>
+                          </apex:actionSupport>---->
+                          </apex:selectList>
+                        </apex:actionRegion>
+                      
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+     <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+                  
+                  <!---close of formelem_box--->
+                  <div class="formelem_boxsmall" >
+                    <div class="formlabel-left textright" >
+                      <label>Zip Code:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" > 
+                      <!-----optext div speakers--->
+                      <apex:inputField value="{!Homeadd.ZipCode__c}" id="zp1" styleClass="notreq valid_zipcode"/>
+                      <!----------> 
+       
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box---> 
+                  <!--------> 
+                   </div>
+                </apex:actionRegion>
+              </div>
+              <!---close of section box-----> 
+              <!-------end of home address----> 
+       
+            </div>
+            <!--close of content-grid---> 
+            <!--------------------->
+            <div class="clear"></div>
+            <!----------> 
+          </div>
+          <!---close of 1st tab------> 
+
+          <!-------------------------------------------------------------> 
+          <!--------------------start of 2nd tab------------------>
+          <div class="TabbedPanelsContent" style="padding:5px;"> 
+            <!--------------------->
+            <div style="margin:30px 20px;" > 
+              <!-------Company Information------->
+    <apex:outputPanel id="detail">      
+  <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script>
+  
+  <!-------Code for getting country states when first time page load------->
+ <script> 
+         jQuery(document).ready(function(){
+         try{
+         getstatejs_forfirsttimeload($('[id$="BusinessCountry"]').attr('id'),'{!comextnew.BLN_Business_Country__c}','{!comextnew.BLN_Business_State__c}');
+         }catch(e){}
+         try{
+         getstatejs_forfirsttimeload($('[id$="HomeCountry"]').attr('id'),'{!Homeadd.Country__c}','{!Homeadd.State__c}');
+         }catch(e){}
+         try{
+         getstatejs_forfirsttimeload($('[id$="BillingCountry"]').attr('id'),'{!billingadd1.Country__c}','{!billingadd1.State__c}');
+         }catch(e){}
+         });
+ </script>   
+
+ <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script>
+
+<script>
+
+   //checking  dropzone image is empty or not
+    emptyDropznImage(); 
+    function emptyDropznImage() {
+        var userimage = '{!GNUSER.User_Pic__c}';        
+        if(!userimage){
+           
+                $("#simagediv img").hide();
+                      
+}
+        var compimg = '{!compdetails.Company_Logo__c}';     
+        if(!compimg){
+            
+                $("#companyLogo img").hide();
+            
+}
+}
+
+       
+    // JavaScript Document
+   /****************************Start of Dropzone js for uploading image****************************/
+    $(".dropzone").mouseover(function(e) {
+        //alert("innn");
+        $(this).find(".clr_dropzone").css("display", "block");
+    });
+
+          
+    $(".dropzone").mouseleave(function(e) {
+        $(this).find(".clr_dropzone").css("display", "none");
+    });
+           
+    $(".clr_dropzone").click(function(e) {
+        //alert("closeeeee");
+        $(this).parent().find("img").remove();
+
+        $(this).siblings("div").css("background", "url({!URLFOR($Resource.edsr_master,'edsr_root/images/dropbg.png')}) no-repeat center");
+    });
+
+    /****************************Dropzone js for uploading image****************************/
+    /****************************Start of Dropzone js for uploading image****************************/
+
+    $(function() {
+            $(".dropzone").click(function(e) {
+                    //alert("click");
+                    //////////////////////////////////////////    
+                    $("div").removeClass('imgdropped');
+                    $(this).addClass('imgdropped');
+                    $(this).find('input').change(function(e) {
+                        var file = this.files[0];
+                        $(":input").removeClass('dropped');
+                        $(this).prev("div").css("background", "none");
+                        $(this).addClass('dropped');
+                        $(this).find('img').remove();
+                        if ((/^image\/(gif|png|jpeg)$/i).test(file.type)) {
+                            var reader = new FileReader(file);
+                                        
+                            reader.readAsDataURL(file);
+              
+                            reader.onload = function(e) {
+                                var data = e.target.result,
+                                    $img = $('<img />').attr('src', data).fadeIn();
+
+                    
+                                $(".dropped").siblings('div').html($img);
+                            };
+                    }else{
+                            var ext = file.name.split('.').pop();
+
+                            $(".dropped").siblings('div').html(ext);
+                    }
+                    });
+
+         
+                }) //click
+        })
+      
+        /****************************End of Dropzone js for uploading image****************************/
+         </script>
+              <div class="section_box">
+                <p class="bg-font" style=" padding-bottom:10px;">Company Information</p>
+                <!------> 
+                <!------>
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Select Company:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft">                     
+                    <apex:actionRegion id="actreg">
+                            <apex:selectList value="{!selectedcompany}" id="idCompany" size="1" styleClass="selectlist"  style="width:12%;margin-left: .3%;">
+                                <apex:selectOptions value="{!selopt}" />
+
+                                <apex:actionSupport action="{!cpmdetails}" event="onchange" rerender="detail,detail2,diversPanel,naicsPanel,commssPanel" status="AjaxLoader" oncomplete="currTabIndex1();" >
+                                    <apex:param name="selectedcompany" value="{!selectedcompany}" assignTo="{!selcompid}" />
+                                </apex:actionSupport>
+                            </apex:selectList>
+                        </apex:actionRegion>
+                    <apex:inputHidden value="{!compdetails.name}" id="theHiddenInput"/>
+                    <script>
+                   
+        </script>
+                    <span> <a id="comp_btn" class="togglebtn" onClick="Alert_NewCompany.render('dialogbox_newcomp','newcomp_dialogoverlay','Alert_NewCompany',this);" title="Add Company" > <i title="Add New Company" class="fa fa-plus fa-1x" style="font-size:13px; padding:3px;"></i> </a> </span> 
+                    <!----------> 
+                    <span>
+                    <a class="togglebtn delcomp_btn" > <i title="Delete Button" class="fa fa-trash-o" style=" color:#fff; font-size:15px; padding:2px;"></i> </a>
+                    </span>                     
+                    <!----------> 
+                    
+                  </div>        
+        
+                  <!---close of formelement-ryt---->
+                <div class="clear"></div>
+                  <!------Add company div---->
+                  <div class="addcomp_exp" style="display:none;"> <br/>
+                    <div class="formlabel-left textright">
+                      <label>Company Name:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft">
+                      <input type="text" id="compname_val" />
+                      <!----------> 
+                      <span>
+                      <a class="togglebtn savecomp_btn" > <i title="Save" class="fa fa-save" style="color:#fff; font-size:13px; padding:3px;"></i> </a>
+                      </span> 
+                      <!----------> 
+                    </div>
+                    <!---close of formelement-ryt----> 
+                  </div>
+                  <!---close of addcomp_exp-----> 
+                  <!----//end of add company name-----> 
+                </div>
+                <!---close of formelem_box---> 
+        
+           <!---compname hidden----->
+                <div class="formelem_boxsmall" style="display:none;">
+                  <div class="formlabel-left textright">
+                    <label>Company Name:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!------->
+                    <apex:inputField value="{!compdetails.name}" id="currentcompid" />
+                    <!----------> 
+                    
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!------> 
+<apex:outputPanel rendered="{!detailsbool}"  id="detailb">              
+                <!----Designation----->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Designation:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!------->
+                    <apex:inputField value="{!ucrole.Title__c}" styleClass="notreq valid_txt" />
+                    <!----------> 
+                    
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!------> 
+                <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright">
+                        <label>Work Phone Number</label> : </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft">
+                        <!------->
+                        <apex:inputField value="{!comextnew.Work_Phone__c}" styleClass="notreq valid_phoneno" />
+                        <!---------->
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                </div>
+                <!---close of formelem_box--->
+
+                <!--Website Url--->
+                
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Website Url</label>
+                    : </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft"> 
+                    <!-------->
+                    <apex:inputField value="{!compdetails.Website_URL__c}" styleClass="notreq valid_url"/>
+                    <!----------> 
+
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+                
+                <!-----Company Logo----> 
+                <!------upload image----->
+                <div class = "formelem_boxsmall" >
+                 <div class = "formlabel-left textright" >
+                 <label> Company Logo: </label> </div>
+                 <!---close of formlabel--->
+                 <div class = "formelement-ryt textleft" >                
+            
+             <!---------->
+    
+            <div class="dropzone">
+                <i title="Remove Image" class="clr_dropzone fa fa-times" onclick="RemoveCompanyLogo()" style="display:none;"></i>            
+                
+                <div id="companyLogo">
+                        <apex:image url="/servlet/servlet.ImageServer?id={!compdetails.Company_Logo__c}&oid={!$Organization.Id}" style="width: 180px;"  />
+                    </div> 
+
+                <input type="file" id="comimage" onchange="checkCompanyLogo()" accept="image/png,image/jpeg" reRender="idcomplogo"/>
+
+            </div>
+        <!----------> 
+
+             </div>
+             <!---close of formelement-ryt---->
+
+
+             <div class = "clear"> </div> 
+
+             </div>
+                <!---------------------> 
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright" >
+                    <label>Work Address:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" style="padding-top:8px;" > 
+                    <!-------->
+                    <input type="checkbox" class="workaddchk" />
+                    <!----------> 
+
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+
+                <!-------Work address---->
+                <apex:actionRegion >
+                  <div class="section_box workaddsect" style="display:none;">
+                    <p class="bg-font" style=" padding-bottom:10px;">Work Address</p>
+                    <!------>
+                    <div class="formelem_boxsmall">
+                      <div class="formlabel-left textright">
+                        <label>Work Address1:</label>
+                        <!--<label class="mandatory">*</label>--> 
+                      </div>
+                      <!---close of formlabel--->
+                      <div class="formelement-ryt textleft"> 
+                        <!-------->
+                        <apex:inputField value="{!comextnew.Business_Address1__c}" styleClass="notreq valid_txt"/>
+                        <!----------> 
+                      </div>
+                      <!---close of formelement-ryt---->
+                      <div class="clear"></div>
+                    </div>
+                    <!---close of formelem_box--->
+
+                    <div class="formelem_boxsmall">
+                      <div class="formlabel-left textright" >
+                        <label>Work Address2:</label>
+                      </div>
+                      <!---close of formlabel--->
+                      <div class="formelement-ryt textleft"> 
+                        <!-------->
+                        <apex:inputField value="{!comextnew.Business_Address2__c}" styleClass="notreq valid_txt"/>
+                        <!----------> 
+
+                      </div>
+                      <!---close of formelement-ryt---->
+                      <div class="clear"></div>
+                    </div>
+                    <!---close of formelem_box--->
+
+                    <div class="formelem_boxsmall">
+                      <div class="formlabel-left textright">
+                        <label>City:</label>
+                      </div>
+                      <!---close of formlabel--->
+                      <div class="formelement-ryt textleft"> 
+                        <!-------->
+                        <apex:inputField value="{!comextnew.Business_City__c}" styleClass="notreq valid_txt"/>
+                        <!----------> 
+
+                      </div>
+                      <!---close of formelement-ryt---->
+                      <div class="clear"></div>
+                    </div>
+                    <!---close of formelem_box--->
+
+                   
+                    <!---close of formelem_box--->
+                    
+                    <div class="formelem_boxsmall" >
+                      <div class="formlabel-left textright" >
+                        <label>State:</label>
+                      </div>
+                      <!---close of formlabel--->
+                      <div class="formelement-ryt textleft" > 
+                        <!-------->
+                     
+                          <apex:selectList value="{!comextnew.BLN_Business_State__c}" multiselect="false" size="1" styleClass="selectlist" style="width:80%" id="BusinessState" >
+                            <apex:selectOptions value="{!stateOptions}"/>
+                        </apex:selectList>
+                        <!----------> 
+
+                      </div>
+                      <!---close of formelement-ryt---->
+                      <div class="clear"></div>
+                    </div>
+                    
+                    <!---Country Zipcode --->
+                    <div  class="cz_wrapper"> 
+                    <!---close of formelem_box--->
+
+                    <div class="formelem_boxsmall">
+                      <div class="formlabel-left textright" >
+                        <label>Country:</label>
+                      </div>
+                      <!---close of formlabel--->
+                      <div class="formelement-ryt textleft" > 
+                        <!-------->
+                        <apex:selectList value="{!comextnew.BLN_Business_Country__c}" id="BusinessCountry" onchange="getstatejs(this.id,this.value);" multiselect="false" size="1" styleClass="country_onchange selectlist" >
+                          <apex:selectOptions value="{!countryOptions}"/>
+                         
+</apex:selectList>
+                        <!----------> 
+                        
+                      </div>
+                      <!---close of formelement-ryt---->
+                      <div class="clear"></div>
+                    </div>
+                    <!---close of formelem_box--->
+                    
+                    <div class="formelem_boxsmall" >
+                      <div class="formlabel-left textright" >
+                        <label>Zip Code:</label>
+                      </div>
+                      <!---close of formlabel--->
+                      <div class="formelement-ryt textleft" > 
+                        <!-----optext div speakers--->
+                        <apex:inputField id="zp3" value="{!comextnew.Business_Zipcode__c}" styleClass="notreq valid_zipcode"/>
+                        <!----------> 
+                        
+                      </div>
+                      <!---close of formelement-ryt---->
+                      <div class="clear"></div>
+                    </div>
+                    <!---close of formelem_box---> 
+                    
+                    <!---close of formelem_box--->
+                    </div>
+                    <!--------> 
+                  </div>
+                  <!---close of section box-----> 
+                </apex:actionRegion>
+                </apex:outputPanel> 
+              </div>
+              <!-------end of Work address----> 
+              
+                <!-------->
+    <apex:outputPanel rendered="{!detailsbool}"  id="detailb2">             
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright" >
+                    <label>Business Information:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" style="padding-top:8px;" > 
+                    <!-------->
+                    <input type="checkbox" class="bussinfochk" />
+                    <!----------> 
+                    
+                  </div>
+                  <!---close of formelement-ryt---->
+                  <div class="clear"></div>
+                </div>
+                <!---close of formelem_box---> 
+
+                <!-------Business Information---->
+                <div class="section_box bussinfosect" style="display:none;">
+                  <p class="bg-font" style=" padding-bottom:10px;"> Business Information</p>
+
+                  <!------>
+                  <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright">
+                      <label>Primary Business Category:</label>
+                      <!--<label class="mandatory">*</label>--> 
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft"> 
+                      <!------->
+                      <apex:inputField value="{!comextnew.Primary_Business_Category__c}" styleClass="selectlist"/>
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+
+                  <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright">
+                      <label>Secondary Business Category:</label>
+                      <!--<label class="mandatory">*</label>--> 
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft"> 
+                      <!------->
+                      <apex:inputField value="{!comextnew.Secondary_Business_Category__c}"  styleClass="selectlist"/>
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+
+                  <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright">
+                      <label>No. Of Employees:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft"> 
+                      <!-------->
+                      <apex:inputField value="{!comextnew.Number_Of_Employees__c}" styleClass="notreq valid_num"/>
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+
+                  <div class="formelem_boxsmall" >
+                    <div class="formlabel-left textright" >
+                      <label>Business Established Date:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" > 
+                      <!-------->
+                      <apex:inputField value="{!comextnew.Established_Date__c}" styleClass="jqdatepicker" />
+                      <!----------> 
+
+</div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+
+                  <div class="formelem_boxsmall">
+                    <div class="formlabel-left textright" >
+                      <label>Business Revenue:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" > 
+                      <!-----optext div speakers--->
+                      <apex:inputField value="{!comextnew.Revenue__c}" styleClass="notreq valid_num"/>
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+
+                  <div class="formelem_boxsmall" >
+                    <div class="formlabel-left textright" >
+                      <label>Business Tax ID:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" > 
+                      <!-----optext div speakers--->
+                      <apex:inputField value="{!comextnew.Tax_Id__c}" styleClass="notreq valid_num"/>
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+
+                  <div class="formelem_boxsmall" >
+                    <div class="formlabel-left textright" >
+                      <label>Business Duns Number:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" > 
+                      <!-----optext div speakers--->
+                      <apex:inputField value="{!comextnew.Duns_Number__c}" styleClass="notreq valid_num"/>
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box--->
+                                    
+                  <div class="formelem_boxsmall" >
+                    <div class="formlabel-left textright" >
+                      <label>Blog URL:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" > 
+                      <!-----optext div speakers--->
+                      <apex:inputField value="{!comextnew.Blog_URL__c}" styleClass="notreq valid_url"/>
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+                  <!---close of formelem_box---> 
+                  <!--------> 
+
+                  <div class="formelem_boxsmall" >
+                    <div class="formlabel-left textright" >
+                      <label>Keywords:</label>
+                    </div>
+                    <!---close of formlabel--->
+                    <div class="formelement-ryt textleft" >                       
+                      <apex:inputField value="{!comextnew.Keywords__c}" styleClass="notreq valid_txt"/>
+                      <!----------> 
+
+                    </div>
+                    <!---close of formelement-ryt---->
+                    <div class="clear"></div>
+                  </div>
+
+                  <!---close of formelem_box---> 
+                  <!--------> 
+                </div>
+                </apex:outputPanel> 
+                <!---close of section box-----> 
+                <!-------end of Business Information----> 
+
+                <!-------->
+
+           <apex:outputPanel rendered="{!detailsbool}" id="detailb3">    
+              <!-------->
+    <div class="formelem_boxsmall">
+        <div class="formlabel-left textright">
+            <label>Billng Address:</label>
+        </div>
+        <!---close of formlabel--->
+        <div class="formelement-ryt textleft" style="padding-top:8px;">
+            <!-------->
+            <input type="checkbox" class="billingaddchk" />
+            <!---------->
+
+        </div>
+        <!---close of formelement-ryt---->
+        <div class="clear"></div>
+    </div>
+    <!---close of formelem_box--->
+
+    <!-------Billing address---->
+    <div class="section_box billingaddsect" style="display:none;">
+        <p class="bg-font" style=" padding-bottom:10px;">Billing Address</p>
+        <!-------->
+
+        <!---close of formelem_box--->
+        <!---------------------------------------------------------------->
+        <!------>
+        <div class="formelem_boxsmall">
+            <div class="formlabel-left textright">
+                <label>Billing Address1:</label>
+                <!--<label class="mandatory">*</label>-->
+            </div>
+            <!---close of formlabel--->
+            <div class="formelement-ryt textleft">
+                <!-------->
+                    <apex:inputField value="{!billingadd1.Address1__c}" styleClass="notreq valid_txt"/>
+                <!---------->
+
+            </div>
+            <!---close of formelement-ryt---->
+            <div class="clear"></div>
+        </div>
+        <!---close of formelem_box--->
+
+        <div class="formelem_boxsmall">
+            <div class="formlabel-left textright">
+                <label>Billing Address2:</label>
+            </div>
+            <!---close of formlabel--->
+            <div class="formelement-ryt textleft">
+                <!-------->
+                    <apex:inputField value="{!billingadd1.Address2__c}" styleClass="notreq valid_txt"/>
+                <!---------->
+
+            </div>
+            <!---close of formelement-ryt---->
+            <div class="clear"></div>
+        </div>
+        <!---close of formelem_box--->
+
+        <div class="formelem_boxsmall">
+            <div class="formlabel-left textright">
+                <label>City:</label>
+            </div>
+            <!---close of formlabel--->
+            <div class="formelement-ryt textleft">
+                <!-------->
+                    <apex:inputField value="{!billingadd1.City__c}" styleClass="notreq valid_txt"/>
+                <!---------->
+
+            </div>
+            <!---close of formelement-ryt---->
+            <div class="clear"></div>
+        </div>
+
+        <div class="formelem_boxsmall">
+            <div class="formlabel-left textright">
+                    <label>State:</label>
+            </div>
+            <!---close of formlabel--->
+            <div class="formelement-ryt textleft">
+                    <!-------->
+                  
+                        <apex:selectList value="{!billingadd1.State__c}" multiselect="false" size="1" styleClass="selectlist" id="BillingState" >
+                          <apex:selectOptions value="{!stateOptions}"/>
+                        </apex:selectList>
+                     
+                <!---------->
+                    
+            </div>
+            <!---close of formelement-ryt---->
+            <div class="clear"></div>
+        </div>
+        <!---close of formelem_box--->
+                 <div  class="cz_wrapper"> 
+                  <!---close of formelem_box--->
+
+                <div class="formelem_boxsmall" >
+                  <div class="formlabel-left textright" >
+                    <label>Country:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft" > 
+                    <!---------->
+                  
+                      <apex:selectList value="{!billingadd1.Country__c}" id="BillingCountry" multiselect="false" size="1" styleClass="country_onchange selectlist" onchange="getstatejs(this.id,this.value);">
+                        <apex:selectOptions value="{!countryOptions}"/>
+                       
+                        </apex:selectList>
+
+                    <!-----------> 
+            </div>
+            <!---close of formelement-ryt---->
+            <div class="clear"></div>
+        </div>
+        <!---close of formelem_box--->
+
+        <div class="formelem_boxsmall">
+            <div class="formlabel-left textright">
+                <label>Zip Code:</label>
+            </div>
+            <!---close of formlabel--->
+            <div class="formelement-ryt textleft">
+                <!-----optext div speakers--->
+                    <apex:inputField value="{!billingadd1.ZipCode__c}"  id="zp2" styleClass="notreq valid_zipcode"/>
+                <!---------->
+
+            </div>
+            <!---close of formelement-ryt---->
+            <div class="clear"></div>
+        </div>
+        <!---close of formelem_box--->
+                </div>
+        <!--------------------------------------------------------------->
+    </div>
+              <!---close of section box-----> 
+</apex:outputPanel>
+              <!-------end of BILLING address---->
+     <apex:outputPanel rendered="{!detailsbool}" id="detailb4">
+    <div class="formelem_boxsmall">
+        <div class="formlabel-left textright">
+            <label> <a class="a_underline moreinfo_link"> <em> <b>More Info.. </b> </em> </a> </label>
+        </div>
+        <!---close of formlabel--->
+
+        <div class="clear"></div>
+    </div>
+    <!---close of formelem_box--->
+    <!----------More info Section Box---------->
+    <div class="section_box moreinfosect" style="display:none;">
+        <p class="bg-font" style=" padding-bottom:10px;">Naics Code</p>
+
+        <!-------Naics Code Information---->
+        <div class="formelem_boxsmall">
+            <div class="formlabel-left textright">
+                <label>Naics Codes:</label>
+                <!--<label class="mandatory">*</label>-->
+            </div>
+            <!---close of formlabel--->
+            <div class="formelement-ryt textleft">
+                <apex:outputPanel id="naicsPanel">
+                    <!---------->
+                    <select multiple="multiple" size="15" data-placeholder="Search NAICS Codes" class="chzn-select medium-select select" id="single-label-example" onchange="sendNaicsCodeBack();">
+                        <option value=""></option>
+                        <apex:repeat value="{!listOfnaicscodes}" var="Lists" id="naics1">
+                          <apex:repeat value="{!Lists}" var="list">
+                            <apex:outputText rendered="{!IF(CONTAINS(checkNAICSforEdit,list.Id), TRUE, FALSE)}">
+                              <option value="{!list.Id}" selected="selected" >{!list.Name} {!list.Description__c}</option>
+                            </apex:outputText>
+                            <apex:outputText rendered="{!IF(CONTAINS(checkNAICSforEdit,list.Id), FALSE, TRUE)}">
+                              <option value="{!list.Id}" >{!list.Name} {!list.Description__c}</option>
+                            </apex:outputText>
+                          </apex:repeat>
+                        </apex:repeat>
+                      </select>
+                    <!---------->
+                </apex:outputPanel>
+            </div>
+            <!---close of formelement-ryt---->
+            <div class="clear"></div>
+        </div>
+        <!---close of formelem_box--->
+
+        <!-------end of Naics Code Information---->
+
+        <!-------Commodities Information---->
+        <p class="bg-font" style=" padding-bottom:10px;">Commodities</p>
+        <div class="formelem_boxsmall">
+            <div class="formlabel-left textright">
+                <label>Commodities:</label>
+                <!--<label class="mandatory">*</label>-->
+            </div>
+            <!---close of formlabel--->
+            <div class="formelement-ryt textleft">
+
+                <!-------------->
+                <apex:outputPanel id="commssPanel">
+                    <select multiple="true" size="15" data-placeholder="Search Commodities" class="selectlist chzn-select" id="single-label-exampleComms" onchange="sendCommsBack();">
+                        <option value=""></option>
+                        <apex:repeat value="{!commoditiesList}" var="Commos" id="Commos1">
+                          <apex:outputText rendered="{!IF(CONTAINS(chkCCmforEdit ,Commos.Id), TRUE, FALSE)}">
+                            <option value="{!Commos.Id}" selected="selected">{!Commos.Description__c}</option>
+                          </apex:outputText>
+                          <apex:outputText rendered="{!IF(CONTAINS(chkCCmforEdit ,Commos.Id), FALSE, TRUE)}">
+                            <option value="{!Commos.Id}" >{!Commos.Description__c}</option>
+                          </apex:outputText>
+                        </apex:repeat>
+                      </select>
+                </apex:outputPanel>
+
+                <!--------------->
+                                    
+            </div>
+            <!---close of formelement-ryt---->
+            <div class="clear"></div>
+        </div>
+        <!---close of formelem_box--->
+
+        <!-------end of Commodities Information---->
+
+        <!-------Diversity Type---->
+        <p class="bg-font" style=" padding-bottom:10px;">Diversity Type</p>
+                <div class="formelem_boxsmall" style=" padding-bottom:50px;">
+            <div class="formlabel-left textright">
+                <label>Diversity Type:</label>
+                <!--<label class="mandatory">*</label>-->
+            </div>
+            <!---close of formlabel--->
+            <div class="formelement-ryt textleft">
+                <!---------->
+                <apex:outputPanel id="diversPanel">
+                    <select multiple="true" size="15" data-placeholder="Search Diversities" class="chzn-select medium-select select" id="single-label-examplediver" onchange="senDiversitiesBack();">
+                        <option value=""></option>
+                        <apex:repeat value="{!diversityList}" var="divers" id="divers1">
+                          <apex:outputText rendered="{!IF(CONTAINS(checkDiversforEdit ,divers.Id), TRUE, FALSE)}">
+                            <option value="{!divers.Id}" selected="selected">{!divers.Name}</option>
+                          </apex:outputText>
+                          <apex:outputText rendered="{!IF((CONTAINS(checkDiversforEdit ,divers.Id)), FALSE, TRUE)}">
+                            <option value="{!divers.Id}" >{!divers.Name}</option>
+                          </apex:outputText>
+</apex:repeat>
+                      </select>
+                </apex:outputPanel>
+                <!----------->
+
+            </div>
+            <!---close of formelement-ryt---->
+
+            <div class="clear"></div>
+        </div>
+        <!---close of formelem_box--->
+        <!-------end of Diversity Type---->
+
+    </div>
+     </apex:outputPanel>
+    <!---close of more info section box---->
+
+    <!----------//Close of More info Section Box--->
+    </apex:outputPanel>
+    </div>
+       <!--section_box--->
+
+    <div class="clear"></div>
+    <!--------------------->
+    </div>
+    <!---close of 2nd tab------> 
+          <!-------------------------------------------------------------> 
+
+          <!-------------------------------------------------------------> 
+        </div>
+        <!---close of TabbedPanelsContentGroup---> 
+      </div>
+      <!----close of TabbedPanels-----> 
+      <!--close of formbox----> 
+    </div>
+    <!--close of form-content-div----> 
+  </div>
+  <!---close of form-embed-div---> 
+  <!--------------> 
+
+  <div style="margin-top:20px; text-align:center;">
+
+        
+        <apex:commandButton value="Save" onclick="if(!ValidateField()) return false;"   styleClass="button-a blue btnclss" action="{!updatedetails}" oncomplete="currTabIndex();Alert.render('You have successfully saved Record!' , 'Alert !','ok','Alertconfirm');"  status="AjaxLoader" />
+&nbsp;&nbsp;
+        <apex:commandButton value="Cancel" styleClass="button-a dark-blue" action="{!cancel}" />
+        
+
+
+    </div>
+<!------------------->
+
+<!------------>
+   </apex:form>
+    <!---end of form started----->
+
+   <!-- </c:ed_fullbodybasictemplate>-->
+    </c:mycomponentfortablewithnoside>
+    
+    <!---end of Basic template component---->
+    <!---popup component---->
+
+    <c:ed_popupbox ></c:ed_popupbox>
+<script>
+    
+    /*******creating instances for calling popups*******/
+
+var Alert_NewCompany = new Custom_formPopup(); //New company for Event Admin 
+
+    
+    /***************/   
+</script> 
+    <!---------popup for Adding NewCompany for event admin------->
+    <apex:form id="secfrm">
+         <script>
+
+    function compsave() {
+        if($('[id$=newcompany]').val() != '')
+        {
+            addCompany( $('[id$=newcompany]').val() );
+        }
+        else
+        {
+            Alert.render('Company name should not be empty' , 'Alert !','ok','Alertconfirm');
+   
+            return false;
+        }
+        }         
+    
+    
+  </script>
+        <div class="dialogoverlay" id="newcomp_dialogoverlay"
+            style="z-index: 99999;"></div>
+        <!----------------->
+        <!--close of dialogoverlay-->
+        <div id="dialogbox_newcomp"
+            style="display: none; z-index: 999991; width: 36%; margin-left: 32%;">
+            <a id="close" onclick="Alert_NewCompany.Cancel()"
+                style="margin-top: -6px;">×</a>
+            <div class="form-embed-div" style="margin-top: 20px;">
+                <div class="form-content-div"
+                    style="padding: 0px; max-height: 575px; overflow: auto;">
+                    <!----------->
+            <!----------->
+                    <div class="grid-1"
+                        style="width: 98%; margin-left: 1%; margin-bottom: 10px; padding-right: 0px;">
+                <div class="title-grid">New Company</div>
+                <div class="content-gird">
+                    <!-------------->
+                            <div class="formbox">
+                                <!------->
+                                <div class="formelem_boxbig">
+                                    <div class="formlabel-left textright">
+                                        <label style="margin-left: 14px;">Company Name :<span
+id="mandatory">*</span></label>
+                                    </div>
+                                    <!---close of formlabel--->
+                                    <div class="formelement-ryt textleft">
+                                        <!-------->
+                                        <apex:inputText id="newcompany"/>
+                                        <!---------->
+                                    </div>
+                                    <!---close of formelement-ryt---->
+                                    <div class="clear"></div>
+                                </div>
+                                <!---close of formelem_boxbig---->
+                                <!------> 
+                            
+                                <!------>
+                                   
+                                
+                                <!------>
+                                <div style="margin-top: 10px; text-align: center;">
+
+                                 <!--<apex:commandButton value="Save" onclick="compsave();"
+                                        styleClass="button-a blue" oncomplete="currTabIndex();Alert.render('company added successfully' , 'Alert !','ok','Alertconfirm');"/>-->
+                                    <input type="button" onclick="compsave();" Class="button-a blue"  value="Save"/>
+                                    &nbsp;&nbsp;
+                                    <button type="button" class="button-a dark-blue"
+                                        onclick="Alert_NewCompany.Cancel();return false;">Cancel</button>
+                                    <!--  <button class="button-a blue" onclick="Alert_NewCompany.Cancel()">Save</button>
+      &nbsp;&nbsp;
+      -->
+                                </div>
+
+                                        <!------->
+                            </div>
+                            <!--close of formbig---->
+                        <!--------------->
+                    </div>
+                <!--close of content-grid--->
+            </div>
+            <!--close of grid-1----->
+            <!----->
+                    <!----->
+        </div>
+        <!----close of form-content-div----->
+    </div>
+    <!----close of form-embed-div------>
+</div>
+<!--close of dialogbox---->
+
+    </apex:form>
+    <!------------end of popup for Adding new company for event admin------------->
+<!--- js component--->
+
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery-1.9.1.js')}">
+</script>
+
+<script>     
+  
+    /***********************************checking  dropzone image is empty or not ****************************/
+     emptyDropznImage();
+    function emptyDropznImage() {
+        var userimage = '{!GNUSER.User_Pic__c}';
+        if (!userimage) {
+
+            $("#simagediv img").hide();
+
+        }
+        var compimg = '{!compdetails.Company_Logo__c}';
+        if (!compimg) {
+
+            $("#companyLogo img").hide();
+
+        }
+    }       
+
+
+    /***********************code for checking and removing  dropzone image for profile pic and company logo ***************/
+    
+    var contents = '';
+    var companylogocontents = '';
+    var IsUploadProfilePic = false;
+    var IsUploadComLogo = false;
+    var jq = jQuery.noConflict();
+
+     /****start of dropzone image for user profile pic and comapny logo***************/
+
+    function RemoveProfilePic() {
+                    
+        IsUploadProfilePic = true;
+        document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:imageData1}").value = '';
+        document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:IsUploadProfilePic1}").value = IsUploadProfilePic;
+    }
+
+    function RemoveCompanyLogo() {
+    
+        IsUploadComLogo = true;
+        document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:comimageData1}").value = '';
+        document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:IsUploadComLogo1}").value = IsUploadComLogo;
+                                     
+    }
+                
+    function checkuserImage() {
+                          
+        var oFReader = new FileReader();
+        var f = document.getElementById("simage").files[0];        
+        var filesize = f.size;
+        if (filesize > 241664) {
+            document.getElementById("simage").value = null;
+            Alert.render('Image size cannot be greater than 200kb!', 'Alert', 'ok');
+            return false;
+        }
+        if (f) {
+            var r = new FileReader();
+            r.onload = function(e) {
+                contents = e.target.result.split(',')[1];
+                IsUploadProfilePic = true;
+                document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:imageData1}").value = contents;
+                document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:IsUploadProfilePic1}").value = IsUploadProfilePic;                
+            }
+            r.readAsDataURL(f);
+        } else {
+            Alert.render('Failed to load image file', 'Alert', 'ok');
+        }
+
+    }
+
+    function checkCompanyLogo() {
+
+        var oFReader = new FileReader();
+        var f = document.getElementById("comimage").files[0];        
+        var filesize = f.size;
+        if (filesize > 241664) {
+            document.getElementById("comimage").value = null;
+            //window.alert("Company logo size cannot be greater than 200kb!");
+            Alert.render('Company logo size cannot be greater than 200kb!', 'Alert', 'ok');
+            return false;
+        }
+        if (f) {
+            var r = new FileReader();
+            r.onload = function(e) {
+                companylogocontents = e.target.result.split(',')[1];                
+                IsUploadComLogo = true;
+                document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:comimageData1}").value = companylogocontents;
+                document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:IsUploadComLogo1}").value = IsUploadComLogo;
+            }
+            r.readAsDataURL(f);
+        } else {
+            Alert.render('Failed to load company logo', 'Alert', 'ok');
+            //alert("Failed to load company logo");
+        }
+
+    }  
+
+ /*********end of dropzone image for user profile pic and comapny logo***************/
+
+
+
+  /*********Sending Naics Codes,Diversities and Commodities information start***************/ 
+
+  /*********Sending Naics Codes information***************/
+
+        function sendNaicsCodeBack() {
+
+            var selbol = '';
+            var SelNaicsVal = '';
+            var x = 0;
+            var j = 0;
+            var surveybool = '';
+          
+            var ele = document.getElementById('single-label-example');
+     
+            var k = 0;
+            for (x = 0; x < ele.length; x++) {
+     
+                if (ele[x].selected) {
+                    k++;
+
+                    if (SelNaicsVal != '') {
+                        SelNaicsVal = SelNaicsVal + '-' + ele[x].value;
+                    } else {
+                        SelNaicsVal = ele[x].value;
+                    }
+                }
+            }
+            
+            if (k > 25) {
+                Alert.render('Maximum of 25 Naics Codes Are allowed' , 'Alert !','ok','Alertconfirm');
+                return false;
+               
+               }else{
+                naicsCodesFunction(SelNaicsVal);
+                       return false;
+                   }
+        }
+
+
+   /*********Sending Diversities information***************/
+              
+        function senDiversitiesBack() {
+               
+            // sendNaicsCodeBack();
+            //sendCommsBack();
+            var selbol = '';
+            var SeldivsVal = '';
+            var x = 0;
+            var j = 0;
+            var surveybool = '';
+
+            var ele = document.getElementById('single-label-examplediver');
+
+            var k = 0;
+            for (j = 0; j < ele.length; j++) {
+
+                if (ele[j].selected) {
+                    k++;
+
+                    if (SeldivsVal != '') {
+                        SeldivsVal = SeldivsVal + '-' + ele[j].value;
+                    } else {
+                        SeldivsVal = ele[j].value;
+            }
+                }
+            }
+            
+
+            if (k > 25) {
+                Alert.render('Maximum of 25 Diversities Are allowed' , 'Alert !','ok','Alertconfirm');
+                return false;
+
+               }else{
+                diversitiesFunction(SeldivsVal);
+           return false;
+     }
+               
+            }
+            
+  /*********Sending Commodities information***************/
+                   
+        function sendCommsBack() {
+
+        
+            var selbol = '';
+            var SelComsVal = '';
+            var x = 0;
+            var j = 0;
+            var surveybool = '';
+        
+            var ele = document.getElementById('single-label-exampleComms');
+    
+            var k = 0;
+            for (x = 0; x < ele.length; x++) {
+     
+                if (ele[x].selected) {
+                    k++;
+  
+                    if (SelComsVal != '') {
+                        SelComsVal = SelComsVal + '-' + ele[x].value;
+                    } else {
+                        SelComsVal = ele[x].value;
+                    }
+  
+                }
+
+     }
+            if (k > 25) {
+                Alert.render('Maximum of 25 Commodities Are allowed' , 'Alert !','ok','Alertconfirm');
+                return false;
+
+            } else {
+                CommoditiesFunction(SelComsVal);
+       return false;
+     }
+}
+
+    /*********End Sending Naics Codes,Diversities and Commodities information ***************/
+
+  /***********************code for updating youtube links************************************/
+
+    jq(function() {
+
+        var iframelink = []; //storing the embed links value        
+        
+        /**********for displaying youtube video using links from back end***************/
+        
+        if ('{!GNUSER.Video__c}' != '' && '{!GNUSER.Video__c}' != undefined) {
+
+            var st = '{!GNUSER.Video__c}';        
+            var res = st.split(",");
+            for (i = 0; i < res.length; i++) {
+
+                iframelink.push(res[i]);
+                var box = jq("<div class='ytbox'></div>") //creating parent div
+                var delimg = jq("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>") //creating delete icon
+                var iframebox = jq("<div class='iframebox'></div>");
+                jq(".ytwraper").css("display", "block");
+                jq(box).append(delimg);
+                jq(iframebox).append(res[i]);
+                jq(box).append(iframebox);
+                jq(".ytwraper").append(box);
+                jq(".framelinkval").val(""); //clearing the embedlink textbox
+            }
+
+        }
+        
+       
+    /**********function calling for delete youtube box***************/
+
+        var resultIframeLink = '';
+        jq(document.body).on('click', '.crossicon', function() {
+
+            jq(this).each(function() {
+                var current_index = jq(this).parent().index(); 
+                iframelink.splice(current_index - 1, 1); //removing the deleted link from the array..                
+                resultIframeLink = iframelink;               
+                var ifrme = resultIframeLink;                
+                document.getElementById("hidtext").value = iframelink;
+                document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:speakervideohidden}").value = iframelink;             
+                jq(this).parent().remove(); //deleting the box
+                if (iframelink.length == 0) {
+                    $(".ytwraper").css("display", "none"); //youtube wrapper with youtube heading will vanish
+    }
+            })
+
+        });
+
+       
+
+    /**********function calling for appending youtube iframe link ******/       
+    
+        jq(".ytsave_btn").click(function() {
+
+            var iframeval = jq(".framelinkval").val(); //capturing user embed link
+            var box = jq("<div class='ytbox'></div>") //creating parent div
+            var delimg = jq("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>") //creating delete icon
+            var iframebox = jq("<div class='iframebox'></div>");
+            var ytregex = iframeval.match(/(<iframe.+?<\/iframe>)/g);
+            //condition for shouldnot equal to null and match the regex of iframe
+            if (iframeval != "" && ytregex) {
+                
+                jq(".ytwraper").css("display", "block");
+                jq(box).append(delimg);
+
+                jq(iframebox).append(iframeval);
+                iframelink.push(iframeval);
+                jq(box).append(iframebox);
+                jq(".ytwraper").append(box);
+                jq(".framelinkval").val(""); //clearing the embedlink textbox
+            } else {
+                Alert.render(' Youtube iframe link shouldnot Null And Provide Embed Format', 'Alert !', 'ok', 'Alertconfirm');
+                jq(".framelinkval").val("");
+    }
+            document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:speakervideohidden}").value = iframelink;
+   
+        })
+  
+       
+    });
+</script>
+
+
+<!------------------------- code for datetimepicker ---------------------->
+
+<apex:outputPanel id="detail2"> 
+  <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script> 
+  <script>
+    var dt = jQuery.noConflict();   
+    dt(document).ready(function() {
+    
+    dt('.jqdatepicker').datetimepicker({
+    timepicker:false,
+    format:'m/d/Y',
+    formatDate: 'm/d/Y', 
+    });
+    })
+  </script> 
+  <c:ed_commonjs ></c:ed_commonjs>  
+  <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}">
+</script>
+<!--- end of js component--->
+<!---custom js----->
+
+
+
+
+<script>
+
+/**********code for rendering tabs****************/
+
+    var urlpage = window.location.href;
+    var n = urlpage.search("1");
+
+    if (n != -1) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 1
+        });
+    } else {
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 0
+            });        
+    }
+    
+    function currTabIndex1() {
+        
+          var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 1
+        });
+    }
+    function currTabIndex() {           
+        
+        var curIndex = TabbedPanels1.getCurrentTabIndex();
+            currenttabindexp(curIndex);
+    }
+
+
+
+    /**********toggle function for home address ******/
+    $(".homeaddchk").change(function(e) {
+        $(".homeaddsect").slideToggle();
+    });
+    /**********toggle function for home address ******/
+
+    /**********toggle function for work address ******/
+    $(".bussinfochk").change(function(e) {
+        $(".bussinfosect").slideToggle();
+    });
+
+    /**********toggle function for work address ******/
+    $(".workaddchk").change(function(e) {
+        $(".workaddsect").slideToggle();
+    });
+    /**********toggle function for Billing address ******/
+    $(".billingaddchk").change(function(e) {
+        $(".billingaddsect").slideToggle();
+    });
+
+    /**********toggle function for Add company ******/
+
+    $(".addcomp_btn").click(function(e) {
+        $(".addcomp_exp").toggle();
+
+    });
+
+    /**************toggle function for More info ********************/
+
+    $(".moreinfo_link").click(function(e) {
+        $(".moreinfosect").slideToggle();
+        $("#single-label-example").chosen({
+            max_selected_options: 4
+        });
+
+        $("#single-label-exampleComms").chosen({
+            max_selected_options: 4
+        });
+
+        $("#single-label-examplediver").chosen({
+            max_selected_options: 4
+        });
+
+    });
+
+
+
+    /************************Script for adding and deleting companies for event admin***************************/
+    $(document).ready(function() {
+
+       /****************Adding new Comapny for event admin**********************/
+        $(".savecomp_btn").click(function(e) {
+
+            if (document.getElementById("compname_val").value != '') {
+                
+                comp_value = document.getElementById("compname_val").value, //capturing segment text value                    
+                addCompany(comp_value);
+            } 
+
+
+        })
+        
+      /******************Delete the selected Comapny**********************/ 
+        
+        $(".delcomp_btn").click(function(e) {
+
+            var companyid = '';
+            var defcompany = '';
+            var stringName = '';
+            var selcompny = '{!selectedcompany }';
+           // alert("selecompany::" + selcompny);
+           // alert("isBlankTypeCompany" + '{!isBlankTypeCompany}')
+            if ('{!isBlankTypeCompany}' == 'true' || selcompny == '') {
+                stringName = 'Blank Company';
+                Alert.render('You can not delete the Blank Company', 'Alert !', 'ok', 'Alertconfirm');
+            
+            } else {
+                //stringName = '{!selCompName}';
+                var stringName = document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:theHiddenInput}").value;
+            var listsize = '{!companyListSize}';
+
+            var clkbtn = $(this);
+            defcompany = document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:idDefaultComp}").value;            
+            companyid = document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:idCompany}").value;                       
+
+                //  var stringName = document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:theHiddenInput}").value;        
+            
+            if(listsize  == 0){
+
+                Alert.render('you have no companies to delete' , 'Alert !','ok','Alertconfirm');
+
+            }else if(((stringName == "none") && (listsize >= 1)) || ((stringName == "") && (listsize >= 1))){            
+                 
+                 Alert.render('No company is selected to delete.' , 'Alert !','ok','Alertconfirm');
+            }else if((defcompany == companyid) && (listsize != 1)){            
+                
+                Alert.render('Please select another default company before deleting Company ' + stringName + '?', 'Confirmation', 'ok', 'Alertconfirm');
+
+            } else {
+
+                companyid = document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:idCompany}").value;
+                Alertconfirm.render('Are you sure you want to Delete Company ' + stringName + '?', 'Confirmation', clkbtn, 'Yes', 'No', 'Alertconfirm');
+        }
+            }
+        });
+
+
+    })
+ </script>
+ 
+ <script>
+  /*********Call back function to Delete the selected Comapny**********/
+  
+    var companyid = document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:idCompany}").value;
+
+    function callback(clkbtn, okbtnn) {
+        var companyid = document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:idCompany}").value;
+        var stringName = '{!compdetails.name}';
+        deleteCompany(companyid);
+    }    
+
+/*****************************************Calling Validation component******************************************/  
+    function ValidateField(){
+    if(validation_test()){
+       return true;
+       }else{
+                return false; 
+            }       
+}
+
+ </script>
+  
+    <script>
+    
+  /*************************Inline Save for the Default company of event admin ************************************/
+    function inlinesave() {
+        var inlinecompanyid = document.getElementById("{!$Component.pageid:thecomp:commoncomponent:myForm:idDefaultComp}").value;
+        inlinesavedefaultcomp(inlinecompanyid);
+}
+</script>
+ <c:ed_validationjs ></c:ed_validationjs>
+<c:BLN_ScriptForContryState > </c:BLN_ScriptForContryState>
+   </apex:outputPanel>   
+   
+  <!---// end of custom js----> 
+
+  <!--- //css component --->
+</apex:page>

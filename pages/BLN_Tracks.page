@@ -1,0 +1,113 @@
+<apex:page Controller="BLN_TracksCon" showHeader="false" id="thePage" standardStylesheets="false">
+  
+    <head>
+        <title>Boothleads-Tracks</title>
+    </head>
+    
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/style.css')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/nwbuttons.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/tables.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/chosen.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/responsive.css')}"/> 
+    
+    <script type="text/javascript">
+    function confirmsave(){
+        var roomname = document.getElementById('{!$Component.thePage.commoncomponent.commoncomponent.editTrack.TrackName}');
+        
+        if(roomname.value == ''){
+            alert('Track name is required');
+            return false;
+        }else{
+          
+            return true;
+        }
+    }
+    </script>
+
+    <c:myComponent BLN_UtillDisplayLinks="{!tracksComponent}"  id="commoncomponent" >  
+    
+    <apex:form id="trackRecords">
+    
+        <apex:outputText rendered="{!NOT(addEditTrackBool)}"> 
+        <div class="grid-1">
+    
+        <div class="title-grid-selectevent"></div>
+            <div class="content-gird-selectevents"> 
+                <apex:commandLink value="New Track" action="{!editTrack}" reRender="editTrack, trackRecords" styleclass="linkbutton blue" style="height:30px; margin-top:-8px; float:right; color:#FFFFFF;"></apex:commandLink>     
+            </div>
+            <!--close of content-grid--> 
+        </div>
+        <!--title-grid--> 
+        
+        
+        <!--Statistic-->
+        <div class="grid-1" > 
+            <!--Track table-->
+            
+            <table class="display" id="trackTable">
+                <thead>
+                    <tr>
+                        <th width="15%">Action</th>
+                        <th width="85%">Track Name</th>
+                    </tr>
+                </thead>
+                <tbody>               
+                    <apex:repeat value="{!trackslist}" var="trk">
+                        <tr class="item">
+                            <td class="subject">
+                                <apex:commandLink action="{!edittrack}" id="edttrack" style="text-decoration:none;cursor: pointer;" title="Edit" reRender="editTrack, trackRecords">
+                                    <apex:param value="{!trk.id}" name="editedTrackId"/>
+                                    <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/edit-1.png')}"/>
+                                </apex:commandLink>
+                                <apex:commandLink action="{!removetrack}" onclick="if(!confirm('Are you sure, do you want to delete track?')){return};" id="removetrack" style="text-decoration:none;cursor: pointer;" title="Remove" reRender="editTrack, trackRecords">
+                                    <apex:param value="{!trk.id}" name="removedTrackId"/>
+                                    <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/remove.png')}"/>
+                                </apex:commandLink>
+                            </td>
+                            <td class="name">
+                                <apex:outputText value="{!trk.Name}"/>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </div>
+        <!--close of grid-1--> 
+    
+        </apex:outputText> 
+    </apex:form>
+
+    
+    <apex:form id="editTrack">
+        <apex:outputPanel rendered="{!addEditTrackBool}" id="editTrackOut">
+        <!--Add Track -->
+            <div class="grid-1" style="width:70%;align:center;">
+        
+            <div class="content-gird" style="border:none;">
+
+            <div class="elem">
+                <label><apex:outputText value="Track Name:"></apex:outputText></label><label id="mandatory">*</label>    
+                <div class="indent" style="margin-left:100px;">   
+                    <apex:inputField value="{!addEditTrack.Name}" styleClass="medium" style="width:80%;" id="TrackName"/>
+                </div>
+            </div>
+            
+            <div class="clear"> </div>
+
+            </div>
+            <!--------------------------------------------------------------------------------->
+            
+                <div style="width:99%; text-align:center;vertical-align:middle; margin-top:-3px;">
+                    <apex:commandButton value="Save" action="{!saveTrack}" styleclass="linkbutton blue" style="width:80px;height:30px;" onclick="return confirmsave();" />&nbsp;&nbsp; <!----- reRender="editTrack, trackRecords"     ----->
+                    <apex:commandButton value="Cancel" action="{!cancelTrack}" reRender="editTrack, trackRecords" immediate="true" styleclass="linkbutton dark-blue" style="width:80px;height:30px;"/>
+                    
+                    <div class="clear"></div>
+                
+                </div><!--close of grid-->
+            </div><!--addtrack-->
+        </apex:outputPanel>
+    </apex:form>
+
+    
+    </c:myComponent>
+</apex:page>

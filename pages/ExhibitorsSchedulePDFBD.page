@@ -1,0 +1,387 @@
+<apex:page controller="MM_EventAdmin_ReportsCon2" renderAs="pdf" action="{!exhibitorschedules}">
+
+<apex:form >
+
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+<apex:variable var="increment" value="{!0}"/> 
+  <apex:repeat value="{!exhibitorlist}" var="a">
+  <apex:variable var="increment" value="{!increment+ 1}"/>
+   <tr >
+  <td>  
+  <apex:outputPanel style="display:{!IF(PsettingCorp.Corporate_Company_Logo_Visible__c= false ,'none','')};" >
+    <!-- <apex:image url="{!$Resource.NoEventLogo}" height="100px" width="100px"  style="display:{!IF(a.EventLogo== null ,'none','')};"/> -->
+   <!-- <apex:image url="/servlet/servlet.ImageServer?id={!a.EventLogo}&oid={!$Organization.Id}" height="100px" width="100px" style="display:{!IF(a.EventLogo== null ,'none','')};"/>-->
+    <apex:image url="/servlet/servlet.ImageServer?id={!a.EventLogo}&oid={!$Organization.Id}" style="display:{!IF(a.EventLogo== null ,'none','')};max-height:150px;width:150px;"/>
+  </apex:outputPanel>
+  
+  </td>    
+    <!--- <td valign="middle" rowspan="2" bgcolor="#f3f3f3">
+       <apex:image url="/servlet/servlet.ImageServer?id={!a.EventLogo}&oid={!$Organization.Id}"   />
+    </td> --->
+    <td width="100%" align="left" valign="middle" bgcolor="#f3f3f3" >
+    <!--<td width="100%" align="left" valign="middle" bgcolor="#f3f3f3" colspan="2">--->
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0px auto;text-align:center;">
+      <tr>
+        <td width="50%">&nbsp;</td>
+        </tr>
+      <tr>
+        <!---<td  align="center" valign="middle" style="text-align:center;" > <h1 style="color:#0f71b5;font-family:Verdana, Geneva, sans-serif; font-size:16px;">Connecticut Business Advantage 2014 Matchmaker Conference</h1></td>
+      --->
+              <td  align="center" valign="middle" style="text-align:center;" > <h1 style="color:#0f71b5;font-family:Verdana, Geneva, sans-serif; font-size:16px;"><apex:outputText value="{!attach.EV_Title__c}"/></h1></td>
+ </tr>
+      <tr>
+     <!---   <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">June 12, 2014</td>
+        --->   
+         <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">
+            <apex:outputText value="{0,date, MMM' 'dd', 'yyyy}" rendered="{!IF(MONTH(attach.EV_StartDate__c)!=6,true,false)}">
+            <apex:param value="{!attach.EV_StartDate__c}" /> 
+            </apex:outputText>   
+            
+            <apex:outputText value="{0,date, MMMM' 'dd', 'yyyy}" rendered="{!IF(MONTH(attach.EV_StartDate__c)==6,true,false)}">
+            <apex:param value="{!attach.EV_StartDate__c}" /> 
+            </apex:outputText>  
+            
+            To &nbsp; 
+            
+            <apex:outputText value="{0,date, MMM' 'dd', 'yyyy}" rendered="{!IF(MONTH(attach.EV_EndDate__c)!=6,true,false)}">
+            <apex:param value="{!attach.EV_EndDate__c}" /> 
+            </apex:outputText>
+            <apex:outputText value="{0,date, MMMM' 'dd', 'yyyy}" rendered="{!IF(MONTH(attach.EV_EndDate__c)==6,true,false)}">
+            <apex:param value="{!attach.EV_EndDate__c}" /> 
+            </apex:outputText>
+         </td>
+        </tr>
+      <tr>
+       <!-- <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">Gengras Student Union, University of Hartford</td> -->
+     <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!attach.EV_HostingLocation__c}</td>
+   </tr>
+      <tr>
+      <!--  <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">200 Bloomfield Avenue</td> -->
+      <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!attach.EV_HistingAddr1__c}</td>
+      </tr>
+      <tr>
+       <!-- <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">West Hartford, CT 06117</td> --->
+       <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!attach.AS_HostingCity__c}, {!attach.EV_HostingStateNew__c} {!attach.EV_HostingZipcode__c}</td>
+        </tr>
+    </table>
+    </td>
+  </tr>
+  <tr >
+    <td colspan="2">
+    <div style="padding:5px; color:#0f71b5;text-align:center;">
+      <!--  <div style="padding:5px; color:#0f71b5;padding-left:350px;"> --->
+                        <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:16px;">{!exhibitoralias } Schedules</h3>
+
+        </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#0f71b5; padding:5px; color:#FFF;">
+            <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:14px;">{!exhibitoralias } Details </h3>
+        </div>
+    </td>
+  </tr>
+
+  <tr>
+    <td height="90" width="19%" align="center" valign="middle" style="padding:15px;">        
+         <apex:outputPanel style="display:{!IF(PsettingCorp.Corporate_Company_Logo_Visible__c= false ,'none','')};" > 
+       <!-- <apex:image url="{!$Resource.NoImage}" height="100px" width="100px"  style="display:{!IF(a.exhibitorLogo!= null ,'none','')};"/> -->
+        <apex:image url="/servlet/servlet.ImageServer?id={!a.exhibitorLogo}&oid={!$Organization.Id}" height="100px" width="100px" style="display:{!IF(a.exhibitorLogo== null ,'none','')};"/>
+        
+        </apex:outputPanel>
+    </td>
+    <td align="left" valign="top">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr style="display:{!IF(PsettingCorp.Company_Name__c= false ,'none','')};">
+            <td width="35%" height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!exhibitoralias }</td>
+            <td width="1%" align="center" valign="middle">:</td>
+            <td width="64%" height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.exhibitorCompany}"></apex:outputText></td>
+          </tr>
+          <tr style="display:{!IF(PsettingCorp.First_Name__c= false ,'none','')};">
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!exhibitoralias } Contact Name</td>
+            <td align="center" valign="middle">:</td>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.exhibitorName}"></apex:outputText></td>
+          </tr>
+          <tr style="display:{!IF(PsettingCorp.Mobile__c= false ,'none','')};">
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!exhibitoralias } Contact No.</td>
+            <td align="center" valign="middle">:</td>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.exhibitorContact}"></apex:outputText></td>
+          </tr>
+         <tr style="display:{!IF(PsettingCorp.Country__c= false ,'none','')};">
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">Table/Room No.</td>
+            <td align="center" valign="middle">:</td>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.exhibitorTable}"></apex:outputText></td>
+          </tr>  
+          <tr style="display:{!IF(PsettingCorp.Corporate_Location_Visible__c= false ,'none','')};">
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">Location</td>
+            <td align="center" valign="middle">:</td>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.exhibitorlocation}"></apex:outputText></td>
+          </tr>   
+        </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#0f71b5; padding:5px; color:#FFF;">
+            <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:14px; border-bottom:3px #FFF;">Scheduled Appointments </h3>
+        </div>
+    </td>
+  </tr>  
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#FFF; padding:1.5px; color:#FFF;">
+        </div>
+    </td>
+  </tr>   
+  <tr>
+    <td colspan="2" align="right" valign="top">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:5px;">
+      <tr>
+        <th height="23px" width="10%" align="left" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">Date</th>
+        <th height="23px" width="20%" align="left" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">Appointment Time</th>
+        <th height="23px" width="30%" align="left" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">{!attendeealias}</th>
+        <th height="23px" width="25%" align="left" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">{!attendeealias} Contact Name</th>
+        <th height="23px" width="15%" align="left" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">Contact No.</th>
+      </tr>
+      <apex:repeat value="{!a.liExhibitors}" var="c">
+      <tr>
+        <td height="21px" width="10%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{0,date,MM'/'dd'/'yyyy}"><apex:param value="{!c.MM_slot_Date__c}"/></apex:outputText></td>
+        <td height="21px" width="20%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_slot_StartTime__c} - {!c.MM_Slot_End_Time__c}"/></td>
+        <td height="21px" width="30%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_To_EAM__r.MBE_Profile__r.AS_Company__c}" rendered="{!IF(PsettingMBE.MBE_Company_Visible__c== false, false, true)}"/></td>
+        <td height="21px" width="25%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_To_EAM__r.MBE_Profile__r.AS_FirstName__c} {!c.MM_To_EAM__r.MBE_Profile__r.AS_LastName__c}" rendered="{!IF(PsettingMBE.MBE_First_Name_Visible__c == false, false, true)}"/></td>
+        <td height="21px" width="15%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_To_EAM__r.MBE_Profile__r.AS_CellPhone__c}" rendered="{!IF(PsettingMBE.MBE_Mobile_Phone_Visible__c == false, false, true)}"/></td>
+      </tr>
+
+      </apex:repeat>   
+                        
+    </table>
+    </td>
+  </tr>
+   <apex:outputText rendered="{!IF(increment < exhibitorlist.size , TRUE,FALSE)}">
+ 
+            <div style="page-break-after:always;"></div>
+  </apex:outputtext> 
+
+ <apex:outputpanel >
+                  <div style="page-break-after:always;"></div>
+      <apex:variable var="count" value="{!0}"/> 
+    
+  <apex:repeat value="{!a.liExhibitors}" var="c">
+      <apex:variable var="count" value="{!count + 1}"/>
+
+ <apex:outputPanel style="color:#000000;">
+                 
+                 <!-- table start-->
+                 
+                 <div id="areaToPrint" >
+                
+              <table width="100%" border="0" align="center" cellpadding="0" cellspacing="5">
+  <tr>
+    <td height="50" colspan="2" align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr style="display:{!IF(PsettingMBE.MBE_Company_Visible__c= false ,'none','')};">
+        <td width="50%" height="50" align="left" valign="middle"  style="padding-left:5px;font-size:20px;"> <b> <h2 style="font-family:Verdana, Geneva, sans-serif;"></h2>  {!c.MM_To_EAM__r.AS_id__r.AS_Company__c}  </b> </td>
+<td width="50%" height="50" align="left" style="padding-left:5px;">
+          <!--<apex:outputPanel style="display:{!IF(Psettings[0].Corporate_Company_Logo_Visible__c= false ,'none','')};" >        
+          <apex:image url="{!$Resource.NoEventLogo}" height="100px" width="100px"  style="display:{!IF(c.MM_To_EAM__r.AS_id__r.Exhibitor_company_imageUrl__c== null ,'none','')};"/> 
+         <apex:image url="/servlet/servlet.ImageServer?id={!c.MM_To_EAM__r.AS_id__r.Exhibitor_company_imageUrl__c}&oid={!$Organization.Id};" height="100px" width="100px" style="display:{!IF(c.MM_To_EAM__r.AS_id__r.Exhibitor_company_imageUrl__c!= null ,'none','')};"/>
+
+        </apex:outputPanel>-->
+         </td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+    <div style="border:2px solid #93a07d; border-radius:5px;color:#000; width:98%; margin:5px;display:{!IF(PsettingMBE.MBE_Company_Visible__c= false && PsettingMBE.MBE_NAICS_CODES_Visible__c= false && PsettingMBE.MBE_Business_Established_Date_Visible__c= false && PsettingMBE.MBE_Primary_Business_Category_Visible__c= false && PsettingMBE.MBE_Secondary_Business_Category_Visible__c= false && PsettingMBE.MBE_Number_Of_Employees_Visible__c= false,'none','')}; && PsettingMBE.MBE_Business_Duns_Number_Visible__c= false && PsettingMBE.MBE_Business_Revenue_Visible__c= false && PsettingMBE.MBE_Business_Type_Visible__c= false && PsettingMBE.MBE_Business_Tax_ID_Visible__c= false,'none','')};">
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="40%" height="25" align="left" valign="middle" style="border-bottom:2px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">COMPANY INFORMATION</h3></td>
+      </tr>
+      <tr style="display:{!IF(PsettingMBE.MBE_Company_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Company Name : </strong>{!c.MM_To_EAM__r.MBE_Profile__r.AS_Company__c}  </td>
+        </tr>
+        <tr>
+        <td width="49%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;display:{!IF(PsettingMBE.MBE_Work_Address_Visibility__c= false ,'none','')};"><strong>Address : </strong>
+        {!c.MM_To_EAM__r.MBE_Profile__r.AS_WorkAddress1__c} {!c.MM_To_EAM__r.MBE_Profile__r.AS_WorkAddress2__c}<br/>
+        {!c.MM_To_EAM__r.AS_id__r.AS_WorkCity__c}, {!c.MM_To_EAM__r.MBE_Profile__r.AS_Work_States__c} {!c.MM_To_EAM__r.AS_id__r.AS_WorkZip__c}        
+        </td>
+        </tr>
+        <tr style="display:{!IF(PsettingMBE.MBE_Website_Visible__c= false ,'none','')};">
+        <td width="40%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Website URL : </strong> {!c.MM_To_EAM__r.MBE_Profile__r.AS_WebsiteUrl__c}</td>
+        </tr>
+        <tr style="display:{!IF(PsettingMBE.MBE_Business_Tax_ID_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Tax ID : </strong>{!c.MM_To_EAM__r.MBE_Profile__r.AS_BusinessTaxId__c} </td>
+        </tr>
+        <tr style="display:{!IF(PsettingMBE.MBE_Business_Duns_Number_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> <strong>DUNS Number : </strong> {!c.MM_To_EAM__r.MBE_Profile__r.AS_BusinessDunsNumber__c}</td>
+        </tr>       
+      <tr style="display:{!IF(PsettingMBE.MBE_Business_Established_Date_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> <strong>Established Date : </strong> 
+            <apex:outputText value="{0,date,MM/dd/yyyy}">
+              <apex:param value="{!c.MM_To_EAM__r.MBE_Profile__r.AS_BusinessEstablishedDate__c}"/>
+            </apex:outputText>
+                </td>
+        </tr>
+        <tr>
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Number of Years in Business : </strong> {!c.MM_To_EAM__r.MBE_Profile__r.Year_in_business__c}</td>
+        </tr>
+        
+        <tr style="display:{!IF(PsettingMBE.MBE_Number_Of_Employees_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>No.of Employees : </strong>    
+            <apex:outputText value="{0,number,0}">
+              <apex:param value="{!c.MM_To_EAM__r.MBE_Profile__r.AS_NumberOfEmployees__c}"/>
+            </apex:outputtext>
+             </td>
+        </tr>
+        <tr >
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Revenue Range : </strong>  
+       {!c.MM_To_EAM__r.MBE_Profile__r.AS_BusinessRevenue__c}
+       </td>
+        </tr>
+        <tr style="display:{!IF(PsettingMBE.MBE_Business_Type_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Certificates : </strong> {!c.MM_To_EAM__r.DiversityType__c}</td>
+        </tr>
+        <!-----Awards--->
+        <tr>
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Awards : </strong> {!c.MM_To_EAM__r.MBE_Profile__r.Any_non_WBENC_awards_received__c}</td>
+        </tr>
+        
+      
+      </table>
+      </div> 
+       <!------1 sec end---->
+       <!----2nd sec-------->
+      <div style="border:2px solid #93a07d; border-radius:5px;width:98%; color:#000; margin:5px; display:{!IF(PsettingMBE.MBE_First_Name_Visible__c= false && PsettingMBE.MBE_LastName_Visible__c= false && PsettingMBE.MBE_Email_Visible__c= false && PsettingMBE.MBE_Mobile_Phone_Visible__c= false && PsettingMBE.MBE_Title_Visible__c= false ,'none','')};">
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="25" colspan="2" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">CONTACT INFORMATION</h3></td>
+      </tr>
+      <tr>
+        <td width="68%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;display:{!IF(PsettingMBE.MBE_First_Name_Visible__c= false ,'none','')};"><strong> Name : </strong> {!c.MM_To_EAM__r.MBE_Profile__r.AS_FirstName__c} {!c.MM_To_EAM__r.MBE_Profile__r.AS_LastName__c}</td>
+      </tr>
+    <tr style="display:{!IF(PsettingMBE.MBE_Title_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Title : </strong>{!c.MM_To_EAM__r.MBE_Profile__r.AS_Title__c} </td>
+    </tr>  
+    <tr style="display:{!IF(PsettingMBE.MBE_Work_Phone_Visible__c= false ,'none','')};">
+        <td width="40%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Phone Number : </strong> {!c.MM_To_EAM__r.MBE_Profile__r.AS_WorkPhone__c}</td>
+        </tr>    
+      <tr style="display:{!IF(PsettingMBE.MBE_Email_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Email : </strong>{!c.MM_To_EAM__r.MBE_Profile__r.AS_Email__c} </td>
+      </tr>
+      
+      </table>
+     </div> 
+       <!----2nd sec end-------->    
+    </td>
+    
+   
+   
+    
+    <td width="50%" align="center" valign="top">
+     
+     
+      <!------3 sec------------>
+      <div style="border:2px solid #93a07d; border-radius:5px;  width:98%; margin:5px; color:#000;display:{!IF(PsettingMBE.MBE_Business_Description_Visible__c= false ,'none','')};">  
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="32%" height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">CAPABILITIES</h3></td>
+        </tr>
+      <!---<tr style="display:{!IF(PsettingMBE.MBE_Business_Description_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;"> <strong>Business Description : </strong>{!c.MM_To_EAM__r.MBE_Profile__r.AS_BusinessDescription__c}  </td>
+        </tr>-->
+        <tr style="display:{!IF(PsettingMBE.MBE_Primary_Business_Category_Visible__c= false ,'none','')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Primary Business Category : </strong> {!c.MM_To_EAM__r.MBE_Profile__r.AS_PrimaryBusinessCategory1__c}</td>
+        </tr>      
+        <tr>
+        <td width="49%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; line-height:20px;"><strong>NAICS CODES : </strong>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_1__c !=null && c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_1__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_1__c}<br/></apex:outputText>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_2__c !=null && c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_2__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_2__c}<br/></apex:outputText>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_3__c !=null && c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_3__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_3__c}<br/></apex:outputText>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_4__c !=null && c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_4__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_4__c}<br/></apex:outputText>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_5__c !=null && c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_5__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_5__c}<br/></apex:outputText>
+        </td>
+        </tr>
+        <tr>
+        <td width="49%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; line-height:20px;"><strong>Commodities : </strong>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.Commodity_1__c !=null && c.MM_To_EAM__r.MBE_Profile__r.Commodity_1__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.Commodity_1__c}<br/></apex:outputText>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.Commodity_2__c !=null && c.MM_To_EAM__r.MBE_Profile__r.Commodity_2__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.Commodity_2__c}<br/></apex:outputText>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.Commodity_3__c !=null && c.MM_To_EAM__r.MBE_Profile__r.Commodity_3__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.Commodity_3__c}<br/></apex:outputText>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.Commodity_4__c !=null && c.MM_To_EAM__r.MBE_Profile__r.Commodity_4__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.Commodity_4__c}<br/></apex:outputText>
+       <apex:outputText rendered="{!IF(c.MM_To_EAM__r.MBE_Profile__r.Commodity_5__c !=null && c.MM_To_EAM__r.MBE_Profile__r.Commodity_5__c !='' , TRUE,FALSE)}"> {!c.MM_To_EAM__r.MBE_Profile__r.Commodity_5__c}<br/></apex:outputText>
+       
+        </td>
+        </tr> 
+        <apex:variable var="klength" value="{!LEN(c.MM_To_EAM__r.MBE_Profile__r.AS_PrimaryBusinessCategory1__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_1__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_2__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_3__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_4__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_5__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.Commodity_1__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.Commodity_2__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.Commodity_3__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.Commodity_4__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.Commodity_5__c)+LEN(c.MM_To_EAM__r.MBE_Profile__r.Key_Words__c)}"/>
+        <apex:variable var="kelength" value="{!0}"/> 
+        <tr style="display:{!IF(PsettingMBE.MBE_Products_Services_Visible__c= true&&klength<=2200 ,'','none')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;"><strong>Products / Services: </strong>{!c.MM_To_EAM__r.MBE_Profile__r.Key_Words__c}   </td>
+      </tr>
+      <tr style="display:{!IF(PsettingMBE.MBE_Products_Services_Visible__c= true&&klength>2200 ,'','none')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;">Contd...</td>
+      </tr>    
+        
+        </table>
+        
+      </div>  
+      <apex:outputpanel rendered="{!PsettingMBE.MBE_Products_Services_Visible__c&&klength>2200}" layout="none">
+      <apex:variable var="kelength" value="{!LEN(c.MM_To_EAM__r.MBE_Profile__r.Key_Words__c)}"/> 
+     <div style="page-break-before:always;"></div> 
+     <div style="border:2px solid #93a07d; border-radius:5px;width:98%; color:#000; margin:5px;">
+     <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+     <tr style="display:{!IF(PsettingMBE.MBE_Products_Services_Visible__c= true&&kelength<=2200 ,'','none')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;"><strong>Products / Services: </strong>{!c.MM_To_EAM__r.MBE_Profile__r.Key_Words__c}   </td>
+      </tr>
+      <tr style="display:{!IF(PsettingMBE.MBE_Products_Services_Visible__c= true&&kelength>2200 ,'','none')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;"><strong>Products / Services: </strong>{!LEFT(c.MM_To_EAM__r.MBE_Profile__r.Key_Words__c,2200)} Contd...</td>
+      </tr>
+      </table>
+     </div> 
+     </apex:outputpanel> 
+     <apex:outputpanel rendered="{!PsettingMBE.MBE_Products_Services_Visible__c&&kelength>2200}" layout="none">
+      <div style="page-break-before:always;"></div> 
+      <div style="border:2px solid #93a07d; border-radius:5px;width:98%; color:#000; margin:5px;">
+     <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+     <tr style="display:{!IF(PsettingMBE.MBE_Products_Services_Visible__c= true,'','none')};">
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;">{!RIGHT(c.MM_To_EAM__r.MBE_Profile__r.Key_Words__c,LEN(c.MM_To_EAM__r.MBE_Profile__r.Key_Words__c)-2200)}   </td>
+      </tr>
+      
+        
+        </table>
+     </div> 
+     </apex:outputpanel> 
+      
+      
+    </td>
+  </tr>
+  <tr>
+    <td height="19" align="center" valign="top">&nbsp;</td>
+    <td align="center" valign="top">&nbsp;</td>
+  </tr>
+</table>
+                 
+  </div>     
+</apex:outputPanel>
+    <apex:outputText rendered="{!IF(count < a.liExhibitors.size , TRUE,FALSE)}">
+   <div style="page-break-after:always;">
+
+  
+  </div>                
+    </apex:outputText>
+    
+    <apex:outputText rendered="{!IF(increment < exhibitorlist.size , TRUE,FALSE)}">
+   <div style="page-break-after:always;">
+
+  
+  </div> 
+        </apex:outputText>
+
+      </apex:repeat> 
+ </apex:outputpanel>
+ <!-----------------------Removed------>
+ 
+  </apex:repeat> 
+</table>
+
+</apex:form>
+ </apex:page>

@@ -1,0 +1,345 @@
+<apex:page controller="BL_Eventadmin_ProfileCon" sidebar="false" showHeader="false" id="Profile" action="{!checkUserId}" standardStylesheets="false">
+<!---------------------- Including Statements/Stylesheets From Static Resource -------------------->
+<head>
+<title>Boothleads</title>
+</head>
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+
+ <apex:includeScript value="{!$Resource.PhoneSetup}"/>  
+
+<!----------------------****************** END *****************-------------------------->
+<script>
+    function submitform(){
+    
+    
+   
+    
+    var lvTnId = document.getElementById('{!$Component.Profile:formid:firstname}').value;
+     
+ 
+  
+  
+     
+    var lvStId = document.getElementById('{!$Component.Profile:formid:Lastname}').value;
+    
+   
+     
+    var lvEtId = document.getElementById('{!$Component.Profile:formid:Orgname}').value;
+    
+    
+     
+    var ZipId = document.getElementById('{!$Component.Profile:formid:Zip}').value;
+    
+    
+
+    lvTnId = lvTnId.trim(); 
+   
+    lvStId = lvStId.trim();
+    
+    lvEtId = lvEtId.trim();
+    
+    ZipId = ZipId.trim();
+    
+    
+    
+                if(lvTnId == "")
+                  {
+                      alert("Please enter First Name");
+                    //  lvTnId.focus();
+                      return false;
+                  }
+              
+                   if(lvStId == "")
+                   {
+                      alert("Please enter Last Name");
+                    //  lvStId.focus();
+                      return false;
+                  }  
+                  if(lvEtId == "")
+                   {
+                      alert("Please enter Organization Name");
+                     //lvEtId.focus();
+                      return false;
+                  }
+                  
+                  
+                  if(ZipId != "")
+             {
+             if(validateZipCode(ZipId)== false){
+                alert("Please enter valid zip code ");
+                //ZipId.focus();
+                return false;
+                }
+            }
+                      
+            
+               
+             
+    }     
+     
+         function validateZipCode(elementname){
+         var zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
+        return zipCodePattern.test(elementname);
+    } 
+   
+</script>
+
+<!--MENU START-->
+<style>
+
+select, option{min-width:90px; max-width:180px}
+
+</style>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<!-- CSS For The Page Start's From Here -->
+<div id="page-top-outer">    
+<!-- Start: page-top -->
+<div id="page-top">
+    <!-- start logo -->
+    <div id="logo">      
+    </div>
+    <!-- end logo -->         
+    <!--  start top-search -->
+    <div id="top-search">     
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tr>        
+        <td Class="welcome">        
+        <font>Welcome :</font>
+                   <b><font size="2" color="sky blue">{!$User.Firstname}&nbsp;{!$User.Lastname}</font></b>        
+          </td>
+        <td></td>             
+        </tr>
+        </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+</div>
+<!-- End: page-top -->
+</div>
+<!-- End: page-top-outer -->    
+<div class="clear">&nbsp;</div> 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+<!-- Start Nav Right-->
+        <div id="nav-right">           
+           <!----LOGOUT ACTION -->
+           <div class="nav">
+        <div class="table">        
+       <apex:form >
+
+       <div class="nav-divider">&nbsp;</div>
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" title="Logout">{!$Label.site.logout}</apex:commandLink>
+        <!--  <div class="nav-divider">&nbsp;</div>
+      <apex:outputLink target="_new" value="/apex/Boothleads_Help_Profile" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" >Help</apex:outputLink>
+            -->
+       </apex:form>  
+            </div></div>           
+           <!----LOGOUT ACTION END--->           
+            <div class="clear">&nbsp;</div>        
+            <!--  start account-content --> 
+            <div class="account-content">
+            <div class="account-drop-inner">
+                <a href="" id="acc-settings">Settings</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-details">Personal details </a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-project">Project details</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-inbox">Inbox</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-stats">Statistics</a> 
+            </div>
+            </div>
+            <!--  end account-content -->        
+        </div>
+        <!-- end nav-right -->
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">
+  <apex:form >  
+    
+   <ul class="select"><li>
+   <apex:outputLink value="/apex/BL_EA_Dashboard?id={!EventId}"><b>Dashboard</b> </apex:outputLink></li></ul>
+   
+   <div class="nav-divider">&nbsp;</div>                    
+    <ul class="select"><li>
+    <apex:outputLink value="/apex/BL_EventAdmin_Events?id={!EventId}"><b>Events</b></apex:outputLink></li></ul>
+         
+   <div class="nav-divider">&nbsp;</div>
+    <ul class="select"><li>
+    <apex:outputLink value="/apex/BL_Eventadmin_BoothAdmins?id={!EventId}"><b>Booths</b></apex:outputLink></li></ul>
+          
+   <div class="nav-divider">&nbsp;</div>
+    <ul class="select"><li>
+    <apex:outputLink value="/apex/BL_Eventadmin_Attendees?id={!EventId}" ><b>Attendees</b> </apex:outputLink></li></ul>
+        
+   <div class="nav-divider">&nbsp;</div>
+    <ul class="select"><li>
+    <apex:outputLink value="/apex/BL_EA_Reports?id={!EventId}"><b>Reports</b> </apex:outputLink></li></ul>
+        
+  </apex:form>
+        
+  <div class="clear"></div>
+   </div>
+  <div class="clear"></div>
+   </div>
+  <!--  start nav -->
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................................................... END -->
+<div class="clear"></div> 
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+<!-- start content -->
+<div id="content">
+    <!--  start page-heading -->
+   <div id="page-heading"><br />
+        <h1 style="font-size:20px;">Profile</h1> 
+        
+        <div style="float:right; color:#0000FF; text-align:right; margin-right:2%;"><apex:form ><apex:commandlink action="{!Profileupdatepage}"><b><font color="sky blue" size="3px">Reset Password</font></b></apex:commandlink></apex:form></div>
+    </div> 
+    <!-- end page-heading -->
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+   
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        <!--  start content-table-inner ...................................................................... START -->
+        <div id="content-table-inner">        
+            <!--  start table-content  -->
+            <div id="table-content" >            
+<!-- Hearder Part Ends Here -->
+
+
+        
+  <apex:form id="formid">
+    <table width="98%" align="center" style="margin:0px auto; border:1px solid #cccccc; line-height:35px;  padding:20px;"><tr><td> 
+  <apex:outputPanel >
+    <table width="90%" border="0" align="center" cellpadding="0" cellspacing="0" style="margin:40px auto;"  class="box">
+  <tr>
+    <td width="25%" height="30" style="padding-left:15px;"></td>
+    <td width="25%" height="30"></td>
+    <td align="left" style="padding-left:15px;"></td>
+    <td width="23%" height="30"></td>
+  </tr>
+  
+  <tr>
+    <td width="25%" height="30" align="right">First Name<font size="4" color="red">*</font>:</td>
+    <td width="25%" height="30" align="left" style="padding-left:10px;"> <apex:inputField value="{!EventUser.FirstName}" style="width:180px;" id="firstname"/></td>
+    <td align="right" style="text-align:right;">Organization Address1:</td>
+    <td width="23%" height="30" align="left"  style="padding-left:10px;"><apex:inputField value="{!EventUser.CompanyAddr1__c}" style="width:180px;" /></td>
+  </tr>
+  <tr>
+    <td height="30" align="right" style="padding-left:15px;">Last Name<font size="4" color="red">*</font>:</td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.LastName}" style="width:180px;" id="Lastname"/></td>
+    <td align="right" style="padding-left:15px;">Organization Address2:</td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.CompanyAddr2__c}" style="width:180px;" /></td>
+  </tr>
+  <tr>
+    <td height="30" align="right" style="padding-left:15px;">Email ID:</td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:outputText value="{!EventUser.Email}"/></td>
+    <td align="right" style="padding-left:15px;">Organization City:</td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.CompanyCity__c }" style="width:180px;"/></td>
+  </tr>
+  <tr>
+    <td height="30" align="right" style="padding-left:15px;">Organization Name<font size="4" color="red">*</font>:</td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.companyName }" style="width:180px;" id="Orgname"/></td>
+    <td align="right" style="padding-left:15px;">Organization Country:</td>
+    <td height="30" align="left" style="padding-left:10px;">
+    
+    <apex:inputField value="{!EventUser.Country__c}" style="width:185px;"/>
+    </td>
+  </tr>
+  <tr>
+    <td height="30" align="right" style="padding-left:15px;">Organization Phone Number:</td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.Companyphone__c}" style="width:180px;" id="Phone" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>
+    <td align="right" style="padding-left:15px;">Organization State:</td>
+    <td height="30" align="left" style="padding-left:10px;">  
+    <apex:inputField value="{!EventUser.States__c}" style="max-width:180px;"/>
+    </td>
+  </tr>
+  <tr>
+    <td height="30" align="right" style="padding-left:15px;">Organization Website URL:</td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.Company_website__c}" style="width:180px;"/></td>
+    <td align="right" style="padding-left:15px;"><span style=" text-align:right;padding-right:15px;">Organization Zip Code:</span></td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.Zipcode__c}" style="width:180px;" id="Zip"/></td>
+  </tr>
+  <tr>
+    <td height="30" align="right" style="padding-left:15px;">Organization Fax Number:</td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.CompanyFaxNumber__c}" style="width:180px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>
+    <td align="right" style="padding-left:15px;"><span style=" text-align:right;padding-right:15px;">Organization PO Box:</span></td>
+    <td height="30" align="left" style="padding-left:10px;"><apex:inputField value="{!EventUser.PoBox__c }" style="width:180px;"/></td>
+  </tr>
+  <tr>
+    <td height="30" style="padding-left:15px;">&nbsp;</td>
+    <td height="30" colspan="2" align="center"><apex:commandButton value="Save" action="{!ProfileSave}" title="Save" styleClass="awesome" onclick="return submitform();"/>
+        <!--<apex:commandButton value="Cancel" action="{!ProfileCancel}" title="Cancel" styleClass="awesome"/>--></td>
+    <td height="30">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%" height="30" style="padding-left:15px;"></td>
+    <td width="25%" height="30"></td>
+    <td align="left" style="padding-left:15px;"></td>
+    <td width="23%" height="30"></td>
+      </tr>
+ </table>
+</apex:outputPanel>  
+   </td></tr></table>
+</apex:form>
+<!-------------------------------------------------- Help Form ----------------------------------------->
+ <!--<apex:form id="Help">
+                <apex:outputPanel id="Helppopup">
+                     <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!HelpPopUp}"/>
+                         <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!HelpPopUp}" style="width:85%;">                         
+                         <div style="height:30px; width:100%; background-color:#cccccc;">
+                         <apex:commandLink value="X" action="{!CloseHelppopup}" style="float:right; color:#000000; padding-right:8px; margin-left:5px; font-weight:bold; font-size:16px;" ></apex:commandlink>
+                         </div>
+                        
+                        <apex:iframe src="http://tcheckin.com/Event_Admin_Help/Event_Admin_Help.html"  scrolling="true"/>
+                        </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:form>-->
+
+<!--//---------------------------------------------*********** END******** ---------------------------------------//-->       
+<!-- Middle Part Of the SCC Starts Here -->
+
+ </div>
+            <!--  end content-table  -->
+        
+            <!--  start actions-box ............................................... -->
+            <!-- end actions-box........... -->
+            
+            
+            <div class="clear"></div>
+         
+        </div>
+        <!--  end content-table-inner ............................................END -->
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    
+    </table>
+    <div class="clear">&nbsp;</div>
+
+</div>
+<!--  end content -->
+<div class="clear">&nbsp;</div>
+</div>
+<!--  end content-outer........................................................END-->
+
+<div class="clear">&nbsp;</div>
+    
+<!-- start footer -->        
+<apex:include pageName="QRCode_Footertemplate"/>
+  
+</apex:page>

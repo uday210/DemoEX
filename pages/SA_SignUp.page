@@ -1,0 +1,339 @@
+<apex:page controller="SA_SignUpController" standardStylesheets="false" showHeader="false" id="SA_SignUpPage">
+
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/login.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.BLN_Signup, 'css/login.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/popup.css')}"/>       
+      
+      
+    <style>
+       .button-a.blue{
+        float:none;
+       }
+       
+       
+       #form-login {
+background-color: #FFF;
+border: 0px solid #ededed;
+ 
+
+width: 100%;
+height: 310px;
+margin: auto;
+padding: 20px;
+background: #f7f7f7;
+background: -moz-linear-gradient(top, #f7f7f7 0%, #e9e9e9 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f7f7f7), color-stop(100%,#e9e9e9));
+background: -webkit-linear-gradient(top, #f7f7f7 0%,#e9e9e9 100%);
+background: -o-linear-gradient(top, #f7f7f7 0%,#e9e9e9 100%);
+background: -ms-linear-gradient(top, #f7f7f7 0%,#e9e9e9 100%);
+background: linear-gradient(top, #f7f7f7 0%,#e9e9e9 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#e9e9e9',GradientType=0 );
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+border-radius: 3px;
+}
+
+
+    </style>  
+    
+<head>
+<title>Scan Attendee</title>
+</head>
+
+<!--
+    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    else if (!filter.test(uid.value)) {
+        alert('Please provide a valid User Name');
+        uid.focus;
+        return false;
+    } 
+    -->
+<script>
+
+function ValidateLogin()
+{
+
+    var uid=document.getElementById('{!$Component.SA_SignUpPage:SA_SignUpForm:usermail}');
+    var pwd=document.getElementById('{!$Component.SA_SignUpPage:SA_SignUpForm:lpass}');
+
+    
+    if(uid.value == ""){
+        alert('Please Enter Username');
+        return false;
+    }  
+    
+    if(pwd.value == "" ) {
+        alert('Please Enter Password');
+        return false;
+    }
+    
+}
+</script>
+
+<script>
+
+function ValidateForm(){
+
+
+var ufn=document.getElementById('{!$Component.SA_SignUpPage:SignupForm:FirstName}');
+var uln=document.getElementById('{!$Component.SA_SignUpPage:SignupForm:LastName}');
+var em=document.getElementById('{!$Component.SA_SignUpPage:SignupForm:ASUserEmail}');
+var org=document.getElementById('{!$Component.SA_SignUpPage:SignupForm:CompanyName}');
+var pas=document.getElementById('{!$Component.SA_SignUpPage:SignupForm:password}');
+
+var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+if(ufn.value == ""){
+alert('Please Enter First Name');
+return false;
+}
+if(uln.value == "" ){
+alert('Please Enter Last Name');
+return false;
+}
+if(em.value == ""){
+alert('Please Enter Email');
+return false;
+} else if (!filter.test(em.value)) {
+alert('Please provide a valid email address');
+em.focus;
+return false;
+} 
+
+if(org.value == "" ){
+alert('Please Enter Organization Name');
+return false;
+}
+if(pas.value == "" ){
+alert('Please Enter Password');
+return false;
+}
+
+}
+</script>
+
+ <script>
+$(function(){
+$('.placeholder').each(function(index, elem){
+$(elem).prop('placeholder',$(elem).prop('title'));
+});
+});
+</script>
+
+<apex:form id="SA_SignUpForm" forceSSL="true">
+<div id="header">
+<div id="logo">
+
+<apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+
+</div><!--close of logo-->
+
+  <div id="loginform" style="width:78%; height:40px; float:right; margin-top:15px; text-align:right; padding-right:-35px; float:right; margin-right:15px;">
+      <ul style="list-style:none; text-align:right;width:100%; ">
+        <li style="display:inline;">
+          <label for="usermail" style="font-size:12px; color:#FFF;">Email&nbsp;&nbsp;</label>
+          <apex:inputText id="usermail" title="Your email address*" value="{!Loginname}" styleclass="rounded placeholder" style="background-image:none; width:220px; padding:1px; height:26px; border-radius:0px; padding-left:5px;font-size:12px;" />
+        </li>
+        &nbsp;&nbsp;
+        <li style="display:inline;">&nbsp;&nbsp;
+          <label for="password" style="font-size:12px; color:#FFF;">Password</label>
+          <apex:inputSecret title="Password*" id="lpass" value="{!Password}"  styleclass="rounded placeholder" style="background-image:none; width:220px; padding:1px; height:26px; border-radius:0px; padding-left:5px; margin-left:5px; border:1px solid #979797;font-size:12px;" />&nbsp;&nbsp;&nbsp;
+          
+          <apex:commandButton value="Login" styleclass="button-a blue" action="{!login}" onclick="return ValidateLogin();" style="padding:3px; width:55px; background-color:#607aab; color:#FFFFFF; border:0px; height:34px; cursor:pointer; font-weight:bold; font-size:14px;vertical-align:middle;padding-right:10px;"/>
+          
+          <div style=" margin-right:150px;">
+              <font style="text-align:left;">
+                  <apex:commandLink action="{!forgotPassword}" value="Forgot your password?" style="color:white;"/>
+              </font>
+          </div>
+        </li>
+        &nbsp;
+        <li style="display:inline;;">
+          
+        </li>
+      </ul>
+   
+    </div>
+</div><!--close of header--->
+
+</apex:form>
+<apex:form id="SignupForm" forceSSL="true" >
+
+<div id="ribbon"></div><!--close of ribbon-->
+
+
+<body  style="background-image: URL('https://cs11.salesforce.com/resource/1399630143000/ScanAttendee_BackgroundImage')">
+
+<div style=" width:100%; padding-top:50px;">
+
+  <div style=" width:30%; float:left; text-align:center;">
+       <apex:image value="{!$Resource.ScanAttendee_Phone}" width="395px" height="450px" style="margin-bottom:55px;"/> 
+  </div>
+  
+  <div style="width:30%; float:left; padding:25px;">  
+      <div>
+        <h2 style="">Welcome to Scan Attendee</h2>
+        <p style="color:#28384D;line-height:30px; font-size:16px; text-align:justify;">
+        Scan Attendee is an easy to use Check In app for your events. You can sell the tickets and Items on site at the event.</p>
+        <ul style="color:#28384D;line-height:30px; font-size:16px;text-align:justify;padding-left:18px;">
+            <li>Create Events </li>
+            <li>Sell Tickets and Items</li>
+            <li>Ability to add Guests</li>
+            <li>Print Badges</li>
+            <li>Check-In Attendees</li>
+            <li>Secured Payments and Refunds</li> 
+            <li>Reports and Analytics for Event ROI</li> 
+        </ul>
+      </div>
+
+  </div>
+  <div style="width:30%; float:left; text-align:right;">
+  
+      <div style="background: #f7f7f7; padding:15px;
+background: -moz-linear-gradient(top, #f7f7f7 0%, #e9e9e9 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f7f7f7), color-stop(100%,#e9e9e9));
+background: -webkit-linear-gradient(top, #f7f7f7 0%,#e9e9e9 100%);
+background: -o-linear-gradient(top, #f7f7f7 0%,#e9e9e9 100%);
+background: -ms-linear-gradient(top, #f7f7f7 0%,#e9e9e9 100%);
+background: linear-gradient(top, #f7f7f7 0%,#e9e9e9 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#e9e9e9',GradientType=0 );
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+border-radius: 3px;">
+          <div class="form-title" style="text-align:left;font-weight:bold;font-size:20px;">Sign Up</div>
+          <div class="form-sub-title" style="text-align:left;font-size:20px;">It is free and anyone can join</div>
+             <table style="width:100%;border:0px solid red;" cellpadding="0" cellspacing="8" border="2">
+              <tbody>
+                <tr>
+                  <td width="49%" style="align:left;"><apex:inputText title="First Name*" value="{!ASFirstName}"  styleclass="rounded placeholder" id="FirstName" style="background-image:none; width:82%;  border:1px solid #CCC; height:32px; border-radius:0px; padding-left:5px; float:left; margin:0px;" /></td>
+                  <td width="49%"><apex:inputText title="Last Name*" value="{!ASLastName}" styleclass="rounded placeholder" id="LastName"   style="background-image:none; width:83%; border:1px solid #CCC; height:32px;  border-radius:0px; padding-left:5px; float:left; margin:0px;" /></td>
+                </tr>     
+                <tr>
+                  <td colspan="2">
+                    <apex:inputText title="Your email address*" value="{!ASUserEmail}" styleclass="rounded placeholder" id="ASUserEmail"  style="background-image:none; width:220px; padding:1px; height:32px; width:100%; border:1px solid #CCC; border-radius:0px; padding-left:5px;" />
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <apex:inputText title="Company" value="{!U.CompanyName}" styleclass="rounded placeholder" id="CompanyName"  style="background-image:none; width:220px; padding:1px; height:32px; width:100%; border:1px solid #CCC; border-radius:0px; padding-left:5px;" />
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <apex:inputSecret title="Password*" value="{!password}" id="password"  styleclass="rounded placeholder" style="background-image:none; width:220px; padding:1px; height:32px; width:100%; border:1px solid #CCC; border-radius:0px; padding-left:5px;" />
+                  </td>
+                </tr>
+                
+                <tr>
+                  <td colspan="2" style="text-align:center;border:0px solid red;" align="center">
+                   <apex:commandButton value="Sign Up" id="SaveAccount" styleclass="button-a blue" action="{!BLS_SignUpUser}" onclick="return ValidateForm();" style="text-align:center;padding:3px; width:80%; background-color:#607aab; color:#FFFFFF; border:0px; height:36px; cursor:pointer; font-weight:bold; font-size:14px;"/>&nbsp;
+                 
+                  <!--<input type="button" value="Signup" class="button-a blue" style="padding:3px; width:55px; background-color:#607aab; color:#FFFFFF; border:0px; height:36px; cursor:pointer; font-weight:bold; font-size:14px;"/>--> </td>
+                </tr>
+              </tbody>
+            </table>
+         
+        </div>
+  
+  </div>
+
+<div style="position:absolute;top:500px;float:right;right:5%;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="right" style="border:0px Solid Black;" >
+ 
+  <tr>
+   
+    <td>
+    <div style="float:right; width:100%;">
+        <table width="50%" border="0" align="right" cellpadding="0" cellspacing="5">
+        <tr>
+            <td style="text-align:center; padding:5px;"><strong style="font-size:25px;">Mobile App</strong></td>  
+        </tr>
+          <tr>
+            
+            <td align="center" valign="middle" style="border:0px Solid red;" width="70%">
+                <a href="https://itunes.apple.com/in/app/scanattendee/id918089834?mt=8" id="learn-more" class="animated slideInDown" target="_blank" style=" text-decoration:none;">
+                    <span>
+                        <apex:image value="{!URLFOR($Resource.BLN_Signup, 'images/matchleads_apple.png')}" />
+                    </span>
+                </a>&nbsp;&nbsp;
+                <a href="https://play.google.com/store/apps/details?id=com.globalnest.scanattendee" id="learn-more" class="animated slideInDown" target="_blank">
+                    <span>
+                        <apex:image value="{!URLFOR($Resource.BLN_Signup, 'images/matchleads_gogleplay.png')}" />
+                    </span>
+                </a>
+            </td>
+          </tr>
+        </table>
+
+      </div></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>
+        
+      </td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+</div>
+    <apex:outputPanel rendered="{!signupbool}">
+    <script>
+    alert('{!errormessage}');
+    </script>
+    </apex:outputPanel>
+    
+    
+
+
+<div style="width:100%;margin-top:90px; clear:both;">
+   
+ <hr />    <p style="text-align:center; line-height:20px;">Copyright © 2014 Global Nest.</p>
+</div>
+</div><!--close of box-->
+</body>
+</apex:form>
+
+<apex:form id="showpopup" forceSSL="true"> 
+<apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!Successbool}" style="width:100%"/>
+<apex:outputPanel styleClass="custPopup" style="width:70%;height:200px;" rendered="{!Successbool}" >
+
+<div style="height:280px;">
+<div>
+<div class="grid-1" style="text-align:left">
+<div class="title-grid">Sign Up Successful</div>
+<div class="content-gird">
+<div class="form">
+<div id="left-form" style=" width:98%; padding-bottom:20px; margin-top:15px; border:0px #000000 solid; float:left;">
+<table border="0" cellspacing="0" cellpadding="0" width="100%" class="tabs_table" >
+<tr>
+<td align="Center" colspan="2">
+<apex:outputText > 
+Your signup for Scan Attendee application is successful. <br/>Please click on <b>'OK'</b> to Login.<br/>
+</apex:outputText>
+</td>
+</tr>
+<tr>
+<td align="center">
+<apex:commandButton value="OK" action="{!close}" styleclass="button-a blue" style="height:30px; cursor:pointer"/>
+</td>
+</tr>
+</table>
+</div>
+<div class="clear"> </div>
+</div> 
+
+<div class="clear"> </div>
+</div>
+</div> 
+</div><!--close of wrapper--> 
+</div>
+</apex:outputPanel>
+</apex:form>
+
+
+
+</apex:page>

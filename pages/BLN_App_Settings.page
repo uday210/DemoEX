@@ -1,0 +1,835 @@
+<apex:page showheader="false" sidebar="false" standardStylesheets="false" controller="BLN_App_SettingsCon">
+  <!------------common styles component------------>
+<c:ed_commonstyles ></c:ed_commonstyles>
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+ <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-staffsettings.css')}" />
+<style>
+input[type="text"] {
+    width: 91%;
+}
+
+input[type="checkbox"]{
+width:15px; 
+height:15px;
+}
+.fa-check-square-o{ color:#B3B3B3;}
+
+.image-upload > input{
+    display: none;
+}
+
+.image-upload img{
+    width: 80px;
+    cursor: pointer;
+}
+
+.aquablue{
+     background-color:#F0F8FF;
+     }
+.switch_options{
+    display: block;
+    font-family: "Helvetica", Arial, Sans-serif;
+    margin-bottom: 10px;
+}
+/* Main block clearfix */
+.switch_options:before,
+.switch_options:after{
+    content:'.';
+    display:block;
+    overflow:hidden;
+    visibility:hidden;
+    font-size:0;
+    line-height:0;
+    width:0;
+    height:0;
+}
+.switch_options:after{clear:both;}
+
+/*Options*/
+.switch_options span{
+    /* display: inline-block; */
+    float: left;
+    padding: 4px 9px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    border: 1px solid #aaa;
+    text-transform: uppercase;
+    background: #ffffff;/* Old browsers */
+    background: -moz-linear-gradient(top,  #ffffff 0%, #e5e5e5 100%);/* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5));/* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #ffffff 0%,#e5e5e5 100%);/* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #ffffff 0%,#e5e5e5 100%);/* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #ffffff 0%,#e5e5e5 100%);/* IE10+ */
+    background: linear-gradient(to bottom,  #ffffff 0%,#e5e5e5 100%);/* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 );/* IE6-9 */
+}
+.switch_options span:first-of-type{
+    /* border-radius: 2px 0 0 2px; */
+    border-right: 0;
+}
+.switch_options span:last-of-type{
+    border-radius: 0 2px 2px 0;
+    border-left: 0;
+}
+.switch_options span:hover{
+    background: #fafafa;
+}
+
+/* Active option */
+.switch_options span.selected{
+    background: #00b7ea;/* Old browsers */
+    background: -moz-linear-gradient(top,  #00b7ea 0%, #009ec3 100%);/* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#00b7ea), color-stop(100%,#009ec3));/* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #00b7ea 0%,#009ec3 100%);/* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #00b7ea 0%,#009ec3 100%);/* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #00b7ea 0%,#009ec3 100%);/* IE10+ */
+    background: linear-gradient(to bottom,  #00b7ea 0%,#009ec3 100%);/* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00b7ea', endColorstr='#009ec3',GradientType=0 );/* IE6-9 */
+    border-color: #0082A3;
+    color: #fff;
+}   
+
+
+
+#titleheadings{width:100%; margin-bottom:5px; height:30px; font-size:22px;text-shadow: 0 1px 1px rgba(0,0,0,.25); color:#247dba; font-family:cuprum; border-bottom:1px solid #E4E4E4; }
+#attendee-settings-box{width:99%; background-color:#ffffff;margin:0px auto;margin-top:5px; border:1px solid #ddd;}
+#v-nav li{
+    outline: 0;
+    text-decoration: none;
+    -webkit-transition-property: background color;
+    -moz-transition-property: background color;
+    -o-transition-property: background color;
+    -ms-transition-property: background color;
+    transition-property: background color;
+    -webkit-transition-duration: 0.12s;
+    -moz-transition-duration: 0.12s;
+    -o-transition-duration: 0.12s;
+    -ms-transition-duration: 0.12s;
+    transition-duration: 0.12s;
+    -webkit-transition-timing-function: ease-out;
+    -moz-transition-timing-function: ease-out;
+    -o-transition-timing-function: ease-out;
+    -ms-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+}
+#v-nav{
+    height: 100%;
+    margin: auto;
+    color: #333;
+    font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+}
+
+#v-nav >ul{
+    float: left;
+    width: 100%;
+    display: block;
+    position: relative;
+    top: 0;
+    border: 0px solid #DDD;
+    border-right-width: 0;
+    margin: auto 0 !important;
+    padding:0;
+}
+
+#v-nav >ul >li{
+
+    background-color: rgb(249, 249, 249);
+ 
+}
+#v-nav >ul >li:hover{
+    cursor:pointer;
+}
+
+#v-nav >ul >li.current
+{
+    color:;
+    border-right: none;
+    z-index: 10;
+    background:#ffffcc !important;
+   /* background: white !important;*/
+    position: relative;
+    font-weight:700;
+    
+}
+#v-nav >ul >li.current >a> div
+{
+    color:;
+    border-right: none;
+    z-index: 10;
+    background:#ffffcc !important;
+   /* background: white !important;*/
+    position: relative;
+    font-weight:700;
+    
+}
+
+
+
+.chklist{ margin-top:2px;}
+
+.insidetabright{width:auto; padding:8px 15px;}
+.insidetabright p{ width:92%; font-size:13px; word-break: break-word;}
+#businessinformation tr td{ padding:5px; font-size:13px;text-align:center; word-break:break-all;}
+#highlight{ background-color:#F7F7F7;}
+.even{background-color:#F7F7F7}
+.odd{background-color:#FFFFFF}
+
+.forInactive{
+color:#247dba;
+}
+
+</style>
+
+   <script>
+   
+   function RemoveFile(fileremove)
+   {
+       var value = $(fileremove).parent().find('input:hidden');
+                      for(var t=0;t<value.length;t++ ){
+                        var hiddenId = $(value[t]).attr('id');
+                        if(hiddenId.indexOf("isImageRemoved")>-1){
+                         document.getElementById(hiddenId).value=true;
+                       }
+                       }
+   }
+   
+            function Save(file){
+              var maxFileSize;
+              if(file.id.indexOf("imageAtt")>-1){
+                  maxFileSize = 200000;
+                }else{
+                  maxFileSize = 4408677;
+                }
+               if(file.files.length>0){
+                var selectedFile = file.files[0];
+                if(selectedFile.size <= maxFileSize){
+                  var oFReader = new FileReader();
+                   oFReader.readAsBinaryString(selectedFile); 
+                    oFReader.onload = function(e) {
+                      var base64value = window.btoa(e.target.result); 
+                       var value = $(file).parent().find('input:hidden');
+
+                      for(var t=0;t<value.length;t++ ){
+                        var hiddenId = $(value[t]).attr('id');
+                        if(hiddenId.indexOf("imageName")>-1){
+                         document.getElementById(hiddenId).value=selectedFile.name;
+                       }else if(hiddenId.indexOf("imageBody")>-1){
+                         document.getElementById(hiddenId).value=base64value;
+                       }
+                      }
+                  }  
+                }else{
+                  var flsize = Math.floor(maxFileSize/1000);
+                  alert("File must be under "+flsize +" KB in size.  Your file is too large.  Please try again.");
+                  return false;
+                }
+              } 
+            }
+      
+        </script>
+  <!------------//common styles component---------->
+  <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="comp">
+      <!-----------startoftabs---------------------------->
+           <!--------------------------->
+   <div class="form-embed-div" style="width:97%;">
+         <div class="form-content-div" style="padding:0px;">
+         
+   <div id="TabbedPanels1" class="TabbedPanels" style="border:none;" >
+      <ul class="TabbedPanelsTabGroup">
+        <li class="TabbedPanelsTab">Eventdex</li>
+        <li class="TabbedPanelsTab" style="display:{!IF(isBoothleadsEnable==true,'','none')}">BoothLeads</li>
+        <li class="TabbedPanelsTab" style="display:{!IF(scanattendeerab==true,'','none')}">Scan Attendee</li>
+         <li class="TabbedPanelsTab">App Sessions</li>
+       </ul>
+     <div class="TabbedPanelsContentGroup" >
+      <!-- ------------------ Tab 1 ---------------------- -->
+      <div class="TabbedPanelsContent" >
+       
+ 
+        <apex:form id="tab1form">
+ 
+ 
+   <script>
+// JavaScript Document
+///////start of Dropzone js for uploading image////////////////
+$(".dropzone").mouseover(function(e) {
+    //alert("innn");
+    $(this).find(".clr_dropzone").css("display", "block");
+});
+
+
+$(".dropzone").mouseleave(function(e) {
+   $(this).find(".clr_dropzone").css("display", "none");
+});
+
+$(".clr_dropzone").click(function(e) {
+    //alert("closeeeee");
+    $(this).parent().find("img").remove();
+    
+    $(this).siblings("div").css("background" ,"url({!URLFOR($Resource.edsr_master,'edsr_root/images/dropbg.png')}) no-repeat center");
+});
+///////Dropzone js for uploading image////////////////      
+///////Start of Dropzone js for uploading image//////////////// 
+$(function() {
+$(".dropzone").click(function(e) {
+//alert("click");
+//////////////////////////////////////////    
+$("div").removeClass('imgdropped');
+$(this).addClass('imgdropped');
+$(this).find( 'input').change(function(e) {
+    var file = this.files[0];
+    $(":input").removeClass('dropped'); 
+    $(this).prev("div").css("background" ,"none");
+    $(this).addClass('dropped');
+    $(this).find('img').remove();
+    if ((/^image\/(gif|png|jpeg)$/i).test(file.type)) {
+      var reader = new FileReader(file);
+
+      reader.readAsDataURL(file);
+      
+      reader.onload = function(e) {
+        var data = e.target.result,
+            $img = $('<img />').attr('src', data).fadeIn();
+            
+    
+     $(".dropped").siblings('div').html($img);
+      };
+    } else {
+      var ext = file.name.split('.').pop();
+      
+      $(".dropped").siblings('div').html(ext);   
+    }
+  });
+
+
+})//click
+})
+///////End of Dropzone js for uploading image////////////////   
+
+</script>
+
+         <apex:actionFunction action="{!saveAppSettings}" name="saveact" reRender="tab1form" />
+           <script>
+           function eventdeButton(ens){
+             var enValue =false;
+             $(ens).addClass( "selected" );
+             if(ens.id=='enableBotton'){
+                enValue =true;
+                $('#disblebutton').removeClass( "selected" );
+              }else{
+               $('#enableBotton').removeClass( "selected" );   
+             }
+               var value = $(ens).parent().find('input:hidden');
+               for(var z=0;z<value.length;z++){
+                  value[z].value = enValue ;
+               } 
+              saveact();        
+          }   
+           </script>
+          
+           <apex:pageMessages ></apex:pageMessages>
+            <p class="padding-5px bg-font left">Eventdex </p>
+               <!-- Switch button html start-->
+               <div class="switch_options right">
+                  <span id="enableBotton" onclick="eventdeButton(this);" class="switch_enable {!IF(eventdexTab==true,'selected','')}"> Enable </span>
+                  <span id="disblebutton" onclick="eventdeButton(this);" class="switch_disable {!IF(eventdexTab==true,'','selected')}"> Disable </span>
+                  <apex:inputHidden value="{!eventdexTab}" id="hiddenId"/>
+               </div>
+            <!-- /Switch button html end  -->
+          <div class="clear"></div>
+          <div class="form-embed-div" style=" width:95%; margin-top:20px;"> 
+             <div class="form-content-div" style=" padding:0px;"> 
+                <table cellpadding="0" cellspacing="0" width="100%" class="display" style="width:100.1%;" >
+                  <thead>
+                    <tr>
+                      <th width="20%"> Display List</th>
+                      <th width="29%">Display Label</th>
+                      <th>Default Image</th>
+                      <th style=" text-align:center;">Standard</th>
+                     </tr>
+                  </thead>
+                 <tbody>
+                  <apex:repeat value="{!eventdexinn}" var="reg">
+                     <tr>
+                     <td>
+                     <font style="{!If(reg.regset.Defaullt_Label__c=='Eventdex Tab','font-weight:bold;color:#000;','')}">{!reg.regset.Defaullt_Label__c}
+                     <apex:outputPanel rendered="{!IF(reg.regset.Defaullt_Label__c=='Eventdex Tab',true,false)}">(Tab name)</apex:outputPanel> </font></td>
+                     
+                     <td><apex:inputField value="{!reg.regset.Label_Name__c}"/> </td>
+                     <td>
+                        <div class="image-upload" id="{!reg.regset.id}" >
+                         
+                          <!--<apex:inputFile value="{!reg.imageBody}" id="cpk" fileName="{!reg.imageName}" accept="jpeg,png,jpg" rendered="{!IF(reg.regset.Images__c!=null,true,false)}"> </apex:inputFile>-->
+                         <!--<input type="file" id="{!reg.regset.id}cpk" onchange="Save(this)" /> --->
+                         
+                         <div class="dropzone" >
+    <i title="Remove Image" class="clr_dropzone fa fa-times" style="display:none;" onclick="RemoveFile(this)"></i>
+                    
+                        <div style="background-image: none;">
+                       <label for="{!reg.regset.id}cpk">
+                            <apex:image value="{!$Label.ImageUrl}?id={!reg.regset.Images__c}&oid={!$Organization.Id}" rendered="{!IF(reg.regset.Images__c!=null,true,false)}" />
+                          </label>
+                        </div>
+                    <input type="file" id="{!reg.regset.id}cpk" onchange="Save(this)" title=" " accept="image/png,image/jpeg" />
+                      <apex:inputHidden value="{!reg.imageName}" id="imageName" />
+                          <apex:inputHidden value="{!reg.imageBody}" id="imageBody"/>
+                                                    <apex:inputHidden value="{!reg.isImageRemoved}" id="isImageRemoved"/>
+                    </div>
+                    
+                         
+                        </div>
+                     </td>
+                     <td>
+                        <!--  rendered="{!IF(reg.regset.Defaullt_Label__c=='Eventdex',false,true)}" -->
+                         <apex:inputField value="{!reg.regset.Included__c}" rendered="{!IF(reg.regset.Defaullt_Label__c=='Eventdex Tab',false,true)}"/>
+                     </td>
+                    </tr> 
+                  </apex:repeat>
+                </tbody> 
+               </table>  
+             </div>
+          </div>  
+          <div style="margin-top:20px; text-align:center;">
+            <apex:commandButton action="{!saveAppSettings}" value="Save" styleClass="button-a blue" reRender="tab1form,commonjs" status="AjaxLoader" />
+             &nbsp;&nbsp;
+           <apex:commandButton action="{!cancelAppSettings}" value="Cancel" styleClass="button-a dark-blue"/>
+         </div>
+          </apex:form> 
+       </div>
+     
+      <!--------------------Tab 2------------------>
+      <div class="TabbedPanelsContent" style="display:{!IF(isBoothleadsEnable==true,'','none')}" >
+        <apex:form id="tab2form">
+        
+        <script>
+// JavaScript Document
+///////start of Dropzone js for uploading image////////////////
+$(".dropzone").mouseover(function(e) {
+    //alert("innn");
+    $(this).find(".clr_dropzone").css("display", "block");
+});
+
+
+$(".dropzone").mouseleave(function(e) {
+   $(this).find(".clr_dropzone").css("display", "none");
+});
+
+$(".clr_dropzone").click(function(e) {
+    //alert("closeeeee");
+    $(this).parent().find("img").remove();
+    
+    $(this).siblings("div").css("background" ,"url({!URLFOR($Resource.edsr_master,'edsr_root/images/dropbg.png')}) no-repeat center");
+});
+///////Dropzone js for uploading image////////////////      
+///////Start of Dropzone js for uploading image//////////////// 
+$(function() {
+$(".dropzone").click(function(e) {
+//alert("click");
+//////////////////////////////////////////    
+$("div").removeClass('imgdropped');
+$(this).addClass('imgdropped');
+$(this).find( 'input').change(function(e) {
+    var file = this.files[0];
+    $(":input").removeClass('dropped'); 
+    $(this).prev("div").css("background" ,"none");
+    $(this).addClass('dropped');
+    $(this).find('img').remove();
+    if ((/^image\/(gif|png|jpeg)$/i).test(file.type)) {
+      var reader = new FileReader(file);
+
+      reader.readAsDataURL(file);
+      
+      reader.onload = function(e) {
+        var data = e.target.result,
+            $img = $('<img />').attr('src', data).fadeIn();
+            
+    
+     $(".dropped").siblings('div').html($img);
+      };
+    } else {
+      var ext = file.name.split('.').pop();
+      
+      $(".dropped").siblings('div').html(ext);   
+    }
+  });
+
+
+})//click
+})
+///////End of Dropzone js for uploading image////////////////   
+
+</script>
+
+
+         <apex:actionFunction action="{!saveBlsettigs}" name="savebl" reRender="tab2form" status="AjaxLoader"/>
+          <script>
+           function boothleadButton(ens){
+             var enValue =false;
+             $(ens).addClass( "selected" );
+             if(ens.id=='enableBottonbl'){
+                enValue =true;
+                $('#disblebuttonbl').removeClass( "selected" );
+              }else{
+               $('#enableBottonbl').removeClass( "selected" );   
+             }
+             var value = $(ens).parent().find('input:hidden');
+              for(var z=0;z<value.length;z++){
+                  value[z].value = enValue ;
+               } 
+              savebl();        
+          } 
+          
+        // For check mark checking
+         function checkmark(sel){
+           if(sel.className=='Lead Retrieval'){
+             var pushcls = document.getElementsByClassName('With Push Notification');
+             var qrcls = document.getElementsByClassName('With QR Code');    
+             if(sel.checked){
+                var chkatleastonesel =false;
+                for(var gt=0;gt<pushcls.length;gt++){
+                   if(pushcls[gt].checked){
+                     chkatleastonesel=true;
+                   }
+                }
+                for(var gt=0;gt<qrcls.length;gt++){
+                   if(!qrcls[gt].checked && chkatleastonesel==false){
+                    qrcls[gt].checked=true;
+                   }
+                }
+             }else{
+               for(var gt=0;gt<pushcls.length;gt++){
+                 pushcls[gt].checked =false;
+               }   
+               for(var gt=0;gt<qrcls.length;gt++){
+                qrcls[gt].checked =false;
+               }
+             } 
+           }else{
+             var leadcls = document.getElementsByClassName('Lead Retrieval')[0];
+             if(sel.checked){
+                  leadcls.checked =true;
+              }else{
+                if(sel.className=='With Push Notification'){
+                   var qrclsq = document.getElementsByClassName('With QR Code');
+                   for(var gt=0;gt<qrclsq.length;gt++){
+                     if(!qrclsq[gt].checked)
+                         leadcls.checked =false;
+                    }
+                }else{
+                  var pushq = document.getElementsByClassName('With Push Notification');
+                   for(var gt=0;gt<pushq.length;gt++){
+                     if(!pushq[gt].checked)
+                         leadcls.checked =false;
+                    }
+                }
+                
+             }
+           }
+         }  
+            
+        </script>
+          <apex:pageMessages ></apex:pageMessages>
+            <p class="padding-5px bg-font left">Boothleads</p>
+               <!-- Switch button html start-->
+               <div class="switch_options right">
+                  <span id="enableBottonbl" onclick="boothleadButton(this);" class="switch_enable {!IF(boothleadstab==true,'selected','')}"> Enable </span>
+                  <span id="disblebuttonbl" onclick="boothleadButton(this);" class="switch_disable {!IF(boothleadstab==true,'','selected')}"> Disable </span>
+                  <apex:inputHidden value="{!boothleadstab}" id="hiddenId2"/>
+               </div>
+            <!-- /Switch button html end  -->
+            
+            <div class="clear"></div>
+          <div class="form-embed-div" style=" width:95%; margin-top:20px;"> 
+             <div class="form-content-div" style=" padding:0px;"> 
+                <table cellpadding="0" cellspacing="0" width="100%" class="display" style="width:100.1%; border:none;" >
+                  <thead>
+                    <tr>
+                      <th width="20%"> Display List</th>
+                      <th width="29%">Display Label</th>
+                      <th>Default Image</th>
+                      <th style=" text-align:center;">Standard</th>
+                     </tr>
+                  </thead>
+                 <tbody>
+                  <apex:repeat value="{!boothleadsinn}" var="reg">
+                     <tr>
+                     <td>
+                     <apex:outputPanel rendered="{!IF(reg.regset.Defaullt_Label__c=='Boothleads',true,false)}">
+                     <font style="{!If(reg.regset.Defaullt_Label__c=='Boothleads','font-weight:bold;color:#000;','')}">{!reg.regset.Defaullt_Label__c}
+                     </font>
+                     </apex:outputPanel>
+                      <apex:outputPanel rendered="{!IF(reg.regset.Defaullt_Label__c=='With QR Code' || reg.regset.Defaullt_Label__c=='With Push Notification',true,false)}">
+                       <span style="padding-left:15%;"><font style="font-size:11px;" >{!reg.regset.Defaullt_Label__c}</font></span>
+                      </apex:outputPanel> 
+                      
+                      <apex:outputPanel rendered="{!IF(reg.regset.Defaullt_Label__c!='Boothleads' && reg.regset.Defaullt_Label__c!='With QR Code' && reg.regset.Defaullt_Label__c!='With Push Notification' ,true,false)}">
+                       {!reg.regset.Defaullt_Label__c}
+                      </apex:outputPanel>
+                      
+                     </td>
+                     
+                     <td><apex:inputField value="{!reg.regset.Label_Name__c}"/> </td>
+                     <td>
+                     
+                      <div class="image-upload" id="{!reg.regset.id}" >
+                  
+                         
+                         <div class="dropzone" >
+    <i title="Remove Image" class="clr_dropzone fa fa-times" style="display:none;" onclick="RemoveFile(this)"></i>
+                    
+                        <div style="background-image: none;">
+                       <label for="{!reg.regset.id}cpk">
+                            <apex:image value="{!$Label.ImageUrl}?id={!reg.regset.Images__c}&oid={!$Organization.Id}" rendered="{!IF(reg.regset.Images__c!=null,true,false)}"/>
+                          </label>
+                        </div>
+                    <input type="file" id="{!reg.regset.id}cpk" onchange="Save(this)" accept="image/png,image/jpeg" />
+                      <apex:inputHidden value="{!reg.imageName}" id="imageName" />
+                          <apex:inputHidden value="{!reg.imageBody}" id="imageBody"/>
+                                                    <apex:inputHidden value="{!reg.isImageRemoved}" id="isImageRemoved"/>
+                    </div>
+                    
+                         
+                        </div>
+                        
+                      
+                     </td>
+                     <td>
+                        <!--  rendered="{!IF(reg.regset.Defaullt_Label__c=='Eventdex',false,true)}" -->
+                         <apex:inputField value="{!reg.regset.Included__c}" styleClass="{!reg.regset.Defaullt_Label__c}" rendered="{!IF(reg.regset.Defaullt_Label__c=='Boothleads Tab',false,true)}" onclick="checkmark(this);"/>
+                     </td>
+                    </tr> 
+                  </apex:repeat>
+                </tbody> 
+               </table>  
+             </div>
+          </div> 
+            <div style="margin-top:20px; text-align:center;">
+            <apex:commandButton action="{!saveBlsettigs}" value="Save" styleClass="button-a blue" reRender="tab2form" status="AjaxLoader" />
+             &nbsp;&nbsp;
+           <apex:commandButton action="{!cancelAppSettings}" value="Cancel" styleClass="button-a dark-blue"/>
+         </div>
+          </apex:form>
+       </div>
+      <!--------------------Tab 3------------------>
+       <div class="TabbedPanelsContent" >
+ <!--start of ct_wrapper------>
+   <apex:form id="tab3form">
+   
+    <script>
+   function closemsg() {
+   setTimeout(function() {
+       $(".msgcls").hide('blind', {}, 200)
+   }, 2000);
+}
+   </script>
+   
+   <apex:outputPanel rendered="{!If(scanattBuyers.size>0,true,false)}">
+       <div id="attendee-settings-box" class="ct_wrapper margin-top-5px" style="display:{!IF(scanattendeerab==true,'','none')};">
+           <!--------> 
+            <div class="left" style="width:25%;">
+                       <div class="leftheader">User Name</div><!--close of leftheader--->
+                            
+                        <div id="v-nav" class="leftcontent" style="">
+                        <ul class="expList" > 
+                        <apex:repeat value="{!scanattBuyers}" var="RL">
+                        <li class="{!If(RL.gnuser.id==selectedGnId,'current','')}" >
+                        <apex:commandLink action="{!selectAct}" reRender="settingspanel" style="text-decoration:none;">
+                       <!----start of rolename-------->
+                       <div  class="rolename_div">
+                        <p>
+                         {!RL.gnuser.first_Name__c}  {!RL.gnuser.last_Name__c} &nbsp;&nbsp; (Qty-{!RL.buyQuan})<br/>
+                          {!RL.gnuser.Email__c}
+                         <apex:param value="{!RL.gnuser.id}" name="abcd" assignTo="{!selectedGnId}" />
+                        </p>
+                       </div>
+                       <!------->    
+                       <!----------//end of rolename--->
+                   </apex:commandLink>  
+                   </li>
+                  </apex:repeat>
+                   </ul>
+                        </div><!---close of leftcontent-----> 
+                      </div><!--close of left----->  
+              <!----------->
+              
+               <!--------start of right------------->
+                    <div class="right" style="width:74.5%;">
+                     <apex:outputPanel id="settingspanel"> 
+                      <script>
+          function chkmaxQuan(thval,mxa){
+            var cls = document.getElementsByClassName('chkboxescls');
+             var selcount =0;
+             for(var r=0;r<cls.length;r++){
+               if(cls[r].checked){
+                 selcount++; 
+               }
+              }
+             var maxcnt = '{!maxcntsel}';
+             if(selcount>maxcnt){
+              alert('You should not select more than buy quantity!' );
+              thval.checked=false;
+             } 
+           } 
+        </script>
+                    <!----------------->
+                     <div class="rightheader">Scan Attendee Settings &nbsp;
+                     <span class="msgcls" style="color:red;">{!error}</span>
+                     </div><!--close of righttheader--->
+                    <!---------->
+                    <table class="display lrsettings_rules" width="100%" border="0" cellspacing="0" cellpadding="0" >
+  
+  <thead>
+  <tr>
+    <th style="width:50%;">Item Name</th>
+    <th>Scan Permission</th>
+</tr>
+  </thead>
+  <tbody>
+  <apex:variable value="even" var="cls"/>  
+  <apex:repeat value="{!itemsWithset}" var="usrPer" >
+  <tr style="height:37px;">
+    <td>
+     <apex:outputText value="{!usrPer.item.item_name__c}" rendered="{!If(usrPer.item.item_type__r.Name!='Package',true,false)}"/>
+            <apex:outputText value="{!usrPer.itemPool.Item_Pool_Name__c}({!usrPer.item.item_name__c})" rendered="{!If(usrPer.item.item_type__r.Name='Package',true,false)}"/>
+            
+     </td>
+    <td class=" textcenter">
+    <apex:inputCheckbox styleclass="chkboxescls" onclick="chkmaxQuan(this);" value="{!usrPer.isSelected}" rendered="{!if(usrPer.scancountitem==0,true,false)}"/> 
+           <apex:inputCheckbox styleclass="chkboxescls" onclick="chkmaxQuan(this);" value="{!usrPer.isSelected}" rendered="{!if(usrPer.scancountitem>0,true,false)}" disabled="true"/> 
+    </td>
+  </tr>
+   <apex:variable value="{!If(cls=='odd','even','odd')}" var="cls"/> 
+   </apex:repeat>
+    </tbody>
+</table>
+
+                    <!----------->
+                   
+                   </apex:outputPanel> 
+                    </div>
+               <!------close of right-------->
+              <div class="clear"></div> 
+             <div style="margin-top:20px; text-align:center;">
+               <apex:actionStatus id="refreshAmount" >         
+                <apex:facet name="start">         
+                   <apex:image url="{!$Resource.LoaderImage}"/>         
+                </apex:facet>         
+            </apex:actionStatus>
+       <apex:commandButton value="Save" action="{!Savesettings}" reRender="settingspanel,errorpanel" status="refreshAmount" oncomplete="closemsg();" styleClass="button-a blue" />     
+      &nbsp;&nbsp;
+     <!--- <button class="button-a dark-blue" >Cancel</button> --->
+      <apex:commandButton action="{!cancelAppSettings}" value="Cancel" styleClass="button-a dark-blue"/>
+    </div> 
+              
+               
+                  </div><!---close of ct_wrapper---------> 
+      
+      </apex:outputPanel>
+      <apex:outputPanel rendered="{!If(scanattBuyers.size<=0,true,false)}">
+        <div style="text-align:center;padding-top:100px;">
+        <span style="font-size:20px;color:#ccc;"> No one bought scan attendee ticket.</span>
+       </div>
+      </apex:outputPanel>
+       </apex:form>            
+                          
+   <!------->                  
+    </div>
+       
+      <!--------------------Tab 3 End ------------------>
+      <div class="TabbedPanelsContent" >
+       <div class="shadow-div">
+           <p class="padding-5px bg-font left">App Sessions
+              <div class="clear"></div>
+             </p><!--close of black-title-->
+             
+             <div style="color:red;float:right;">Note : Combined sessions allowed per email address are limited to a maximum of 4 devices. </div>
+            
+             <apex:form id="from4">
+             <apex:actionFunction action="{!saveSessonSett}" name="savess" reRender="form4" status="AjaxLoader"/>
+               <script>
+                   function multiSessionButton(ens){
+                    /* var enValue =false;
+                     $(ens).addClass( "selected" );
+                     if(ens.id=='enablesesbl'){
+                        enValue =true;
+                        $('#disblesesbl').removeClass( "selected" );
+                      }else{
+                       $('#enablesesbl').removeClass( "selected" );   
+                     }
+                     var value = $(ens).parent().find('input:hidden');
+                      for(var z=0;z<value.length;z++){
+                          value[z].value = enValue ;
+                       } */
+                      savess();        
+                  } 
+             </script>
+               <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+                <div class="form-content-div" style=" padding:0px;">
+                    <table id="tktlevel-tbl" class="display" style="width:100.1%; border:none;">
+                       <thead>
+                         <tr>
+                            <th width="50%">App Name</th>
+                            <th style="color:#333;">Allowed Number Of Devices Per Ticket </th>
+                            <!-- <th >Allow Multiple Logins</th> --> 
+                         </tr>
+                      </thead>
+                    <tbody>
+                        <tr>
+                          <td style="color:#333;"><b>Scan Attendee</b></td>
+                           <td style="color:#333;">
+                            <apex:inputField value="{!eventslist.AllowedDevicescount__c}" styleClass="selectlist" required="true" style="width:80px;" id="hiddenIdses" onchange="multiSessionButton(this);"/>
+                           </td>
+                         <!-- <td >
+                            <div class="switch_options left">
+                                <span id="enablesesbl" onclick="multiSessionButton(this);" class="switch_enable {!IF(eventslist.AllowmultipleLogins__c==true,'selected','')}"> Enable </span>
+                                 <span id="disblesesbl" onclick="multiSessionButton(this);" class="switch_disable {!IF(eventslist.AllowmultipleLogins__c==true,'','selected')}"> Disable </span>
+                                <apex:inputHidden value="{!eventslist.AllowmultipleLogins__c}" id="hiddenIdses"/>
+                             </div>
+                            </td>-->
+                        </tr>
+                        <tr>
+                          <td style="color:#333;"><b>Lead Retrival </b></td>
+                           <td style="color:#333;">
+                            <apex:inputField value="{!eventslist.AllowedLRDevicescount__c}" styleClass="selectlist" required="true" style="width:80px;" id="hiddenIdsese" onchange="multiSessionButton(this);"/>
+                         </td>
+                        </tr>
+                   </tbody>
+                </table>
+                 
+                </div><!--close of form-content-div-->
+             </div><!--close of form-embed-div-->
+          
+         </apex:form>
+       </div>
+      </div>   
+      <!------------------ Tab 4 End --------------------------------------- -->          
+    </div><!--close of TabbedPanelsContentGroup-->
+    </div><!--close of tabbedpanelsgroup1-->
+     <!--------------------------------------------->   
+                  </div><!--close fo form-content-div--->
+                  </div><!--close of form-embed-div---->
+
+  </c:ed_basictemplate>
+  <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+   <script>
+  $('.expList li').click(function(){
+   $(this).siblings('li').removeClass('current');
+      $(this).addClass('current');
+   }) 
+   
+      var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+      // THis function is for making selected check color diffrent 
+  
+  </script>
+
+  
+  
+
+
+
+</apex:page>

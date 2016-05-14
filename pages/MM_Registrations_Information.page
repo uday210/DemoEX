@@ -1,0 +1,776 @@
+<apex:page controller="testgroupingCon" showHeader="false" standardStylesheets="true">
+ 
+  <apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/jquery.akordeon.css")}"/>
+ <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/reveal.css")}"/>
+ 
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.akordeon.js")}"/>
+  
+  
+  
+  
+ <style>
+ .eventtable{text-align:left;color:#FF0000;padding-left:3px;border-right:0px solid #CCCCCC;}
+
+ .eventselect{text-align:left;padding-left:3px;border-right:0px solid #CCCCCC;}
+ </style>
+ <script language="JavaScript" type="text/javascript">
+function CloseAndRefresh(){
+window.opener.location.href="/{!$CurrentPage.parameters.id}";
+      window.top.close();
+    
+  }
+</script>
+ <script type="text/javascript">
+ function confirmassign()
+    {
+    
+    var r=confirm("Do you want to confirm the appointment for this Prime Contractor?");
+   
+   // if(r==true){
+    //alert('Your appointment is confirmed.');
+    
+    
+    //}
+     return r;
+    }
+    </script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#buttons').akordeon();
+        $('#button-less').akordeon({ buttons: false, toggle: true, itemsOrder: [2, 0, 1] });
+    });
+    $(document).ready(function() {
+
+    //Default Action
+    $(".tab_content").hide(); //Hide all content
+    $("ul.tabs li:first").addClass("active").show(); //Activate first tab
+    $(".tab_content:first").show(); //Show first tab content
+    
+    //On Click Event
+    $("ul.tabs li").click(function() {
+        $("ul.tabs li").removeClass("active"); //Remove any "active" class
+        $(this).addClass("active"); //Add "active" class to selected tab
+        $(".tab_content").hide(); //Hide all tab content
+        var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
+        $(activeTab).fadeIn(); //Fade in the active content
+        return false;
+    });
+
+});
+</script>
+    
+<!------------------------------------------------------------------------------------------------------->
+<script type="text/javascript" >
+$(document).ready(function()
+{
+$(".account").click(function()
+{
+var X=$(this).attr('id');
+
+if(X==1)
+{
+$(".submenu").hide();
+$(this).attr('id', '0');    
+}
+else
+{
+
+$(".submenu").show();
+$(this).attr('id', '1');
+}
+    
+});
+
+//Mouseup textarea false
+$(".submenu").mouseup(function()
+{
+return false
+});
+$(".account").mouseup(function()
+{
+return false
+});
+
+
+//Textarea without editing.
+$(document).mouseup(function()
+{
+$(".submenu").hide();
+$(".account").attr('id', '');
+});
+    
+});
+    
+    </script>
+<style>
+    
+.btn {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 5px; /*optional*/
+    color: #aaa;
+    font-size: .875em;
+}
+
+.pagination {
+    margin:0px auto;
+    color:#414141;
+      padding: 3px;
+    margin-bottom: 3px;
+}
+
+.page {
+    display: inline-block;
+    padding: 0px 9px;
+    margin-right: 4px;
+    border-radius: 3px;
+    border: solid 1px #c0c0c0;
+    background: #e9e9e9;
+    box-shadow: inset 0px 1px 0px rgba(255,255,255, .8), 0px 1px 3px rgba(0,0,0, .1);
+    font-size: .875em;
+    font-weight: bold;
+    text-decoration: none;
+   color:#414141;
+    text-shadow: 0px 1px 0px rgba(255,255,255, 1);
+}
+
+.page:hover, .page.gradient:hover {
+    background: #fefefe;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FEFEFE), to(#f0f0f0));
+    background: -moz-linear-gradient(0% 0% 270deg,#FEFEFE, #f0f0f0);
+}
+
+.page.active {
+    border: none;
+    background: #616161;
+    box-shadow: inset 0px 0px 8px rgba(0,0,0, .5), 0px 1px 0px rgba(255,255,255, .8);
+    color: #f0f0f0;
+    text-shadow: 0px 0px 3px rgba(0,0,0, .5);
+}
+
+.page.gradient {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f8f8f8), to(#e9e9e9));
+    background: -moz-linear-gradient(0% 0% 270deg,#f8f8f8, #e9e9e9);
+}
+
+.pagination.dark {
+    background: #414449;
+    color: #feffff;
+}
+
+.page.dark {
+    border: solid 1px #32373b;
+    background: #3e4347;
+    box-shadow: inset 0px 1px 1px rgba(255,255,255, .1), 0px 1px 3px rgba(0,0,0, .1);
+    color: #feffff;
+    text-shadow: 0px 1px 0px rgba(0,0,0, .5);
+}
+
+.page.dark:hover, .page.dark.gradient:hover {
+    background: #3d4f5d;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#547085), to(#3d4f5d));
+    background: -moz-linear-gradient(0% 0% 270deg,#547085, #3d4f5d);
+}
+
+.page.dark.active {
+    border: none;
+    background: #2f3237;
+    box-shadow: inset 0px 0px 8px rgba(0,0,0, .5), 0px 1px 0px rgba(255,255,255, .1);
+}
+
+.page.dark.gradient {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#565b5f), to(#3e4347));
+    background: -moz-linear-gradient(0% 0% 270deg,#565b5f, #3e4347);
+}
+</style>
+ <script>
+ function move(){
+ 
+ window.open("http://boothleads.force.com/MatchMaking/apex/bl_eventadmin_events","_self");
+ return true;
+ }
+ </script>
+<style>
+    
+    .listcls
+    {
+    background-color: #81BEF7;
+    color: #ffffff;
+    }
+    .listcls:hover
+    {
+    background-color: #ffffff;
+    color: #09F;
+    }
+    
+    
+    </style>
+    
+    
+    
+    <style>
+
+.grid{ 
+width: 100%; 
+border-collapse: collapse; 
+}
+/* Zebra striping */
+.grid tr:nth-of-type(odd) { 
+background: #eee;
+padding:0px;
+}
+.grid tr:hover{ 
+background: #f3f3f3; 
+}
+.grid th { 
+background: #CCCCCC;
+color: #414141; 
+font-weight: bold; 
+background: #eaeaea; /* Old browsers */
+background: -moz-linear-gradient(top,  #eaeaea 0%, #f3f3f3 39%, #f3f3f3 58%, #eaeaea 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eaeaea), color-stop(39%,#f3f3f3), color-stop(58%,#f3f3f3), color-stop(99%,#eaeaea)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* IE10+ */
+background: linear-gradient(to bottom,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#eaeaea',GradientType=0 ); /* IE6-9 */
+    }
+    .grid td{ 
+        padding:2px; 
+        border-bottom:1px solid #eaeaea; 
+        text-align: left;
+      border-right:0px;; 
+    }
+    .grid th { 
+        padding:2px; 
+        padding-left:5px; 
+        border: 1px solid #D3D3D3; 
+        font-size:11px;
+        text-align: left; 
+        height:19px;
+    }
+    .grid1 td{
+    border-right:0px solid #F00; 
+  
+    }
+ .grid tr:nth-child(odd)     { background-color:#fafafa; }
+ .grid tr:nth-child(even)      { background-color:#fff; }
+ 
+  .grid tr:hover{background-color:#eaeaea;} 
+  
+.glossy{background: #d8e5f5; /* Old browsers */
+background: -moz-linear-gradient(top,  #d8e5f5 0%, #cfdff3 45%, #c6d9f1 48%, #b6ceee 48%, #aec9ed 48%, #bed4f0 73%, #caddf3 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8e5f5), color-stop(45%,#cfdff3), color-stop(48%,#c6d9f1), color-stop(48%,#b6ceee), color-stop(48%,#aec9ed), color-stop(73%,#bed4f0), color-stop(100%,#caddf3)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e5f5', endColorstr='#caddf3',GradientType=0 ); /* IE6-9 */
+ border-top:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;
+}
+.gridbottom{border-bottom:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;background-color:#d6e3f2; padding:3px; border-top:1px solid #91b5db;}
+.trwhite{ background-color: #FFFFFF; }
+.trwhite:hover { background-color: #FFFFFF; }
+</style>
+<style type='text/css'>
+
+
+.hidedivtext{font-size:14px; padding-left:6px;text-align:left;}
+#B {
+position: absolute;
+}
+
+#B {
+top: 228px;
+right:0px;
+width:auto;
+height:auto;
+z-index:999;
+display:none;
+background:#FFFFFF;
+border:0px solid #226b86;
+padding:10px;
+ border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px;
+-webkit-box-shadow: 0 8px 6px 6px #cccccc;
+-moz-box-shadow: 0 8px 6px 6px #cccccc;
+box-shadow: 0 8px 6px 6px #cccccc;
+}
+
+#BB {
+top: 0px;
+left: 0px;
+right: 0;
+bottom: 0px;
+
+align:left;
+float:left;
+// background:green;
+}
+
+
+
+
+.grid{ 
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    /* Zebra striping */
+   .grid tr:nth-of-type(odd) { 
+        background: #eee; 
+    }
+     .grid tr:hover{ 
+        background: #f3f3f3; 
+    }
+   .grid th { 
+        background: #CCCCCC;
+        color: #414141; 
+        font-weight: bold; 
+        background: #eaeaea; /* Old browsers */
+background: -moz-linear-gradient(top,  #eaeaea 0%, #f3f3f3 39%, #f3f3f3 58%, #eaeaea 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eaeaea), color-stop(39%,#f3f3f3), color-stop(58%,#f3f3f3), color-stop(99%,#eaeaea)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* IE10+ */
+background: linear-gradient(to bottom,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#eaeaea',GradientType=0 ); /* IE6-9 */
+ border-right:1px solid #91b5db; 
+ border-left:1px solid #91b5db; 
+    }
+    .grid td{ 
+        padding:2px; 
+        border-bottom:1px solid #CCCCCC; 
+        text-align: left;
+      border-right:0px;; 
+    }
+    .grid th { 
+        padding:2px; 
+        text-align: left; 
+    }
+    .grid1 td{
+    border-right:0px solid #F00; 
+    }
+ .grid tr:nth-child(odd)     { background-color:#fafafa; }
+ .grid tr:nth-child(even)      { background-color:#fff; }
+ 
+  .grid tr:hover{background-color:#eaeaea;} 
+  
+.glossy{background: #d8e5f5; /* Old browsers */
+background: -moz-linear-gradient(top,  #d8e5f5 0%, #cfdff3 45%, #c6d9f1 48%, #b6ceee 48%, #aec9ed 48%, #bed4f0 73%, #caddf3 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8e5f5), color-stop(45%,#cfdff3), color-stop(48%,#c6d9f1), color-stop(48%,#b6ceee), color-stop(48%,#aec9ed), color-stop(73%,#bed4f0), color-stop(100%,#caddf3)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e5f5', endColorstr='#caddf3',GradientType=0 ); /* IE6-9 */
+ border-top:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;
+}
+.gridbottom{border-bottom:1px solid #91b5db; border-right:0px solid #91b5db; border-left:0px solid #91b5db;background-color:#d6e3f2; padding:3px;}
+.trwhite{ background-color: #FFFFFF; padding:0px;}
+.trwhite:hover { background-color: #FFFFFF; }
+
+
+
+   .awesome {
+background-color: #2486c3;color: #FFFFFF;padding: 5px;font-weight: normal;border: 0px;cursor: pointer;font-size: 13px;background: -moz-linear-gradient(top, #2a81b8, #3298d8);background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2a81b8), to(#3298d8));-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;
+
+
+</style>
+
+
+<head>
+<title>Boothleads</title>
+</head>
+    
+    
+<!--topblock start-->
+    <div id="topblock"> 
+    <div id="logo"></div>
+    <div id="topblockright" style="position:absolute; top:0px; right:0px;">
+    <table width="98%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+        <td align="right"><div style="padding-right:20px;color:#83CBF2">Hello {!$User.Firstname}&nbsp;{!$User.Lastname}</div></td>        
+        <td style="width:150px;"><div class="dropdown">
+            <a class="account" ><span><b>Settings</b></span></a>
+            <div class="submenu" style="display: none;">
+            <apex:form >
+            <ul class="root">
+                
+                <li><apex:outputLink value="/apex/MM_Profile" ><span>View/Edit Profile</span> </apex:outputLink></li>
+                <li><a href="change-password.html">Change Password</a></li>
+                <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}">{!$Label.site.logout}</apex:commandLink></li>
+            </ul>
+            </apex:form>
+            </div>
+            </div>
+        </td>
+       <td align="center" colspan="2" >
+      
+         </td></tr>
+        
+    </table>
+    </div>
+    </div>   
+<!--topblock end-->
+
+
+<!--menublock start-->
+        <div id="menublock">
+            <div id='cssmenu'>
+                  <ul>
+                       
+                        <li><apex:outputLink value="/apex/Matchleads_eventsPage" ><span>Events</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_schedule" ><span>Schedule</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_ExhibitorsDirectory"><span>Prime Contractor Directory</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_AttendeesDirectory"><span>Small Business Directory</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_eventadmin_SponsorsDirectory" ><span>Resource Partner Directory</span></apex:outputLink></li>
+                        <li class="active"><apex:outputLink value="/apex/MM_EventAdmin_Reports"><span>Reports</span></apex:outputLink></li>                    
+                  </ul>
+            </div>
+        </div>
+        <!----------------------------------- header end  -------------------------------------------- -->
+ <apex:form >   
+        
+    <div id="content-outer">
+<!-- start content -->
+<div id="content">
+
+<!--  start page-heading -->
+
+<div id="page-heading" width="30%">
+ 
+</div>
+
+<table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+<tr>
+    <th rowspan="3" class="sized">
+    <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt="" /></th>
+    <th class="topleft"></th>
+    <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+
+    <th class="topright"></th>
+    <th rowspan="3" class="sized">
+    <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+</tr>
+<tr>
+<td id="tbl-border-left"> </td>
+<td>
+<!--  start content-table-inner ...................... START -->
+<div id="content-table-inner">
+
+<!--  start table-content  -->
+<div id="table-content">
+<apex:outputPanel rendered="{!completegrid}" id="maingrid">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+   <td align="left"><b><apex:outputLink value="/apex/MM_EventAdmin_Reports" styleclass="awesome" style="color:#FFFFFF;">Back</apex:outputLink></b></td> 
+   <td align="right">
+       <apex:commandButton value="Print" action="{!export}" ></apex:commandButton>&nbsp; &nbsp;
+       <apex:commandButton value="Export" action="{!ExportSummaryReportasCSV}" ></apex:commandButton>&nbsp; &nbsp;
+    <!--   <apex:commandButton value="Detail report" action="{!detailedreport}" styleClass="awesome"></apex:commandButton> -->
+   </td>                       
+  </tr>
+</table>
+
+<div style="height:10px;"></div>
+     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="grid">
+     <div style="width:99.8%; height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+      <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Report on Payment Details</div>
+    
+     
+    <div style="font-weight:bold; float:right; color:#04408c; padding-right:10px;">
+     <apex:outputPanel >
+<apex:outputText value="Attendees Count : {!attendeecount}" id="attcount" rendered="{!IF(selectedoption=='Attendee',true,false)}"></apex:outputText>
+<apex:outputText value="Tables Count : {!bacount}" rendered="{!IF((selectedoption== 'Exhibitor' || selectedoption== 'SPONSOR'),true,false)}" id="exhcount"></apex:outputText>
+</apex:outputPanel>
+   </div>   </div> 
+<tr>    
+  <!-- <th style="width:10%;">Registration Type</th>  --> 
+      <th style="width:12%;">
+   <apex:commandLink value="Company{!IF(sortField=='Company__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Company__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>
+   <th style="width:12%;">
+       <apex:commandLink value="Name{!IF(sortField=='Last_Name__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Last_Name__c" assignTo="{!sortField}"/>
+       </apex:commandLink>
+   </th>
+   <th style="width:12%;">
+   <apex:commandLink value="Email{!IF(sortField=='Email__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Email__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>
+   <th style="width:8%;">
+   <apex:commandLink value="Phone{!IF(sortField=='Phone__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Phone__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>
+   <th style="width:7%;">
+   <apex:commandLink value="Payment Type{!IF(sortField=='Payment_Type__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Payment_Type__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>    
+   <th style="width:10%;">
+   <apex:commandLink value="Payment Status{!IF(sortField=='Payment_Status__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Payment_Status__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>
+   <th style="width:12%;">
+   <apex:commandLink value="Registered Date{!IF(sortField=='Registered_Date__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Registered_Date__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th> 
+   <th style="width:13%;">
+   <apex:commandLink value="Ticket Type{!IF(sortField=='TicketTypes__r.TT_Name__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="TicketTypes__r.TT_Name__c" assignTo="{!sortField}"/>
+   </apex:commandLink>&nbsp;
+   <apex:selectList value="{!selectedoption}" size="1">
+       <apex:actionSupport action="{!customerreport}" event="onchange"/> 
+       <apex:selectOptions value="{!atttypeoption}"/>
+   </apex:selectList>
+   </th>   
+   <th style="width:7%;">
+   <apex:commandLink value="Amount Paid{!IF(sortField=='TicketAmount__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="TicketAmount__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>  
+   <th style="width:7%;">
+   <apex:commandLink value="Discount{!IF(sortField=='DiscountValue__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="DiscountValue__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th> 
+</tr>
+
+<tr>
+<td colspan="10" class="trwhite" style="border-right:1px solid #91b5db;border-left:1px solid #91b5db;">
+<DIV style="overflow:auto;width:100%;height:350px;">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:11px;" class="grid">
+ 
+     <apex:repeat var="a" value="{!dummylist}">
+     <tr>
+       <!-- <td style="padding-left:4px;color:#04408c;"><b><apex:outputText value="{!a.dummyusertype}"/></b></td> -->      
+        <td style="padding-left:5px;color:#04408c;width:12%;"><b><apex:outputText value="{!a.dummyCompany}"/></b></td>
+     </tr>
+     <apex:repeat var="c" value="{!a.liDummys}">
+     <tr style="border-top:1pt solid silver;">
+        <td style="padding-left:5px;"></td>        
+        <td style="padding-left:5px;width:12%;"><apex:outputText value="{!c.First_Name__c} {!c.Last_Name__c}"/></td>
+        <td style="padding-left:5px;width:12%;"><apex:outputText value="{!c.Email__c}"/></td>
+        <td style="padding-left:2px;width:8%;"><apex:outputText value="{!c.Phone__c}"/></td>
+        <td style="padding-left:2px;width:7%;"><apex:outputText value="{!c.Payment_Type__c}"/></td>
+        <td style="padding-left:2px;width:10%;">
+            <apex:commandLink value="{!c.Payment_Status__c}" action="{!changestatus}" style="color:#0000ff" rendered="{!IF(c.Payment_Type__c == 'Free',FALSE,TRUE)}">
+                <apex:param name="mycheck" value="{!c.id}"/>
+            </apex:commandLink>
+        </td>
+       <!-- <td style="padding-left:10px;"><apex:outputText value="{!c.Registered_Date__c}"/></td> -->
+        <td style="padding-left:2px;width:12%;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Registered_Date__c - 0.208333333}"/></apex:outputText></td>
+        <td style="padding-left:2px;width:13%;"><apex:outputText value="{!c.TicketTypes__r.TT_Name__c}"/></td>
+        <td style="padding-left:2px;width:7%;text-align:right;"><apex:outputText value="{!c.IndividualAmount__c}"/></td>
+        <td style="padding-left:2px;width:7%;text-align:right;"><apex:outputText value="{!c.DiscountValue__c}"/></td>
+     </tr>
+     </apex:repeat>
+ </apex:repeat>
+</table>
+
+</div></td>
+</tr>
+</table>
+
+     
+<div class="gridbottom" style="height:20px;width:99.5%; border-right:1px solid #91b5db; border-left:1px solid #91b5db; border-top:0px solid #91b5db;padding:3px 0 0 8px;font-weight:bold; color:#04408c; ">
+<div style="float:left;">
+Total Amount Through: &nbsp; Credit Card: &nbsp;&nbsp; ${!TotalCCAmount} &nbsp;&nbsp;&nbsp;&nbsp; / &nbsp;
+Check: &nbsp; ${!TotalCheckAmount} &nbsp;&nbsp;&nbsp;&nbsp; / &nbsp;
+Invoice: &nbsp; ${!TotalInvoiceAmount} &nbsp;&nbsp;&nbsp;&nbsp; / &nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+
+<div style="float:right;">
+Total Amount: &nbsp; ${!TotalAmount} &nbsp;
+</div>
+
+</div>                    
+</apex:outputPanel>
+<!------ GNESMSDC_RegistrationReport End ------>  
+
+
+<!------------------------ GNESMSDC_Complete_RegistrationReport Start ---------------------------> 
+<apex:outputPanel rendered="{!primarygrid}">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+   <td align="left"><b>
+   <apex:outputLink value="/apex/MM_EventAdmin_Reports" styleClass="awesome" style="color:#FFFFFF;">Back</apex:outputLink></b></td> 
+   <td align="right">
+       <apex:commandButton value="Print" action="{!exportAll}" styleClass="awesome"></apex:commandButton>&nbsp; &nbsp;
+       <apex:commandButton value="Export" action="{!ExportReportasCSV}" styleClass="awesome"></apex:commandButton>&nbsp; &nbsp;
+       <apex:commandButton value="Summary report" action="{!cancel}" styleClass="awesome"></apex:commandButton>
+   </td>                     
+  </tr>
+</table>
+
+<div style="height:10px;"></div>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<div style="width:99.8%; height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+<div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Expo Attendee Registration (Detail Report)</div>
+</div> 
+
+                
+<tr><td colspan="10" class="trwhite" style="border-right:1px solid #91b5db;border-left:1px solid #91b5db;">
+<div style="overflow:auto;width:100%;height:350px;">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:11px;" class="grid">
+<tr>        
+   <!-- <th style="width:10%;">Registration Type</th>    -->
+   <th style="width:12%;">Company</th>
+   <th style="width:12%;">Name</th>
+   <th style="width:12%;">Email</th>
+   <th style="width:8%;">Phone</th>
+   <th style="width:7%;">Payment Type</th>    
+   <th style="width:10%;">Payment Status</th>
+   <th style="width:12%;">Registered Date</th> 
+   <th style="width:10%;">Ticket Type   
+       <apex:selectList value="{!selectedoption }" size="1">
+           <apex:actionSupport action="{!customerreport}" event="onchange" /> 
+           <apex:selectOptions value="{!atttypeoption}"/>
+       </apex:selectList>
+   </th>   
+   <th style="width:7%;">Amount Paid</th>  
+   <th style="width:7%;">Discount</th> 
+</tr>
+     <apex:repeat var="ca" value="{!completedummylist}">
+     <tr>
+      <!--  <td style="padding-left:4px;color:#04408c;"><b><apex:outputText value="{!ca.completedummyUserType}"/></b></td> -->
+        <td style="padding-left:4px;color:#04408c;"><b><apex:outputText value="{!ca.completedummyCompany}"/></b></td>
+     </tr>
+     <apex:repeat var="c" value="{!ca.completeliDummys}">
+     <tr style="border-top:1pt solid silver;">
+        <td></td>
+        <td style="padding-left:4px;"><apex:outputText value="{!c.First_Name__c} {!c.Last_Name__c}"/></td>
+        <td style="padding-left:4px;"><apex:outputText value="{!c.Email__c}"/></td>
+        <td style="padding-left:7px;"><apex:outputText value="{!c.Phone__c}"/></td>
+        <td style="padding-left:7px;"><apex:outputText value="{!c.Payment_Type__c}" rendered="{!c.Primary_Attendee__c}"/></td>
+        <td style="padding-left:12px;">
+            <apex:commandLink value="{!c.Payment_Status__c}" action="{!changestatus}" style="color:#0000ff"  rendered="{!c.Primary_Attendee__c}">
+                <apex:param name="mycheck" value="{!c.id}"/>
+            </apex:commandLink>
+        </td>
+        <!-- <td style="padding-left:10px;"><apex:outputText value="{!c.Registered_Date__c}" /></td> -->
+        <td style="padding-left:10px;"><apex:outputText value="{0,date,MM/dd/yy hh:mm a}"><apex:param value="{!c.Registered_Date__c - 0.208333333}"/></apex:outputText></td>
+        <td style="padding-left:7px;"><apex:outputText value="{!c.TicketTypes__r.TT_Name__c}"/></td>
+        <td style="padding-left:12px;"><apex:outputText value="{!c.TicketAmount__c}" rendered="{!c.Primary_Attendee__c}"/></td>
+        <td style="padding-left:12px;"><apex:outputText value="{!c.DiscountValue__c}"/></td>
+     </tr>
+     </apex:repeat>
+ </apex:repeat>
+</table>
+
+</div>
+</td></tr>
+
+</table>      
+<div class="gridbottom" style="height:20px;width:100%; border-right:1px solid #91b5db; border-left:1px solid #91b5db; border-top:0px solid #91b5db;padding:3px 0 0 8px;font-weight:bold; color:#04408c; ">
+<div style="float:left;">
+Total Amount Through: &nbsp; Credit Card: &nbsp;&nbsp; {!TotalCCAmount} &nbsp;&nbsp;&nbsp;&nbsp; / &nbsp;
+Check: &nbsp; {!TotalCheckAmount} &nbsp;&nbsp;&nbsp;&nbsp; / &nbsp;
+Invoice: &nbsp; {!TotalInvoiceAmount} &nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+<div style="float:right;">
+Total Amount: &nbsp; {!TotalAmount} &nbsp;
+</div>
+</div>                    
+</apex:outputPanel>
+<!------------------------ GNESMSDC_Complete_RegistrationReport Start --------------------------->  
+
+</div>
+<!--  end content-table  -->
+ <!--------------------------------------------------statuschange--------------------------------->
+<apex:outputPanel >
+    
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!statuschange}" />
+    <apex:outputPanel styleClass="custPopup" layout="block"  style="width:40%;" rendered="{!statuschange}" >
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" valign="top">
+    <tr bgcolor="#75b9fe" height="35px">    
+    <td colspan="2" align="left"> <apex:outputText value="Change your Payment Status" style="font-size:16px;font-weight:bold;padding-left:15px; color:#FFFFFF;" />
+    <div style="float:right;  padding-right:5px;">   
+    <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" style="height:25px; width:25px;"  /> </div>
+    </td>
+    </tr>
+    <tr height="10px"><td></td></tr>
+    <tr>
+    <td>
+    <table cellpadding="0" cellspacing="5px" border="0" width="98%" align="center">
+    <tr height="35px">
+        <td align="right" width="49%">Payment Status: &nbsp;&nbsp;&nbsp;</td>
+        <td width="49%" align="left">
+            <apex:selectList value="{!statusvalue}" size="1">
+             <apex:selectOptions value="{!paymentstatus}">  
+            </apex:selectOptions>
+            </apex:selectList>
+        </td>
+    </tr>
+    <tr height="35px">
+        <td align="right" width="49%">Check No.: &nbsp;&nbsp;&nbsp;</td>
+        <td width="49%" align="left">
+            <apex:inputText value="{!checknumber}"/>           
+        </td>
+    </tr>
+    <tr height="35px">
+        <td align="right" width="49%">Amount Received: &nbsp;&nbsp;&nbsp;</td>
+        <td width="49%" align="left">
+            <apex:inputText value="{!checkamount}"/>
+        </td>
+    </tr>
+    <tr height="10px"><td></td></tr>
+    <tr height="35px">  
+        <td colspan="2" align="center">
+            <apex:commandButton action="{!changingpaymentstatus}" value="Save Change" styleClass="awesome"/>
+        </td>
+    </tr>
+    </table>
+    
+    </td>
+    <td>
+    
+    
+    </td>  </tr>
+    </table>
+    </apex:outputpanel>
+    </apex:outputpanel> 
+    <!------------------------------------------------------------------------------------------------>
+    
+<div class="clear"></div>
+         
+</div>
+<!--  end content-table-inner ....................END  -->
+</td>
+ <td id="tbl-border-right"></td>
+ </tr>
+ <tr>
+    <th class="sized bottomleft"></th>
+    <td id="tbl-border-bottom">&nbsp;</td>
+    <th class="sized bottomright"></th>
+ </tr>
+ </table>
+ <div class="clear">&nbsp;</div>
+</div>
+ 
+<!--  end content -->
+<div class="clear">&nbsp;</div>
+</div>    
+ </apex:form>           
+        <!-------------------------Appointments By Group ENDS**Unni**----------------->
+<!--footer start-->
+    <div id="footer">
+      © GlobalNest LLC. All Rights Reserved 
+    </div>
+<!--footer end-->
+        
+</apex:page>

@@ -1,0 +1,457 @@
+<apex:page controller="SA_ItemsController" standardStylesheets="false" showHeader="false" id="thePage" action="{!checkUserId}">
+
+<head>
+    <title>Scan Attendee</title>
+</head>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References Start ------------------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/fullcalendar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fullcalendar.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions.js')}"/>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/slider js/jquery.min.js')}"/>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/slider js/jquery.touchslider.js')}"/>
+
+<script>
+jQuery(function($) {
+    $(".touchslider").touchSlider({/*options*/});
+    $(".touchslider").data("touchslider").stop(); // stop the slider
+$(".touchslider").data("touchslider").start(); // start the slider
+});
+</script>
+
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+
+
+ <script>
+$(function(){
+$('.placeholder').each(function(index, elem){
+$(elem).prop('placeholder',$(elem).prop('title'));
+});
+});
+</script>
+
+<script>
+
+function ValidateForm(){
+
+    var inn=document.getElementById('{!$Component.thePage:theForm:itemName}');
+    var ip=document.getElementById('{!$Component.thePage:theForm:itemCost}');
+    var iq=document.getElementById('{!$Component.thePage:theForm:itemQuantity}');
+    
+    if(inn.value == "" ) {
+        alert('Please Enter Item Name');
+        return false;
+    }
+    
+    if(ip.value == "" ) {
+        alert('Please Enter Price');
+        return false;
+    }
+    
+    if(iq.value == "" ) {
+        alert('Please Enter Quantity');
+        return false;
+    }else if(isNaN(iq.value)){
+        alert('Please Enter Number For Quantity');
+        return false;
+    }
+    
+  
+    
+}
+</script>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References End ------------------------------------------------->
+<apex:form id="theForm">
+
+
+<script>
+function confirmdel(){
+var r = confirm(' Would you like to delete !');
+if(r==true){
+    return true;}
+    else{
+    return false;
+    }
+}
+</script>
+
+
+<div id="header">
+        <div id="logo">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+        </apex:outputLink>
+        </div><!--close of logo-->
+    </div><!--close of header--->
+    
+    <div  id="ribbon"></div><!--close of ribbon-->
+    <header>
+        <div id="centered-head" class="res"> 
+        <nav>
+            <ul>
+                <li id="login">
+                    <span id="login-trigger">
+                        <span id="login-triggers">
+                            <span id="user-panel-check"></span>
+                            <span id="user-panel-title ">My Account</span>
+                        </span>
+                    </span>
+                    <div id="login-content">
+                        <ul>
+                            <li><apex:outputLink value="/apex/SA_ManageProfile"><apex:image value="{!$Resource.Manage_Profile}" width="15px" height="15px"/><span class="editprofile icon">Manage Profile</span></apex:outputLink></li>
+                            <li><apex:outputLink value="/apex/SA_ResetPassword"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon">Reset Password</span></apex:outputLink></li>  
+                            <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="account-name">
+            <p><span class="welcome">Welcome, </span><strong>{!$User.Firstname}&nbsp;{!$User.Lastname}</strong></p>
+                <div class="account-separator"></div>
+        </div>
+        <div class="account-name"></div>
+        <div class="account-name" style="float:left;valign:middle;align:left;">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image value="{!$Resource.HomeIcon}" height="40" width="40"/>
+        </apex:outputLink></div>
+        <!-- Navigation end--> 
+        </div>
+    </header>
+
+    <section id="middle" style=" border:0px #000000 solid" class="res">
+    <div id="container-main">
+        <div id="container" style="border:0px #000000 solid">
+            <div id="content">
+            <div class="speedbar" style=" border:0px #FF0000 solid">
+                    <div class="speedbar-nav">Scan Attendee ›› Items</div>
+                    <div style="float:right;padding-right:10px;">Selected Event: <b>{!SelectedEvent.Ev_Title__c}</b></div>
+                    <!--close of speedbar-nav-->
+                </div>
+                <apex:outputPanel rendered="{!ShowSalesTax}">
+                <div class="grid-1">
+          <div class="title-grid">Update SalesTax</div>
+            <div class="content-gird" >
+            
+            <div class="form">
+
+               <div id="left-form" style=" margin-left:25%; margin-top:10px; width:49%; padding-bottom:20px;  border:0px #000000 solid; float:left">
+                 
+                
+                  <div class="elem">
+                  <label>Enter Sales Tax : </label>
+                  <div class="indent">
+                      <apex:inputField value="{!SelectedEvent.Sales_Tax__c}" styleClass="medium" style="width:80px;"/>%
+                  </div>
+                  </div>
+                
+                    <br/>
+                  <div class="indent">  
+                 <apex:commandButton value="Save" action="{!SaveSalesTax}" styleclass="button-a blue"  onclick="return ValidateForm();"/>
+                 &nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!closeItem}" styleclass="button-a dark-blue"/>          
+                 </div>
+                  
+                </div><!--close of left-form-->
+                
+                <div class="right-form"  style=" width:0%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:right">
+                <br/>
+                    
+                </div><!--close of right-form-->
+              <div class="clear"> </div>
+            </div>
+          </div>
+          <!--------------------------------------------------------------------------------->
+
+    <div class="clear"></div>
+         
+    </div>
+                
+                </apex:outputPanel>
+                <apex:outputPanel id="ItemTable" rendered="{!ItemPopUp}">
+                
+                
+                <div style="float:right;padding-right:10px;padding-bottom:10px;padding-top:10px;">
+                        <apex:commandButton value="Update SalesTax" action="{!UpdateSalesTax}" style="text-align:right;" styleclass="button-a blue"/>
+                    </div>
+                    <br/><br/>
+                <div class="grid-1">
+                                <apex:outputText rendered="{!ShowItemError}" value="Sold Items Cannot be Deleted !" style="color:red; font-size:24px;"/>
+                    <div class="title-grid">Items<span>
+                    </span>
+                    </div>
+                    
+                        <div class="content-gird"> 
+                        <div class="dataTables_wrapper" id="example_wrapper" style="height:600px;overflow:scroll;">
+
+                        <table class="display" id="example">
+                        <thead>
+                            <tr>  
+                                <apex:outputText rendered="{!NOT(isEventAdminStaffUser)}">                                                          
+                                    <th class="th_title sorting" rowspan="1" colspan="1" style="width:10%;">Action</th>
+                                </apex:outputText>                            
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 10%;">Image</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 25%;">Item Name</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 13%;">Price</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 15%;">Total Quantity</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 15%;">Available Quantity</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 15%;">Sales Tax</th>                            
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:repeat value="{!Items}" var="Item">
+                                <tr class="item odd">
+                                    <apex:outputText rendered="{!NOT(isEventAdminStaffUser)}">
+                                        <td class="subject">
+    
+                                              <span><apex:commandLink action="{!editItem}" title="Edit">
+                                              <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/edit-1.png')}"/>
+                                                  <apex:param value="{!Item.id}" name="ItemIdParam"/>
+                                              </apex:commandLink>  |
+                              
+                                              <apex:commandLink action="{!deleteItem}" onclick="return confirmdel();">
+                                                  <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/remove.png')}"/>
+                                                  <apex:param value="{!Item.id}" name="ItemIdParam"/>
+                                              </apex:commandLink></span>
+    
+                                        </td>
+                                    </apex:outputText>
+                                    <td>
+                                     <apex:image url="/servlet/servlet.ImageServer?id={!Item.Item_Image__c}&oid={!$Organization.Id}" height="40" width="50" rendered="{!IF(Item.Item_Image__c !=NULL,true,false)}"/>
+                                      <apex:image value="{!$Resource.NoEventLogo}" width="40" height="50" rendered="{!IF(Item.Item_Image__c =NULL,true,false)}"/>
+                                      </td>
+                                    <td>{!Item.Item_name__c}</td>
+                                    <td>
+                                        <apex:outputText value="{0,number,$ ###,##0.00}">
+                                          <apex:param value="{!Item.Cost__c}"/>
+                                        </apex:outputText>
+                                    </td>
+                                    <td>{!Item.Item_Quantity__c}</td>
+                                     <td>{!Item.Available_Quantity__c}</td>
+                                     <td>{!Item.Sales_Tax__c}%</td>                                     
+                                </tr>
+                            </apex:repeat>
+                        </tbody>
+                        </table>
+                        
+                        </div>
+                        
+                        <div class="clear"></div>        
+                  </div>            
+          </div>
+          </apex:outputPanel>
+     <!-------------------------------------------------------- Tickets Grid End ----------------------------------------------------->  
+     
+     
+     <!--------------------------------------------------------- Add Ticket Grid Start ------------------------------------------------>
+      <apex:outputPanel id="AddItemTable" rendered="{!AddItemPopUp}">
+      <div class="grid-1">
+          <div class="title-grid">{!TableHeading}</div>
+            <div class="content-gird" >
+            
+            <div class="form">
+
+               <div id="left-form" style=" margin-left:25%; margin-top:10px; width:49%; padding-bottom:20px;  border:0px #000000 solid; float:left">
+               <apex:outputText rendered="{!salesTaxError}" value="Please Enter Sales Tax/ Mark an Item as Taxable !" style="color:red; font-color:20px;"/>
+                  
+                
+                  <div class="elem">
+                  <label>Item Name: </label><label id="mandatory">*</label>   
+                  <div class="indent">
+                      <apex:inputField value="{!Item.Item_name__c}" rendered="{!SelectedItemMode}" styleClass="medium" id="itemName"/>
+                      <apex:outputField value="{!Item.Item_name__c}" rendered="{!NOT(SelectedItemMode)}"/>
+                  </div>
+                  </div>
+                
+                  <div class="elem">
+                  <label>Item Price: </label><label id="mandatory">*</label>
+                  <div class="indent">
+                      $&nbsp;<apex:inputField value="{!Item.Cost__c}" rendered="{!SelectedItemMode}" styleClass="medium" id="itemCost"/>
+                      <apex:outputField value="{!Item.Cost__c}" rendered="{!NOT(SelectedItemMode)}"/>
+                  </div>
+                  </div>
+
+                  <div class="elem">
+                  <label>Quantity:</label><label id="mandatory">*</label>
+                  <div class="indent">
+                      <apex:inputField value="{!Item.Item_Quantity__c}" rendered="{!SelectedItemMode}" styleClass="medium" id="itemQuantity"/>
+                      <apex:outputField value="{!Item.Item_Quantity__c}" rendered="{!NOT(SelectedItemMode)}"/> 
+                  </div>
+                  </div>  
+                
+                  <div class="elem" style="">
+                  <label>is Taxable:</label>
+                  <div class="indent" style="">
+                      <apex:inputField style="float:left;" value="{!Item.isTaxable__c}" rendered="{!SelectedItemMode}" styleClass="medium" id="taxCheck"/>
+                      <apex:outputField value="{!Item.isTaxable__c}" rendered="{!NOT(SelectedItemMode)}"/> 
+                  </div>
+                  </div>
+
+                  <div class="elem">
+                  <label>Item Image:</label>
+                  <div class="indent">
+                      <table style="margin:15px 0px 0px 31px;">
+                        
+                        <tr><td colspan="2">
+                           <apex:image url="/servlet/servlet.ImageServer?id={!Item.Item_Image__c}&oid={!$Organization.Id}" height="100px" width="80px" rendered="{!IF(Item.Item_Image__c !=NULL,true,false)}"/>
+                           <apex:image value="{!$Resource.NoEventLogo}" width="50" height="40" rendered="{!IF(Item.Item_Image__c =NULL,true,false)}"/>
+                           <apex:inputFile value="{!Logo}" rendered="{!SelectedItemMode}" filename="{!LogoName}" style="border:0px solid black; padding-left:0px; height:30px; width:220px; border-radius:3px; margin-left:0px; text-indent:0px;"/><br />
+                        </td></tr> 
+                    </table>
+
+                    <apex:outputText rendered="{!SelectedItemMode}"><font color="red">*</font><b> Please make sure the image size is not <br />more than 100KB Dimensions applicable 193w x 96h</b></apex:outputText> 
+                  </div>
+                  </div>
+
+                 <div class="indent">  
+                 <apex:commandButton value="Save" rendered="{!SelectedItemMode}" action="{!createItem}" styleclass="button-a blue"  onclick="return ValidateForm();"/>
+                 &nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!closeItem}" styleclass="button-a dark-blue"/>          
+                 </div>
+
+                </div><!--close of left-form-->
+                
+                <div class="right-form"  style=" width:0%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:right">
+                <br/>
+                    
+                </div><!--close of right-form-->
+              <div class="clear"> </div>
+            </div>
+          </div>
+          <!--------------------------------------------------------------------------------->
+
+    <div class="clear"></div>
+         
+    </div>
+    </apex:outputPanel> 
+     
+      <!-------------------------------------------------------- Live Events Grid End ----------------------------------------------------->   
+      </div>
+      <!-- #content--> 
+    </div>
+    <!-- #container-->
+    
+          <aside class="sideLeft">
+        <span class="categories">Categories</span>
+        <ul class="menu">
+            <li class="expand"><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events" styleClass="active"><span class="four-prong icon">Event Information</span></apex:outputLink>
+                <ul class="acitem" style="display: block;">
+                    <li><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events1"><span class="home icon">Dashboard</span></apex:outputLink></li>
+                    <li><apex:commandLink action="/apex/SA_Attendees"><span class="four-prong icon">Attendees</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                        <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">
+                            <ul class="acitem" style="display: none;">
+    
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_AddAttendee"><span class="attendee icon">Add Attendee</span></apex:outputLink></li>
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_ImportAttendees"><span class="importattendee icon">Import Attendee</span></apex:outputLink></li>
+    
+                            </ul>
+                    </apex:outputText>  
+                    </li> 
+                    <li><apex:commandLink action="/apex/SA_Reports"><span class="four-prong icon">Reports</span><span class="num">6</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Ticket Sales</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Item Sales</span></apex:outputLink></li>                            
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Orders</span></apex:outputLink></li>                                                                               
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Refunds</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in Status</span></apex:outputLink></li>                        
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in History</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+           <li class="expand"><apex:outputLink style="background-color:#5B7585;" value="/apex/SA_Tickets"><span class="four-prong icon">Event Settings</span></apex:outputLink>
+                <ul class="acitem" style="display: none;">
+
+                    <li><apex:commandLink action="/apex/SA_Tickets"><span class="four-prong icon">Tickets</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style="padding-left:15px"><apex:outputLink value="/apex/SA_Tickets"><span class="cal icon">Add Ticket</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportTickets"><span class="conversations icon">Import Tickets</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+
+                            <li class="expand"><apex:commandLink style="background-color:#5B7585;" action="/apex/SA_Items"><span class="four-prong icon">Items</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:commandLink action="{!addItem}" style="{!IF(AddItemPopUp=true,'background-color:#5B7585;','')}"><span class="additem icon">Add Item</span></apex:commandLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportItems"><span class="importitem icon">Import Items</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+                    <!--
+                    <li><apex:commandLink action="/apex/SA_PromoCodes"><span class="four-prong icon">Promo Codes</span><span class="num">1</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_PromoCodes"><span class="addpromocode icon">Add Promo Code</span></apex:outputLink></li>    
+                        </ul> 
+                    </li
+                    -->
+                    <apex:outputText rendered="{!NOT(isEventAdminStaffUser)}">                        
+                    <li><apex:commandLink action="/apex/SA_AddUsers"><span class="four-prong icon">Event Staff</span> <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"> <span class="num">1</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_AddUsers"><span class="addpromocode icon">Add Event Staff</span></apex:outputLink></li>    
+                        </ul> 
+                    </apex:outputText>    
+                    </li>
+                   </apex:outputText>    
+                </ul>
+            </li>
+        </ul>
+        </aside>
+        
+    </div>
+  <!-- #sideLeft --> 
+  <!-- #container main-->
+
+  <footer>
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Scan Attendee </p>
+      </div>
+    </div>
+  </footer>
+  
+</section>
+<!-- #middle-->
+</apex:form> 
+
+<div class="clear"></div>
+
+</apex:page>

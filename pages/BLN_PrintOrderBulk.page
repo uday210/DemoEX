@@ -1,0 +1,54 @@
+<apex:page standardStylesheets="false" showHeader="false"  sidebar="false" controller="BLN_MyticketsCon" renderAs="pdf" readOnly="true"  >
+   <apex:stylesheet value="{!URLFOR($Resource.styles_for_report_pring, 'styles_for_report_pring.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.boothscreen_pdf, 'boothscreen.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.landscape_pdf, 'landscape_pdf.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+   <div style=" " class="printpdfreportname" >
+      <div style="text-align:left;">
+         <span style="font-weight: bold;">ORDERS</span>
+         <c:EventDetails BLN_EventDetails="{!eventInfo1}"></c:EventDetails>
+         <!-- Event Information--> 
+      </div>
+   </div>
+   <apex:variable value="{!se.BLN_Country__r.Currency__r.Currency_Symbol__c}" var="curSym"/>
+   <div id="TableInfo">
+      <table  width="99.5%" class="display" cellpadding="0" cellspacing="0" border="1" style="font-size:12px; font-family:Verdana, Geneva, sans-serif;">
+         <thead>
+            <tr>
+               <th> Order No </th>
+               <th> Ordered By </th>
+               <th> Email </th>
+               <th> Company </th>
+               <th> Phone </th>
+               <th> Order Date </th>
+               <th> Pay Type </th>
+               <th> Order Status </th>
+               <th> Amount({!eventcurrency}) </th>
+            </tr>
+         </thead>
+         <tbody>
+            <apex:repeat value="{!RecListorders}" var="current">
+               <tr>
+                  <td>{!current.Name} </td>
+                  <td>{!current.BLN_TKT_profile__r.First_Name__c} {!current.BLN_TKT_profile__r.Last_Name__c} </td>
+                  <td>{!current.BLN_TKT_profile__r.Email__c} </td>
+                  <td>{!current.BLN_TKT_profile__r.TKT_Company__c} </td>
+                  <td>{!current.BLN_TKT_profile__r.Mobile__c} </td>
+                  <td>
+                     <c:MFSI_FormatDateTime date_Timevalue="{!current.createdDate}"/>
+                  </td>
+                  <td>{!current.Payments__r[0].Payment_Mode__c} </td>
+                  <td>{!current.Order_Status__c} </td>
+                  <td style="text-align:Right;">{!current.Amount_Paid__c} </td>
+               </tr>
+            </apex:repeat>
+         </tbody>
+      </table>
+   </div>
+   <c:printPageFooter ></c:printPageFooter>
+   <script>
+      // alert ('asd');
+    //  window.print();
+   </script> 
+</apex:page>

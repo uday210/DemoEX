@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldUpdates>
+        <fullName>Update created date</fullName>
+        <field>Update_with_created_date__c</field>
+        <formula>CreatedDate</formula>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Payment_Status</fullName>
+        <field>Payment_Status__c</field>
+        <literalValue>Paid</literalValue>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Primary_Att</fullName>
+        <field>Primary_Attendee__c</field>
+        <literalValue>1</literalValue>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Ticket_Amount</fullName>
+        <field>TicketAmount__c</field>
+        <formula>TicketTypes__r.TT_Amount__c</formula>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+    </fieldUpdates>
+    <rules>
+        <fullName>Update created date</fullName>
+        <actions>
+            <name>Update created date</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Dummay__c.CreatedDate</field>
+            <operation>notEqual</operation>
+        </criteriaItems>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>UpdatePaymentStatus</fullName>
+        <actions>
+            <name>Update_Payment_Status</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>ISPICKVAL(Payment_Type__c,&apos;Credit Card&apos;)</formula>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>UpdatePrimaryAtt</fullName>
+        <actions>
+            <name>Update_Primary_Att</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <formula>Email__c = customer_key__r.Email__c</formula>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>Update_Ticket_Amount</fullName>
+        <actions>
+            <name>Update_Ticket_Amount</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <criteriaItems>
+            <field>Dummay__c.First_Name__c</field>
+            <operation>notEqual</operation>
+            <value>null</value>
+        </criteriaItems>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+</Workflow>

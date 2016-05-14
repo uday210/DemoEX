@@ -1,0 +1,152 @@
+<apex:page controller="MM_EventAdmin_ReportsCon" renderAs="pdf">
+<apex:form >
+
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <apex:repeat value="{!attendeelist}" var="a">
+  <tr>
+   <td>   <!-- <apex:image url="/servlet/servlet.ImageServer?id={!attach.EV_EventLogo__c}&oid={!$Organization.Id}"  width="200" height="150" style="background-color:#f3f3f3;"/> --> 
+    <apex:outputPanel style="display:{!IF(Psettings[0].MBE_Company_Logo_Visible__c= false ,'none','')};">
+        <!-- <apex:image url="/servlet/servlet.ImageServer?id={!a.EventLogo}&oid={!$Organization.Id}"  width="200" height="150" style="background-color:#f3f3f3;" rendered="{!Psettings[0].MBE_Company_Logo_Visible__c}"/> -->
+        <!-- <apex:image url="{!$Resource.NoEventLogo}" height="100px" width="100px"  rendered="{!if(attach.EV_EventLogo__c== null,'TRUE','FALSE')}"/> -->
+        <apex:image url="/servlet/servlet.ImageServer?id={!attach.EV_EventLogo__c}&oid={!$Organization.Id}"  style="max-height:150px;width:150px;" rendered="{!attach.EV_EventLogo__c!=Null}" />
+    </apex:outputPanel>
+    </td>
+   <!--<td width="19%" height="150" align="center" valign="middle" bgcolor="#f3f3f3">
+
+ 
+       <apex:image id="theImage" value="{!$Resource.GNEMSDCEventLogo}" width="100" height="100"/>
+    </td> --->
+    <td width="100%" align="left" valign="middle" bgcolor="#f3f3f3">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="50%">&nbsp;</td>
+        </tr>
+      <tr>
+        <td align="center" valign="middle"><h1 style="color:#0f71b5;font-family:Verdana, Geneva, sans-serif; font-size:16px;"><apex:outputText value="{!attach.EV_Title__c}"/></h1></td>
+        </tr>
+      <tr>
+        <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">
+        
+         <apex:outputText value="{0,date,YYYY'-'MM'-'dd}">
+                <apex:param value="{!attach.EV_StartDate__c}" /> 
+            </apex:outputText>  
+            
+            To &nbsp; 
+            
+            <apex:outputText value="{0,date,YYYY'-'MM'-'dd}">
+                <apex:param value="{!attach.EV_EndDate__c}" /> 
+            </apex:outputText>
+        </td>
+        </tr>
+      <tr>
+        <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!attach.EV_HostingLocation__c}</td>
+      </tr>
+      <tr>
+        <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!attach.EV_HistingAddr1__c}</td>
+      </tr>
+      <tr>
+        <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!attach.AS_HostingCity__c}, {!attach.EV_HostingStateNew__c} {!attach.EV_HostingZipcode__c}</td>
+        </tr>
+    </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+        <div style="padding:5px; color:#0f71b5;text-align:center;">
+            <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:16px;">{!attendeealias} Schedules</h3>
+        </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#0f71b5; padding:5px; color:#FFF;">
+            <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:14px;">{!attendeealias} Details </h3>
+        </div>
+    </td>
+  </tr>
+
+  <tr>
+    <td height="90" width="19%" align="center" valign="middle" style="padding:15px;display:{!IF(PsettingMBE.MBE_Company_Logo_Visible__c== false ,'none','')};">
+        <!-- <apex:image url="/servlet/servlet.ImageServer?id={!a.attendeeLogo}&oid={!$Organization.Id}" width="100%"/> -->
+        <!-- <apex:image url="{!$Resource.NoImage}" height="100px" width="100px"  rendered="{!if(a.attendeeLogo== null,'TRUE','FALSE')}"/> -->
+        <apex:image url="/servlet/servlet.ImageServer?id={!a.attendeeLogo}&oid={!$Organization.Id}" width="100%" style="display:{!IF(a.attendeeLogo== NULL ,'none','')};" />
+    
+    </td>
+    <td align="left" valign="top">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:5px;">
+          <tr style="display:{!IF(PsettingMBE.MBE_Company_Visible__c == false ,'none','')};">
+            <td width="35%" height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!attendeealias} </td>
+            <td width="1%" align="center" valign="middle">:</td>
+            <td width="64%" height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;">
+            <apex:outputText value="{!a.attendeeCompany}" rendered="{!attach.Is_Webank_event__c == false}"></apex:outputText>
+            <apex:outputText value="{!a.attendeeCompany1}" rendered="{!attach.Is_Webank_event__c == true}"></apex:outputText>
+            </td>
+          </tr>
+          <tr style="display:{!IF(PsettingMBE.MBE_First_Name_Visible__c == false ,'none','')};">
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">
+            {!attendeealias} Contact Name
+            
+            
+            </td>
+            <td align="center" valign="middle">:</td>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;">
+            <apex:outputText value="{!a.attendeeName}" rendered="{!attach.Is_Webank_event__c == false}"></apex:outputText>
+            <apex:outputText value="{!a.attendeeName1}" rendered="{!attach.Is_Webank_event__c == true}"></apex:outputText>
+            </td>
+          </tr>
+          <tr style="display:{!IF(PsettingMBE.MBE_Mobile_Phone_Visible__c == false ,'none','')};">
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!attendeealias} Contact No.</td>
+            <td align="center" valign="middle">:</td>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;">
+            <apex:outputText value="{!a.attendeeContact}" rendered="{!attach.Is_Webank_event__c == false}"></apex:outputText>
+            <apex:outputText value="{!a.attendeeContact1}" rendered="{!attach.Is_Webank_event__c == true}"></apex:outputText>
+            </td>
+          </tr> 
+        </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#0f71b5; padding:5px; color:#FFF;">
+            <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:14px; border-bottom:3px #FFF;">Scheduled Appointments </h3>
+        </div>
+    </td>
+  </tr>  
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#FFF; padding:1.5px; color:#FFF;">
+        </div>
+    </td>
+  </tr> 
+  <tr>
+    <td colspan="2" align="right" valign="top">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <th height="23px" align="left" width="10%" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">Date</th>
+        <th height="23px" align="left" width="20%" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">Appointment Time</th>
+        <th height="23px" align="left" width="25%" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">{!exhibitoralias}</th>
+        <th height="23px" align="left" width="20%" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">{!exhibitoralias} Name</th>
+        <th height="23px" align="left" width="15%" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">Contact No.</th>
+        <th height="23px" align="left" width="10%" valign="middle" bgcolor="#2eace5" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; color:#FFFFFF;padding-left:4px;">Table/Room No.</th>
+      </tr>
+      <apex:repeat value="{!a.liattendees}" var="c">
+      <tr>
+        <td height="21px"  width="10%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{0,date,MM'/'dd'/'yyyy}"><apex:param value="{!c.MM_slot_Date__c}"/></apex:outputText></td>
+        <td height="21px"  width="20%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_slot_StartTime__c} - {!c.MM_Slot_End_Time__c}"/></td>
+        <td height="21px"  width="25%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_To_UPE__r.Attendee_Summary__r.AS_Company__c}" rendered="{!IF(PsettingCorp.Company_Name__c== false, false, true)}"/></td>
+        <td height="21px"  width="20%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_To_UPE__r.Attendee_Summary__r.AS_FirstName__c} {!c.MM_To_UPE__r.Attendee_Summary__r.AS_LastName__c}" rendered="{!IF(PsettingCorp.First_Name__c== false, false, true)}" /></td>
+        <td height="21px"  width="15%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}" rendered="{!IF(PsettingCorp.Mobile__c== false, false, true)}"/></td>
+        <td height="21px"  width="10%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.MM_To_UPE__r.BT_id__r.MM_TableNo__c}" rendered="{!IF(PsettingCorp.Country__c== false, false, true)}"/></td>
+      </tr>
+      </apex:repeat>                     
+    </table>
+    </td>
+  </tr>
+  
+  <div style="page-break-after:always;"></div>
+  </apex:repeat> 
+         
+</table>
+
+</apex:form>
+ </apex:page>

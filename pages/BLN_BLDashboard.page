@@ -1,0 +1,218 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" readOnly="true"  controller="BLN_BLDashboardCon" id="blnDashboard"  action="{!restoftheQueries}">
+  
+  <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-dasboard.css')}" />
+    <!------------//common styles component---------->
+
+   
+    <!------------common scripts component------------>
+    <apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/> 
+    <!------------//common scripts component---------->
+    
+    <!------------basic template html component------------>
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+   <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}" />
+    <!------------//basic template html component---------->
+    
+     
+
+  <!------------custom ajax loader------------>
+    <div class="Mask">
+        <div class="LoadingWrapOuter">
+            <img src="{!$Resource.AjaxLoaderImage}" class="LoadingImage" />
+            <div class="LoaderWrap">
+            </div>
+        </div>
+    </div>
+    <!------------//custom ajax loader------------>
+
+  
+  <apex:outputPanel >
+        <!--------------------------------------second row start ------------------------------------------->
+        <div class="grid-1" style=" width:99%;padding-right:0px; float:left">
+          <div class="title-grid trig-grid1"><i class="fa fa-tachometer"></i> BoothLeads</div>
+          <div class="content-gird" style=" border:1px solid #e3e3e3;"> 
+           <!---------statistic blocks------------>
+                <!---First statstics blocks------------------>
+                <div class="stat-cont" style="width: 24%;">
+                    <div class="stat-header">Boothleads Users</div>
+                    <!--close of stat-header-->
+                    <div class="stat-output stat-tt-bg-img1">
+                        <p class="tt-no">
+                            {!ticTemp.size}
+                        </p>
+                    </div>
+                    <!--close of stat-output-->
+                </div>
+                <!---close of stat-cont-->
+                <!---//First statstics blocks------------------>
+
+                <!------------2nd  statstics block------------------>
+                <div class="stat-cont" style="width: 24%;">
+                    <div class="stat-header">iOS Device Users</div>
+                    <!--close of stat-header-->
+                    <div class="stat-output stat-tts-bg-img1">
+                        <p class="tts-no">
+                            {!iOScount}
+                        </p>
+                    </div>
+                    <!--close of stat-output-->
+
+                </div>
+                <!---close of stat-cont-->
+                <!------------//2nd statstics blocks------------------>
+                <!--------------------3rd statistics block--------------->
+                <div class="stat-cont" style="width: 24%;">
+                    <div class="stat-header">android Device Users</div>
+                    <!--close of stat-header-->
+
+                    <div class="stat-output stat-rg-bg-img1">
+                        <p class="rg-no">
+                            {!Androidcount}
+                        </p>
+                    </div>
+                    <!--close of stat-output-->
+
+                </div>
+                <!---close of stat-cont-->
+                <!------------------3rd statstics blocks------------------>
+                <!-----------------4th statstics block------------------>
+                <div class="stat-cont" style="width: 24%;">
+                    <div class="stat-header">Scanned Leads</div>
+                    <!--close of stat-header-->
+                    <div class="stat-output stat-to-bg-img1">
+                        <p class="to-no">
+                           {!leadlist.size}
+                        </p>
+                    </div>
+                    <!--close of stat-output-->
+                </div>
+                <!---close of stat-cont-->
+                <!--------------//4th statstics blocks------------------>
+                
+ 
+    
+    <!--Lead Rating report---------------->
+            <div class="grid-1 portlet graph-grid">
+                <div class="title-grid portlet-header trig-grid1">
+                    <i class="fa fa-bar-chart fa-1x">&nbsp;&nbsp;</i>Report By Lead Rating
+                </div>
+                <div class="content-gird portlet-content">
+                    <!------graph div----->
+                    <div id="chartContainer">
+                        <apex:outputPanel rendered="{!if(leadRating.size != 0,true,false)}">
+                            <apex:chart data="{!leadRating}" width="100%" height="300"
+                                resizable="true">
+                                <apex:axis type="Category" position="bottom" fields="leadrat"
+                                    title="Lead Rating">
+
+                                </apex:axis>
+
+                                <apex:axis type="Numeric" position="left" fields="leadNo"
+                                    title="No Of Leads" minimum="0" steps="0" />
+                                <apex:barSeries gutter="200" orientation="vertical"
+                                    axis="bottom" xField="leadrat" yField="leadNo" stacked="false"
+                                    colorSet="#369ead,#c24642,#7f6084,#86b402,#a2d1cf"
+                                    colorsProgressWithinSeries="true">
+                                    <apex:chartLabel display="outside" field="leadNo" />
+                                    <apex:chartTips height="20" width="120" />
+                                    </apex:barseries>
+                            </apex:chart>
+
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!if(leadRating.size == 0,true,false)}">
+                            <h1>No Ratings</h1>
+                        </apex:outputPanel>
+                    </div>
+                    <!--close of chartcontainer-->
+                    <!------//graph div----->
+                    <div class="clear"></div>
+                </div>
+                <!--close of contentgrid-->
+            </div>
+            <!--close of grid-->
+            <!-------------------End of lead rating report-------------------------------------->
+            
+           <!----------Report by Booth Admin and Booth User Scans---------------->
+            <div class="grid-1 portlet graph-grid">
+                <div class="title-grid portlet-header trig-grid1">
+                    <i class="fa fa-bar-chart fa-1x">&nbsp;&nbsp;</i>Report By Booth Admin and Booth User Scans
+                </div>
+                <div class="content-gird portlet-content">
+                    <!------graph div----->
+                    <div id="chartContainer">
+                    <apex:outputPanel rendered="{!if(boothreportfordisplay.size != 0,true,false)}">
+                    <apex:chart width="100%" height="300" data="{!boothreportfordisplay}" resizable="true">
+                          <apex:axis type="Numeric" position="left" fields="ScanNo" title="Number Of Scans" grid="true"  minimum="0" steps="0" maximum="2000"/>
+                          <apex:axis type="Category" position="bottom" fields="BLusers" title="Boothleads Users" >
+                          <apex:chartLabel rotate="-90" />
+                        </apex:axis>
+                        <apex:barSeries title="Report By Booth Admin and Booth User Scans" orientation="vertical" axis="left" xField="BLusers" yField="ScanNo"  gutter="200"
+                        colorSet="#D2691E,#369ead,#c24642,#7f6084,#86b402,#a2d1cf"
+                        colorsProgressWithinSeries="true">
+                           <apex:chartLabel display="outside" field="ScanNo" />
+                           <apex:chartTips height="20" width="120"/>
+                       </apex:barSeries>
+                        <!--<apex:lineSeries axis="left" xField="BLusers" yField="ScanNo" markerType="circle" markerSize="4" markerFill="#FFFFFF"/>-->
+                   </apex:chart>
+                   </apex:outputPanel>
+                        <apex:outputPanel rendered="{!if(boothreportfordisplay.size == 0,true,false)}">
+                            <h1>No Data</h1>
+                        </apex:outputPanel>
+                   </div>
+                    <!--close of chartcontainer-->
+                    <!------//graph div----->
+                    <div class="clear"></div>
+                </div>
+            </div>   
+           <!---------statistic blocks------------>
+        
+            <div class="clear"></div>
+           </div><!--close of contentgrid-->
+        
+        <!--------------------------------------------------------------------------------->
+        </div>
+         <div class="clear"></div>
+        
+    </apex:outputPanel>     
+        <!----------------------------------second end----------------------------------------------->
+  <script>
+    $(document).ready(function() {
+    try{
+           //restoftheQueries();
+
+    }catch(e){}
+       
+      
+        
+    });
+       
+</script>   
+
+<script type="text/javascript">
+      $(document).ready(function(){
+      $('.Mask').fadeIn('slow');
+      $(window).load(function(){
+      $('.Mask').fadeOut('slow');
+      });
+      });
+</script>
+
+<style>
+.Mask{background: none repeat scroll 0 0 #282828; height: 100%; left: 0; position: fixed; top: 0; width: 100%; z-index: 9999999999999999;  opacity:0.7;}
+.LoadingWrapOuter {width:285px; height:158px; position:absolute; top:50%; left:50%; margin: -79px 0 0 -162px;z-index:9999999999999999;}
+.LoadingImage {position:absolute; top:0; left:0; margin:45px 0 0 100px;}
+.LoaderWrap {width:285px; height:158px; top:50%; left:50%; }
+.Loader {width:80px; height:26px; margin: 45px auto 0;}
+</style>
+
+
+    </c:ed_basictemplate>
+    <!-------------end of basic template html component---------------->
+
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+  
+</apex:page>

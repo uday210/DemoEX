@@ -1,0 +1,425 @@
+<apex:page controller="SA_AddUsersController" standardStylesheets="false" showHeader="false" id="thePage" action="{!checkUserId}">
+
+<head>
+    <title>Scan Attendee</title>
+</head>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References Start ------------------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/fullcalendar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fullcalendar.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions1.js')}"/> 
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/slider js/jquery.min.js')}"/>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/slider js/jquery.touchslider.js')}"/>
+
+<apex:includeScript value="{!$Resource.PhoneSetup}"/> 
+    
+<!--
+<script>
+jQuery(function($) {
+    $(".touchslider").touchSlider({/*options*/});
+    $(".touchslider").data("touchslider").stop(); // stop the slider
+$(".touchslider").data("touchslider").start(); // start the slider
+});
+</script>
+-->
+
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+
+
+<script>
+
+function validatePhone(){
+    
+}
+function ValidateForm(){
+
+    var fn=document.getElementById('{!$Component.thePage:theForm:FName}');
+    var ln=document.getElementById('{!$Component.thePage:theForm:LName}');
+    var em=document.getElementById('{!$Component.thePage:theForm:UEmail}');
+    var cn=document.getElementById('{!$Component.thePage:theForm:Company}');
+    var phn=document.getElementById('{!$Component.thePage:theForm:UPhone}');
+    var pw=document.getElementById('{!$Component.thePage:theForm:pwd}');
+        
+    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+    if(fn.value == "" ) {
+        alert('Please Enter First Name');
+        return false;
+    }
+    
+    if(ln.value == "" ) {
+        alert('Please Enter Last Name');
+        return false;
+    }
+    
+    if(em.value == "" ) {
+        alert('Please Enter Email Id');
+        return false;
+    } else if (!filter.test(em.value)) {
+        alert('Please provide a valid Email Id');
+        em.focus();
+        return false;
+    } 
+    
+     if(pw.value == "" ) {
+        alert('Please Enter Password ');
+        return false;
+    }
+       
+    if(cn.value == "" ) {
+        alert('Please Enter Company Name ');
+        return false;
+    }
+        
+    if(phn.value != ""){
+       if( validatePhoneNumber(phn.value)== false){
+           alert(' Please provide valid 10 digit phone number');
+           phn.focus();
+           return false;
+       }
+    } 
+    
+   
+}
+
+  function validatePhoneNumber(elementValue)
+    {  
+        var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
+        return phoneNumberPattern.test(elementValue);  
+    }
+</script>
+
+<!-- if( validatePhoneNumber(phn.value)== false){
+           alert('Please provide valid 10 digit phone number');
+           phn.focus();
+           return false;
+       }
+    
+    -->
+<!-------------------------------------------- Styles, Javascript and Jquery References End ------------------------------------------------->
+<apex:form id="theForm">
+<div id="header">
+        <div id="logo">
+        <apex:outputLink value="/apex/BLS_ManageEvents">
+            <apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+        </apex:outputLink>
+        </div><!--close of logo-->
+    </div><!--close of header--->
+    
+    <div  id="ribbon"></div><!--close of ribbon-->
+    <header>
+        <div id="centered-head" class="res"> 
+        <nav>
+            <ul>
+                <li id="login">
+                    <span id="login-trigger">
+                        <span id="login-triggers">
+                            <span id="user-panel-check"></span>
+                            <span id="user-panel-title ">My Account</span>
+                        </span>
+                    </span>
+                    <div id="login-content">
+                        <ul>
+                            <li><apex:outputLink value="/apex/SA_ManageProfile"><apex:image value="{!$Resource.Manage_Profile}" width="15px" height="15px"/><span class="editprofile icon">Manage Profile</span></apex:outputLink></li>
+                            <li><apex:outputLink value="/apex/SA_ResetPassword"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon">Reset Password</span></apex:outputLink></li>  
+                            <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="account-name">
+            <p><span class="welcome">Welcome, </span><strong>{!$User.Firstname}&nbsp;{!$User.Lastname}</strong></p>
+                <div class="account-separator"></div>
+        </div>
+        <div class="account-name"></div>
+        <div class="account-name" style="float:left;valign:middle;align:left;">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image value="{!$Resource.HomeIcon}" height="40" width="40"/>
+        </apex:outputLink></div>
+        <!-- Navigation end--> 
+        </div>
+    </header>
+
+    <section id="middle" style=" border:0px #000000 solid" class="res">
+    <div id="container-main">
+        <div id="container" style="border:0px #000000 solid">
+            <div id="content">
+                <div class="speedbar" style=" border:0px #FF0000 solid">
+                    <div class="speedbar-nav">Scan Attendee ›› Event Staff</div>
+                    <div style="float:right;padding-right:10px;">Selected Event: <b>{!SelectedEvent.Ev_Title__c}</b></div>
+                    <!--close of speedbar-nav-->
+                </div>
+                <!------------------------------------------------------- Live Events Grid Start ---------------------------------------------------->
+                
+                
+                 <apex:outputPanel id="usersTable" rendered="{!ShowEventAdminStaffList}">
+                  
+                     <div class="grid-1">
+                             <div class="title-grid">Event Staffs</div>
+                        <div class="content-gird"> 
+                        <div class="dataTables_wrapper" id="example_wrapper">
+                        
+                      
+
+                            <table class="display" id="example" width="50%" align="Center">
+                            <thead>
+                                <tr>                            
+                                    <th width="10%" class="th_title sorting" rowspan="1" colspan="1">Action</th>
+                                    <th width="25%" class="th_title sorting" rowspan="1" colspan="1">Name</th>
+                                    <th width="25%" class="th_title sorting" rowspan="1" colspan="1">Email</th>
+                                    <th width="25%" class="th_title sorting" rowspan="1" colspan="1">Company</th>    
+                                    <th width="15%" class="th_title sorting" rowspan="1" colspan="1">Phone</th>                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                            
+                                <apex:repeat value="{!EventAdminStaffList}" var="usr" >
+    
+                                    <tr class="item odd">
+                                         <td width="10%" class="subject">
+                                                 <apex:commandLink title="Edit" action="{!editEventStaff}">
+                                                  <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/edit-1.png')}"/>
+                                                      <apex:param value="{!usr.id}" name="UserEditId" assignTo="{!SelectedUserEditId}"/>
+                                                 </apex:commandLink>  |
+                                              
+                                                 <apex:commandLink title="Delete" action="{!deleteUser}">
+                                                 <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/remove.png')}"/>
+                                                      <apex:param value="{!usr.id}" name="UserDeleteId" assignTo="{!selectedUserDeleteId}"/>
+                                                 </apex:commandLink> 
+                                                                    
+                                               </td>  
+                                        <td>{!usr.Attendee_Summary__r.AS_FirstName__c} {!usr.Attendee_Summary__r.AS_LastName__c}</td>
+                                        <td>{!usr.Attendee_Summary__r.AS_Email__c}</td>   
+                                        <td>{!usr.Attendee_Summary__r.AS_Company__c}</td>  
+                                        <td>{!usr.Attendee_Summary__r.AS_CellPhone__c}</td>                                      
+                                     </tr>
+                                </apex:repeat>
+                                
+                            </tbody>
+                            </table>
+
+                            </div>
+                            
+                            <div class="clear"></div>        
+                      </div>            
+                    </div>                
+                   
+               
+          </apex:outputPanel>
+          
+         <apex:outputPanel id="AddUserTable" rendered="{!showAddEventAdminStaff}">
+      <div class="grid-1"  >
+          <div class="title-grid">Add Event Admin Staff</div>
+            <div class="content-gird" >
+            <div style="align:middle;">
+              <apex:outputText value="User Already Exist !" rendered="{!errorbool}" style="font-size:22px;color:red;text-align:middle;" />
+            </div>
+            <div class="form">
+
+               <div id="left-form" style=" margin-left:25%; margin-top:10px; width:49%; padding-bottom:20px;  border:0px #000000 solid; float:left">
+              
+                  <div class="elem">
+                  <label>First Name : </label><label id="mandatory">*</label>   
+                  <div class="indent">    
+                      <apex:inputField value="{!AttendeeForEventAdminStaff.AS_FirstName__c}" styleClass="medium" id="FName"/>
+                  </div>
+                  </div>
+                  
+                   <div class="elem">
+                  <label>Last Name : </label><label id="mandatory">*</label>   
+                  <div class="indent">
+                      <apex:inputField value="{!AttendeeForEventAdminStaff.AS_LastName__c}" styleClass="medium" id="LName"/>
+                  </div>
+                  </div>
+                                    
+                  <div class="elem">
+                  <label>Email : </label><label id="mandatory">*</label>   
+                  <div class="indent">
+                      <apex:inputField value="{!AttendeeForEventAdminStaff.AS_Email__c}" styleClass="medium" rendered="{!IF(SelectedUserEditId == NULL, TRUE, FALSE)}" id="UEmail"/>
+                      <apex:outputText value="{!AttendeeForEventAdminStaff.AS_Email__c}" rendered="{!IF(SelectedUserEditId != NULL, TRUE, FALSE)}"/>
+                  </div>
+                  </div>
+              
+                    <div class="elem">
+                  <label>Password : </label><label id="mandatory">*</label>   
+                  <div class="indent">
+                      <apex:inputText value="{!password}" styleClass="medium" id="pwd"/>
+                  </div>
+                  </div>   
+                  
+                  <div class="elem">
+                  <label>Company: </label><label id="mandatory">*</label>   
+                  <div class="indent">
+                      <apex:inputField value="{!AttendeeForEventAdminStaff.AS_Company__c}" styleClass="medium" id="Company"/>
+                  </div>
+                  </div>    
+ 
+                  <div class="elem">
+                  <label>Phone Number: </label>   
+                  <div class="indent">
+                      <apex:inputField value="{!AttendeeForEventAdminStaff.AS_CellPhone__c}" styleClass="medium" id="UPhone" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/>
+                  </div>
+                  </div>    
+                 
+                        
+                <br/>
+                
+                 <div class="indent">  
+                 <apex:commandButton value="Save" action="{!saveEventAdminStaff}" styleclass="button-a blue" onclick="return ValidateForm();"/>
+
+                  
+                 
+
+                 &nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!cancelStaff}" styleclass="button-a dark-blue" immediate="true"/>          
+                 </div>
+
+                </div><!--close of left-form-->
+                
+                
+              <div class="clear"> </div>
+            </div>
+          </div>
+          <!--------------------------------------------------------------------------------->
+
+    <div class="clear"></div>
+         
+    </div>
+    </apex:outputPanel> 
+           
+
+
+
+                <!-------------------------------------------------------- Live Events Grid End ----------------------------------------------------->   
+      </div>
+      <!-- #content--> 
+    </div>
+    <!-- #container-->
+    
+          <aside class="sideLeft">
+        <span class="categories">Categories</span>
+        <ul class="menu">
+            <li class="expand"><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events" styleClass="active"><span class="four-prong icon">Event Information</span></apex:outputLink>
+                <ul class="acitem" style="display: block;">
+                    <li><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events1"><span class="home icon">Dashboard</span></apex:outputLink></li>
+                    <li><apex:commandLink action="/apex/SA_Attendees"><span class="four-prong icon">Attendees</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                        <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">
+                            <ul class="acitem" style="display: none;">
+    
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_AddAttendee"><span class="attendee icon">Add Attendee</span></apex:outputLink></li>
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_ImportAttendees"><span class="importattendee icon">Import Attendee</span></apex:outputLink></li>
+    
+                            </ul>
+                    </apex:outputText>  
+                    </li> 
+                    <li><apex:commandLink action="/apex/SA_Reports"><span class="four-prong icon">Reports</span><span class="num">6</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Ticket Sales</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Item Sales</span></apex:outputLink></li>                            
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Orders</span></apex:outputLink></li>                                                                               
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Refunds</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in Status</span></apex:outputLink></li>                        
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in History</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+           <li class="expand"><apex:outputLink style="background-color:#5B7585;" value="/apex/SA_Tickets"><span class="four-prong icon">Event Settings</span></apex:outputLink>
+                <ul class="acitem" style="display: none;">
+
+                    <li><apex:commandLink action="/apex/SA_Tickets"><span class="four-prong icon">Tickets</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style="padding-left:15px"><apex:outputLink value="/apex/SA_Tickets"><span class="cal icon">Add Ticket</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportTickets"><span class="conversations icon">Import Tickets</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+
+                            <li><apex:commandLink action="/apex/SA_Items"><span class="four-prong icon">Items</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Items"><span class="additem icon">Add Item</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportItems"><span class="importitem icon">Import Items</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+                    <!--
+                    <li><apex:commandLink action="/apex/SA_PromoCodes"><span class="four-prong icon">Promo Codes</span><span class="num">1</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_PromoCodes"><span class="addpromocode icon">Add Promo Code</span></apex:outputLink></li>    
+                        </ul> 
+                    </li
+                    -->
+                    <apex:outputText rendered="{!NOT(isEventAdminStaffUser)}">                        
+                    <li class="expand"><apex:commandLink action="/apex/SA_AddUsers" style="background-color:#5B7585;"><span class="four-prong icon">Event Staff</span> <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"> <span class="num">1</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:commandLink action="{!addEventStaff}" style="{!IF(showAddEventAdminStaff == TRUE, 'background-color:#5B7585;','')}"><span class="addpromocode icon">Add Event Staff</span></apex:commandLink></li>    
+
+                        </ul> 
+                    </apex:outputText>    
+                    </li>
+                   </apex:outputText>    
+                </ul>
+            </li>
+        </ul>
+        </aside>
+        
+    </div>
+  <!-- #sideLeft --> 
+  <!-- #container main-->
+
+  <footer>
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Scan Attendee </p>
+      </div>
+    </div>
+  </footer>
+  
+</section>
+<!-- #middle-->
+</apex:form> 
+
+<div class="clear"></div>
+
+</apex:page>

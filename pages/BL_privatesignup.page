@@ -1,0 +1,248 @@
+<apex:page controller="BL_Eventadmin_privateSignupCon" id="ThePage" sidebar="false" showHeader="false" standardStylesheets="false" action="{!checkuserName}">
+<!--<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/screen.css")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/pro_dropline_ie.css")}"/>-->
+         
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+
+    <script>
+     
+     function ValidateForm(){
+        
+        var lvFn = document.getElementById('{!$Component.Thepage:loginForm:conFname}').value;
+        var lvLn = document.getElementById('{!$Component.Thepage:loginForm:conLname}').value;
+        var lvEn = document.getElementById('{!$Component.Thepage:loginForm:conemail}').value;
+        var lvCn = document.getElementById('{!$Component.Thepage:loginForm:conOrgname}').value;
+        
+        
+        
+         
+         if(lvFn == ""){
+              alert("Please Furnish First Name");
+             // lvFn.focus();
+              return false;
+         }
+         if(lvLn == ""){
+              alert("Please Furnish Last Name");
+              //lvLn.focus();
+              return false;
+         }
+         if(lvEn == ""){
+              alert("Please Furnish Email Id");
+             // lvEn.focus();
+              return false;
+         }
+         if(lvCn == ""){
+              alert("Please Furnish Hosting Organization Name");
+             // lvCn.focus();
+              return false;
+         }
+         if(lvEn !="" )
+        {
+           var boo = validateEmail(lvEn );
+           //lvEnId.focus();
+           return boo;
+        }
+         
+    }     
+       function validateEmail(var1)
+    {
+        var x= var1
+        var atpos=x.indexOf("@");
+        var dotpos=x.lastIndexOf(".");
+          if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length)
+          {
+              alert("Please enter a valid Email Id");
+              return false;
+          }else return true;
+    }  
+    </script> 
+
+<apex:form id="loginForm"  forceSSL="true" >
+<body id="login-bg" > 
+<div id="login-holder">
+   <div id="logo">
+        <!--<a href="index.html"><img src="{!URLFOR($Resource.GlobalnestPortal_Cssall,"css/images/shared/logo.png")}" width="244" height="98" alt=""  style="padding-left:25px;"/></a>--> 
+
+    </div>
+<div class="clear"></div>
+ <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" >
+  <tr>
+    <td align="center">     
+          <div id="loginbox">          
+         <!--validation on login  --> 
+         <table border="0" cellpadding="0" cellspacing="0" >                                  
+            <tr><td>
+                   <apex:outputPanel layout="block" >
+                 <!--  <apex:pageMessages id="error"/>--></apex:outputPanel>
+            </td></tr>                 
+         </table>         
+           <div id="login-inner" >
+             <table width="500px" border="0" align="center" cellpadding="0" cellspacing="0"  style="position:absolute; left:10px; top:10px;">
+  <tr>
+   <td align="left" valign="middle" id="gradient" style="padding-left:30px;"><h2 class="signup" style="font-size:20px; color:#414141; padding-top:10px;">Sign Up</h2></td>
+  </tr>
+  <tr>
+    <td width="55%" align="center" valign="top"><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="45%" align="left" style="padding-left:15px;text-align:right;">First Name<font color="red">*</font> </td>
+       
+        <td width="55%" align="left" style="padding-left:5px">
+        <apex:inputfield id="conFname" value="{!U.Firstname}"/></td>
+      </tr>
+      <tr>
+        <td align="left" style="padding-left:15px;text-align:right;">Last Name<font color="red">*</font></td>
+        
+        <td  align="left" style="padding-left:5px">
+        <apex:inputfield id="conLname" value="{!U.LastName}"/></td>
+      </tr>
+      <tr>
+        <td  align="left" style="padding-left:15px;text-align:right;">Email Id<font color="red">*</font> </td>
+        
+        <td  align="left" style="padding-left:5px">
+        <apex:inputText id="conemail" value="{!EvEmail}"/>
+            <apex:outputPanel >
+         
+           
+           </apex:outputPanel>
+        </td>
+      </tr>
+      <apex:outputText rendered="{!error}">
+      <tr><td colspan="2">
+
+      <apex:outputText value="{!errormessage}" style="color:#FF0000;Font-size:1.875em;font-style:italic;font-family:Times New Roman; padding-left:15px;" rendered="{!error}"></apex:outputText> 
+
+      </td></tr> </apex:outputText>
+      <tr>
+        <td align="left" style="padding-left:15px;text-align:right;">Hosting Organization Name<font color="red">*</font></td>
+        <td align="left" style="padding-left:5px">
+        <apex:inputfield id="conOrgname" value="{!U.CompanyName}"/></td>
+      </tr>
+      <tr>
+        <!-- <td align="left" style="Padding-left:25px" colspan="3"><h4 style="color:red"><apex:PageMessages /></h4></td>-->
+   
+        </tr>
+     
+    </table></td>
+   
+  </tr>
+  
+  <tr>
+   <td height="30" colspan="2" align="center" valign="middle"> 
+    <apex:commandbutton value="Sign up" action="{!EventAdminReg}" title="Sign Up" onClick=" return ValidateForm();" styleclass="awesome"/>&nbsp;&nbsp;
+    <apex:commandButton value="Cancel" action="{!CancelSignUp}" styleclass="awesome" immediate="true" reRender="signup"/>
+   </td>
+  </tr>
+  <tr>
+   <td height="30" colspan="2" align="center" valign="middle"> 
+   </td>
+  </tr>
+</table>
+           </div>
+        <div class="clear"></div>            
+         
+        </div></td>
+  </tr>
+</table>
+                                                            
+</div>
+</body>
+</apex:form>
+<!---------------------------------------------------------- SIGNUP ------------------------------------------------------->
+<!--
+<apex:form id="signup">
+         <apex:outputPanel id="signuppopup">
+         <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!signuppopup}" />
+         <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!signuppopup}" style="width:50%">
+             
+           
+           <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+   <td align="left" valign="middle" id="gradient" style="padding-left:30px;"><h2 class="signup" style="font-size:20px; color:#FFFFFF; padding-top:10px;">Sign Up</h2></td>
+  </tr>
+  <tr>
+    <td width="55%" align="center" valign="top"><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="45%" height="40px" align="left" style="padding-left:15px;text-align:right;">First Name<font size="4" color="red">*</font> </td>
+       
+        <td width="55%" height="40px" align="left" style="padding-left:5px">
+        <apex:inputfield id="conFname" value="{!U.Firstname}"/></td>
+      </tr>
+      <tr>
+        <td height="40px" align="left" style="padding-left:15px;text-align:right;">Last Name<font size="4" color="red">*</font></td>
+        
+        <td height="40px" align="left" style="padding-left:5px">
+        <apex:inputfield id="conLname" value="{!U.LastName}"/></td>
+      </tr>
+      <tr>
+        <td height="40px" align="left" style="padding-left:15px;text-align:right;">Email Id<font size="4" color="red">*</font> </td>
+        
+        <td height="40px" align="left" style="padding-left:5px">
+        <apex:inputText id="conemail" value="{!EvEmail}"/>
+            <apex:outputPanel >
+         
+           
+           </apex:outputPanel>
+        </td>
+      </tr>
+      <apex:outputText rendered="{!error}">
+      <tr><td colspan="2">
+
+      <apex:outputText value="{!errormessage}" style="color:#FF0000;Font-size:1.875em;font-style:italic;font-family:Times New Roman; padding-left:15px;" rendered="{!error}"></apex:outputText> 
+
+      </td></tr> </apex:outputText>
+      <tr>
+        <td height="40px" align="left" style="padding-left:15px;text-align:right;">Hosting Organization Name<font size="4" color="red">*</font></td>
+        <td height="40px" align="left" style="padding-left:5px">
+        <apex:inputfield id="conOrgname" value="{!U.CompanyName}"/></td>
+      </tr>
+      <tr>
+         <td align="left" style="Padding-left:25px" colspan="3"><h4 style="color:red"><apex:PageMessages /></h4></td>
+   
+        </tr>
+     
+    </table></td>
+   
+  </tr>
+  
+  <tr>
+   <td height="30" colspan="2" align="center" valign="middle"> 
+    <apex:commandbutton value="Sign up" action="{!EventAdminReg}" title="Sign Up" onClick=" return ValidateForm();" styleclass="awesome"/>&nbsp;&nbsp;
+    <apex:commandButton value="Cancel" action="{!CancelSignUp}" styleclass="awesome" immediate="true" reRender="signup"/>
+   </td>
+  </tr>
+  <tr>
+   <td height="30" colspan="2" align="center" valign="middle"> 
+   </td>
+  </tr>
+</table>
+
+</apex:outputpanel>
+</apex:outputpanel>       
+</apex:form>
+-->
+<!-- Registration Sucessfull PopUp -->
+<apex:form id="Success">
+ <apex:outputPanel id="signuppopup">
+  <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!sucessPopUp}" />
+    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!sucessPopUp}" style="width:50%">
+
+  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+     <td height="35" colspan="2" align="left" valign="middle" bgcolor="#cccccc" style="padding-left:25px;"><H2 > <font size="2">Registration Successful</font> </H2></td>
+   </tr>
+   <tr>
+         <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;">&nbsp;</td>
+         
+       </tr>
+       <tr>
+       <td height="35px" align="left" valign="middle" bgcolor="#FFFFFF" style="padding-left:25px;"><apex:outputtext ><b>Your registration was successful. <br/>Please check your email for details and login.</b></apex:outputtext></td></tr>
+       <tr><td height="30" colspan="2" align="center" valign="middle"> 
+    <apex:commandbutton value="OK" action="{!SuccesPopUpClose}" title="OK"  styleclass="awesome"/></td>
+     </tr>
+</table>
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:form>
+
+</apex:page>

@@ -1,0 +1,366 @@
+<apex:page controller="SA_ReportsController" standardStylesheets="false" showHeader="false" action="{!checkUserId}" readOnly="true">
+
+<head>
+    <title>Scan Attendee</title>
+</head>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References Start ------------------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/fullcalendar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.login, 'login/css/screen.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.login, 'login/css/osx.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/popup.css')}"/>
+
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+
+<!----
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fullcalendar.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.jplayer.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/ttw-video-player-min.js')}"></script>
+--->
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+<!--
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.dataTables.min.js')}"/>
+-->
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/validation.js')}"/>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions1.js')}"/>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References End ------------------------------------------------->
+
+<apex:form id="AS_EventsForm">
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.dataTables.min.js')}"/>
+<div id="header">
+        <div id="logo">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+        </apex:outputLink>
+        </div><!--close of logo-->
+    </div><!--close of header--->
+    
+    <div  id="ribbon"></div><!--close of ribbon-->
+    <header>
+        <div id="centered-head" class="res"  > 
+        <nav>
+            <ul>
+                <li id="login">
+                    <span id="login-trigger">
+                        <span id="login-triggers">
+                            <span id="user-panel-check"></span>
+                            <span id="user-panel-title ">My Account</span>
+                        </span>
+                    </span>
+                    <div id="login-content">
+                        <ul>
+                            <li><apex:outputLink value="/apex/SA_ManageProfile"><apex:image value="{!$Resource.Manage_Profile}" width="15px" height="15px"/><span class="editprofile icon">Manage Profile</span></apex:outputLink></li>
+                            <li><apex:outputLink value="/apex/SA_ResetPassword"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon">Reset Password</span></apex:outputLink></li>  
+                            <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="account-name">
+            <p><span class="welcome">Welcome, </span><strong>{!$User.Firstname}&nbsp;{!$User.Lastname}</strong></p>
+                <div class="account-separator"></div>
+        </div>
+        <div class="account-name"></div>
+        <div class="account-name" style="float:left;valign:middle;align:left;">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image value="{!$Resource.HomeIcon}" height="40" width="40"/>
+        </apex:outputLink></div>
+        <!-- Navigation end--> 
+        </div>
+    </header>
+
+    <section id="middle" style=" border:0px #000000 solid;" class="res">
+    <div id="container-main">
+        <div id="container" style="border:0px #000000 solid">
+            <div id="content">
+            
+              <div class="speedbar" style=" border:0px #FF0000 solid">
+                    <div class="speedbar-nav">Scan Attendee ›› Reports</div>
+                    <div style="float:right;padding-right:10px;">Selected Event: <b>{!SelectedEvent.Ev_Title__c}</b></div>
+                    <!--close of speedbar-nav-->
+                </div> 
+                
+                <div style="float:right;padding:5px;">
+                    <div style="float:right;margin-right:5px;margin-bottom:5px;">
+                        <apex:commandButton value="Export" action="{!exportIntoCSV}" styleclass="button-a blue" style="font-weight:bold;"/>
+                    </div>
+                    <div style="float:right;margin-right:8px;"> 
+                        <apex:commandLink action="{!PrintReport}" target="_blank">
+                            <apex:commandButton value="Print" action="{!PrintReport}" styleclass="button-a blue" style="font-weight:bold;"/>
+                         </apex:commandLink>
+                        
+                    </div>
+                </div>
+
+                
+    <!------------------------------------------------------- REPORTS Grid Start ---------------------------------------------------->
+       <!--132-report--->
+                 
+             
+        <!---295-389 Order report---> 
+        
+
+        <br/><br/>
+                    
+        <apex:outputPanel id="CheckInStatusTable" rendered="{!ShowCheckInStatus}">
+       
+    
+        <script type="text/javascript" src="{!URLFOR($Resource.nwdatatable, 'nwdatatable/js/jquery.js')}"></script>
+        <script type="text/javascript" src="{!URLFOR($Resource.nwdatatable, 'nwdatatable/js/jquery.dataTables.js')}"></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.nwdatatable, 'nwdatatable/css/jquery.dataTables.css')}"/> 
+  <script type="text/javascript" language="javascript" class="init">
+
+$(document).ready(function() {
+    $('#example').dataTable( {
+        "pagingType": "full_numbers",
+        /**default orderid in asc sorting**/
+         "order": [[ 1, "asc" ]],
+        /**sorting coloumn disable**/
+        "aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] },
+     
+   ]
+        
+    } );
+} );
+
+    </script>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions1.js')}"/>
+
+        
+        <div class="grid-1">
+        <div class="title-grid"><span>Report On CheckIn Status</span>
+        
+            <div style="float:right;valign:top;">
+                <label> Filter By : &nbsp;</label>
+                <apex:selectList value="{!SelectedCheckInFilter}" size="1" multiselect="false" > 
+                    <apex:selectOptions value="{!CheckInFilterOptions}"/>
+                    <apex:actionSupport event="onchange" action="{!checkInStatusReport}" reRender="CheckInStatusTable"/>
+                </apex:selectList>
+            </div>
+        </div>
+        
+        <div class="content-gird"> 
+        
+        <div class="dataTables_wrapper" id="example_wrapper" style="height:470px;overflow:scroll;">
+        <apex:outputPanel rendered="{!WithSessions}">
+            <table class="display" id="example">
+                <thead>
+                    <tr>
+                    <th  width="0%"></th>
+                        <th width="14%" class="th_title sorting" rowspan="1" colspan="1" >Name</th>
+                        <th width="11%" class="th_status sorting" rowspan="1" colspan="1" >Email</th>
+                        <th width="11%" class="th_date sorting" rowspan="1" colspan="1">Company</th>
+                        <th width="11%" class="th_author sorting" rowspan="1" colspan="1">Ticket Name</th>
+                        <th width="8%" class="th_author sorting" rowspan="1" colspan="1">Ticket Number</th>
+                        <th width="11%" class="th_author sorting" rowspan="1" colspan="1">Session Name</th>
+                        <th width="11%" class="th_chexbox sorting" rowspan="1" colspan="1" >CheckIn/Out Date Time</th>                    
+                        <th width="11%" class="th_chexbox sorting" rowspan="1" colspan="1" >CheckIn Status</th>
+                        <th width="11%" class="th_chexbox sorting" rowspan="1" colspan="1">Scanned By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!CheckInStatusList}" var="checkStatus">
+                        <apex:repeat value="{!checkStatus}" var="check">
+                            <tr class="item odd">
+                            <td width="0%" ></td>
+                                <td width="14%">{!check.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!check.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}</td>
+                                <td width="11%">{!check.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}</td>
+                                <td width="11%">{!check.Event_Attendee_Mapping__r.AS_id__r.AS_Company__c}</td>
+                                <td width="11%">{!check.Registration_Info__r.TicketTypes__r.TT_Name__c}</td>
+                                <td width="8%">{!check.Name}</td>
+                                <td width="11%">{!check.Ticket_Session_Mapping__r.Session__r.Session_Name__c}</td>                            
+                                <td width="11%">{!check.Latest_Date_Time__c}</td>
+                                <td width="11%"><apex:outputText value="{!IF(check.IsCheckedIn__c == TRUE, 'Checked In', 'Not Checked In')}"/></td>
+                                <td width="11%">{!check.Scanned_by__r.firstname} {!check.Scanned_by__r.lastname}</td>
+                            </tr>
+                        </apex:repeat>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!WithOutSessions}">
+            <table class="display" id="example">
+                <thead>
+                    <tr>
+                    <th  width="0%"></th>
+                        <th width="18%" class="th_title sorting" rowspan="1" colspan="1" >Name</th>
+                        <th width="14%" class="th_status sorting" rowspan="1" colspan="1" >Email</th>
+                        <th width="14%" class="th_date sorting" rowspan="1" colspan="1">Company</th>
+                        <th width="14%" class="th_author sorting" rowspan="1" colspan="1">Ticket Name</th>
+                        <th width="10%" class="th_author sorting" rowspan="1" colspan="1">Ticket Number</th>
+                       <th width="14%" class="th_chexbox sorting" rowspan="1" colspan="1" >CheckIn/Out Date Time</th>                   
+                        <th width="14%" class="th_chexbox sorting" rowspan="1" colspan="1" >CheckIn Status</th>
+                        <th width="14%" class="th_chexbox sorting" rowspan="1" colspan="1">Scanned By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!CheckInStatusList}" var="checkStatus">
+                        <apex:repeat value="{!checkStatus}" var="check">
+                            <tr class="item odd">
+                            <td width="0%" ></td>
+                                <td width="18%">{!check.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!check.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}</td>
+                                <td width="14%">{!check.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}</td>
+                                <td width="14%">{!check.Event_Attendee_Mapping__r.AS_id__r.AS_Company__c}</td>
+                                <td width="14%">{!check.Registration_Info__r.TicketTypes__r.TT_Name__c}</td>
+                                <td width="10%">{!check.Name}</td>
+                                <td width="14%">{!check.Latest_Date_Time__c}</td> 
+                                <td width="14%"><apex:outputText value="{!IF(check.IsCheckedIn__c == TRUE, 'Checked In', 'Not Checked In')}"/></td>
+                                <td width="14%">{!check.Scanned_by__r.firstname} {!check.Scanned_by__r.lastname}</td>
+                            </tr>
+                        </apex:repeat>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </apex:outputPanel>
+        </div>
+        <div class="clear"></div>        
+        </div>
+        
+        
+        <div class="title-grid" style="">
+            <div style="float:right;">
+                <label> Total CheckIns: {!TotalCheckins}</label>
+            </div>
+        </div>              
+        </div>
+        </apex:outputPanel>
+        
+        
+         
+       <!--524-698---checkinhistory report-->
+         
+         <!---Refund table-->
+
+      
+       <!-------------------------------------------------------- REPORTS Grid End ----------------------------------------------------->   
+      </div>
+      <!-- #content--> 
+    </div>
+    <!-- #container-->
+   <aside class="sideLeft">
+        <span class="categories">Categories</span>
+        <ul class="menu">
+            <li class="expand"><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events" styleClass="active"><span class="four-prong icon">Event Information</span></apex:outputLink>
+                <ul class="acitem" style="display: block;">
+                    <li><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events1"><span class="home icon">Dashboard</span></apex:outputLink></li>
+                    <li><apex:commandLink action="/apex/SA_Attendees"><span class="four-prong icon">Attendees</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                        <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">
+                            <ul class="acitem" style="display: none;">
+    
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_AddAttendee"><span class="attendee icon">Add Attendee</span></apex:outputLink></li>
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_ImportAttendees"><span class="importattendee icon">Import Attendee</span></apex:outputLink></li>
+    
+                            </ul>
+                    </apex:outputText>  
+                    </li> 
+                    <li class="expand"><apex:commandLink style="background-color:#5B7585;" action="/apex/SA_Reports"><span class="four-prong icon">Reports</span><span class="num">6</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:commandLink action="{!ticketSales}" style="{!IF(ShowTicketSales == TRUE, 'background-color:#5B7585;','')}"><span class="reports icon">Ticket Sales</span></apex:commandLink></li>
+                            <li style=" padding-left:15px"><apex:commandLink action="{!ItemSales}" style="{!IF(ShowItemSales == TRUE, 'background-color:#5B7585;','')}"><span class="reports icon">Item Sales</span></apex:commandLink></li>
+                            <li style=" padding-left:15px"><apex:commandLink action="{!orderSales}" style="{!IF(ShowOrderSales== TRUE, 'background-color:#5B7585;','')}" ><span class="reports icon"> Orders</span></apex:commandLink></li>
+                            <li style=" padding-left:15px"><apex:commandLink action="{!refundsList}" style="{!IF(ShowRefundList == TRUE, 'background-color:#5B7585;','')}" ><span class="reports icon"> Refunds</span></apex:commandLink></li>
+                            <li style=" padding-left:15px"><apex:commandLink action="{!checkinStatus}" style="{!IF(ShowCheckInStatus == TRUE, 'background-color:#5B7585;','')}" ><span class="reports icon">CheckIn Status</span></apex:commandLink></li>
+                            <li style=" padding-left:15px"><apex:commandLink action="{!CheckInHistoryReport}" style="{!IF(OR(ShowCHForAttendee, ShowCHForTicket) == TRUE, 'background-color:#5B7585;','')}"><span class="reports icon">CheckIn History</span></apex:commandLink></li>
+                        </ul>
+                    </li> 
+                </ul>
+            </li>
+            
+           <li><apex:outputLink value="/apex/SA_Tickets"><span class="four-prong icon">Event Settings</span></apex:outputLink>
+                <ul class="acitem" style="display: none;">
+
+                    <li><apex:commandLink action="/apex/SA_Tickets"><span class="four-prong icon">Tickets</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style="padding-left:15px"><apex:outputLink value="/apex/SA_Tickets"><span class="cal icon">Add Ticket</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportTickets"><span class="conversations icon">Import Tickets</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+
+                            <li><apex:commandLink action="/apex/SA_Items"><span class="four-prong icon">Items</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Items"><span class="additem icon">Add Item</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportItems"><span class="importitem icon">Import Items</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+                    
+                    <apex:outputText rendered="{!NOT(isEventAdminStaffUser)}">                        
+                    <li><apex:commandLink action="/apex/SA_AddUsers"><span class="four-prong icon">Event Staff</span> <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"> <span class="num">1</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_AddUsers"><span class="addpromocode icon">Add Event Staff</span></apex:outputLink></li>    
+                        </ul> 
+                    </apex:outputText>    
+                    </li>
+                   </apex:outputText>    
+                </ul>
+            </li>
+        </ul>
+        </aside>
+        
+        
+    </div>
+  <!-- #sideLeft --> 
+  <!-- #container main-->
+
+  <footer>
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Scan Attendee </p>
+      </div>
+    </div>
+  </footer>
+  
+</section>
+<!-- #middle-->
+</apex:form> 
+
+<div class="clear"></div>
+
+</apex:page>

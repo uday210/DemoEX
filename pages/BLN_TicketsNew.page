@@ -1,0 +1,1162 @@
+<apex:page standardController="BLN_Event__c" extensions="BLN_ReUse_EventsEditCon" showHeader="false"  standardStylesheets="false" >
+  <!-- <apex:stylesheet value="{!URLFOR($Resource.createevents,'createevents/css/tables.css')}"/>-->
+  <!-- <apex:stylesheet value="{!URLFOR($Resource.createevents,'createevents/css/style-button.css')}"/>   -->
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />  
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/style-button.css')}" />
+<style>
+.title-grid > span{ display:none !important;}
+#three,#packageprice
+{
+     text-align: right;
+}
+</style>   
+    <c:myComponent BLN_UtillDisplayLinks="{!Ticket}">
+   
+<select class="selectlist" style="width:92%; padding:0px;display:none" id="meventstat">
+                            <apex:repeat value="{!EventStatus}" var="es">
+                            <option value="{!es.value}">{!es.label}
+                            </option>
+                            </apex:repeat>
+                          </select>
+            
+   
+<!--start of ticket dynamic table-->
+         <div id="dynamictickets">
+         
+          <!--create package button-->
+            <div id="package" style="   margin:0px; padding:0px; margin-right:0%; margin-top:10px; margin-bottom:10px; ">
+   <a id="blprodlink" onClick="blprod()" style="margin-left:1%;   cursor:pointer;  font-family:Arial, Helvetica, sans-serif;">Evendex Products<span><img id="expblp" src="{!URLFOR($Resource.createevents,'createevents/images/Addoptions1.png')}" width="14px" height="14px" style="margin-bottom:-2px; margin-left:.3%;"/></span></a>
+   <input type="button" class="button-a blue"   onClick="Alert_paymentopt.render('dialogbox_paymentopt','paymentopt_dialogoverlay','Alert_paymentopt' ,this);HideLoader();"   value="Payment Options" />
+            
+                 
+    <input type="button" class="button-a blue"   onClick="showpackageforevent('package1','dynamictickets','true')"   value="Create Package" style="margin-left:10px;float:right"  />
+      
+    <input type="button" class="button-a blue"   onClick="showticketforevent('','ticket1','dynamictickets','true')"   value="Create Ticket" style="float:right"  />
+          
+           
+    <script>
+   
+  var flagexpp=0;
+     function blprod(){
+        
+          if ( flagexpp==0){
+            flagexpp=1;  
+         document.getElementById("boothleadsprodcontents").style.display="";
+         document.getElementById("expblp").src="{!URLFOR($Resource.createevents,'createevents/images/minusoptions1.png')}";
+          }
+          
+          else{
+              document.getElementById("boothleadsprodcontents").style.display="none";
+             document.getElementById("expblp").src="{!URLFOR($Resource.createevents,'createevents/images/Addoptions1.png')}";  
+             flagexpp=0;
+              
+              }
+         
+         }
+     
+     </script>
+     <!------------------------------Booth leads product rows script------------->
+  
+                            <script>
+                            
+                            
+                            
+function lrrow(eventpriceid,ittypenumber,id){
+
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getTickets}',
+            ittypenumber,
+            eventpriceid,
+            eventmand.EventID, 
+            function(result, event){
+             
+ $.each(result, function(i, resulteach){
+              if(resulteach.show==true){
+              document.getElementById('ticketprice').disabled=false;
+               document.getElementById('ticketname').value=resulteach.ticketName;
+               document.getElementById('ticketprice').value='';
+document.getElementById('ticketprice').placeholder=resulteach.ticketPrice;
+document.getElementById('ticketqty').value='';
+     ticketlist[document.getElementById("tickettable").rows.length-1].itemtype=resulteach.ticketId;
+ ticketlist[document.getElementById("tickettable").rows.length-1].trowid=document.getElementById("tickettable").rows.length;
+     parentrowindex=document.getElementById("tickettable").rows.length;
+   Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getbadgeinfo}',
+            ticketlist[document.getElementById("tickettable").rows.length-1].itemtype,
+            document.getElementById("tickettable").rows.length-1,
+           function(result, event){
+           ticketlist[result.arrindex].tbadgable=result.badgable;
+           
+           if(result.badgable!='B - Badge')
+                            {
+                                ticketlist[result.arrindex].tbdglabel="";
+                                
+                             }
+                           else{
+                           
+                             ticketlist[result.arrindex].tbdglabel=result.badgelabel;
+                             
+                         }
+             });
+           
+     
+      }
+            });
+         
+            }, 
+            {escape: true}
+        );
+       
+document.getElementById('ticket1').style.display="block";
+document.getElementById('dynamictickets').style.display="none";
+document.getElementById('package1').style.display="none";
+
+
+
+
+ }
+</script>     
+    
+              </div><!--close of createpackagebutton-->
+                <!----------------------------------------->
+             <div id="boothleadsprodcontents" style="display:none; margin-bottom:10px;">
+              
+              <table  border="0" >
+  <tr style=" background-color:#EFEFEF;">
+   
+  <apex:variable var="i" value="{!1}"/>
+  <apex:repeat value="{!eventSelectOptions}" var="eveOpt">
+
+      <td><button onClick="lrrow('{!eveOpt.eventOptionItemType.Id}','{!eveOpt.eventOptionItemType.Item_type__r.Item_Type_Number__c}','{!eveOpt.eventOptionItemType.Item_type__r.Id}');" style="background:url('/servlet/servlet.ImageServer?id={!eveOpt.eventOptionItemType.Item_type__r.Event_Options_Image_URL__c}&oid={!$Organization.Id}') no-repeat left top;padding-left: 16px;width:200px;height:31px;">Add {!eveOpt.eventOptionItemType.Item_type__r.Event_Option_Desc__c}</button></td>
+   
+    
+        <apex:variable var="i" value="{!i+1}"/>
+  </apex:repeat>
+         
+  </tr>
+  
+</table>
+   
+              
+              </div><!--close of boothleadsproductscontent-->
+              
+              <!----------------------------------------------------------------->
+         <!--Statistic-->
+        <div class="grid-1"  >
+                   <table class="display dynamic" id="tickettable" style="width:100%; margin:0px auto;"> <!--    -->
+            <thead>
+              <tr>
+                <!-- <th width="2%"></th>  --> 
+                <th width="32%" style="padding:3px 0px 3px 7px; text-indent:5px;margin-left:5px;">Ticket Name</th>
+                <th width="24%" style="padding:3px 0px 3px 2px;text-indent:5px;">Ticket Pay Type</th>
+                <th width="12%" style="padding:3px 0px 3px 2px;text-indent:5px;">Qty</th>
+                 <!--  <th width="10%" style="padding:3px 0px 3px 2px;text-indent:5px;">Min-Qty</th>-->
+                     <!-- <th width="10%" style="padding:3px 0px 3px 2px;text-indent:5px;">Max-Qty</th>-->
+                  <th width="10%" style="padding:3px 0px 3px 2px;text-indent:5px;">Price</th>
+<!--                <th width="19%" style="padding:3px 0px 3px 2px;text-indent:5px;">Ticket Category</th>-->
+                <th width="9%" style="padding:3px 0px 3px 2px;text-indent:5px; ">Edit</th>
+                <!--<th width="7%" style="padding:3px 0px 3px 2px;text-indent:5px; ">Add Tag</th>-->
+                <th > <!--<a class="add" title="Add new ticket" style="color:#807f7f; text-decoration:none;">
+                <img src="{!URLFOR($Resource.createevents,'createevents/images/addrow.png')}" width="18" height="18" style="margin-right:5px; margin-bottom:-5px;"/>Add Ticket</a>-->
+                Delete
+                </th>
+              </tr>
+            </thead>
+             <tbody> 
+             
+            
+            </tbody>
+          
+            
+            
+            
+          </table>
+          </div>
+          
+          
+
+          </div>
+          
+
+          <!--End Of Ticket Div-->
+
+          <script>
+          
+   var defaultendtime;
+   var eventmand={};
+   var mcurrset='';
+   eventmand.EventID='{!selectedEvent}';
+          window.onload = function () { 
+          //Load the Event data
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getnewEvents}',
+            '{!selectedEvent}',
+           function(result, event){
+           //alert('result.ble.End_Date__c'+result.enddate);
+           defaultendtime=result.enddate;
+           Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getTimeZoneValue}',
+            result.ble.End_Date__c,
+           function(resultsd, eventd){
+           //defaultendtime=resultsd+' '+result.ble.End_Time__c;
+           });
+           document.getElementById('meventstat').value=result.ble.Event_Status__c;
+           
+           try{
+           mcurrset=result.ble.BLN_Country__r.Currency__c;
+          
+           }catch(e){}
+           },
+            {escape: true}
+        );
+          mask1();
+          getEventTags();
+          getallboothleadproductdetails();
+          
+   }
+ var boothleadproduct=[];
+var epproduct=[];  
+var bpindex=0,epindex=0;
+  function getallboothleadproductdetails()
+{
+ 
+ //Load all bl product
+ //getallboothleadproduct
+ if('{!$CurrentPage.parameters.id}'!='')
+ eventmand.EventID='{!$CurrentPage.parameters.id}';
+             boothleadproduct=[];
+             Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getAllBLProduct}',
+            eventmand.EventID, 
+            function(result, event){
+             
+ $.each(result, function(i, resulteach){
+                 boothleadproduct.push({tname:"",tprice:"",tqty:"",itemtype:""});
+      boothleadproduct[bpindex].tname=resulteach.ticketName;
+      boothleadproduct[bpindex].tprice=resulteach.ticketPrice;
+      boothleadproduct[bpindex].itemtype=resulteach.ticketId;
+      boothleadproduct[bpindex].tqty=resulteach.ticketQty;
+      bpindex++;
+            }
+            )
+            console.log(boothleadproduct);
+            });
+
+ 
+
+//
+//Load all eventproducer orderitems for blproduct
+ epproduct=[];
+ Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getEventproducerpaiditems}',
+            eventmand.EventID, 
+            function(result, event){
+             
+ $.each(result, function(i, resulteach){
+                 epproduct.push({itemId:"",tqty:"",itemtype:""});
+     
+      epproduct[epindex].itemId=resulteach.itemId;
+      epproduct[epindex].tqty=resulteach.ticketQty;
+            epproduct[epindex].itemtype=resulteach.ticketId;
+      epindex++;
+            }
+            )
+            console.log(epproduct);
+            });
+            
+            //code for adding existing event tags
+  
+   
+   }
+   
+
+      var totalblprice=0;
+      var bllist=[];
+function show(show)
+{
+
+document.getElementById(show).style.display="block";
+bllist=[];
+var appendtxt=''
+totalblprice=0;
+var blflag=0;
+
+
+var bllistindex=0;
+
+for(j=0;j<boothleadproduct.length;j++){
+    
+    for(i=0;i<ticketlist.length;i++)
+     {
+     if(ticketlist[i].trowid!=''){
+    if(ticketlist[i].itemtype==boothleadproduct[j].itemtype){
+    
+   var prevquantity=0;
+      for(p=0;p<epproduct.length;p++)
+      {
+          if(ticketlist[i].grouptickets[0].itemid==epproduct[p].itemId){
+          prevquantity+=Number(epproduct[p].tqty);
+          
+          }
+      } 
+    var amount=(boothleadproduct[j].tprice*(ticketlist[i].tqty-prevquantity));
+    if(amount==0)
+    continue;
+    blflag=1;
+    if((ticketlist[i].tqty-prevquantity)<0)
+    appendtxt+="<tr><td>"+boothleadproduct[j].tname+"<\/td><td>"+Math.abs(ticketlist[i].tqty-prevquantity)+"<\/td><td>$ "+Math.abs(amount)+" (Refund)<\/td><\/tr>";
+    else
+    {
+    
+    appendtxt+="<tr><td>"+boothleadproduct[j].tname+"<\/td><td>"+(ticketlist[i].tqty-prevquantity)+"<\/td><td>$ "+amount+"<\/td><\/tr>";
+    bllist.push({ticketName:"",ticketPrice:"",ticketQty:"",ticketId:"",itemId:""});
+       bllist[bllistindex].ticketName=boothleadproduct[j].tname;
+    bllist[bllistindex].ticketId=boothleadproduct[j].itemtype;
+    bllist[bllistindex].ticketQty=(ticketlist[i].tqty-prevquantity);
+    bllist[bllistindex].ticketPrice=amount;
+    bllist[bllistindex].itemId=ticketlist[i].grouptickets[0].itemid;
+    bllistindex++;
+   
+    totalblprice+=amount;
+    }
+   
+    }
+    //checking in package
+    if(ticketlist[i].subpackagegroup.length!=0)
+    {
+    var totqtyline=0;
+       var prevquantity=0;
+         for(k=0;k<ticketlist[i].subpackagegroup.length;k++)
+         {
+               if(ticketlist[i].subpackagegroup[k].ttype==boothleadproduct[j].itemtype){
+   
+    var prevquantity=0;
+      for(p=0;p<epproduct.length;p++)
+      {
+          if(ticketlist[i].grouptickets[0].itemid==epproduct[p].itemId&&ticketlist[i].subpackagegroup[k].ttype==epproduct[p].itemtype)
+          prevquantity+=Number(epproduct[p].tqty);
+      } 
+     
+     totqtyline+=(((ticketlist[i].subpackagegroup[k].pkgitemqty*ticketlist[i].tqty)));
+    
+    }
+         }  
+         
+      var amount=(boothleadproduct[j].tprice*((totqtyline)-prevquantity));
+    if(amount!=0)
+    {
+     blflag=1;
+     if((totqtyline)-prevquantity<0)
+    appendtxt+="<tr><td>"+boothleadproduct[j].tname+"<\/td><td>"+Math.abs((totqtyline)-prevquantity)+"<\/td><td>$ "+Math.abs(amount)+" (Refund)<\/td><\/tr>";
+    else
+    {
+    appendtxt+="<tr><td>"+boothleadproduct[j].tname+"<\/td><td>"+((totqtyline)-prevquantity)+"<\/td><td>$ "+amount+"<\/td><\/tr>";
+    bllist.push({ticketName:"",ticketPrice:"",ticketQty:"",ticketId:"",itemId:""});
+       bllist[bllistindex].ticketName=boothleadproduct[j].tname;
+    bllist[bllistindex].ticketId=boothleadproduct[j].itemtype;
+    bllist[bllistindex].ticketQty=((totqtyline)-prevquantity);
+    bllist[bllistindex].ticketPrice=amount;
+     bllist[bllistindex].itemId=ticketlist[i].grouptickets[0].itemid;
+    bllistindex++;
+    totalblprice+=amount;
+   }
+    }  
+    }
+    
+    
+    }
+   }
+   
+   
+}
+appendtxt+='<tr><td style="text-align:left; border-top:1px solid #9C9C9C; border-bottom:1px solid #9C9C9C;font-weight:700;">Total:</td><td style=" border-top:1px solid #9C9C9C;border-bottom:1px solid #9C9C9C;">&nbsp;</td><td style=" border-top:1px solid #9C9C9C;border-bottom:1px solid #9C9C9C;" >$ '+totalblprice+'</td></tr>';
+$(".ordersummarytable").find("tr:gt(0)").remove();
+      $(".ordersummarytable").append(appendtxt);
+
+if(blflag==0)
+{
+hide(show);
+document.getElementById('finalpaybutton').style.display='none';
+
+}
+else
+{
+if(totalblprice==0)
+{
+document.getElementById('finalpaybutton').style.display='none';
+document.getElementById('paymentdetailscontent').style.display='none';
+document.getElementById('pinfotd').style.display='none';
+}
+else
+{
+document.getElementById('finalpaybutton').style.display='';
+document.getElementById('paymentdetailscontent').style.display='';
+document.getElementById('pinfotd').style.display='';
+}
+}
+
+
+}
+function hide(hide)
+{
+
+document.getElementById(hide).style.display="none";
+
+}  
+   function showpackage(show,hide)
+{
+document.getElementById(show).style.display="";
+document.getElementById(hide).style.display="none";
+}
+
+                 function showchk_content(chkbox,targetid){
+if(chkbox.checked==true){
+/*  alert('yes');*/
+document.getElementById(targetid).style.display='';
+try{
+$(".chzn-select").chosen();
+ $(".chzn-select-deselect").chosen({allow_single_deselect:true});}catch(e){}
+}
+else{
+/*alert('no');*/
+document.getElementById(targetid).style.display='none'; 
+}
+}
+                 
+              
+    function mainradioshow()
+    {
+       var rads = document.getElementsByName("orpg");
+         document.getElementById( 'mainpaypalbox' ).style.display = ( rads[0].checked ) ? 'block' : 'none';
+        document.getElementById('mainstripebox').style.display = ( rads[1].checked ) ? 'block' : 'none';
+        document.getElementById( 'osauthbox' ).style.display = ( rads[2].checked ) ? 'block' : 'none';
+        document.getElementById( 'ostrustbox' ).style.display = ( rads[3].checked ) ? 'block' : 'none';
+    }          
+      
+  </script>
+
+    
+    <!--<c:TicketCommonComponent eventids="{!selectedEvent}"/>-->
+    <apex:include pageName="BLN_TicketCommonPage"/>
+    <apex:include pageName="BLN_TicketCommonPageBUTTON" /> 
+    
+   <c:ticketdragdrop />
+   <dl class="Zebra_Accordion" style=" margin-top:15px; padding-bottom:0px;" id="ticketpagepaymentoption">
+          
+           <!--start of ticket options-->
+          <style>
+          #ticketopt tr td{ padding:2px;}
+          
+           .dt {
+    border: solid 1px #186f8f;
+    background-color: #3bb3e0 border: solid 1px #186f8f;
+    background-color: #3bb3e0;
+    background-image: linear-gradient(bottom, rgb(44,160,202) 0%, rgb
+
+(62,184,229) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(44,160,202) 0%, 
+
+rgb(62,184,229) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(44,160,202) 0%, 
+
+rgb(62,184,229) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(44,160,202) 
+
+0%, rgb(62,184,229) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(44,160,202) 0%, 
+
+rgb(62,184,229) 100%);
+    background-image: -webkit-gradient( linear, left bottom, left top, 
+
+color-stop(0, rgb(44,160,202)), color-stop(1, rgb(62,184,229)) );
+    -webkit-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+    -moz-box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+    box-shadow: inset 0px 1px 0px #7fd2f1, 0px 1px 0px #fff;
+    color: #fff !important;
+    text-shadow: 0 1px 0 #3d7933;
+    margin-left: 87%;
+    width: 12%;
+    cursor: pointer;
+    border-radius: 3px;
+    color: #FFF;
+    font-weight: bold;
+    padding: 5px;
+}
+          </style>
+          
+          
+   
+          
+            
+            
+    <div class="dialogoverlay" id="paymentopt_dialogoverlay" style="z-index:9999;"></div><!--close of dialogoverlay--->
+ <div id="dialogbox_paymentopt" style=" display:none;z-index:99991; width:75%; max-height:100%;overflow:auto;">      
+ <div style="border:1px solid #E7E7E7;background: #ffffff;border-radius: 3px;padding:10px;">
+ <style>
+ #tabs-container{
+ overflow: hidden;
+margin: 0px;
+
+padding: 0px;
+clear: none;
+
+
+
+ background: #f9f9f9;
+
+ }
+ 
+ .tabs-menu {
+ list-style: none;
+    margin: 0px;
+padding: 0px;
+font-size: 13px;
+outline: none;
+}
+
+.tabs-menu li {
+color: #555;
+ position: relative;
+/* top: 1px; */
+float: left;
+
+/* background-color: #DDD; */
+list-style: none;
+border-right: 1px solid #ddd;
+border-bottom: 1px solid #ddd;
+-moz-user-select: none;
+-khtml-user-select: none;
+cursor: pointer;
+  padding: 8px 21px;
+  margin: 0px 2px 0px -3px;
+}
+
+
+.tabs-menu li.current {
+   color: #555;
+    background-color: #ffffff;
+border-bottom: 1px solid #fff;
+/* height: 14.4px; */
+-moz-box-shadow: inset 0 2px #2a90d3;
+-webkit-box-shadow: inset 0 2px #2a90d3;
+box-shadow: inset 0 2px #2a90d3;
+
+}
+
+
+.tabs-menu li:hover {   background: #fefefe;
+  background: -moz-linear-gradient(top,#fefefe 0,#f3f3f3 100%);
+  background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#fefefe),color-stop(100%,#f3f3f3));
+  background: -webkit-linear-gradient(top,#fefefe 0,#f3f3f3 100%);
+  background: -o-linear-gradient(top,#fefefe 0,#f3f3f3 100%);
+  background: -ms-linear-gradient(top,#fefefe 0,#f3f3f3 100%);
+  background: linear-gradient(top,#fefefe 0,#f3f3f3 100%);}
+
+
+.tabs-menu li a {
+    outline: none;
+focus: none;
+color: #555;
+font-weight: 300;
+text-decoration:none;
+}
+
+
+.tabs-menu .current a {
+    outline: none;
+focus: none;
+color: #555;
+font-weight: 300;
+}
+
+.tab {
+    border: 1px solid #d4d4d1;
+    background-color: #fff;
+    float: left;
+    margin-bottom: 20px;
+    width: auto;
+}
+
+
+.tab-content {
+    width: 660px;
+    padding: 20px;
+    display: none;
+}
+
+#tab-1 {
+ display: block;   
+}
+ </style>
+ <apex:form >
+ <apex:actionFunction name="CallComponent"  
+    rerender="componentcontainer" status="AjaxLoader">
+    <apex:param name="modules" assignTo="{!modules}" value="" />
+</apex:actionFunction>
+
+</apex:form>
+ 
+<div class="boxed">
+ 
+            <div id="tabs-container">
+    <ul class="tabs-menu">
+                    <li class="current" id="Online" onclick="CallComponent('Online');">Online Registration</li>
+                    <li id="Onsite" onclick="CallComponent('Onsite');">Onsite Registration</li>
+                    <li id="ScanAttendee" onclick="CallComponent('ScanAttendee');">Scan Attendee</li>
+                </ul>
+</div>
+                           
+                         
+                            
+                            
+                            <div class="form" style="width:100%; border:0px solid #000; margin:0px auto;  height:auto; padding-bottom:50px; "> <!-- Not Closed4 -->
+                            <style type="text/css">
+                                .distance p{ float:none; line-height:none;}
+                                
+                            </style>
+                           
+                            
+                            
+                           <apex:outputpanel id="componentcontainer"  layout="block">  
+                            
+                            
+                            <c:PaymentSettingCommonComponent module="{!modules}" ></c:PaymentSettingCommonComponent>
+                            <script>
+                             $('#{!modules}').addClass("current");
+        $('#{!modules}').siblings().removeClass("current");
+        
+                            </script>
+                           
+                            </apex:outputpanel> 
+                            </div>
+                           
+                            
+  <!--<c:PaymentSettingCommonComponent module="Online" ></c:PaymentSettingCommonComponent>-->
+  <center><input type="button" class="button-a blue"   onClick="ShowLoader();var s=savespaymentfunction();if(s==false){document.getElementById('ticketloader').style.display='none';return;}"   value="Save"   />&nbsp;&nbsp;<input type="button" class="button-a blue"   onClick="Alert_paymentopt.Cancel()"   value="Cancel"   /></center>
+  
+  </div>
+  </div><!--close of dialogbox_paymentopt------->
+  </div>
+  <script>
+   var Alert_paymentopt = new Custom_formPopup(); //paymentopt Popup  
+  </script>
+          </dl> 
+          <div style="margin-top:20px; margin-right:.5%; margin-bottom:5px; text-align:center;" id="ticketpagesavebutton">
+
+<!--<button class="button-a blue" onclick="ticketvalid()" id="ticketsavebutton">Save</button>
+&nbsp;&nbsp;
+<button class="button-a dark-blue" onclick="window.location.href=window.location.href;">Cancel</button>-->
+</div>
+<div id="ticketloader" style=" display:none; margin-left:-1%; margin-top:0px;margin-bottom:40px; text-align:center;">
+<img src="{!URLFOR($Resource.createevents,'createevents/images/ajaxloader.gif')}"/>
+
+</div>
+          <!--------start of payment hide and show------------->
+            <style>
+            #ordersummarytitles{
+                border-collapse:collapse;
+                font-size: 22px;
+color: #5283cc;
+margin-right: 10px;
+letter-spacing: .5px;
+font-family: Bebas Neue;
+font-weight: normal;
+                }
+                
+            #ordersummarytitles td{ padding:0px 5px ;}
+            #ordersummarycontent table { border-collapse:collapse;}
+            #ordersummarycontent table tr{ border-bottom:1px solid #ffffff;}
+            #ordersummarycontent table td{ padding:5px; text-align:center; font-size:14px;} 
+            #paymentwrapper{width:90%;  margin:0px auto; padding:10px; border: 4px solid #ffffff;background-image:url({!URLFOR($Resource.createevents,'createevents/images/background.gif')} ); ;box-shadow: 0 1px 3px 0 #b5b5b5;-moz-box-shadow: 0 1px 3px 0 #b5b5b5;-webkit-box-shadow: 0 1px 3px 0 #b5b5b5;}
+            #ordersummarytitle{ font-size:16px; font-family:cuprum; background-color:#D7D7D7;}
+            
+            #dialogoverlay8{
+    display:none;
+    /*opacity: .8;*/
+position: fixed;
+top: 0px;
+left: 0px;
+background-color: #484848;
+width: 100%;
+z-index: 999999999999;
+height: 100%;
+
+    
+    }
+#payment{ display:none; position:fixed;padding:5px;;
+ width:40%; margin-left:29%; z-index:99999999999; height:530px; padding-bottom:30px;  overflow:auto; border-radius:3px;
+  -webkit-border-radius: 3px;-moz-border-radius: 3px;} 
+ </style>
+  
+           <div id="dialogoverlay8"></div><!--close of dialogoverlay-->
+  
+            <div id="payment" style="width: 50%; display: none;position:absolute;padding-bottom: 30px; top: 100px; left: -50px;overflow:inherit;">
+             <a href="#" id="close" onclick="Alert8.Cancel()" >x</a>
+            <div id="paymentwrapper" style="overflow:inherit;">
+           <!---Start of titles----------->
+            <table id="ordersummarytitles" width="100%" border="0">
+  <tr> 
+    <td width="14%" style=" text-align:right;font-family: Bebas Neue;; font-size:22px; text-align:left; color:#5283cc;"  >Order Summary</td>
+    <td width="30%"> <div id="stripe-line" style="margin-top:0px;"></div><!--close fo stripe-line--></td>
+      </tr>
+</table>
+
+ <!---close of titles----------->
+            <div id="paymentcontentwrapper" style="width:99%; display:inline-block; padding:5px 5px 0px 5px; margin-top:0px;">
+            <div id="ordersummarycontent" style="width:80%; display:inline-block; height:auto; background-color:#f8f8f8; border: 1px solid #ffffff;">
+            <table width="100%" border="0" style="background-color:#F8F8F8;" class="ordersummarytable">
+  <tr id="ordersummarytitle">
+    <td style="text-align:center;">Item</td>
+    <td style="text-align:center;">Quantity</td>
+    <td style="text-align:center;">Price</td>
+  </tr>
+  
+   
+</table>
+<script>
+function showwhich()
+{
+document.getElementById('paywhich').style.display='';
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getcreditcarddetails}',
+             eventmand.EventID,
+            function(result, event){
+            if (event.status){
+            //success code
+           try{
+           document.getElementById('spantoshowcardtype').innerHTML=result.organizer_id__r.PG_Authorization_Card_Type__c+' card ending with '+result.organizer_id__r.PG_Authorization_CC_Last_four_Digit__c;
+           showpackage('carddetailsstrip2','ccbox2');
+           pusing='Pay Using Existing Credit Card';
+           }catch(e){pusing='';}
+             } 
+             else if (event.type === 'exception') {
+                    alert(event.message + " " + event.where + " ");
+                } else {
+                    alert(event.message);
+                }  
+                  
+            }, 
+            {escape: true}
+        );
+
+
+
+
+
+
+}
+</script>
+
+<script type="text/javascript">
+    
+    function CustomAlert(){
+        this.render =function(dialog){
+        
+            
+            var winH = window.innerHeight;
+            var dialogoverlay =document.getElementById('dialogoverlay8');
+            var dialogbox = document.getElementById('payment');
+            dialogoverlay.style.display="block";
+           
+            dialogbox.style.display="block";
+            
+        }
+        this.Cancel = function(){
+            document.getElementById('payment').style.display ="none";
+                    document.getElementById('dialogoverlay8').style.display ="none";
+
+                    return false;
+            
+            }
+        
+        }
+        
+        var Alert8= new CustomAlert();  
+    
+    </script>
+            
+            </div><br/><br/><!--close of ordersummary content-->
+           
+           
+      <table  width="100%" border="0">
+  <tr> 
+     <td width="50%" style=" text-align:right; font-family: Bebas Neue;; font-size:22px; text-align:left; color:#5283cc;" id="pinfotd">Payment Information</td>
+    <td width=""> <div id="stripe-line" style="margin-top:0px;"></div><!--close fo stripe-line--></td>
+  </tr>
+</table>     
+       
+           
+            <div id="paymentdetailscontent" style="width:80%; border:1px solid #ffffff; display:inline-block; padding:5px ; margin-bottom:5px; background-color:#f8f8f7; ">
+            <div style="display:{!if(creditcardoverwrite==true,'','none')}"><input type="radio" id="checkcommonblfee" value="Check" name="creditoverwriteblfee"  onClick="document.getElementById('paywhich').style.display='none';" /> Check</div><br/>
+            <input type="radio" value="Credit Card" checked="checked" name="creditoverwriteblfee" id="creditcardcommonblfee"  onClick="showwhich();" /> Credit Card(These charges will apply now to your credit card)
+            <div id="paywhich" style="display:none">
+            <div id="creditcardcommon2" style="">
+<!--common code for credit card box-->
+<div id="carddetailsstrip2" class="ccdetails_strip" style="display:none">
+                                               <div class="form-embed-div" style=" width:80%; padding:8px; margin-top:0px; margin-left:25px;"> 
+                                                  <div class="form-content-div" style="padding:0px;">
+                                                 <p class="ccstriph1" >Your Credit Card</p>
+                                                   <div class="clear"></div>
+                                            <!-------------->  
+                                              
+                                               <div  class="ccdetails_stripbox left" >
+                                                <p class="left"  style="width:80%;">
+                                                <i class="fa  fa-cc-mastercard fa-cc-25x"></i>
+                                                <i class="fa  fa-cc-visa fa-cc-25x" style="display:none;"></i>
+                                                <i class="fa  fa-cc-discover fa-cc-25x" style="display:none;"></i>
+                                                <i class="fa  fa-cc-amex fa-cc-25x" style="display:none;"></i>
+                                                <span class="strong_700" id="spantoshowcardtype"></span>
+                                                
+                                                </p>
+                                                <!---->
+                                                 </div>
+                                                <button  type="button" class="togglebtn" style="margin-top:10px;" onClick="showpackage('ccbox2','carddetailsstrip2');pusing=''; ">Update Details</button> 
+                                              <div class="clear"></div>
+                                            <!-------------->  
+                                               </div><!---clode of form-content-div----->
+                                               </div><!---close of form-embed-div------->
+                                              </div><!---close of ccdetails_strip---->
+                                               <!------------------------------------------------>
+                                            <!-------//strip ccbox-------->                              
+                                            <!-----------Credit Card-------------->
+                                            <div id="ccbox2" class="ccbox" style="">
+                                                <!--start of ccbox--------->
+                                                <p class="sm-subheading">Pay By Credit Card:</p>
+                                                <!--close of black-title-->
+                                                <div class="form-embed-div"
+                                                    style="width: 80%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                                    <div class="form-content-div" style="padding: 0px;">
+
+                                                        <!----start of creditcardbox---->
+                                                        <!------------->
+                                                        <div class="ccheader">
+                                                            <p class="left bg-font">Enter Details</p>
+                                                            <ul class="right">
+                                                                <li><i class="fa  fa-cc-mastercard fa-cc-25x"></i></li>
+                                                                <li><i class="fa  fa-cc-visa fa-cc-25x"></i></li>
+                                                                <li><i class="fa  fa-cc-discover fa-cc-25x"></i></li>
+                                                                <li><i class="fa  fa-cc-amex fa-cc-25x"></i></li>
+                                                            </ul>
+                                                            <div class="clear"></div>
+                                                        </div>
+                                                        <!--close of ccheader---->
+                                                        <!------------>
+                                                        <div class="cccontent textcenter padding-5px">
+                                                            <p class="padding-5px strong_700 textleft">Card
+                                                                Number</p>
+                                                            <input type="text" id="cardnumber"/>
+                                                            <!-------->
+                                                            <div class="left" style="width: 60%;">
+                                                                <p class="padding-5px strong_700 textleft">Expiration</p>
+                                                                <span> <!------> <select class="cclist"
+                                                                    style="width: 45%;" id="cardmonth">
+                                                                        <option>---Month---</option>
+                                                                        <option>01</option>
+                                                                        <option>02</option>
+                                                                        <option>03</option>
+                                                                        <option>04</option>
+                                                                        <option>05</option>
+                                                                        <option>06</option>
+                                                                        <option>07</option>
+                                                                        <option>08</option>
+                                                                        <option>09</option>
+                                                                        <option>10</option>
+                                                                        <option>11</option>
+                                                                        <option>12</option>
+                                                                </select> <!-------->
+                                                                </span> <span> <select class="cclist"
+                                                                    style="width: 50%;" id="cardyear">
+                                                                        <!-------->
+                                                                        <option>---Year---</option>
+                                                                        <option value="2014">2014</option>
+                                                                        <option value="2015">2015</option>
+                                                                        <option value="2016">2016</option>
+                                                                        <option value="2017">2017</option>
+                                                                        <option value="2018">2018</option>
+                                                                        <option value="2019">2019</option>
+                                                                        <option value="2020">2020</option>
+                                                                        <option value="2021">2021</option>
+                                                                        <option value="2022">2022</option>
+                                                                        <option value="2023">2023</option>
+                                                                        <option value="2024">2024</option>
+                                                                        <option value="2025">2025</option>
+                                                                        <option value="2026">2026</option>
+                                                                        <option value="2027">2027</option>
+                                                                        <option value="2028">2028</option>
+                                                                        <option value="2029">2029</option>
+                                                                        <option value="2030">2030</option>
+
+                                                                </select> <!-------->
+                                                                </span>
+                                                            </div>
+                                                            <!--close left--->
+                                                            <!------>
+                                                            <!-------->
+                                                            <div class="right" style="width: 39%;">
+                                                                <p class="padding-5px strong_700 textleft">CVV/CVC</p>
+                                                                <input class="cvvtext" type="text" id="cardcvv"/>
+                                                            </div>
+                                                            <!--close left--->
+                                                            <!------>
+                                                            <div class="clear"></div>
+                                                    </div>
+                                                    <!--close of cc content-->
+                                                    <!-------------->
+                                                </div>
+                                                <!--form-embed-div-->
+                                            </div>
+                                            <!-----form-content-div-------->
+                                        </div>
+                                        <!--close of ccbox--------->
+
+<!--end of-->
+ </div> 
+             </div>
+          
+         
+            </div><!--close of paymentetailscontent-->
+           
+            </div><!--close of paymentcontentwrapper-->
+            <div style="margin-top:20px; margin-right:.5%; margin-bottom:5px; text-align:right;">
+
+<button class="button-a blue" onclick="finalsave()" id="finalpaybutton" style="display:none">Pay</button>
+<button class="button-a blue" onclick="Alert8.Cancel();"  >Cancel</button>
+</div>
+<div id="ticketloaderfinalsave" style=" display:none; margin-left:-1%; margin-top:0px;margin-bottom:40px; text-align:center;">
+<img src="{!URLFOR($Resource.createevents,'createevents/images/ajaxloader.gif')}"/>
+            
+            </div><!--close of paymentwrapper-->
+            
+          
+            </div><!--close of payment-------->   
+  
+  
+  
+  
+
+</div>
+<!-------------------Zebra Accordian---------------->
+ <script type="text/javascript" src="{!URLFOR($Resource.createevents, 'createevents/js/zebra_accordion.src.js')}"></script>  
+
+<script >
+ var pusing='';
+ var finalclick=false;
+function finalsave()
+      {
+     if(finalclick==true){
+  return;}
+  if(finalclick==false)
+  finalclick=true; 
+ var ptype='';
+  if(document.querySelector('input[name="creditoverwriteblfee"]:checked')!=null)
+  ptype=document.querySelector('input[name="creditoverwriteblfee"]:checked').value;
+  
+  var cardtype='';
+  try{
+  var cardno=document.getElementById('cardnumber').value;
+  cardtype=GetCardType(cardno)+";"+cardno.substr(cardno.length - 4);
+  }catch(e){}
+          
+  document.getElementById("ticketloaderfinalsave").style.display="";
+            Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.savesFinalEvent}',
+            document.getElementById('meventstat').value,
+            eventmand.EventID,
+            totalblprice,
+            document.getElementById('cardnumber').value,
+            document.getElementById('cardmonth').value,
+            document.getElementById('cardyear').value,
+            document.getElementById('cardcvv').value,
+             JSON.stringify(bllist),
+            mcurrset,
+            pusing,
+            ptype,
+            cardtype,
+            function(result, event){
+            if (event.status){
+            //sucess code
+            document.getElementById("ticketloaderfinalsave").style.display="none";
+           alert(result);
+           if(result=='success'){
+           
+           window.location.href='{!$Site.BaseUrl}/apex/BLN_TicketsNew';
+           
+           }
+             } 
+             else if (event.type === 'exception') {
+                    alert(event.message + " " + event.where + " ");
+                } else {
+                    alert(event.message);
+                }  
+              finalclick=false;    
+            }, 
+            {escape: true}
+        );
+      }
+var flagexp=0;
+  $(document).ready(function() {
+  var myAccordion = new $.Zebra_Accordion($('.Zebra_Accordion'));
+  $( ".Zebra_Accordion dt" ).click(function() {
+                        if(flagexp==0)
+                        {
+                             flagexp=1;
+                            <!-- alert('expanded2');-->
+                             document.getElementById("addicon").src="{!URLFOR($Resource.createevents,'createevents/images/minusoptions.png')}";
+                             
+                        }
+                        else
+                        {
+                             <!--alert('expanded');-->
+                              document.getElementById("addicon").src="{!URLFOR($Resource.createevents,'createevents/images/Addoptions.png')}"
+                             flagexp=0;
+                        }
+}); 
+    
+});
+</script>
+</c:myComponent>
+
+
+
+ 
+<!------------------popups code------------------------------->
+                 <style>
+                   #dialogoverlay{
+    display:none;
+    /*opacity: .8;*/
+position: fixed;
+top: 0px;
+left: 0px;
+background-color: #484848;
+width: 100%;
+z-index: 999999999999;
+height: 100%;
+
+    
+    }
+ #dialogoverlay2{
+    display:none;
+    opacity: .8;
+position: fixed;
+top: 0px;
+left: 0px;
+background-color: #484848;
+width: 100%;
+z-index:99;
+height: 100%;
+    
+    }
+#dialogbox{ display:none; position:fixed;padding:5px;;
+ width:40%; margin-left:29%; z-index:99999999999; height:530px; padding-bottom:30px;  overflow:auto; border-radius:3px;
+  -webkit-border-radius: 3px;-moz-border-radius: 3px;}
+  
+  #dialogbox3{ display:none; position:fixed;padding:5px;;
+ width:90%; margin-left:-15.3%; z-index:100; height:630px; padding-bottom:30px;  overflow:auto; border-radius:3px;
+  -webkit-border-radius: 3px;-moz-border-radius: 3px;}
+  
+    #dialogbox4{ display:none; position:fixed;padding:5px;;
+ width:90%; margin-left:-15.3%; z-index:100; height:630px; padding-bottom:30px;  overflow:auto; border-radius:3px;
+  -webkit-border-radius: 3px;-moz-border-radius: 3px;}
+  
+   #dialogbox5{ display:none; position:fixed;padding:5px;;
+ width:90%; margin-left:4.8%; z-index:100;padding-bottom:30px;  overflow:auto; border-radius:3px;
+  -webkit-border-radius: 3px;-moz-border-radius: 3px;}
+ 
+  #dialogbox2{ display:none; position:fixed;padding:5px;
+ width:20%; margin-left:40%; z-index:100; height:630px; padding-bottom:30px;  overflow:auto; border-radius:3px;
+  -webkit-border-radius: 3px;-moz-border-radius: 3px;}
+   
+ #close{font-size: 25px;
+font-weight: bold;
+color: #302525;
+text-decoration: none;
+float: right;
+margin-right: .2%;
+margin-top:-9px;
+cursor:pointer;}
+
+#close:hover{font-size: 25px;
+text-decoration: underline;
+font-weight: bold;
+color: #302525;
+float: right;
+margin-right: .2%;
+margin-top:-9px; cursor:pointer;} 
+
+#managetagpopup tr td{
+    height: 27px;
+border-bottom: 1px solid #e3e3e3;
+border-right: 1px solid #e3e3e3;
+padding-left: 10px;
+color: #807f7f;
+    
+    }
+
+</style>
+
+    <style>
+  #nwmoreinfodiv{
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(253,253,253,1)), color-stop(100%,rgba(227,227,227,1)));
+background: -webkit-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: -o-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: -ms-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#e3e3e3',GradientType=0 );
+border: 1px solid #e3e3e3;
+padding: 5px;
+padding-bottom:1px;
+border-radius: 3px;
+/* padding-top: 5px; */
+padding-left:6px;
+float: right;
+margin-right:10%;
+cursor:pointer;
+}
+  
+  </style> 
+  <apex:stylesheet value="{!URLFOR($Resource.createevents,'createevents/css/jquery.datetimepicker.css')}"/>
+  <script type="text/javascript" src="{!URLFOR($Resource.createevents, 'createevents/js/jquery-1.9.1.js')}"></script>  
+    <script type="text/javascript" src="{!URLFOR($Resource.datetimepicker, 'datetimepicker/jquery.datetimepicker.js')}"></script>           
+         <script>
+
+
+$m=jQuery.noConflict();
+$m(document).on('focus',".datetimepickers", function(){
+  
+    $m(this).datetimepicker({value:'',step:15});
+});
+
+window.onbeforeunload = confirmExit;
+    function confirmExit()
+{
+if(pgtexcep||ticketneedToConfirm)
+return "You have attempted to leave this page. If you have made any changes to the fields without clicking the Save button, your changes will be lost. Are you sure you want to exit this page?";
+}
+</script>
+
+<script>
+//slide toggle button
+$j=jQuery.noConflict();
+$j('.togglebtn2').click(function(){
+ 
+$j(this).parent().siblings('.contentexp').slideToggle();
+var $img = $j(".toggleimg", this);
+   if ($img.attr('src').indexOf("Addoptions.png") > -1) {
+       $img.attr('src', $img.attr('src').replace('Addoptions', 
+
+'minusoptions'));
+   } else {
+       $img.attr('src', $img.attr('src').replace('minusoptions', 
+
+'Addoptions'));
+   }  
+
+})  
+
+
+</script> 
+<!------------------scripts------------------------------------------>
+
+ <!--<script type="text/javascript" src="{!URLFOR($Resource.createevents, 'createevents/js/jquery.min.js')}"></script> -->
+
+</apex:page>

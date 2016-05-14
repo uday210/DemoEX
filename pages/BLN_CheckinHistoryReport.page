@@ -1,0 +1,485 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" cache="true" controller="BLN_CheckinHistoryReportCon" readOnly="true">
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>    
+        <!------------common styles component------------>
+        <c:ed_commonstyles ></c:ed_commonstyles>
+        <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+        <!------------//common styles component---------->
+        <!-----------datatable stylescss------------->
+        <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+        <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-checkinhistory-report.css')}" />
+        <!-------------basic template html component------------------------------------->
+        <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+        <style>
+        
+        tr.group,
+tr.group:hover {
+    background-color: #ddd !important;
+}
+        </style>
+        <c:ed_popupbox ></c:ed_popupbox>  
+ <script>
+
+ function continueToBatch(clkbtn)
+ {
+     Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+ }
+ 
+ function callback(clkbtn , okbtnn){
+     if(clkbtn =='sendToMail')
+     {
+         exporder();
+     }
+     
+}
+function callbackcancel(clkbtn,cnclbtnn)
+{
+    if(clkbtn =='sendToMail')
+     {
+         //alert('cancel');
+     }
+     
+}
+  </script>
+            <apex:form >
+          
+          <!-- <apex:outputPanel id="CheckInHistoryTable">-->
+                <!---------------------template code------------------>
+                <!-------------------------print and export button-------------------------------------------->
+                <div class="print_export_cont" style="width: 100%;">
+                  <a class="datatables_btn" href="{!$Label.siteurl}/apex/BLN_Importscans?id={!selectedEvent}" >
+                   <font color="blue"><i class="fa fa-expand">&nbsp;</i>
+                   Import Scan</font>
+                   </a>
+                    <div id="example_filter" align="right" style="display:inline-block;"><label>Search:<input type="text" id="searchKey" class="" aria-controls="example" onkeyup="table.draw();table1.draw();" style="width:65%"/></label></div>
+                    <div style="display:inline-block;">
+                    <!--<apex:commandLink styleClass="datatables_btn" onclick="exporder();return false;">
+                        <span>Export</span>
+                    </apex:commandLink>-->
+                    <apex:outputText rendered="{!ShowticketDetail.size<1000}">
+                      <input type="button" class="datatables_btn" onclick="exporder();return false;" value="Export"/>
+                    </apex:outputText>
+                    
+                    <apex:outputText rendered="{!ShowticketDetail.size>1000}">
+                      <input type="button" class="datatables_btn" onclick="continueToBatch('sendToMail')" value="Export"/>
+                    </apex:outputText>
+                    </div>
+                    <!-------->
+                    <!--<apex:commandLink styleClass="datatables_btn" target="_blank" action="{!printCheckinHistory}">
+                        <span>Print</span>
+                    </apex:commandLink>-->
+                    
+                </div>
+                
+                <!--------------------------//end of print and export button---------------------------------->
+                  
+                <div class="datatable-wrapper">
+                    <!-------->
+                    <div class="top-stats">         
+                        <p >
+                        
+                      
+                        
+                       <!-- <apex:outputpanel id="statrender" styleclass="top-stats"> -->
+                       <!-- <apex:variable value="{!0}" var="in"/>
+                        <apex:variable value="{!0}" var="all"/>-->
+                        
+                       <!-- <apex:repeat value="{!CheckInInnerList}" var="cl">
+                            <span class="labeltitles"> {!cl.ticName} : </span>
+                            <span>{!cl.CheckInCount}/{!cl.NotCheckInCount}  </span>
+                            <apex:variable value="{!in+cl.CheckInCount}" var="in"/>
+                            <apex:variable value="{!all+cl.NotCheckInCount}" var="all"/>
+                        </apex:repeat>-->
+                      <!--   <span class="labeltitles"> Total Checkin : </span>
+                         <span>
+                            {!in}/{!all} 
+                            {!inTotal}/{!allTotal}
+                         </span> -->
+                       <!--  </apex:outputpanel> -->
+                          
+                         <span class="right" style="text-align:right;">
+                        <apex:selectList value="{!selectedFilterType}" size="1" multiselect="false" styleClass="selectlist-datatable"> 
+                            <apex:selectOptions value="{!filterTypes}"/>
+                            <apex:actionSupport event="onchange" action="{!CheckInHistory}" oncomplete="table.draw()"/>
+                        </apex:selectList></span>
+                        <span class="labeltitles right" style="text-align:right;">Sort By : &nbsp;</span>
+                        </p>
+                        
+                        <span class="labeltitles left" style="text-align:left;">Filter By : &nbsp;</span>
+                        <span class="left" style="text-align:left;">
+                        <apex:selectList value="{!selectedTicketName}" size="1" multiselect="false" styleClass="selectlist-datatable"> 
+                            <apex:selectOptions value="{!Ticketnamefilter}"/>
+                            <apex:actionSupport event="onchange" action="{!CheckInHistory}" oncomplete="table.draw()"/>
+                        </apex:selectList>
+                        <apex:selectList value="{!selectedpaymentFilterType}" size="1" multiselect="false" styleClass="selectlist-datatable"> 
+                           <apex:selectOptions value="{!paymentfilterTypes}"/>
+                           <apex:actionSupport event="onchange" action="{!CheckInHistory}" oncomplete="table.draw()"/>
+                       </apex:selectList>
+                       <apex:selectList value="{!selectedScannedBy}" size="1" multiselect="false" styleClass="selectlist-datatable"> 
+                           <apex:selectOptions value="{!ScannedByfilter}"/>
+                           <apex:actionSupport event="onchange" action="{!CheckInHistory}" oncomplete="table.draw()"/>
+                       </apex:selectList>
+                        </span>
+                        
+                        <br/><br/>
+                    <p><span><ul  class="left" style="width: 100%; height: auto;" id='statui'>
+                      
+                          </ul>
+                    </span></p>
+                        <div class="clear"></div>
+                    </div>
+                    <!--close of top-stats-->
+                    <!------------group by guest------------------->
+                    <!-----datatable start----->
+                    
+                     <div id="grpby-guest" style="display:{!IF(ShowCHForAttendee==true,'','none')}">
+  <!---------------------->
+   
+  
+  
+  
+  
+                    <table id="example" class="display" width="100%" cellpadding="0" cellspacing="0">
+                        <thead>
+                          <th style="padding:0px;">
+                          <table width="100.2%" cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th width="18%" style="border-bottom:0px;">Ticket Name</th>
+                                    <th width="10%" style="border-bottom:0px;">Ticket Number</th>
+                                    <th width="13%" style="border-bottom:0px;">Email</th>
+                                    <th width="13%" style="border-bottom:0px;">Company</th>
+                                    <th width="17%" style="border-bottom:0px;">Checkin-out Date/Time</th>
+                                    <th width="19%" style="border-bottom:0px;">Scanned By</th>
+                                    <th width="10%" style="border-bottom:0px;">Device Name</th>
+                                </tr>
+                            </thead>
+                            </table>
+                            </th>
+                        </thead>
+    
+                            <tbody >
+                            </tbody>
+                        </table>
+  
+  <!-----------------------> 
+                    </div>
+                    <!--close of grpby-guest--->
+
+                    <!-----------end of datatable report-->
+                    <!--------------//group by guest---------------->
+    
+                    <!--****------------group by ticket----------------****--->
+                     <div id="grpby-ticket" style="display:{!IF(ShowCHForTicket==true,'','none')}">
+                        <table id="example2" class="display" width="100%" cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr>
+                                <th>
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr>
+                                  <th width="18%" style="border-bottom:0px;">Ticket Name</th>
+                                    <th width="10%" style="border-bottom:0px;">Ticket Number</th>
+                                    <th width="13%" style="border-bottom:0px;">Email</th>
+                                    <th width="13%" style="border-bottom:0px;">Company</th>
+                                    <th width="17%" style="border-bottom:0px;">Checkin-out Date/Time</th>
+                                    <th width="19%" style="border-bottom:0px;">Scanned By</th>
+                                    <th width="10%" style="border-bottom:0px;">Device Name</th>
+                                </tr>
+                            </thead>
+                      </table>
+                                    </th>
+                                                </tr>
+                            </thead>
+                            <tbody>
+            
+                            </tbody>
+                            
+                        </table>
+                    </div>
+                    <!---close of grpby-ticket ----->
+                    <!-----------//group by ticket-->
+    
+                </div>
+                <!--close of datatable-wrapper-->
+    
+               <!-- </apex:outputpanel> -->
+                <!-----------------//template code----------------------->
+            <apex:actionFunction action="{!userSelectPerticularToExport}"
+            name="individualexport" ReRender="aaa" >
+            <apex:param value="" name="filter" />
+            <apex:param value="" name="search" />
+            <apex:param value="" name="ShowCHForAttendee"/>
+            <apex:param value="" name="ShowCHForTicket"/>
+            <apex:param value="" name="ticketname"/>
+            <apex:param value="" name="regtype"/>
+            <apex:param value="" name="scannedby"/>
+         </apex:actionFunction>
+         
+         <!--<apex:actionfunction action="{!statistics}" name="statistics"/>-->
+         
+            </apex:form>
+        </c:ed_basictemplate>
+        <!-------------//end of basic template component------------------------>
+        <!--/*********************Java Script Section*******************/-->
+        <!--------//start of datatable js component------------->
+        <c:ed_datatablejs ></c:ed_datatablejs>
+    
+        <script type="text/javascript" class="init">
+            var table;
+            var table1;
+            var j = jQuery.noConflict();
+            j(document).ready(
+                    function() {
+                        /*********group by guest table script********************/
+                         table = j('#example').DataTable( 
+                                {
+                                    "pagingType" : "full_numbers",
+                                    "scrollX": true,
+                                   "sScrollX": "100%",
+                                   "sScrollXInner": "120%",
+    
+                              "aLengthMenu": [[  5, 10, 25, 50], [ 5, 10, 25, 50]],
+                              "iDisplayLength": 5,
+                                            "sDom": 'W<"clear">lfrtip', 
+    
+                                    /**default orderid in asc sorting**/
+                                    "order" : [ [ 0, "asc" ] ],
+                          "bSort": false,
+                          "bAutoWidth": false, // Disable the auto width calculation
+                          "bFilter": false,
+                          //"oColumnFilterWidgets": {
+                          //"aiExclude": [ 0,2,4,5,6,7,9,10 ]
+                          
+                          //},
+                          
+                          "processing": true,
+                              "serverSide": true,
+                                             
+                        "ajax": {
+                        "url":'{!$Page.BLN_CheckinReportHelperPage}?core.apexpages.devmode.url=1',
+                        
+                                              
+                        "data": function ( pagedata ) {
+                          
+                                pagedata["filterKey"]='{!selectedFilterType}';
+                                pagedata["searchKey"]=$("[id$='searchKey']").val();
+                                pagedata["ticketname"]='{!selectedTicketName}';
+                                pagedata["regtype"]='{!selectedpaymentFilterType}';
+                                pagedata["scannedby"]='{!selectedScannedBy}';
+
+                             }
+                                       },
+                                       
+                                       "columns": [
+                                        {
+                                        data:   "item",
+                                          render: function ( data, type, row ) {
+                                          var attname='';
+                                          var details='';
+                                          if(row.tcinn.length >0){
+                                          attname='<ul class="grpheader" style="width:100%; margin-left:-10px;margin-top: -3px;"><li class="labeltitles">Name:</li><li class="labeloutput" style="font-size:18px;font-weight:normal;">'+row.GuestName.tkt_profile__r.First_Name__c+' '+row.GuestName.tkt_profile__r.Last_Name__c+'</li></ul>';
+                                          details='<table cellpadding="0" cellspacing="0" cellpadding="0" cellspacing="0" class="display checkin_rpttbl" width="102.5%" style="margin-left:-6px; margin-top:-3px; line-height:35px;"><tbody>';
+                                          
+                                          for(i=0;i < row.tcinn.length; i++)
+                                            {
+                                             
+                                              details+='<tr><td style="width:18%">';
+                                              details+=row.tcinn[i].tic.Item_Pool__r.Item_Pool_Name__c;
+                                              if(row.tcinn[i].tic.Item_Type__r != undefined && row.tcinn[i].tic.Item_Type__r.Name=='Package')
+                                              details+=' ('+row.tcinn[i].tic.Item__r.item_name__c+') ';
+                                              details+='</td><td style="width:10%">'+row.tcinn[i].tic.Name+'</td>';
+                                              details+='<td style="width:13%">'+row.tcinn[i].tic.tkt_profile__r.Email__c+'</td>';
+                                              details+='<td style="width:13%">'+row.tcinn[i].tic.tkt_profile__r.TKT_Company__c+'</td>';
+                                              details+='<td class="grptd" colspan="3" style="border-right:0px;margin: 0px;padding: 0px;">';
+                                              details+='<table class="chkin-out-tbl" width="102%" border="0" cellpadding="0" cellspacing="0">';
+                                              for(j=0;j< row.tcinn[i].tstatDetailsList.length; j++)
+                                              {
+                                                if(row.tcinn[i].tstatDetailsList[j]!= undefined){
+                                                details+='<tr>';
+                                                details+='<td style="width:38.5%;">';
+                                                       if(row.tcinn[i].tstatDetailsList[j].tstatName  == true){
+                                                           details+='<span class="green_clr"> <i class="fa fa-check-square-o"></i>';
+                                                       }else if(row.tcinn[i].tstatDetailsList[j].tstatName  == false){
+                                                           details+='<span class="red_clr"> <i class="fa fa-share-square-o"></i>';
+                                                       }
+                                                       console.log('uday');
+                                                       console.log(row);
+                                                      <!-- console.log(row.tcinn[i].tstatDetailsList[j].lastmoddate); --><!--lastmoddate-->
+                                                      if(row.tcinn[i].tstatDetailsList[j]!= undefined && row.tcinn[i].tstatDetailsList[j].lastmoddate != undefined){
+                                                       details+=row.tcinn[i].tstatDetailsList[j].lastmoddate;
+                                                       }else{
+                                                       details+='';
+                                                       }
+                                                       details+='</span></td>';
+                                                    details+='<td>'+row.tcinn[i].tstatDetailsList[j].scanBy+'</td>';
+    
+                                                    if(row.tcinn[i].tstatDetailsList[j]!= undefined && row.tcinn[i].tstatDetailsList[j].device != undefined){
+                                                   details+='<td style="width:21.5%;">'+row.tcinn[i].tstatDetailsList[j].device+'</td> </tr> ';
+                                                    }else{
+                                                    details+='<td style="width:21.5%;"> </td>';
+                                                    }
+                                
+                                                    details+='</tr>';
+                                                  }
+                                                  }
+                                                  details+='</table></td></tr>';
+                                                }
+                                                details+='</tbody></table>';
+                                              return attname+details;
+                                          }
+                                        }
+                                        }
+    
+                                    ]
+                                });
+                        /*********group by ticket table script********************/
+                        
+                                
+                       table1 = j('#example2').DataTable( 
+                                {
+                                    "pagingType" : "full_numbers",
+                                     "scrollX": true,
+                                   "sScrollX": "100%",
+                                   "sScrollXInner": "120%",
+    
+                               "aLengthMenu": [[ 5, 10, 25, 50], [ 5, 10, 25, 50]],
+                              "iDisplayLength": 5,
+                                            "sDom": 'W<"clear">lfrtip', 
+    
+                                    /**default orderid in asc sorting**/
+                                    "order" : [ [ 0, "asc" ] ],
+                                    "bSort" : false,
+                              "bAutoWidth": false, // Disable the auto width calculation
+                              "bFilter": false,
+                              //"oColumnFilterWidgets": {
+                              //"aiExclude": [ 0,2,4,5,6,7,9,10 ]
+                              
+                              //},
+                             
+                              "processing": true,
+                              "serverSide": true,
+                                             
+                        "ajax": {
+                        "url":'{!$Page.BLN_CheckinReportHelperPage}?core.apexpages.devmode.url=1',
+                                              
+                          
+                        "data": function ( pagedata ) {
+
+                                pagedata["filterKey"]='{!selectedFilterType}';
+                                pagedata["searchKey"]=$("[id$='searchKey']").val();
+                                pagedata["ticketname"]='{!selectedTicketName}';
+                                pagedata["regtype"]='{!selectedpaymentFilterType}';
+                                pagedata["scannedby"]='{!selectedScannedBy}';
+                          
+                             }
+                          },
+                          
+                                       "columns": [
+                                        {
+                                        data:   "item",
+                                          render: function ( data, type, row ) {
+                                          console.log(row);
+                                          var attname='';
+                                          var details='';
+                                          if(row.tcinn.length >0){ 
+                                          attname='<ul class="grpheader"><li class="labeltitles">Ticket Name:</li><li class="labeloutput">'+row.GuestName.Item_Pool__r.Item_Pool_Name__c;
+                                          if(row.GuestName.Item_Type__r.Name=='Package')
+                                              attname+=' ('+row.GuestName.Item__r.item_name__c+') ';
+                                          attname+='</li></ul>';
+                                          details='<table class="display checkin_rpttbl" width="100.1%" cellpadding="0" cellspacing="0"><tbody>';
+                                          for(i=0;i < row.tcinn.length; i++)
+                                            {
+                                             
+                                              details+='<tr><td style="width:18%">'+row.tcinn[i].tic.tkt_profile__r.First_Name__c+' '+row.tcinn[i].tic.tkt_profile__r.Last_Name__c+'</td><td style="width:10%">'+row.tcinn[i].tic.Name+'</td>';
+                                              details+='<td style="width:13%">'+row.tcinn[i].tic.tkt_profile__r.Email__c+'</td>';
+                                              details+='<td style="width:13%">'+row.tcinn[i].tic.tkt_profile__r.TKT_Company__c+'</td>';
+                                              details+='<td class="grptd" colspan="3">';
+                                              details+='<table class="chkin-out-tbl" width="100%" border="0" cellpadding="0" cellspacing="0">';
+                                              for(j=0;j< row.tcinn[i].tstatDetailsList.length; j++)
+                                              {
+                                                if(row.tcinn[i].tstatDetailsList[j]!= undefined){
+                                                details+='<tr>';
+                                                details+='<td style="width:38.5%;">';
+                                                       if(row.tcinn[i].tstatDetailsList[j].tstatName == true){
+                                                           details+='<span class="green_clr"> <i class="fa fa-check-square-o"></i>';
+                                                       }else if(row.tcinn[i].tstatDetailsList[j].tstatName == false){
+                                                           details+='<span class="red_clr"> <i class="fa fa-share-square-o"></i>';
+                                                       }
+                                                       if(row.tcinn[i].tstatDetailsList[j]!= undefined && row.tcinn[i].tstatDetailsList[j].lastmoddate != undefined){
+                                                       details+=row.tcinn[i].tstatDetailsList[j].lastmoddate;
+                                                       }else{
+                                                       details+='';
+                                                       }
+                                                       details+='</span></td>';
+                                                    details+='<td>'+row.tcinn[i].tstatDetailsList[j].scanBy+'</td>';
+                                
+                                                    if(row.tcinn[i].tstatDetailsList[j].device != undefined){
+                                                   details+='<td style="width:21.5%">'+row.tcinn[i].tstatDetailsList[j].device+'</td> </tr> ';
+                                                    }else{
+                                                    details+='<td style="width:21.5%"> </td>';
+                                                    }
+    
+                                                    details+='</tr>';
+                                                  }
+                                                  }
+                                                  details+='</table></td></tr>';
+                                                }
+                                                details+='</tbody></table>';
+                                              return attname+details;
+                                           }
+                                        }
+                                        }
+                                    ]
+                                });
+    
+    Visualforce.remoting.timeout = 120000; 
+    Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_CheckinHistoryReportCon.statistics}',
+            '{!SelectedEvent}',
+           function(result, event){
+            
+               for(i=0;i<result.length;i++){
+                   if(result[i].CheckInCount != 0){
+                    $('#statui').append("<li class='labeltitles'>");
+                    $('#statui').append("<b class='labeltitles'>&nbsp;"+result[i].ticName +" : </b></li><li class='labeloutput'> "+result[i].CheckInCount+"/"+result[i].NotCheckInCount+"&nbsp;");
+                    $('#statui').append('</li>');
+                   }
+               }
+              
+           console.log(result);
+           });
+           
+           
+ })
+        </script>
+        <script>
+      /*******************************************************/
+      function exporder(){
+          constructstr();
+      } 
+      
+      function constructstr(){
+          individualexport('{!selectedFilterType}',document.getElementById("searchKey").value ,'{!ShowCHForAttendee}','{!ShowCHForTicket}','{!selectedTicketName}','{!selectedpaymentFilterType}','{!selectedScannedBy}');
+      }
+   </script>
+        <!--------//end of datatable js component------------->
+        <!----on change filter script------>
+        <script>
+            function updatebox(selectlist_id) {
+                //alert(selectlist_id.length);
+                var optvalue = selectlist_id.options[selectlist_id.selectedIndex].value;
+                if (optvalue == 'Attendee') {
+                // alert('Guest11');
+    
+                    showpackage('grpby-guest', 'grpby-ticket');
+                } else {
+                  //alert('ticket11');
+                    showpackage('grpby-ticket', 'grpby-guest');
+                }
+            }
+        </script>
+        <!------------common js libraries component------------>
+        <c:ed_commonjs ></c:ed_commonjs>
+        <!------------//common js libraries component------------>
+    
+    </apex:page>

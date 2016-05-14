@@ -1,0 +1,887 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_SurveyByTicketTabReportCon" action="{!hideEventsTab}" readOnly="true" id="page">
+     <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!---------------------------------------------->
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+    <!------------//common styles component---------->
+    <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />   
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-surveyquest-report.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" />
+    <!-----------//datatable stylescss------------->
+    <style>
+        button.ColVis_Button {margin-top:-32px !important;}
+        .subtable tbody tr  td:last-child { border-right:0px !important;}   
+        .subtable tbody tr:last-child  td{ border-bottom:0px !important; } 
+        .formelem_boxfull .form_quest input[type="text"]{ margin-left:7px;} 
+        .surveybyatt_tbl tbody tr td .grpheader {background-color:#D2E8FB !important;}
+    </style>
+ 
+ <apex:form id="myForm">
+
+ <!--<apex:actionFunction action="{!backsurveybytic}" name="backsurveybytic1" reRender="sectab" status="AjaxLoader"/>-->
+ <!--<apex:actionFunction action="{!backtoSurveyByQue}" name="backtoSurveyByQue1" reRender="sectab" status="AjaxLoader"/>-->
+ 
+ 
+ <!-------------------------tmplate print & Export Code Start--------------------------->
+<div class="datatable-wrapper">
+            
+            <!---start of tab1 topstats2--->
+            <div id="tab2topstats" >
+               <!-------------------------print and export button-------------------------------------------->
+               <div class="print_export_cont" style=" text-align:right; margin-bottom:0px; margin-top:5px; margin-right:.4%;">
+                  <!----------response export button tab2 ticket------->
+                  <span id="response2" style="display:none;">
+                     <apex:commandLink styleClass="datatables_btn" action="{!exportResponsesByTicket}" status="AjaxLoader">
+                        <span>Export Current View </span>
+                     </apex:commandLink>                      
+                  </span>
+                  <!----------response export button tab2 pool line------->
+                  <span id="response3" style="display:none;"> 
+                     <apex:commandLink styleClass="datatables_btn" action="{!exportResponsesByPoolLines}" status="AjaxLoader">
+                        <span>Export Current View </span>
+                     </apex:commandLink>                      
+                  </span>
+                    <apex:commandLink styleClass="datatables_btn" onclick="exportTicketslist();return false;" > <span>Export</span> </apex:commandLink>
+                   
+               </div>
+               <!--------------------------//end of print and export button---------------------------------->
+            </div>
+            <!--close of tab2 topstats--->
+            
+         </div>
+          <!-------------------------end template print & Export Code Start--------------------------->
+ <!-------------------------tmplate Code Start--------------------------->
+  <!-----------startoftabs---------------------------->
+    
+   
+                 
+                <div class="TabbedPanelsContentGroup" style="padding-top:5px;" >
+              
+
+ <!-----------------2nd tabs content------------>
+    <div class="TabbedPanelsContent" style=" padding-top:0px;">
+    <!--------->
+         <div class="datatable-wrapper" style="margin-top:0px;">
+         
+        <!---start of parenttbl box----->      
+      <apex:outputPanel id="sectab">
+           
+     <apex:outputPanel id="itemQuestionPanel" rendered="{!NOT(showQuestionDetails)}">
+         <!-------------->  
+       <table class="display surveybytkt_tbl" width="100%" id="example1">
+                <thead>
+                    <tr>
+                        <th style="width:15%;">Question Level</th>
+                        <th style="width:27.5%;">Ticket Name</th>
+                        <th style="width:25%;">Questions</th>
+                        <th style="width:28%;">Answer Type</th>
+                    </tr>
+                </thead>
+                <tbody> 
+                    <!-- ------------------- Reccommended Code Start -------------------------------------- -->
+                    
+                    <apex:repeat value="{!itemQuestionsInnerList}" var="item">
+                           <!--<apex:repeat value="{!iqAgg}" var="key">
+                               <apex:outputPanel rendered="{!(key['i']==item.itemQuestionsData[0].question__c && key['cnt'] > 0)}">-->
+                                    <tr> 
+                                       <apex:outputText rendered="{!item.levelType=='Event Level'}">
+                                          <td class="eventlvl_bg" style=" width:16.6%;">
+                                             <apex:commandLink value="({!item.levelType})" onclick="document.getElementById('response2').style.display='' " action="{!surveyDataForQuestion}" rendered="{!(item.itemData.Item_Type__r.Name != 'Package' && item.itemQuestionsData.size>0)}" styleClass="a_underline" reRender="sectab" status="AjaxLoader">
+                                                <apex:param value="{!item.itemData.Id}" name="itemId"/>
+                                             </apex:commandLink>
+                                          </td>
+                                       </apex:outputText>
+                                       <apex:outputText rendered="{!item.levelType=='Ticket Level'}">
+                                          <td class="tktlvl_bg" style=" width:16.6%;">Ticket Level</td>
+                                       </apex:outputText>
+                                       <apex:outputText rendered="{!item.levelType=='Event Level'}">
+                                          <td class="grptd" colspan="3">
+                                              
+                                             <table class="insidetkt_tbl display hideRow" width="100%">
+                                                <tbody>
+                                                   <tr>
+                                                      <td style="width:34%"></td>
+                                                       
+                                                      <td class="grptd" >
+                                                          
+                                                         <table width="100%" class="insidesqans_tbl el_sqans  display">
+                                                           
+                                                            <tbody>
+                                                               <apex:repeat value="{!item.itemQuestionsData}" var="itemQuestion">
+                                                                  <tr Style="display:{!IF(Contains(item.QuestionName, itemQuestion.Question__r.Name),'','none')}" > 
+                                                                     <td style="width:42.5%;">{!itemQuestion.Question__r.Question_Text__c}</td>
+                                                                     <td style="width:50%;">{!itemQuestion.Question__r.Answer_Type__c}</td>
+                                                                  </tr>
+                                                               </apex:repeat>
+                                                                <apex:repeat value="{!item.itemPoolQuestionInnrList}" var="ipl" rendered="{!item.itemData.item_type__r.Name == 'Package'}">
+                                                                  <apex:repeat value="{!ipl.itmPlQuestionsListInfo}" var="iplqq">
+                                                                     <tr Style="display:{!IF(Contains(ipl.poolQueName, iplqq.Question__r.Name),'','none')}">
+                                                                        <td width="42.5%" >{!iplqq.Question__r.Question_Text__c}</td>
+                                                                        <td width="50%">{!iplqq.Question__r.Answer_Type__c}</td>
+                                                                     </tr>
+                                                                  </apex:repeat>
+                                                               </apex:repeat> 
+                                                            </tbody>
+                                                         </table>
+                                                      </td>
+                                                   </tr>
+                                                </tbody>
+                                             </table>
+                                          </td>
+                                       </apex:outputText>
+                                       <!-- ***********************Ticket level start**************************** -->
+                                       <apex:outputText rendered="{!item.levelType=='Ticket Level'}">
+                                          <td class="grptd" colspan="3">
+                                             
+                                             <table class="insidetkt_tbl display" width="100%">
+                                                <tbody>
+                                                   <tr style="display:{!IF(item.itemQuestionsData.size>0,'','none')}"> 
+                                                      <td style="width:34%">
+                                                      
+                                                         <div>
+                                                            <apex:commandLink onclick="document.getElementById('response2').style.display='' " rendered="{!if((item.itemData != NULL && item.itemData.Item_Type__r.Name != 'Package'  && item.itemQuestionsData.size>0), TRUE, FALSE)}" value="{!item.itemData.item_name__c}" action="{!surveyDataForQuestion}" styleClass="blueanchor a_underline" reRender="sectab" status="AjaxLoader">
+                                                               <apex:param value="{!item.itemData.Id}" name="itemId"/>
+                                                            </apex:commandLink>
+                                                            <apex:commandLink onclick="document.getElementById('response2').style.display='' " rendered="{!if((item.itemPoolData!= NULL && item.itemData.Item_Type__r.Name == 'Package' && item.itemQuestionsData.size>0), TRUE, FALSE)}" value="{!item.itemData.item_name__c}" action="{!surveyDataForQuestion}" styleClass="blueanchor a_underline" reRender="sectab" status="AjaxLoader">
+                                                               <apex:param value="{!item.itemData.Id}" name="itemId"/>
+                                                            </apex:commandLink>
+                                                            <span class="font-10x blueanchor" style="display:{!IF((item.itemPoolData!= NULL && item.itemData.Item_Type__r.Name = 'Package' && item.itemQuestionsData.size>0), '', 'none')}">
+                                                            Package</span>
+                                                         </div>
+                                                                                   
+                                                      </td>
+                                                      
+                                                      <td class="grptd">
+                                                          
+                                                          <table width="100%" class="insidesqans_tbl tl_sqans display hideRow">
+                                                             
+                                                            <tbody>
+                                                               <apex:repeat value="{!item.itemQuestionsData}" var="itemQuestion">
+                                                                  <tr Style="display:{!IF(Contains(item.QuestionName, itemQuestion.Question__r.Name),'','none')}">
+                                                                     <td width="42.5%">{!itemQuestion.Question__r.Question_Text__c}</td>
+                                                                     <td width="50%">{!itemQuestion.Question__r.Answer_Type__c}</td>
+                                                                  </tr>
+                                                               </apex:repeat>
+                                                            </tbody>
+                                                         </table> 
+                                                      </td> 
+                                                   </tr>
+                                                </tbody>
+                                             </table>
+                                              
+                                             <table class="insidetkt_tbl display hideRow" width="100%" >
+                                                <tbody>
+                                                   <apex:repeat value="{!item.itemPoolQuestionInnrList}" var="itmPool">
+                                                     
+                                                      <tr style="display:{!IF(itmPool.itmPlQuestionsListInfo.size>0,'','none')}">
+                                                         <td style="width:34%">
+                                                            <apex:commandLink onclick="document.getElementById('response3').style.display='';" value="{!itmPool.itemPoolInfo.Item_Pool_Name__c}" action="{!surveyDataForItemPoolQuestion}" rendered="{!itmPool.itmPlQuestionsListInfo.size>0}" styleClass="a_underline" status="AjaxLoader" reRender="sectab">
+                                                               <apex:param value="{!itmPool.itemPoolInfo.Id}" name="itemPoolId"/>
+                                                            </apex:commandLink>
+                                                            <span class="font-10x blueanchor" style="display:{!IF(itmPool.itmPlQuestionsListInfo.size>0,'','none')}">{!item.itemData.item_name__c}</span>
+                                                         </td>
+                                                          
+                                                         <td class="grptd">
+                                                            
+                                                            <table width="100%" class="insidesqans_tbl tl_sqans  display">
+                                                              
+                                                               <tbody>
+                                                                  <apex:variable value="{!0}" var="dupQuNum"/>
+                                                                  <apex:variable value="" var="dupQuVal"/>
+                                                                  <apex:repeat value="{!item.itemPoolQuestionInnrList}" var="ipl" rendered="{!item.itemData.item_type__r.Name == 'Package'}">
+                                                                     <apex:repeat value="{!ipl.itmPlQuestionsListInfo}" var="iplqq">
+                                                                        <apex:outputText rendered="{!!Contains(dupQuVal,iplqq.question__r.id)}">
+                                                                           <apex:variable value="{!(dupQuVal+iplqq.question__r.id)}" var="dupQuVal"/>
+                                                                           <apex:outputText rendered="{!Contains(ipl.poolQueName,iplqq.Question__r.id)}">
+                                                                              <apex:outputText rendered="{!(itmPool.itemPoolInfo.Id==iplqq.item_pool__r.id)}"> <!-- {!(itmPool.itemPoolInfo.Id==iplqq.item_pool__r.id)} -->
+                                                                              <tr>
+                                                                                 <td style="width:42.5%;">{!iplqq.Question__r.Question_Text__c}</td>
+                                                                                 <td style="width:50%;">{!iplqq.Question__r.Answer_Type__c}</td>
+                                                                              </tr>
+                                                                              </apex:outputText>
+                                                                           </apex:outputText>
+                                                                        </apex:outputText>
+                                                                     </apex:repeat>
+                                                                  </apex:repeat>
+                                                               </tbody>
+                                                            </table>
+                                                             
+                                                         </td>
+                                                
+                                                      </tr>
+                                                   </apex:repeat>
+                                                </tbody>
+                                             </table> 
+                                              
+                                          </td>
+                                       </apex:outputText>
+                                        
+                                    </tr>
+                                <!-- </apex:outputPanel>
+                                 </apex:repeat> --> 
+                                 </apex:repeat>
+                                 <!-- -----------------------------------------------Recommended Code End --------------------------------------------------------- -->
+                </tbody>
+            </table>
+
+</apex:outputPanel> <!-- itemQuestionPanel panel ending -->
+  <!-----------> 
+ 
+      <apex:outputPanel rendered="{!showQuestionDetails}" id="summaryPanel">
+                            <apex:outputPanel rendered="{!(!showQuestionDetailsForItemPool)}">
+                            <div class="top-stats">
+                               
+                               <div id="statsultkt_box" class="statsul_box left" style="width:60%;">
+                                 <ul>
+                                  
+                                    <li class="labeltitles">Total Count :</li>
+                                    <li class="labeloutput">{!totalOrders}</li>
+                                   
+                                    <li class="labeltitles">Response Count :</li>
+                                    <li class="labeloutput">
+                                       
+                                       <apex:variable var="responded" value="{!respondedItemAttendees}"/> 
+                                       {!responded}
+                                    </li>
+                                    
+                                    <li class="labeltitles">Response % :</li>
+                                    <li class="labeloutput">
+                                       <apex:outputText value="{0, Number, #0.00}">
+                                          <apex:param value="{!((responded)*100/(totalOrders))}" />
+                                       </apex:outputText>
+                                    </li>
+                                   
+                                    <li class="labeltitles">Skips Count :</li>
+                                    <li class="labeloutput">{!((totalOrders)-responded)}</li>
+                                     
+                                    <li class="labeltitles">Skips % :</li>
+                                    <li class="labeloutput">
+                                       <apex:outputText value="{0, Number, #0.00}">
+                                          <apex:param value="{!((totalOrders-responded)*100/totalOrders)}" />
+                                       </apex:outputText>
+                                    </li>
+                                 </ul>
+                               
+                              </div> 
+                              <!---close of statsul_box---->    
+                              <!---->
+                              <!---------->
+                              <!-----------> 
+                              <div class="right">
+                                 <ul style="list-style:none; height:0px; ">
+                                    <!---->
+                                    <li class="labeltitles" style="display:inline;">
+                                       <input id="summaryresponsetkt" type="radio" name="responsetkt" checked="checked" onclick="showpackage('summaryresptkt_box' ,'detailresptkt_box');showdiv('statsultkt_box');hidediv('statsul_boxItem');" />
+                                       <label for="summaryresponsetkt">View Summary Response</label>
+                                    </li>
+                                    <!----->
+                                    <li class="labeltitles" style="display:inline;">
+                                       <input id="detailresponsetkt" type="radio" name="responsetkt" onclick="showpackage('detailresptkt_box' ,'summaryresptkt_box');changedQuestion('{!selectedQuestion}');calldt_detailresptkt();" /><!-- showdiv('statsul_boxItem');hidediv('statsultkt_box');-->
+                                       <label for="detailresponsetkt">View Detail Response</label>
+                                    </li>
+                                    <!------>
+                                 </ul>
+                              </div>
+                              <!------------->        
+                              <div class="clear"></div>
+                              <!--close of clear-->  
+                              <!---->
+                              <p class="padding-5px">
+                            <div id="statsul_boxItem" style="width:60%;display:none" >
+                                 <ul>
+                                    <li style="color:white;">
+                                       <apex:inputHidden value="{!queName}"/>
+                                       
+                                    </li>
+                                    
+                                 </ul>
+                                 </div>                                   
+                              
+                              <apex:commandLink styleClass="labeltitles a_underline" value="Survey By Ticket" onclick="document.getElementById('response2').style.display='none';" action="{!backsurveybytic}" status="AjaxLoader" reRender="sectab"/>
+                              <span class="labeloutput strong_700" style="font-size:14px;">
+                                 ›› 
+                                 <apex:outputText value="Event Level" rendered="{!selectedItemName==null}"/>
+                                 <apex:outputText value="{!selectedItemName}" rendered="{!selectedItemName!=null}"/>
+                                 ››
+                                 <apex:actionRegion >
+                                 <apex:selectList value="{!selectedQuestion}" multiselect="false" size="1" style="width:55%;" styleClass="selectlist-datatable" >
+                                    <apex:selectOptions value="{!questionsForItem}"/>
+                                    <apex:actionSupport event="onchange" action="{!summaryResponseData}" reRender="summaryPanel" status="AjaxLoader">
+                                    </apex:actionSupport>
+                                 </apex:selectList>
+                                 </apex:actionRegion>
+                              </span>
+                              </p>
+                              <!---->
+                           </div>
+                           <!------//end of top stats----->   
+                           <!--------start of view summary response----->  
+                           <div id="summaryresptkt_box">
+                              <apex:outputText rendered="{!(itemAnswerType == 'Text' || itemAnswerType == 'Paragraph text')}">
+                                 <br/><br/>
+                                 <b>
+                                    <i>
+                                       <font size="4" color="#AAACAA">
+                                          <center>
+                                             No Summary Responses for Text and Paragraph Answer Type Questions !!
+                                          </center>
+                                       </font>
+                                    </i>
+                                 </b>
+                              </apex:outputText>
+                              <apex:outputText rendered="{!(itemAnswerType != 'Text' && itemAnswerType != 'Paragraph text')}">
+                                 <table class="example2 display hideRow" width="100%" id="chkid">
+                                    <!-------> 
+                                    <thead>
+                                       <tr>
+                                          <th>Answer</th>
+                                          <th>Response Count</th>
+                                          <th style="">Response Percentage (%)</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                       <apex:repeat value="{!responsesInnerList}" var="summary">
+                                          <tr>
+                                            <td style="width:60%;">{!summary.answerType}</td>
+                                             <td>{!summary.answerCount}</td>
+                                             <td>
+                                                <apex:outputText value="{0, Number, #0.00}" rendered="{!responded!=0}">
+                                                   <apex:param value="{!((summary.answerCount)*100/(responded))}" />
+                                                </apex:outputText> 
+                                             </td>
+                                          </tr>
+                                       </apex:repeat>
+                                    </tbody>
+                                 </table>
+                                 <script>
+                                  calldtfunc();
+                                 </script>
+                              </apex:outputText>
+                              <!-------->
+                           </div>
+                           <!---close of viewsummary responsebox----->
+                           <!--------End of view summary response----->
+                           <!--------start of view detail response-----> 
+                           
+                           <!--<apex:outputPanel rendered="{!IF(userAnswersList.size != 0, TRUE, FALSE)}" id="tktdtl">-->
+                              <div id="detailresptkt_box" style="display:none;">
+                              <!-- <div id="example_filter" align="right" style="margin-bottom:5px;"><label>Search:<input type="text" id="searchKeySBT" class="" aria-controls="example10" onkeyup="table2.draw();" style="width:20%;"/></label></div> -->
+                                 <table class="example2 display hideRow" width="100%" id="example10">
+                                    <!-------> 
+                                    <thead> 
+                                    <tr>                                      
+                                      <th style="width:15%;border-bottom:0px;" >Name</th>
+                                       <th style="width:25%;border-bottom:0px;" >Email</th>
+                                        <th style="width:15%;border-bottom:0px;" >Order Id</th>
+                                         <th style="width:15%;border-bottom:0px;" >Ticket Id</th>
+                                      <th style="width:30%;border-bottom:0px;border-right:0px;">Answer</th> 
+                                    </tr>
+                                    </thead>
+                                    <tbody> 
+                                    </tbody>
+                                 </table>
+                              </div>
+                           <!--</apex:outputPanel>-->
+                           
+                           <!---close of view detail responsebox-----> 
+                           
+                        </apex:outputPanel>
+                        </apex:outputPanel>
+                        
+                        
+                        <apex:outputPanel rendered="{!showQuestionDetailsForItemPool}" id="summaryPanelForIP">
+                           <!----top stats------------->
+                           <div class="top-stats">
+                              <div id="statsultktpool_box" class="statsul_box left" style="width:60%;">
+                                 <ul>
+                                    <!---->
+                                    <li class="labeltitles">Total Count :</li>
+                                    <li class="labeloutput">{!totalOrderpools}</li>
+                                    <!----->
+                                    <!---->
+                                    <li class="labeltitles">Response Count :</li>
+                                    <li class="labeloutput">
+                                       <!-- =======================Logic to calculate responded figure====================== -->
+                                       <apex:variable value="{!respondedItemPoolAttendees}" var="respondedPool"/> 
+                                       {!respondedPool}
+                                    </li>
+                                    <!----->
+                                    <li class="labeltitles">Response % :</li>
+                                    <li class="labeloutput">
+                                       <apex:outputText value="{0, Number, #0.00}">
+                                          <apex:param value="{!(respondedPool*100/totalOrderpools)}" />
+                                          <!-- value="{!responseGivenPercentForItemPool}" -->
+                                       </apex:outputText>
+                                    </li>
+                                    <!------>
+                                    <li class="labeltitles">Skips Count :</li>
+                                    <li class="labeloutput">{!(totalOrderpools-respondedPool)}</li>
+                                    <!------>
+                                    <li class="labeltitles">Skips % :</li>
+                                    <li class="labeloutput">
+                                       <apex:outputText value="{0, Number, #0.00}">
+                                          <apex:param value="{!((totalOrderpools-respondedPool)*100/totalOrderpools)}" />
+                                          <!-- value="{!responseNotGivenPercentForItemPool}"  -->
+                                       </apex:outputText>
+                                    </li>
+                                 </ul>
+                                 <!--close of right-->
+                              </div>
+                              <!---close of statsul_box---->    
+                              <!---->
+                              <!---------->
+                              <!-----------> 
+                              <div class="right">
+                                 <ul style="list-style:none; height:0px; ">
+                                    <!---->
+                                    <li class="labeltitles" style="display:inline;">
+                                       <input id="summaryresponsetkt" type="radio" name="responsetkt" checked="checked" onclick="showpackage('summaryresptktpool_box' ,'detailresptktpool_box');showdiv('statsultktpool_box');hidediv('statsul_boxPool')" />
+                                       <label for="summaryresponsetkt">View Summary Response</label>
+                                    </li>
+                                    <!----->
+                                    <li class="labeltitles" style="display:inline;">
+                                       <input id="detailresponsetkt" type="radio" name="responsetkt" onclick="showpackage('detailresptktpool_box' ,'summaryresptktpool_box');hidediv('statsultktpool_box');showdiv('statsul_boxPool');changedQuestionPool('{!SelectedItempoolQuestion}');calldt_detailresptktpool();" />
+                                       <label for="detailresponsetkt">View Detail Response</label>
+                                    </li>
+                                    <!------>
+                                 </ul>
+                              </div>
+                              <!------------->        
+                              <div class="clear"></div>
+                              <!--close of clear-->  
+                              <!---->
+                              <p class="padding-5px">
+                              <div id="statsul_boxPool" style="width:60%;display:none" >
+                                 <ul>
+                                    <li style="color:white;">
+                                       <apex:inputHidden value="{!queName}"/>
+                                       <apex:inputHidden value="{!itemPoolId}" id="itemPool"/>
+                                    </li>
+                                 </ul>
+                              </div> 
+                              <apex:commandLink styleClass="labeltitles a_underline" value="Survey By Ticket" onclick="document.getElementById('response3').style.display='none';" action="{!backsurveybytic}" status="AjaxLoader" reRender="sectab" />
+                              <span class="labeloutput strong_700" style="font-size:14px;">
+                                 ››{!selectedItemPoolName} ››
+                                 <apex:selectList value="{!SelectedItempoolQuestion}" multiselect="false" size="1" style="width:55%;" styleClass="selectlist-datatable" >
+                                    <apex:selectOptions value="{!questionsForItemPool}"/>
+                                    <apex:actionSupport event="onchange" action="{!summaryResponseDataForItemPool}" reRender="summaryPanelForIP" status="AjaxLoader"/>
+                                 </apex:selectList>
+                              </span>
+                              
+                              </p>
+                              <!---->
+                           </div>
+                           <!------//end of top stats----->   
+                           <!--------start of view summary response----->  
+                           <div id="summaryresptktpool_box" >
+                              <apex:outputText rendered="{!(itemPoolitemAnswerType == 'Text' || itemPoolitemAnswerType == 'Paragraph text')}">
+                                 <br/><br/>
+                                 <b>
+                                    <i>
+                                       <font size="4" color="#AAACAA">
+                                          <center>
+                                             No Summary Responses for Text and Paragraph Answer Type Questions !!
+                                          </center>
+                                       </font>
+                                    </i>
+                                 </b>
+                              </apex:outputText>
+                              <apex:outputText rendered="{!(itemPoolitemAnswerType != 'Text' && itemPoolitemAnswerType != 'Paragraph text')}">
+                                 <table class="example2 display hideRow" width="100%" id="chkid_pool">
+                                    <!-------> 
+                                    <thead>
+                                       <tr>
+                                          <th>Answer</th>
+                                          <th>Response Count</th>
+                                          <th style="">Response Percentage (%)</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                        <apex:repeat value="{!responsesItemPoolInnerList}" var="summaryIP">
+                                          <tr>
+                                             <td style="width:60%;">{!summaryIP.itemPoolanswerType}</td>
+                                             <td>{!summaryIP.itemPoolanswerCount}</td>
+                                             <td>
+                                                <apex:outputText value="{0, Number, #0.00}" rendered="{!respondedPool!=0}">
+                                                   <apex:param value="{!(summaryIP.itemPoolanswerCount*100/respondedPool)}" /> 
+                                                </apex:outputText>
+                                             </td>
+                                          </tr>
+                                       </apex:repeat> 
+                                    </tbody>
+                                 </table>
+                              </apex:outputText>
+                              <!-------->
+                           </div>
+                           <script>
+                              calldtfunc();
+                           </script>
+                           <!---close of viewsummary responsebox----->
+                           <!--------End of view summary response----->
+                           <!--------start of view detail response-----> 
+                          <!-- <apex:outputPanel rendered="{!IF(itemPooluserAnswersList.size != 0, TRUE, FALSE)}" id="itempooldetailid">-->
+                              <div id="detailresptktpool_box" style="display:none;">
+                                 <table class="example2 display hideRow" width="100%" id="example11">
+                                    <!-------> 
+                                    <thead>
+                                       <tr>
+                                            
+                                          <th style="width:15%;">Name</th>
+                                          <th style="width:25%;">Email</th>
+                                          <th style="width:15%;">Order Id</th>
+                                          <th style="width:15%;">Ticket Id</th>
+                                          <th style="width:30%">Answer</th> 
+                                       </tr>
+                                    </thead>
+                                    <tbody> 
+                                    </tbody>
+                                 </table>
+                              </div>
+                           <!--</apex:outputPanel>-->
+                           <!-- end of itempooldetailid-->
+           
+                        
+ </apex:outputPanel>  
+<!----end of parenttbl box----------->
+ 
+ </apex:outputPanel> <!-- sectab panel ending --> 
+
+ 
+ 
+ 
+         </div><!----close of datatable-wrapper------> 
+     <!----------->
+     </div>
+     <!--close of tab2 tabbedpanelscontent--> 
+      
+     
+    <apex:inputHidden value="{!itemId}" id="itemId"/>        
+    <apex:actionFunction name="surveyDataForQuestion" action="{!surveyDataForQuestion}" rerender="sectab,tktdtl"  oncomplete="calldt_detailresptkt()" status="Ajaxloader">
+    </apex:actionFunction>
+    
+    <apex:inputHidden value="{!itemPoolId}" id="itemPoolId"/>        
+    <apex:actionFunction name="surveyDataForItemPoolQuestion" action="{!surveyDataForItemPoolQuestion}" rerender="sectab" oncomplete="calldt_detailresptktpool()" status="Ajaxloader"/>
+     
+     <!-- onchange item question id -->
+     <apex:inputHidden value="{!myItmQueId}" id="myItmQueId"/>
+      <!-- ----------------------onchange item quest------------------ion id for pool -->
+     <apex:inputHidden value="{!myItmQuePoolId}" id="myItmQuePoolId"/>
+     
+     <!-- -------------Exporting functionaliy for survey by ticket grid with search key ------------------- --> 
+     <apex:actionFunction action="{!exportSurveyQuestions}" name="surveyByTicketExportAction" ReRender="aaa"> 
+            <apex:param value="" name="searchTicket" />
+         </apex:actionFunction>
+    
+    <apex:actionFunction action="{!summaryResponseData}"
+            name="callOnchangefn" ReRender="bbb"> 
+            <apex:param value="" name="myItmQueId" />
+         </apex:actionFunction>
+         
+         <script>
+         function exportTicketslist(){
+          constructstrTicket();
+          } 
+      
+      function constructstrTicket(){
+          surveyByTicketExportAction();                         
+      }
+         </script>
+       
+     <!---------------------------------------------->
+    </div><!--close of TabbedPanelsContentGroup--> 
+    <!---------------------->
+    <script>
+         function changedQuestion(iqId){
+             
+              $("[id$='myItmQueId']").val(iqId);
+              //alert($("[id$='myItmQueId']").val());  
+         }
+      
+         function changedQuestionPool(iqIdPool){
+             //alert(iqIdPool);
+              $("[id$='myItmQuePoolId']").val(iqIdPool);  
+         }
+     </script>
+      
+ <!------------------------------------------------------------->        
+</apex:form>  
+<!-------------//end of basic template component------------------------>
+  <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+    <script>
+function itemClick(itm){
+    //alert(qid);        
+    $("[id$='itemId']").val(itm);
+    surveyDataForQuestion();
+}
+
+function itemPoolClick(itmpl){
+    //alert(qid);        
+    $("[id$='itemPoolId']").val(itmpl);
+    surveyDataForItemPoolQuestion();
+}
+</script> 
+  <!--------end of datatable js library------------->
+  <script type="text/javascript" language="javascript" class="init">
+var j = jQuery.noConflict();
+ var table1;
+ var table2;
+ var table3;
+j(document).ready(function() {
+//    alert('page ');
+  
+    
+} ); 
+j(document).ready(function() {
+    j('#example1').DataTable( {
+         "paging": true,
+           "bsort":true,
+            "order": [[ 2, "asc" ]],
+         
+        
+       
+         
+    } );
+} );
+
+
+ function calldtfunc(){
+$(document).ready(function() {
+ 
+    j('#chkid').DataTable( {
+         "paging": true,
+          "pagingType": "full_numbers",
+         
+        "order": [[ 0, "asc" ]],
+        "bSort": true,
+       
+         
+    } );
+} );
+
+$(document).ready(function() {
+ 
+    j('#chkid_pool').DataTable( {
+         "paging": true,
+          "pagingType": "full_numbers",
+         
+        "order": [[ 0, "asc" ]],
+        "bSort": true,
+       
+         
+    } );
+} );
+}
+            
+            
+            function calldt_detailresptkt(){
+            
+                    $(document).ready(function() {   
+                                             
+                    table2=j('#example10').dataTable( {
+                        "processing": true,
+                        "serverSide": true,
+                        "ajax": "/apex/BLN_SQReport_detailresptkt_helper",
+         
+                        "fnServerData" : function ( sSource, aoData, fnCallback ) {
+                        console.log(aoData[2].value[0].column);
+                        console.log(aoData[2].value[0].dir);
+                        console.log(aoData);     
+                        console.log(aoData[5].value.value);     
+                        aoData.push({ "name": "searchKeySBT", "value":aoData[5].value.value});/*  $("[id$='searchKeySBT']").val() */ 
+                        aoData.push({ "name": "itemId", "value": $("[id$='itemId']").val() });
+                        aoData.push({ "name": "myItmQueId", "value": $("[id$='myItmQueId']").val() });
+                        aoData.push({"name": "roworder", "value":aoData[2].value[0].dir});
+                        aoData.push({"name": "rownumber", "value":aoData[2].value[0].column});
+                        myItmQueId=$("[id$='myItmQueId']").val();
+                        console.log($("[id$='myItmQueId']").val());
+                        console.log(aoData);
+    
+  
+    
+    
+    $.ajax( {
+    "dataType": 'json',
+    "type": "GET",
+    "url": '{!$Page.BLN_SQReport_detailresptkt_helper}',
+    "data": aoData,
+    "success": fnCallback,
+    "error": function (e) {
+    console.log(e);
+    }
+    } );
+    
+    },
+                        "columns": [
+                            {
+                               data:   "usransItm",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.tkt_profile__r.First_Name__c+' '+data.Ticket__r.tkt_profile__r.Last_Name__c;  
+                                    }
+                                     
+                                },
+                                
+                                {
+                                data:   "usransItm",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.tkt_profile__r.Email__c;  
+                                    }
+                                     
+                                }, 
+                                
+                                {
+                                data:   "usransItm",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.Order__r.Name;  
+                                    }
+                                     
+                                }, 
+                                
+                                {
+                                data:   "usransItm",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.Name;  
+                                    }
+                                     
+                                },  
+                                
+                                {
+                               data:   "usransItm",                                   
+                                    render: function ( data, type, row ) {                                                                     
+                                        //if(data.Item_Question__r.Question__r.Answer_Type__c!='Checkboxes'){
+                                            //return data.UAnswer_Text_Update__c;
+                                        //}else{ 
+                                            return data.UAnswer_Text_Update__c; 
+                                        //}             
+                                    }
+                                }      
+                        ]
+                    } );
+                } );
+                    
+                    
+      
+ }     
+function calldt_detailresptktpool(){
+        $(document).ready(function() {  
+            table3=j('#example11').dataTable( {
+                        "processing": true,
+                        "serverSide": true,
+                        "ajax": "/apex/BLN_SQReport_detailresptktpool_helper", 
+      
+ "fnServerData" : function ( sSource, aoData, fnCallback ) {
+               console.log(aoData[2].value[0].column);
+               console.log(aoData[2].value[0].dir);
+               console.log(aoData);     
+               console.log(aoData[5].value.value);     
+    aoData.push({ "name": "searchKeySBT", "value":aoData[5].value.value});/*  $("[id$='searchKeySBT']").val() */ 
+   aoData.push({ "name": "itemPoolId", "value": $("[id$='itemPoolId']").val() });
+   aoData.push({ "name": "myItmQuePoolId", "value": $("[id$='myItmQuePoolId']").val() });
+    aoData.push({"name": "roworder", "value":aoData[2].value[0].dir});
+    aoData.push({"name": "rownumber", "value":aoData[2].value[0].column});
+   myItmQuePoolId=$("[id$='myItmQuePoolId']").val();
+      console.log($("[id$='myItmQuePoolId']").val());
+      console.log(aoData);
+    
+  
+    
+    
+    $.ajax( {
+    "dataType": 'json',
+    "type": "GET",
+    "url": '{!$Page.BLN_SQReport_detailresptktpool_helper}',
+    "data": aoData,
+    "success": fnCallback,
+    "error": function (e) {
+    console.log(e);
+    }
+    } );
+    
+    },
+                           
+                "columns": [
+                            {
+                               data:   "usrans",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.tkt_profile__r.First_Name__c+' '+data.Ticket__r.tkt_profile__r.Last_Name__c;  
+                                    }
+                                     
+                                }, 
+                                
+                                 {
+                                data:   "usrans",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.tkt_profile__r.Email__c;  
+                                    }
+                                     
+                                }, 
+                                
+                                {
+                                data:   "usrans",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.Order__r.Name;  
+                                    }
+                                     
+                                }, 
+                                
+                                {
+                                data:   "usrans",
+                                    render: function ( data, type, row ) {                         
+                                        return data.Ticket__r.Name;  
+                                    }
+                                     
+                                },
+                               
+                                {
+                               data:   "usrans",                                   
+                                    render: function ( data, type, row ) {                                                                     
+                                        //if(data.Item_Question__r.Question__r.Answer_Type__c!='Checkboxes'){
+                                            //return data.UAnswer_Text_Update__c;
+                                        //}else{ 
+                                            return data.UAnswer_Text_Update__c; 
+                                        //}             
+                                    }
+                                }      
+                        ]
+                    } );
+                } ); 
+}
+
+
+<!--------->
+</script>  
+<!------------common js libraries component----------->
+<c:ed_commonjs ></c:ed_commonjs>
+<!------------//common js libraries component------------>    
+   <script type="text/javascript">
+var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+/*************function calling for tab toggle showhide**************/   
+ $("#tab1clk").click(function(){
+     //alert("1");
+     showpackage("tab1topstats","tab2topstats");
+     hidediv("tab3topstats");
+ })
+ $("#tab2clk").click(function(){
+     //alert("2");
+ 
+ showpackage("tab2topstats","tab1topstats");
+ hidediv("tab3topstats");
+ })
+ 
+  $("#tab3clk").click(function(){
+     //alert("3");
+ 
+ showpackage("tab3topstats","tab1topstats");
+ hidediv("tab2topstats");
+ 
+ })
+  
+  
+      
+/***************************/   
+</script>
+<!----------------------------->
+</c:ed_basictemplate>
+</apex:page>

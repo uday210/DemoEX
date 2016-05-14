@@ -1,0 +1,1407 @@
+<apex:page controller="BLN_LeadRetrievalCon" standardStylesheets="false" sidebar="false" showHeader="false" id="pg" apiVersion="29.0"><!-- action="{!displayPermissions}"-->
+ 
+ <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+        <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTablesnew.css')}" />
+
+<style>
+ button.ColVis_Button {margin-top:-32px !important;}
+.subtable tbody tr  td:last-child { border-right:0px !important;}   
+.subtable tbody tr:last-child  td{ border-bottom:0px !important; } 
+.subtable tbody tr  td{ white-space:normal !important;}
+.formelem_boxfull .form_quest input[type="text"]{ margin-left:7px;}
+</style>
+
+    <!-----------//datatable stylescss------------->
+    
+    <!-------------basic template html component------------------------------------->
+<c:ed_basictemplate BLN_UtillDisplayLinks="{!LeadRetrieval}" id="cmp">
+
+    
+<apex:form id="allLeads">
+ <!------------Start content section component------------>
+      
+ <!--------------------------body code--------------------->
+
+<!------starts of lead table----------> 
+<apex:outputPanel id="maingrid" rendered="{!IF(editPopUp==false,true,false)}">
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+ <div id="leadstable" class="datatable-wrapper"> 
+  
+  <!----------------------------------------------------PRINT AND EXPORT BUTTON------------------------------------------------------------------->
+  
+<div class="print_export_cont" style="width:86%; margin-bottom:4px;">
+  
+   <a class="datatables_btn" href="{!$Label.siteurl}/apex/BLN_ImportLeads?id={!selectedeventid}" >
+       <font color="blue"><i class="fa fa-expand">&nbsp;</i>
+       Import Leads</font>
+       </a>
+    <apex:outputpanel id="statrender" styleclass="top-stats">
+    <apex:outputText rendered="{!listSize<1000}">
+      <input type="button" class="datatables_btn" onclick="exportfn();return false;" value="Export"/>
+    </apex:outputText>
+    
+    <apex:outputText rendered="{!listSize>=1000}">
+      <input type="button" class="datatables_btn" onclick="continueToBatch('sendToMail')" value="Export"/>
+    </apex:outputText>
+    </apex:outputpanel>
+                <!-------->
+    <script>
+    function exportfn(){
+    var search= $("[id$='example_filter']").find('input').val();
+    //alert(search);
+    exportfn1(search);
+    }
+    </script> 
+     <apex:actionFunction action="{!exportLeads}" name="exportfn1" reRender="sss">
+     <apex:param value="" name="search"/>
+     </apex:actionFunction>         
+   </div>
+   
+ <!----------------------------------------------------//END OF PRINT AND EXPORT BUTTON---------------------------------------------------------->  
+ 
+ 
+ <!-----------------------------------------------------START OF LEAD DATATABLE SECTION---------------------------------------------------------> 
+ 
+<div class="clear"></div> 
+    <!-----datatable start-----> 
+ <table id="example" class="display  nowrap" >
+    <thead>
+        <tr>
+            <th class="textcenter">Actions</th>
+            <th>Image</th>
+            <th>Prefix</th>
+            <th>Name</th>
+            <th>Suffix</th>
+            <th>Company</th>
+            <th>Title</th>
+            <th>Email</th>
+            <th>Cell Phone</th>
+            <th>Rating</th>
+            <th>Scanned By</th>
+            <th>Scanned Time</th>
+            <th>Notes</th>
+            <th>Followup Date</th>
+            
+            <th>Work Address1</th>
+            <th>Work Address2</th>
+            <th>Work City</th>
+            <th>Work State</th>
+            <th>Work Country</th>
+            <th >Work Zip</th>
+            <th>Work phone</th>
+            <th>Home Phone</th>
+            <th>
+            <table  style="width:100%"><tr><th style="width:50%">Question</th>
+            <th style="width:50%">Answer</th></tr></table></th>
+        </tr>
+    </thead>
+
+    <tbody> 
+       <!----------repeat start----->
+            
+  </tbody>
+</table>
+     
+</div>
+
+</apex:outputPanel>
+
+ <apex:actionFunction action="{!deleteLead}" name="deleteLeadfn" reRender="aaa">
+     <apex:param value="" name="deleteLead"/>
+ </apex:actionFunction>
+ 
+ <apex:actionFunction action="{!editLead}" name="editMethodaction" reRender="allLeads">
+     <apex:param value="" name="editLead"/>
+ </apex:actionFunction>
+ 
+ <apex:actionFunction action="{!showpopup}" name="showMethodaction" reRender="popup">
+     <apex:param value="" name="showId"/>
+ </apex:actionFunction>
+ 
+ <apex:actionfunction action="{!allstats}" name="allstatsPanel" rerender="statrender" status="AjaxLoader" />
+
+ <!-------------------------------------------------------END OF LEAD DATATABLE SECTION---------------------------------------------------------------> 
+  
+
+<!-------------------------------------- ----------------- START EDIT LEAD SECTION ----------------------------------------------------------------------> 
+
+ 
+ 
+ 
+
+<apex:outputPanel id="editpopup"  rendered="{!editPopUp}">
+<div id="leadsform" class="createform" style=" margin-top:20px;"> 
+ <div class="clear"></div>
+  <div class="shadow-div" style=" margin-top:0px;">
+    <p class="padding-5px bg-font left">Edit Leads</p>
+    <!--<a href=".surveyquest"  class="jumperbody a_white togglebtn right margin-top-5px">Lead Qualifiers</a>-->
+    <div class="clear"></div>
+    <!--close of black-title-->
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;"> 
+      <!----------->
+      <div class="form-content-div" style=" padding:0px;">
+        <div class="formbox" style=" ">
+        
+            <!---------> 
+            <!--  <div style="border:1px solid #ddd; padding:5px;">-->
+           <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Upload Image:</label>
+               </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+              <!------->   
+             <div id="2" class="dropzone">
+               <i title="Remove Image" style="display:none;" class="clr_dropzone fa fa-times" onclick="delfn()"></i>
+                <div id="compimg">  
+                <apex:outputPanel rendered="{!IF(leadeditlist.user_pic__c != null,true,false)}">
+                <apex:image url="/servlet/servlet.ImageServer?id={!leadeditlist.user_pic__c}&oid={!$Organization.Id}" style="width: 180px;"/>     
+                </apex:outputPanel>
+                </div>
+                       <apex:inputFile value="{!leadPic}" filename="{!leadImageName}" title="Upload image" id="infile" onchange="checkimagesize()"/>
+                </div>
+                <apex:inputHidden value="{!isdelete}" id="del"/>
+                <script>
+                function delfn(){
+                $("[id$='del']").val(true);
+                }
+                </script>
+                <script>
+                function checkimagesize(){
+                    var oFReader = new FileReader();
+                    var f = document.getElementById("pg:cmp:commoncomponent:allLeads:infile").files[0];
+                    var filesize= f.size;
+                    if(filesize > 241664){
+                    document.getElementById("pg:cmp:commoncomponent:allLeads:infile").value = null;
+                    Alert.render('Image size cannot be greater than 200kb!' ,'Alert','ok');
+                    //window.alert("Image size cannot be greater than 200kb!");
+                    return false;
+                    }
+                }
+                </script>
+                
+              <!---------->
+              
+              </div><!---close of formelement-ryt---->
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+               <!--------->
+           <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Prefix:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                
+                 <apex:inputField value="{!leadeditlist.Prefix__c}" styleClass="selectlist"/>
+               
+              </div>
+              
+              <div class="formlabel-left textright" style="padding-top:10px">
+                <label>Title:</label>
+               </div>
+              <div class="formelement-ryt textleft"  style="padding-top:10px">
+                
+                 <apex:inputField value="{!leadeditlist.Title__c}" styleClass="selectlist"/>
+               
+              </div>
+              
+              <div class="formlabel-left textright" style="padding-top:10px">
+                <label>Suffix:</label>
+               </div>
+              <div class="formelement-ryt textleft"  style="padding-top:10px">
+                
+                 <apex:inputField value="{!leadeditlist.Suffix__c}" styleClass="selectlist"/>
+               
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+            <!---------> 
+        
+            <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>First Name:</label>
+                <label class="mandatory">*</label>
+              </div>
+              <div class="formelement-ryt textleft" >
+                <apex:inputField value="{!leadeditlist.First_Name__c}" required="true" id="fname"/>
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+            
+                  <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Last Name:</label>
+                <label class="mandatory">*</label>
+              </div>
+              <div class="formelement-ryt textleft" >
+                <apex:inputField value="{!leadeditlist.Last_Name__c}"  required="true" id="lname"/>
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+            
+              <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Company:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                <apex:inputField value="{!leadeditlist.Company__c}"/>
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+            
+              <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Email:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                
+     <a style="line-height:25px;" class="margin-lft-5px" href="mailto:{!leadeditlist.Lead_Email__c}?Subject=" target="new">
+      {!leadeditlist.Lead_Email__c}</a>
+           
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+            
+            <!-------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Followup Date:</label>
+              </div>
+              <div class="formelement-ryt textleft" >
+              
+              <!--<apex:inputField value="{!leadeditlist.followup_date__c}" styleClass="jqdatepicker" onchange="datevalidation()" id="fdate"/> --> 
+               <input class="jqdatepicker" id="fdate" type="text" placeholder="__/__/____  __:__"  onchange="datevalidation()"/>
+                    <div style="display:none">
+                      <apex:outputpanel rendered="{!leadeditlist.followup_date__c!=null}" >
+                        <!--<c:EV_FormatDt date_Timevalue="{!leadeditlist.followup_date__c}" t_Zone="{!eventslist.Time_Zone__c}"  id="fudap"/>-->
+                        <c:EV_FormatDt date_Timevalue="{!leadeditlist.followup_date__c}" t_Zone="GMT"  id="fudap"/>
+                      </apex:outputpanel>
+                    </div>
+              </div>
+              <div id="fdateerrormsg" style="display:none;">
+                                        
+                                        <p style="color:#d43535; font-size:13px;">Followup Date cannot be past date ! </p>
+                                      </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+              <!-------->
+              <div class="formelem_boxsmall" style="margin-bottom: 0px;">
+              <div class="formlabel-left textright">
+                <label>Rating:</label>
+                </div>
+               <div class="formelement-ryt textleft" >
+                
+                
+                <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}" onclick="ratingfn('1');"  id="i1"/>
+                <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}" onclick="ratingfn('2');"  id="i2"/>
+                <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}" onclick="ratingfn('3');"  id="i3"/>
+                <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}" onclick="ratingfn('4');" id="i4"/>
+                <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}" onclick="ratingfn('5');" id="i5"/>
+                <i id="filtersubmit" onclick="clearrating();" class="fa fa-times-circle" title="clear"></i>
+                </div>
+                <apex:inputHidden value="{!selectedRating}" id="rating"/>
+                        <script>
+                        
+                        var c=9;
+                            //if(c==9){
+                           // window.onload = function() {
+                            //alert('{!leadeditlist.Rating__c}');
+                            if(null != '{!leadeditlist.Rating__c}' && '' != '{!leadeditlist.Rating__c}'){
+                            ratingfn({!leadeditlist.Rating__c});
+                            }
+                            else{
+                            ratingfn(0);
+                            }
+                            //};
+                            //}
+                        function ratingfn(c){                              
+                            var starrate=c;
+                            document.getElementById('pg:cmp:commoncomponent:allLeads:rating').value=starrate;
+                            for(var i=1;i<=c;i++)
+                            {
+                            
+                            document.getElementById('pg:cmp:commoncomponent:allLeads:i'+i).src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/yellowstar.png')}";
+                            }
+                            for(var j=5;j>c;j--)
+                            {
+                            document.getElementById('pg:cmp:commoncomponent:allLeads:i'+j).src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}";
+                            }
+                        
+                        }
+                        
+                        function clearrating(){
+                            for(var j=5;j>0;j--)
+                            {
+                            document.getElementById('pg:cmp:commoncomponent:allLeads:i'+j).src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}";
+                            }
+                            document.getElementById('pg:cmp:commoncomponent:allLeads:rating').value=0;
+                        }
+                        </script>
+            <div class="clear"></div>
+            
+           </div>
+             <!--close formelem_box---> 
+         <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Mobile Number:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                <apex:inputField value="{!leadeditlist.Cell_Phone__c}" onkeyup="pnovalid2(this.value,this.id)" id="ph1"/>
+              </div>
+              <div id="pnoerrormsg1" style="display:none;">
+                                
+                                  <p style="color:#d43535; font-size:13px;">Phone Number is not valid !</p>
+                                  </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+             <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Work Phone Number:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+               <apex:inputField value="{!leadeditlist.Work_Phone__c}" onkeyup="pnovalid2(this.value,this.id);" id="ph2"/>
+              </div>
+              <div id="pnoerrormsg2" style="display:none;">
+                                
+                                  <p style="color:#d43535; font-size:13px;">Phone Number is not valid !</p>
+                                  </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+          <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Home Phone Number:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+               <apex:inputField value="{!leadeditlist.Home_Phone__c}" onkeyup="pnovalid2(this.value,this.id)" id="ph"/>
+              </div>
+              <div id="pnoerrormsg" style="display:none;">
+                               
+                                  <p style="color:#d43535; font-size:13px;">Phone Number is not valid !</p>
+                                  </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+            <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Address1:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                <apex:inputField value="{!leadeditlist.Street1__c}" />
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+           
+           <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Address2:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                <apex:inputField value="{!leadeditlist.Street2__c}" />
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+         
+         <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>City:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                <apex:inputField value="{!leadeditlist.City__c}" />
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+            
+            
+         <!--------->
+         <apex:outputPanel id="WorkStatePanel">
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>State:</label>
+               </div>
+               
+              <div class="formelement-ryt textleft" >
+                        <!--<apex:selectList id="BusinessState"  value="{!leadeditlist.BLN_State__c}" multiselect="false" size="1" styleClass="selectlist">
+               
+                        <apex:selectOptions value="{!stateOptions}" rendered="{!leadeditlist.BLN_Country__c!=null}"></apex:selectOptions>
+                        </apex:selectList>-->
+                    <apex:selectList id="leadState"  value="{!leadeditlist.BLN_State__c}" multiselect="false" size="1" styleClass="selectlist">
+                        <apex:selectOptions value="{!stateOptions}"></apex:selectOptions>
+                        </apex:selectList>
+                                        
+              </div>
+               <div class="clear"></div>
+            </div>
+          </apex:outputPanel>  
+            <!--close formelem_box--->
+            
+             <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Zip:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                <apex:inputField value="{!leadeditlist.zip__c}" id="zip" onkeyup="zipcodevalid()"/>
+                <br/><label id="ziperrormsg" style="color:#d43535; font-size:13px;line-height: 2; display:none;">
+                                        Zip Code is not valid !
+                                        </label>
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box--->
+            
+            <!--------->
+            <div class="formelem_boxsmall">
+              <div class="formlabel-left textright">
+                <label>Country:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                <!--<apex:actionRegion >
+                                        <apex:selectList id="BusinessCountry" onchange="getstatejs(this.id,this.value);" value="{!leadeditlist.BLN_Country__c}" multiselect="false" size="1" styleClass="selectlist">
+                                            <apex:selectOptions value="{!countryOptions}" />
+                                          
+                                        </apex:selectList>
+                                        </apex:actionRegion>-->
+                <apex:actionRegion >
+                        <apex:selectList id="leadCountry" value="{!leadeditlist.BLN_Country__c}" multiselect="false" size="1" styleClass="selectlist">
+                                            <apex:selectOptions value="{!countryOptions}" />
+                            <apex:actionSupport event="onchange" action="{!statesBasedOnCountry}" rerender="WorkStatePanel" status="Ajaxloader"/>
+                                        </apex:selectList>
+                                        </apex:actionRegion>
+              </div>
+               <div class="clear"></div>
+            </div>
+            <!--close formelem_box---> 
+            
+         
+           <!-------->
+           <div class="formelem_boxsmall">
+               <div class="formlabel-left textright">
+                <label>Note:</label>
+              
+              </div>
+              <div class="formelement-ryt textleft" >   
+              <apex:inputTextarea value="{!leadeditlist.notes__c}" rows="5" id="notes"/>
+              <!-- <textarea rows="4" cols="50"> <apex:inputField value="{!leadeditlist.notes__c}"/> </textarea> --> 
+              </div>
+              <div class="clear"></div>
+            </div>
+            <!--close formelem_box--->
+   
+             <!----------------------------------------------start of surveyquest section_box-------------------------------------------------->  
+             
+           <div class="surveyquest section_box">
+             <p class="bg-font" style=" padding-bottom:10px;">Lead Qualifiers</p>
+           <!----apex repeat------>  
+           <apex:variable value="{!0}" var="c"/>
+           <apex:repeat value="{!editqacls}" var="q">
+             <apex:variable value="{!c+1}" var="c"/>
+             <!---------question type text-------->
+             <div class="formelem_boxfull">
+              <ul class="stdul">
+              <li>
+              <div class="form_quest">
+              <label class="labeltitles left margin-ryt-5px">Q{!c}.</label>
+                  <apex:inputField value="{!q.q1.Question_Text__c}"/>
+              <div class="clear"></div>
+              </div><!---close of form_quest--->
+               <div class="form_answer">
+              <!------->   
+             <label class="labeltitles left margin-ryt-5px" style="line-height:25px;">Ans.</label>
+                 <apex:inputField value="{!q.u1.UAnswer_Text__c}"/>
+              <!---------->
+               <div class="clear"></div>
+              </div><!---close of form_ans---->
+              </li>
+              </ul>
+            </div>
+            <!---close of formelem_box--->
+          </apex:repeat>
+          <!-----//close of apex repeat-------->  
+             <!--------//question type text------->
+          
+             
+           <!----->   
+          </div> 
+     <!-----------close of surveyquest section_box-------------->       
+           </div><!--close of form--> 
+      </div>
+      <!--close of form-content-div----> 
+    </div>
+    <!--close of form-embed-div----->
+    <apex:inputHidden id="fupdate" value="{!followupdate}" />
+    <div style="margin-top:20px; text-align:center;">
+      <apex:commandButton value="Save" action="{!SavePopup}" styleClass="button-a blue" onclick="if((validateSave() && zipcodevalid())) return true; else return false;"/>&nbsp;
+      &nbsp;&nbsp;
+      <apex:commandButton value="Cancel" action="{!closePopup}" styleClass="button-a dark-blue"/>
+    </div>
+  </div>
+  <!---close of shadow-div-----> 
+  
+</div>
+<!--close of leadsform-----> 
+<script>
+///////start of Dropzone js for uploading image////////////////
+$(".dropzone").mouseover(function(e) {
+    //alert("innn");
+    $(this).find(".clr_dropzone").css("display", "block");
+});
+
+
+$(".dropzone").mouseleave(function(e) {
+   $(this).find(".clr_dropzone").css("display", "none");
+});
+
+$(".clr_dropzone").click(function(e) {
+    //alert("closeeeee");
+    $(this).parent().find("img").remove();
+    
+    $(this).siblings("div").css("background" ,"src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/noimage.jpg')}' no-repeat center");
+});
+///////Dropzone js for uploading image////////////////      
+///////Start of Dropzone js for uploading image//////////////// 
+$(function() {
+$(".dropzone").click(function(e) {
+//alert("click");
+//////////////////////////////////////////    
+$("div").removeClass('imgdropped');
+$(this).addClass('imgdropped');
+$(this).find( 'input').change(function(e) {
+    var file = this.files[0];
+    //alert("cccc");
+    $(":input").removeClass('dropped'); 
+    $(this).prev("div").css("background" ,"none");
+    $(this).addClass('dropped');
+    $(this).find('img').remove();
+    if ((/^image\/(gif|png|jpeg)$/i).test(file.type)) {
+      var reader = new FileReader(file);
+
+      reader.readAsDataURL(file);
+      
+      reader.onload = function(e) {
+        var data = e.target.result,
+            $img = $('<img />').attr('src', data).fadeIn();
+            
+    
+     $(".dropped").siblings('div').html($img);
+      };
+    } else {
+      var ext = file.name.split('.').pop();
+      
+      $(".dropped").siblings('div').html(ext);   
+    }
+  });
+
+
+})//click
+})
+///////End of Dropzone js for uploading image////////////////   
+</script>
+</apex:outputPanel>
+
+
+
+
+
+
+<!-----------------------------------------------------------END EDIT LEAD SECTION-----------------------------------------------------------------------> 
+
+
+
+
+
+   <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery-1.9.1.js')}"> </script>
+    <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script> 
+    <script> //alert(); var dt = jQuery.noConflict(); 
+    dt(document).ready(function() { dt('.jqdatepicker').datetimepicker({ step:15, formatDate: 'Y/m/d', }); }) </script> 
+
+<script>
+var dateTimest = document.getElementById("pg:cmp:commoncomponent:allLeads:fudap").innerHTML;
+        if(dateTimest!=""){
+           var dateTimest1=dateTimest.split(', ');
+           var newDate = new Date(dateTimest);
+           var sMonth = newDate.getMonth() + 1;
+           var sDay = newDate.getDate();
+           var dateTimest2=sMonth+'/'+sDay+'/'+dateTimest1[1].trim();
+           document.getElementById("fdate").value=dateTimest2.trim();
+           
+
+        }
+</script> 
+ 
+<!------------------------------------------------------------->        
+  
+</apex:form> 
+</c:ed_basictemplate>
+<!-------------//end of basic template component------------------------>
+ <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+    <script type="text/javascript" language="javascript" class="init">
+     var j = jQuery.noConflict();
+     var imp='';
+j(document).ready(function() {
+    j('#example').dataTable( {
+          "scrollX": true,
+    
+          "sScrollX": "100%",
+       // "sScrollXInner": "678%",
+  dom: 'C<"clear">lfrtip',
+          
+         "bAutoWidth": false, // Disable the auto width calculation
+"aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [0,1,8,12,20,21,22] },
+     
+   ],
+   order: [] ,
+
+
+        colVis: {
+             "label": function ( index, title, th ) {
+                return (index+1) +'. '+ title;
+            } },
+            /***********/   
+        "processing": true,
+              "serverSide": true,
+    
+                "ajax": {
+                "url":'{!$Page.BLN_LeadRetrieval_Helper}?core.apexpages.devmode.url=1',
+                "data": function ( pagedata ) {
+                        //pagedata["search"]=$("[id$='idFromDate']").val();
+                        //pagedata["tdate"]=$("[id$='idToDate']").val();
+                  }
+                },
+                "fnDrawCallback": function()
+                 {
+                 imp = document.URL; 
+                 if(imp.indexOf('?')!= -1){
+                  //Alert.render('Import might take some time, Please check your data after receiving the import status email.','Alert','OK');
+                  Alertconfirm.render('Import might take some time, Please check your data after receiving the import status email.' , 'Alert','','Ok','Cancel','Alertconfirm');
+                  $('#confirm_dialogboxfoot').find('button').eq(1).hide();
+                  
+                  }
+                 },
+               "columns": [ 
+                   {
+                        data:   "active",
+                        render: function ( data, type, row ) {
+                           return '<a onclick=editMethodaction(\''+row.ls.Id+'\');> <i class="fa fa-pencil fa-edit20px"></i></a>&nbsp;&nbsp;<a onclick=confirmDelete(\''+row.ls.Id+'\',this);return false;> <i class="fa fa-trash-o fa-delete20px"></i></a>';
+                            //return 'aaa';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        "class" : "textcenter",
+                        render: function ( data, type, row ) {
+                            var ids= row.ls.user_pic__c;
+                            if(row.ls.user_pic__c!=undefined){
+                                return '<div  class="fixedimg_div"><img class="fixedimg" src="/servlet/servlet.ImageServer?id='+ids+'&oid={!$Organization.Id}+" /></div>';
+                            }else{
+                                return '<div class="fixedimg_div"><img class="fixedimg" src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/noimage.jpg')}"  /></div>';
+                            }
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Prefix__c != null)
+                            return row.ls.Prefix__c;
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            //return row.ls.First_Name__c+' '+row.ls.Last_Name__c;
+                            return '<a onclick=showMethodaction(\''+row.ls.Id+'\');>'+row.ls.First_Name__c+' '+row.ls.Last_Name__c+'</a>';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Suffix__c != null)
+                            return row.ls.Suffix__c;    
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Company__c != null)
+                            return row.ls.Company__c;          
+                            else
+                            return '';       
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Title__c != null)
+                            return row.ls.Title__c;     
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            return row.ls.Lead_Email__c;
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Cell_Phone__c != null)
+                            return row.ls.Cell_Phone__c;
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        "class" : "rating_display",
+                        render: function ( data, type, row ) {
+                            returnstring = '';
+                            if(row.ls.Rating__c!=undefined){
+                                for(i=1;i<=row.ls.Rating__c;i++){
+                                returnstring += '<img class="fixedimg" src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/yellowstar.png')}"/>';
+                                }
+                                for(j=5-row.ls.Rating__c;j>0;j--){
+                                returnstring += '<img class="fixedimg" src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}"/>';
+                                }
+                            }else{
+                                for(i=1;i<=5;i++){
+                                returnstring += '<img class="fixedimg" src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}"/>';
+                                }
+                            }
+                            return returnstring;   
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            return row.ls.Scanner_User__r.First_Name__c+'&nbsp;'+row.ls.Scanner_User__r.Last_Name__c;
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            return row.scantime;    
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                        var returnstr = '';
+                            if(row.ls.notes__c != undefined)
+                            returnstr=row.ls.notes__c.substring(0,49);
+                            
+                            if(returnstr != '' && returnstr != undefined && returnstr != null && row.ls.notes__c.length>50){
+                                returnstr += '.....';
+                            }
+                            return returnstr;
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            return row.fdate;  
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Street1__c != null)
+                            return row.ls.Street1__c;
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Street2__c != null)
+                            return row.ls.Street2__c; 
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                             if(row.ls.City__c != null)
+                             return row.ls.City__c;
+                             else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.BLN_State__r != undefined && row.ls.BLN_State__r != null)
+                            return row.ls.BLN_State__r.Long_Name__c;
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.BLN_Country__r != undefined && row.ls.BLN_Country__r != null)
+                            return row.ls.BLN_Country__r.Long_Name__c;
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.zip__c != null)
+                            return row.ls.zip__c;
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Work_Phone__c != null)
+                            return row.ls.Work_Phone__c;
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            if(row.ls.Home_Phone__c != null)
+                            return row.ls.Home_Phone__c;
+                            else
+                            return '';
+                        }
+                    },
+                    {
+                        data:   "item",
+                        render: function ( data, type, row ) {
+                            var returnstring = '';
+                            returnstring +='<table class="subtable display" style="width:1000px;"  >';
+                            for(d=0;d<row.qc.length;d++){
+                                returnstring +='<tr><td style="width:50%">';
+                                if(row.qc[d].que!= null)
+                                returnstring += row.qc[d].que;
+                                else
+                                returnstring += '';
+                                
+                                returnstring +='</td><td style="width:50%">';
+                                
+                                if(row.qc[d].ans!= null)
+                                returnstring += row.qc[d].ans;
+                                else
+                                returnstring += '';
+                                
+                                returnstring += '</td></tr>';
+                            }
+                            returnstring +='</table>';
+                            return returnstring ;
+                        }
+                    }
+                ]
+    } );
+
+<!--------end of datatable js library------------->
+    
+} );
+
+function callback(clkbtn, okbtnn) {
+var url1=imp.split('?');
+window.location.href = url1[0];
+}
+</script>
+
+<!-----------------start of datepicker------> 
+
+<script src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"></script> 
+<script>
+var dt = jQuery.noConflict();        
+dt('.jqdatepicker').datetimepicker({
+   formatDate: 'Y/m/d',
+   step:15,
+  //defaultTime:'5:00 PM',
+
+});
+
+var dateTimest = document.getElementById("pg:cmp:commoncomponent:allLeads:fudap").innerHTML;
+        if(dateTimest!=""){
+           var dateTimest1=dateTimest.split(', ');
+           var newDate = new Date(dateTimest);
+           var sMonth = newDate.getMonth() + 1;
+           var sDay = newDate.getDate();
+           var dateTimest2=sMonth+'/'+sDay+'/'+dateTimest1[1].trim();
+           document.getElementById("fdate").value=dateTimest2.trim();
+           
+           
+        }
+</script> 
+
+<script>
+$(document).ready(function() {
+    try{
+    allstatsPanel();
+    }catch(e){}
+});
+
+</script>
+
+<!----------------------//end of datepicker------>
+<!------------------popup for leads view start-------->
+<c:ed_popupbox ></c:ed_popupbox>
+ <script language="javascript">
+ var deleteLead='';
+        function confirmDelete(deleteLead1,clkbtn_id){
+        deleteLead=deleteLead1;
+    Alertconfirm.render('Are you sure you want to delete the Lead ?' , 'Confirmation',clkbtn_id,'Yes','No','Alertconfirm');
+        }
+        
+function continueToBatch(clkbtn)
+{
+    Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+}
+        
+        function callback(clkbtn , okbtnn){
+    if(clkbtn =='sendToMail')
+    {
+        exportfn();
+    }else{
+            deleteLeadfn(deleteLead);
+     }
+}
+    </script>
+
+<script>
+    /*******creating instances for calling popups*******/
+var Alert_leaddp = new Custom_formPopup(); // Leads details
+    /***************/   
+</script>
+<apex:outputPanel id="popup">
+<script>
+Alert_leaddp.render('dialogbox_leaddp','leaddp_dialogoverlay','Alert_leaddp' ,this);
+</script>
+<!---------View popup for Leads------->
+<div class="dialogoverlay" id="leaddp_dialogoverlay" style="z-index:9999;"></div>
+<!----------------->
+    <!--close of dialogoverlay-->
+     <div  id="dialogbox_leaddp" style=" display:none;z-index:999991; width:50%; margin-left:25%;">
+    <a id="close" onclick="Alert_leaddp.Cancel()" style=" margin-top:-5px;">×</a>
+  <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+     <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;">
+    
+    <!----------->
+    <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+       <!-- <div class="title-grid">Speaker Details</div>-->
+        <div class="content-gird" style="padding:0px;">
+        <!--------------> 
+       <div  class="spkpopup-bg">
+       <!-------left side---------->
+       <div class="form-embed-div" style=" float:left; width:34%; margin-top:0px;">
+     <div class="form-content-div" style=" background-color:#f6f6f6; padding:0px; min-height:150px; max-height:530px;">
+     <!---------------------->
+     <div class="spkpopup-left-top">
+    <!---------> 
+     <apex:outputpanel rendered="{!showlead.user_pic__c!=null}">
+     <!--<div class="round-imgdiv" style="background-image:url('/servlet/servlet.ImageServer?id={!showlead.user_pic__c}&oid={!$Organization.Id}')">-->
+     <!--<div class="round-imgdiv" >
+     <apex:image url="/servlet/servlet.ImageServer?id={!showlead.user_pic__c}&oid={!$Organization.Id}" style="width: 180px;"/>
+     -->
+    <div class="round-imgdiv" style=" background-image:url('servlet/servlet.ImageServer?id={!showlead.User_Pic__c}&oid={!orgId}');" >
+    
+     </div><!---close of round--imgdiv--->
+     
+     </apex:outputpanel>
+     <apex:outputpanel rendered="{!showlead.user_pic__c==null}">
+     <div class="round-imgdiv" style="background-image:url('{!URLFOR($Resource.edsr_master,'edsr_root/images/noimage.jpg')}')"></div>
+     </apex:outputpanel>
+     <p class="textcenter custh1">{!showlead.Prefix__c} {!showlead.First_Name__c} {!showlead.Last_Name__c} </p>
+     
+     <!---------> 
+     <p class="textcenter strong_700 custh2">{!showlead.Title__c}</p>
+    <!---------> 
+    <style>
+    .rating_display img{ width:15px;}
+    </style>
+     <p class="textcenter strong_700  custh2" style="padding-top:0px;">{!showlead.Company__c}</p>
+     <p class="textcenter rating_display"> <!--<apex:repeat value="{!listOfintegers1}" var="tr">
+                            <apex:image value="{!tr}"/>
+                            </apex:repeat> -->
+                    <apex:outputPanel rendered="{!IF(showlead.Rating__c!=null,true,false)}">
+                    <apex:repeat value="{!listOfintegers1}" var="tr" first="{!5-showlead.Rating__c}">
+                    <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/yellowstar.png')}"/>
+                    </apex:repeat>
+                    
+                    <apex:repeat value="{!listOfintegers1}" var="tr" first="{!showlead.Rating__c}">
+                    <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}"/>
+                    </apex:repeat>
+                   </apex:outputPanel>
+                    
+                     <apex:outputPanel rendered="{!(showlead.Rating__c==null)}">
+                    <apex:repeat value="{!listOfintegers1}" var="tr">
+                    <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/whitestar.png')}"/>
+                    </apex:repeat>
+                    </apex:outputPanel>
+     </p>         
+     </div><!--close of popup-left-top---->
+     
+     <!--------------------->
+     <div class="spkpopup-left-btm"><!--close of popup-left-bottom---->
+     <div class="left-icodiv">
+     <i title="Mail Address" class="fa fa-envelope fa-social-20x" style="color:#f2b013;"></i>
+     
+     </div>
+     <div class="right-icodiv">
+     
+     <a class="margin-lft-5px" href="mailto:{!showlead.Lead_Email__c}?Subject=" target="new">
+      {!showlead.Lead_Email__c}</a>
+     </div>
+     <div class="clear"></div>
+     </div><!--close of popup-left-bottom---->
+   <!--------->  
+   <!--------------------->
+     <div class="spkpopup-left-btm"><!--close of popup-left-bottom---->
+     <div class="left-icodiv">
+      
+     <!-- <i title="Mail Address" class="fa fa-envelope fa-social-20x" style="color:#f2b013;"></i> --> 
+     
+     </div>
+     <div class="right-icodiv">
+     <apex:outputpanel rendered="{!showlead.followup_date__c!=null}" >
+            <!--<c:EV_FormatDt date_Timevalue="{!showlead.followup_date__c}" t_Zone="{!eventslist.Time_Zone__c}"/>-->
+            <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}"><apex:param value="{!showlead.followup_date__c}"/></apex:outputText>
+            </apex:outputpanel>
+     
+      <!--<c:MFSI_FormatDateTime date_Timevalue="{!showlead.followup_date__c}"/>-->
+     </div>
+     <div class="clear"></div>
+     </div><!--close of popup-left-bottom---->
+   <!--------->
+     
+       <!--------------------->
+    <div class="spkpopup-left-btm"><!--close of popup-left-bottom---->
+    <div class="left-icodiv">
+    <i title="Work Phone No" class="fa fa-phone-square fa-social-20x blueanchor" style=""></i>
+    </div> 
+    <div class="right-icodiv"> 
+    <apex:outputText rendered="{!IF(showlead.Cell_Phone__c!=null,true,false)}">{!showlead.Cell_Phone__c} <font size="2" color="lightBlue">(C)</font><br/></apex:outputText>
+    <apex:outputText rendered="{!IF(showlead.Work_Phone__c!=null,true,false)}">{!showlead.Work_Phone__c} <font size="2" color="lightBlue">(W)</font><br/></apex:outputText>
+    <apex:outputText rendered="{!IF(showlead.Home_Phone__c!=null,true,false)}">{!showlead.Home_Phone__c} <font size="2" color="lightBlue">(H)</font><br/></apex:outputText>
+    </div>
+    <div class="clear"></div>
+    </div><!--close of popup-left-bottom---->
+   <!---------> 
+   
+   <!--------------------->
+     <div class="spkpopup-left-btm"><!--close of popup-left-bottom---->
+     <div class="left-icodiv" style="">
+    <i title="Work Address" class="fa fa-map-marker fa-social-20x blueanchor"></i>
+  
+     </div> 
+     <div class="right-icodiv">
+     <apex:outputText rendered="{!IF((showlead.Street2__c!=null || showlead.Street1__c!=null),true,false)}">
+     <p>
+     <apex:outputText rendered="{!IF(showlead.Street1__c!=null,true,false)}">
+     {!showlead.Street1__c}, </apex:outputText>
+     {!showlead.Street2__c}</p></apex:outputText>
+     
+     <p>{!showlead.City__c}<apex:outputText rendered="{!IF(showlead.City__c!=null,true,false)}">,</apex:outputText>
+            {!showlead.BLN_State__r.Short_Name__c}
+            
+     <apex:outputText rendered="{!IF(showlead.BLN_State__c!=null,true,false)}">,</apex:outputText> 
+        {!showlead.zip__c}
+     </p>
+            <p>{!showlead.BLN_Country__r.Short_Name__c} </p>
+     </div>
+     <div class="clear"></div>
+     </div><!--close of popup-left-bottom---->
+   <!---------> 
+    
+     
+     
+     </div><!----close of form-content-div----->
+     </div> <!----close of form-embed-div(left)------>  
+
+       <!-------start of right--------> 
+       <div class=" right spkpopup-right-box" style="width:58% !important;">
+       <!--------->
+       <p style=" margin-bottom:5px;">
+        <span><img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/scannedby.png')}" title="Scanned By" /></span>
+       <span class="strong_700">{!showlead.Scanner_User__r.First_Name__c}&nbsp;{!showlead.Scanner_User__r.Last_Name__c}, 
+       <apex:outputpanel rendered="{!showlead.Scan_Time__c!=null}" >
+            <c:EV_FormatDt date_Timevalue="{!showlead.Scan_Time__c}" t_Zone="{!eventslist.Time_Zone__c}"/>
+            </apex:outputpanel>
+       </span>
+    
+       <apex:outputPanel rendered="{!IF((devicelist.Device_OS__c==null || devicelist.Device_OS__c==''),false,true)}">
+       <span class=" margin-lft-5px"><i title="Scanned By" class="fa fa-mobile fa-social-20x blueanchor" style=""></i></span>
+       <span class="strong_700">{!devicelist.Device_OS__c} </span>
+       </apex:outputPanel>
+       </p>
+      <!-----> 
+       <apex:outputPanel rendered="{!IF((showlead.notes__c==null || showlead.notes__c==''),false,true)}">
+       <hr class="hr_engrave"/>
+       <br/>
+       <p class="custh1">Lead Notes</p>
+       <p class="content_par">
+        {!showlead.notes__c}
+       </p>
+       </apex:outputPanel>
+       <!------content_par----->
+       
+       <hr class="hr_engrave"/>
+     <!--------------Lead Qualifiers--------->
+     <!--------->
+   <apex:variable value="{!0}" var="quecount"/>
+   <apex:repeat value="{!qacls}" var="q"> 
+   <apex:outputPanel rendered="{!IF((q.que ==null || q.que ==''),false,true)}">
+   <apex:variable value="{!quecount+1}" var="quecount"/>
+    </apex:outputPanel>
+   
+    </apex:repeat>
+   <apex:outputPanel rendered="{!IF((quecount!=0),true,false)}">
+       <p class="custh1" style="padding:10px 0px;">Lead Qualifiers</p>
+ 
+       <apex:variable value="{!1}" var="num"/>
+      <!----repeat starts-------> 
+      <apex:repeat value="{!qacls}" var="q"> 
+       <div class="formelem_boxfull">
+             <div class="form_quest">
+              <label class="labeltitles left margin-ryt-5px">Q{!num}.</label>
+              <apex:variable value="{!num+1}" var="num"/>
+              <p >{!q.que}</p>
+               <div class="clear"></div>
+              </div><!---close of form_quest--->
+               <div class="form_answer">
+              <!------->   
+             <label class="labeltitles left margin-ryt-5px">Ans.</label>
+              <p >{!q.ans}</p>
+              <!---------->
+               <div class="clear"></div>
+              </div><!---close of form_ans---->
+             
+            </div>
+           
+      </apex:repeat>
+      </apex:outputPanel>  
+      <!-----//repeat End--------->   
+
+       <!------content_par----->
+     
+     <!-------------// End of Lead Qualifiers------->  
+       
+       
+      
+       <!---------------------->
+       </div><!-- // popup-right-box---->
+        <div class="clear"></div>
+       <!----------------->
+        </div><!--close of pop-bg---->
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+       <!----->
+        </div><!----close of form-content-div----->
+        </div> <!----close of form-embed-div------>  
+</div>
+<!--close of dialogbox----> 
+<!------------end of popup for Lead display-------------> 
+</apex:outputPanel>
+<!---------------//popup for leads view start-------->
+    <!--/*********************Java Script Section*******************/-->
+<!------------common js libraries component----------->
+<c:ed_commonjs ></c:ed_commonjs>
+<!------------//common js libraries component------------>
+
+<!-----star rating script------->
+
+<!-------//end of star rating script----->
+
+
+<!---------------------------------------------------------START VALIDATION SECTION-------------------------------------------------------->
+
+<script>
+  var errorbool= true;
+  function pnovalid2(pnovalue2,phid){
+   // alert('1');
+    //var pnovalue2=document.getElementById("pg:cmp:commoncomponent:allLeads:ph2").value;
+    //alert(phid);
+     document.getElementById("pg:cmp:commoncomponent:allLeads:ph2").style.border="1px solid #e3e3e3";
+     document.getElementById("pnoerrormsg2").style.display="none";
+     if(pnovalue2!=null  && pnovalue2!=''){
+     var phoneno2 =/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+     
+     if(phoneno2.test(pnovalue2)){
+        if(phid=='pg:cmp:commoncomponent:allLeads:ph2'){
+            document.getElementById("pg:cmp:commoncomponent:allLeads:ph2").style.border="1px solid #e3e3e3";
+            document.getElementById("pnoerrormsg2").style.display="none";
+        }else if(phid=='pg:cmp:commoncomponent:allLeads:ph1'){
+            document.getElementById("pg:cmp:commoncomponent:allLeads:ph1").style.border="1px solid #e3e3e3";
+            document.getElementById("pnoerrormsg1").style.display="none";
+        }else if(phid=='pg:cmp:commoncomponent:allLeads:ph'){
+            document.getElementById("pg:cmp:commoncomponent:allLeads:ph").style.border="1px solid #e3e3e3";
+            document.getElementById("pnoerrormsg").style.display="none";
+        }
+        errorbool=true;
+        return true;  
+         }
+         else if(pnovalue2.length !=0){
+            if(phid=='pg:cmp:commoncomponent:allLeads:ph2'){
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph2").focus();
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph2").style.border="2px solid #d43535";
+                document.getElementById("pnoerrormsg2").style.display="";
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph2").focus();
+            }else if(phid=='pg:cmp:commoncomponent:allLeads:ph1'){
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph1").focus();
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph1").style.border="2px solid #d43535";
+                document.getElementById("pnoerrormsg1").style.display="";
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph1").focus();
+            }else if(phid=='pg:cmp:commoncomponent:allLeads:ph'){
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph").focus();
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph").style.border="2px solid #d43535";
+                document.getElementById("pnoerrormsg").style.display="";
+                document.getElementById("pg:cmp:commoncomponent:allLeads:ph").focus();
+            }
+            errorbool= false;
+            return false;
+         }
+         }else{
+                errorbool=true;
+                return true;
+            }
+            
+    
+    }  
+
+    function zipcodevalid(){
+            //var country=document.getElementById("pg:cmp:commoncomponent:allLeads:BusinessCountry").value;
+            var zipcodevalue=document.getElementById("pg:cmp:commoncomponent:allLeads:zip").value;
+            
+            var e = document.getElementById("pg:cmp:commoncomponent:allLeads:BusinessCountry");
+            var country = e.options[e.selectedIndex].text;
+
+            if(zipcodevalue!= null && zipcodevalue!=''){
+                
+                if(country == 'United States Of America')
+                var zipcodepattern=/^\d{5}(?:[-\s]\d{4})?$/;
+                else  if(country == 'India')
+                var zipcodepattern=/^\d{6}(?:[-\s]\d{5})?$/;
+                
+                document.getElementById("ziperrormsg").style.display="none";
+                document.getElementById("pg:cmp:commoncomponent:allLeads:zip").style.border="1px solid #e3e3e3";
+                if(zipcodepattern.test(zipcodevalue)){
+                    document.getElementById("pg:cmp:commoncomponent:allLeads:zip").style.border="1px solid #e3e3e3";
+                    document.getElementById("ziperrormsg").style.display="none";
+                    errorbool=true;
+                    return true;
+                }else if(zipcodevalue.length !=0){
+                    document.getElementById("pg:cmp:commoncomponent:allLeads:zip").focus();
+                    document.getElementById("pg:cmp:commoncomponent:allLeads:zip").style.border="2px solid #d43535";
+                    document.getElementById("ziperrormsg").style.display="";
+                    document.getElementById("pg:cmp:commoncomponent:allLeads:zip").focus();
+                    errorbool= false;
+                    return false;
+                }
+
+            }else{
+                errorbool=true;
+                return true;
+            }
+            
+            }
+
+    function datevalidation(){
+        var fdatevalue=document.getElementById("fdate").value;
+        document.getElementById("fdate").style.border="1px solid #e3e3e3";
+        document.getElementById("fdateerrormsg").style.display="none";
+        if(fdatevalue!= null && fdatevalue!=''){
+        if(new Date(fdatevalue) > new Date())
+        {
+            document.getElementById("fdate").style.border="1px solid #e3e3e3";
+            document.getElementById("fdateerrormsg").style.display="none";
+            document.getElementById("pg:cmp:commoncomponent:allLeads:fupdate").value = fdatevalue ;
+            errorbool=true;
+        }else{
+            document.getElementById("fdate").focus();
+            document.getElementById("fdate").style.border="2px solid #d43535";
+            document.getElementById("fdateerrormsg").style.display="";
+            document.getElementById("fdate").focus();
+            errorbool= false;
+            return false;
+        }
+        }else{
+        document.getElementById("pg:cmp:commoncomponent:allLeads:fupdate").value = fdatevalue ;
+        errorbool=true;
+        return true;
+        }
+    }
+    
+    function validateSave(){
+        var notes = document.getElementById("pg:cmp:commoncomponent:allLeads:notes").value;
+        var notesbool=true;
+        if(notes.length > 255){
+            notesbool= false;
+            Alert.render('Maximium Limit of 255 characters is exceeded for Notes','Alert','ok');
+            return false;
+        }
+        
+        
+        if($("[id$='fname']").val() == '' || $("[id$='fname']").val() == null){
+            Alert.render('First Name is Required. Please enter a value.','Alert','ok');
+            return false;
+        }
+        
+        if($("[id$='lname']").val() == '' || $("[id$='lname']").val() == null){
+            Alert.render('Last Name is Required. Please enter a value.','Alert','ok');
+            return false;
+        }
+        
+        if(errorbool== false || notesbool == false){
+            return false;
+        }else{
+            return true;
+        }
+    }
+        </script>
+        <script>
+        jQuery(document).ready(function(){
+     try{
+     getstatejs_forfirsttimeload($('[id$="BusinessCountry"]').attr('id'),'{!leadeditlist.BLN_Country__c}','{!leadeditlist.BLN_State__c}');
+     }catch(e){}
+     
+     });
+        </script>
+         <c:BLN_ScriptForContryState >  </c:BLN_ScriptForContryState>
+
+<!---------------------------------------------------------END VALIDATION SECTION---------------------------------------------------------->
+
+</apex:page>

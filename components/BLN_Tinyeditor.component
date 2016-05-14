@@ -1,0 +1,117 @@
+<!----------------------------------------------------
+
+* Developer: Vineel
+* Purpose: Rich Text Conversion from Text Field/ Long Text
+
+------------------------------------------------------>
+
+<apex:component >
+
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/tinyeditor/tinyeditor.css')}" />
+
+<!-----------------start of Tinyeditor------------>
+        <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/tinyeditor/tiny.editor.packed.js')}"> </script>
+        <script>
+        
+        function Richtextconverter(RichtextFieldId)
+        {
+        var editor = new TINY.editor.edit(RichtextFieldId, {
+            id:RichtextFieldId,
+            width: '100%',
+            height: 100,
+            cssclass: 'tinyeditor',
+            controlclass: 'tinyeditor-control',
+            rowclass: 'tinyeditor-header',
+            dividerclass: 'tinyeditor-divider',
+            controls: ['bold', 'italic', 'underline', 'strikethrough', '|', 'subscript', 'superscript', '|',
+                       'orderedlist', 'unorderedlist', '|', 'outdent', 'indent', '|', 'leftalign',
+                       'centeralign', 'rightalign', 'blockjustify', '|', 'unformat', '|', 'undo', 'redo', 'n',
+                       'font', 'size', 'style', '|', 'image', 'hr', 'link', 'unlink', '|', 'print'],
+                       footer: true,
+                       fonts: ['Verdana','Arial','Georgia','Trebuchet MS'],
+                       xhtml: true,
+                       //cssfile: 'custom.css',
+                       bodyid: RichtextFieldId,
+                       footerclass: 'tinyeditor-footer',
+                       toggle: {text: 'source', activetext: 'wysiwyg', cssclass: 'toggle'},
+                       resize: {cssclass: 'resize'}
+        });
+        }
+        
+</script>  
+<!-----------------End start of Tinyeditor------------>
+<!-----------------start of TinyMC  editor------------>
+<apex:includeScript value="{!URLFOR($Resource.tinymce, 'tinymce/js/tinymce/tinymce.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.tinymce, 'tinymce/js/tinymce/jquery.tinymce.min.js')}"/>
+<script>
+             function Richtextconverter_TyniMc(RichtextFieldIdmc)
+        {
+         tinymce.init({
+    theme: "modern",
+     mode : "specific_textareas",
+      //  editor_selector : RichtextFieldIdmc,
+     selector: "#"+RichtextFieldIdmc,  // change this value according to your HTML
+  toolbar: "fontsizeselect,code,widgets,myimageuploadbutton,mybutton,preview,media,insertdatetime,table,image,forecolor backcolor,anchor,ltr rtl",
+  plugins: "code,table,visualblocks,media,print,preview,charmap,textpattern,insertdatetime,importcss,hr,fullscreen,fullpage,table,emoticons,image imagetools,layer,textcolor colorpicker,anchor,autolink,autoresize,codesample,contextmenu,directionality",
+  contextmenu: "link image inserttable | cell row column deletetable",
+  body_class: 'uday123',
+  relative_urls : false,
+remove_script_host : false,
+convert_urls : true,
+image_advtab: true,
+ imagetools_toolbar: "imageoptions",
+   insertdatetime_formats: ["%H:%M:%S", "%Y-%m-%d", "%I:%M:%S %p", "%D"],
+   fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+  importcss_append: true,
+   textpattern_patterns: [
+     {start: '*', end: '*', format: 'italic'},
+     {start: '**', end: '**', format: 'bold'},
+     {start: '#', format: 'h1'},
+     {start: '##', format: 'h2'},
+     {start: '###', format: 'h3'},
+     {start: '####', format: 'h4'},
+     {start: '#####', format: 'h5'},
+     {start: '######', format: 'h6'},
+     {start: '1. ', cmd: 'InsertOrderedList'},
+     {start: '* ', cmd: 'InsertUnorderedList'},
+     {start: '- ', cmd: 'InsertUnorderedList'}
+  ],
+color_picker_callback: function(callback, value) {
+alert('coming');
+    callback('#FF00FF');
+  },
+  setup: function(editor) {
+ editor.on('keyup', function(e) {
+         //  alert('keyup occured');
+          
+        //  var valu = $(this).html();
+          console.log(e);
+           // check_submit(); //another function calling
+               $( "#map" ).resizable();
+
+        });
+   
+    }
+  
+
+
+    });
+  
+
+}
+
+</script>
+<!-----------------End start of TinyMC editor------------>
+<!--- Can be Used "textofl" as a class name where ever to implement overflow functionality---------> 
+<style>
+   .textofl {
+    white-space: nowrap; 
+    width: 300px; 
+    height: 25px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    //border: 1px solid #ffffff;
+   }
+</style>
+</apex:component>

@@ -1,0 +1,102 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_AttendeesController" action="{!exportSelectedTicketBatch}"  contentType="application/vnd.ms-excel#ExportAttendees.xls"> 
+    <apex:outputPanel rendered="{!attendeeList.size<=1000}">
+    <table border="1" cellpadding="0" cellspacing="0"> 
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email </th>
+            <th>Phone</th>
+            <th>Company</th>
+            <th>Designation</th> 
+            <th>Ticket Type</th>
+            <th>Ticket Name</th>
+            <th  >Badge Label</th> 
+            <th >Seat No.</th> 
+            <th >Badge Status</th> 
+            <th>Checkin Status</th>
+            <th>Buyer Name</th>
+            <th >Tag  </th>
+            <th>Order Date</th>
+            <th>Order Id</th>
+            <th>Ticket Id</th>
+            <th>Custom Barcode</th> 
+        </tr>
+        
+        <apex:repeat value="{!attendeeList}" var="item">
+            <tr>
+                <td>{!item.tkt_profile__r.First_Name__c}</td>
+                <td>{!item.tkt_profile__r.Last_Name__c} </td>
+                <td>{!item.tkt_profile__r.Email__c}</td>
+                <td>{!item.tkt_profile__r.Mobile__c}</td>
+                <td>{!item.tkt_profile__r.TKT_Company__c}</td>
+                <td>{!item.tkt_profile__r.TKT_Job_Title__c}</td> 
+                <!--<td>{!item.Item_Pool__r.Item_Type__r.Name}</td>-->
+                <td> 
+                    <apex:variable value="" var="LabelName"/>   
+                    <apex:outputText rendered="{!item.Item_Pool__r.Item_Type__r.Name=='Admissions'}"> 
+                        <apex:repeat value="{!RegList}" var="r">        
+                            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Attendee'}"/>      
+                            <apex:variable value="Admissions" var="LabelName" rendered="{!r.Label_Name__c=='Attendee'}"/>      
+                        </apex:repeat>
+                    </apex:outputText>
+                    
+                    <apex:outputText rendered="{!item.Item_Pool__r.Item_Type__r.Name=='Exhibitor'}"> 
+                        <apex:repeat value="{!RegList}" var="r">        
+                            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Exhibitor'}"/>     
+                        </apex:repeat> 
+                    </apex:outputText>
+                    
+                    <apex:outputText rendered="{!item.Item_Pool__r.Item_Type__r.Name=='Sponsor'}"> 
+                        <apex:repeat value="{!RegList}" var="r">        
+                            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Sponsor'}"/>       
+                        </apex:repeat> 
+                    </apex:outputText>
+                    
+                    <apex:outputText rendered="{!item.Item_Pool__r.Item_Type__r.Name=='Speaker'}"> 
+                        <apex:repeat value="{!RegList}" var="r">        
+                            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Speaker'}"/>       
+                        </apex:repeat> 
+                    </apex:outputText>
+                    {!LabelName}
+                </td>
+                <td>{!item.Item_Pool__r.Item_Pool_Name__c}</td> 
+                <td>{!item.Badge_Label__c}</td> 
+                <td>{!item.Tag_No__c}</td> 
+                <td>{!item.Badge_ID__r.Print_status__c}</td>
+                <td>
+                    <apex:outputText value="Checked In" rendered="{!item.Tstatus_Id__r.Tstatus_name__c==true}"/>
+                    <apex:outputText value="Checked Out" rendered="{!item.Tstatus_Id__r.Tstatus_name__c==false}"/>
+                </td>
+                <td>{!item.Order__r.BLN_TKT_profile__r.First_Name__c} {!item.Order__r.BLN_TKT_profile__r.Last_Name__c}</td>
+                <td>
+                    <apex:variable value="" var="tg"/> 
+                    <apex:repeat value="{!tagsmap}" var="x"> 
+                        <apex:outputText rendered="{!(item.Item_Pool__c==x)}"> 
+                            <apex:variable value="{!(tg+tagsmap[x])}" var="tg"/> 
+                        </apex:outputText>          
+                    </apex:repeat> 
+                    <apex:variable value="{!(tg+' ')}" var="tg"/> 
+                    <apex:repeat value="{!tickettagsmap}" var="x">                    
+                        <apex:outputText rendered="{!(item.id==x)}"> 
+                            <apex:variable value="{!(tg+tickettagsmap[x])}" var="tg"/> 
+                        </apex:outputText> 
+                    </apex:repeat>
+                    {!tg}
+                </td>
+                <td> 
+                <apex:outputText >
+                  <c:EV_FormatDt t_Zone="{!item.Event__r.Time_Zone__c}" date_Timevalue="{!item.Order__r.createdDate}" ></c:EV_FormatDt>
+                </apex:outputText> 
+                </td>
+                <td>{!item.Order__r.Name}</td>
+                <td>{!item.name}</td>
+                <td>{!item.Custom_Barcode__c}</td>
+            </tr>    
+        </apex:repeat>  
+    </table>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!attendeeList.size>1000}">
+    Please Check your Email !!
+    </apex:outputPanel> 
+</apex:page>

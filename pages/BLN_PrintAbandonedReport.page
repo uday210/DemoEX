@@ -1,0 +1,71 @@
+<apex:page showHeader="false" standardStylesheets="false"
+   sidebar="false" cache="true"  controller="BLN_AbandonedOrdersReportCon"
+   action="{!hideEventsTab}"  id="pgid" renderAs="pdf">
+
+   <apex:stylesheet value="{!URLFOR($Resource.styles_for_report_pring, 'styles_for_report_pring.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.boothscreen_pdf, 'boothscreen.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.landscape_pdf, 'landscape_pdf.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+   
+      <div style=" " class="printpdfreportname" >
+      <div style="text-align:left;">
+         <span style="font-weight: bold;">Abandoned ORDERS</span>
+         <c:EventDetails BLN_EventDetails="{!eventInfo1}"></c:EventDetails>
+         <!-- Event Information--> 
+      </div>
+    </div>
+            <apex:variable var="OrderNumber" value="{!0}" />
+<div id="TableInfo">
+      <table  width="99.5%" class="display" cellpadding="0" cellspacing="0" border="1" style="font-size:12px; font-family:Verdana, Geneva, sans-serif;">
+               <thead>
+                  <tr>
+                     <th >S.no</th>
+                     <th >Order No</th>
+                     <th >Ordered By</th>
+                     <th >Email</th>
+                     <th> Phone </th>
+                     <th> Company </th>
+                     <th >Order Date</th>
+                     <th >Pay Type</th>
+                     <th >Order Status</th>
+                     <th >Amount ({!currencySymbol}) </th>
+                  </tr>
+               </thead>
+               <apex:repeat value="{!abandonedOrd}" var="order">
+                  <tbody>
+                     <td>
+                        <apex:variable var="OrderNumber" value="{!OrderNumber+1}"/>
+                        {!OrderNumber}. 
+                     </td>
+                     <td>  {!order.Name} </td>
+                     <td> {!order.BLN_TKT_profile__r.First_Name__c} {!order.BLN_TKT_profile__r.Last_Name__c} </td>
+                     <td>{!order.BLN_TKT_profile__r.Email__c} </td>
+                     <td> {!order.BLN_TKT_profile__r.Mobile__c} </td>
+                     <td> {!order.BLN_TKT_profile__r.TKT_Company__c} </td>
+                     <td>
+                        <c:EV_FormatDt date_Timevalue="{!order.CreatedDate}" t_Zone="{!se.Time_Zone__c}"></c:EV_FormatDt>
+                     </td>
+                     <td>
+                        <apex:repeat value="{!order.Payments__r}" var="payment">
+                           {!payment.Payment_Mode__c}
+                        </apex:repeat>
+                     </td>
+                     <td> {!order.Order_Status__c}</td>
+                     <td style="text-align: right;"> {!order.Amount_Paid__c} </td>
+                  </tbody>
+               </apex:repeat>
+            </table>
+         </div>   
+
+   
+<c:currencyFormatting ></c:currencyFormatting>
+   <script>
+      function currencyformat()
+      {
+          //alert();
+          rightJustificationOrders('{!currencySymbol}');
+      }
+      rightJustificationOrders('{!currencySymbol}');
+   </script>
+</apex:page>

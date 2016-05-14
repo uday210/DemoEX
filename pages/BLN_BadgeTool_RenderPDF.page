@@ -1,0 +1,445 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="BLN_CustomBadgeRenderCon" id="stylepage" >
+<title>Eventdex Badge Creator - Rendering</title>
+<script>var resourcePath='{!URLFOR($Resource.badgeToolRenderAssets)}';
+//alert(resourcePath);
+</script>
+<script src="{!URLFOR($Resource.badgeToolRenderAssets, '/scripts/lib/jquery-2.1.4.min.js')}"></script>
+<script src="{!URLFOR($Resource.badgeToolRenderAssets, '/scripts/lib/jquery-2.1.4.min.js')}"></script>
+<!---<script src="{!URLFOR($Resource.badgeToolRenderAssets, '/scripts/jquery-barcode.js')}"></script>--->
+<script>
+    function getURLParameter(name) {
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
+$(document).ready(function() {
+var x = location.hash;
+var res = x.substring(1,x.length); 
+
+    var Listid= getURLParameter("lis");
+    //console.log(Listid);
+    Visualforce.remoting.Manager.invokeAction(
+    'BLN_CustomBadgeRenderCon.getRenderData','{!selectedEvent}',
+    getURLParameter("style"),res,getURLParameter("allpages"),
+    function(result, event) {
+        
+        var attendees = JSON.parse(result.attendeeData).attendees,
+            styleData = JSON.parse(result.style.badge.Data__c),
+            pages = Math.ceil(attendees.length / result.layoutData.perPage);
+        console.log(result);
+       // console.log(pages );
+        $("body")
+            .css({
+                width: result.layoutData.pageWidth+"in",
+                height: result.layoutData.pageHeight+"in"
+            });
+            
+        for (var pageNum = 0; pageNum < pages; pageNum++) {
+            
+            for (var rowNum = 0; rowNum < result.layoutData.perPage / result.layoutData.perRow; rowNum++) {
+                var badgesInRow =
+                    attendees.slice(pageNum * result.layoutData.perPage + rowNum * result.layoutData.perRow,
+                                    pageNum * result.layoutData.perPage + rowNum * result.layoutData.perRow + result.layoutData.perRow);
+        
+                for (var i = 0; i < badgesInRow.length; i++) {
+                    var positionDataForBadge = {
+                        width: styleData.canvasWidth+"in",
+                        height: styleData.canvasHeight+"in",
+                        top: result.layoutData.topMargin + (styleData.canvasHeight * rowNum) + (result.layoutData.verticalSpacing * rowNum) + (pageNum * result.layoutData.pageHeight) + "in",
+                        left: result.layoutData.leftMargin + (styleData.canvasWidth * i) + (result.layoutData.horizontalSpacing * i) + "in",
+                       // bottom: result.layoutData.bottomMargin+ (styleData.canvasHeight * rowNum) + (result.layoutData.verticalSpacing * rowNum) + (pageNum * result.layoutData.pageHeight) + "in",
+                       // right: result.layoutData.rightMargin + (styleData.canvasWidth * i) + (result.layoutData.horizontalSpacing * i) + "in",
+                        
+                     //   top: result.layoutData.topMargin+ "in",
+                     //   left: result.layoutData.leftMargin +  "in",
+                        
+                        
+                        backgroundColor: styleData.backgroundColor,
+                        backgroundImage: "url("+styleData.backgroundImage+")",
+                        backgroundRepeat: styleData.backgroundRepeat,
+                        backgroundSize: styleData.backgroundSize,
+                        backgroundPosition: styleData.backgroundPosition
+                    };
+                    
+                    var badge = $("<div class='badge' />")
+                        .css(positionDataForBadge)
+                        .appendTo("body");
+                    
+                    addLayersTo(badge, result.style.layers, styleData, badgesInRow[i]);
+                }
+            }
+        
+        }
+        
+    },
+    { escape: false });
+    
+});
+
+function addLayersTo(badge, layers, styleData, attendee) {
+//console.log(attendee);
+    for (var i = 0, j = layers.length; i < j; i++) {
+        var layerData = JSON.parse(layers[i].Data__c);
+     // console.log(layerData);
+        layerData.id = undefined;
+        layerData.formatOptions = undefined;
+        layerData.elem = undefined;
+        layerData.scope = undefined;
+        layerData.canvas = undefined;
+        
+        var layer = $("<div class='layer' />");
+        
+        for (var prop in layerData) {
+            switch (prop) {
+                case "id":
+                case "formatOptions":
+                case "elem":
+                case "scope":
+                case "canvas":
+                case "directive":
+                case "selected":
+                    continue;
+                    break;
+                
+                case "width":
+                    layer.css("width", layerData[prop] * styleData.canvasWidth + "in");
+                    break;
+                case "height":
+                    layer.css("height", layerData[prop] * styleData.canvasWidth + "in");
+                    break;
+                
+                case "x":
+                    layer.css("left", layerData[prop] * styleData.canvasWidth + "in");
+                    break;
+                case "y":
+                    layer.css("top", layerData[prop] * styleData.canvasWidth + "in");
+                    break;
+                
+                case "color":
+                    if (layerData.layerType == "SHAPE") {
+                        layer.css("backgroundColor", layerData[prop]);
+                    } else {
+                        layer.css("color", layerData[prop]);
+                    }
+                    break;
+                
+                case "shape":
+                    if (layerData[prop] == 1) {
+                        layer.css("borderRadius", "50%");
+                    }
+                    break;
+                
+                case "content":
+                console.log(layerData.layerType);
+                    if(layerData.layerType=="QR_CODE"){
+                   
+                     layer.css("backgroundImage","url(https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl="+attendee.Badge_ID__c+")")
+                  
+                  
+                     }else if(layerData.layerType=="BAR_CODE"){
+                     layer.css("backgroundImage","url(https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl="+attendee.Badge_ID__c+")")
+                    
+                     
+                    }
+                    else if (layerData.layerType == "TEXT") {
+                    console.log('text layer');
+                        $("<span class='text' />").text(layerData[prop]).appendTo(layer);
+                    } else if (layerData.layerType == "ATTENDEE_DATA") {
+                        var contents = {
+                        
+                            
+                            
+                            "John Smith": attendee.tkt_profile__r.First_Name__c + " " + attendee.tkt_profile__r.Last_Name__c,
+                            "John": attendee.tkt_profile__r.First_Name__c,
+                            "Smith": attendee.tkt_profile__r.Last_Name__c,
+                            "My Company": attendee.tkt_profile__r.TKT_Company__c,
+                            "President": attendee.tkt_profile__r.TKT_Job_Title__c,
+                            //"Kansas City": attendee.Item_Type__r.Name,
+                           // "Kansas City": attendee.Client_GN_User__r.City__c,
+                            "Attendee": attendee.Item_Type__r.Name,
+                            "Label":attendee.Badge_Label__c,
+                            "Printed":attendee.Badge_ID__r.Print_status__c,
+                         //   "Checked In":  attendee.Tstatus_Id__r.Tstatus_name__c==true,
+                          //  "Checked In":"Checked in/Out",
+                            "012":attendee.Tag_No__c,
+                        //    "Check":"pay type",
+                            "Fully Paid":attendee.Order__r.Order_Status__c,
+                            "Buyer Name":attendee.Order__r.BLN_TKT_profile__r.First_Name__c+ " "+attendee.Order__r.BLN_TKT_profile__r.Last_Name__c,
+                       //     "Tag":"tag",
+                            "O-00062251":attendee.Order__r.Name,
+                            "TKT-1265433":attendee.Name,
+                            "0723":attendee.Scan_Id__c
+                            
+                            
+                            
+                            
+    
+                            
+                        };
+                        $("<span class='text' />").text(contents[layerData[prop]]).appendTo(layer);
+                    }
+                    break;
+                
+                case "transform":
+                    layer.css("textTransform", layerData[prop]);
+                    break;
+                
+                case "image":
+            //new logic to display blank image with event logo
+                var im = layerData[prop];
+                if(im.indexOf('servlet') != -1){
+                    layer.css("backgroundImage", "url("+layerData[prop]+")");
+                    }
+                    else if(im.indexOf('servlet') == -1)
+                    {
+                   // layer.css("backgroundImage", "url(/servlet/servlet.ImageServer?id=0158A00000097qGQAQ&oid=00D8A0000008jG2UAI)");
+                    layer.css("backgroundImage", "url(/servlet/servlet.ImageServer?id="+'{!ee.Logo_URL__c}'+"&oid="+'{!$Organization.Id}'+")");
+                    
+                    }
+                  //  layer.css("backgroundImage": 'url(https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl=uday-125)');
+                    break;
+                
+                case "rotation":
+                    // do later
+                    break;
+                
+                case "align":
+                    layer.css("textAlign", layerData[prop]);
+                    break;
+                
+                default:
+                    layer.css(prop, layerData[prop]);
+            }
+        }
+        if (layerData.rotation) {
+            layer.find(".text").css("transform", "rotate("+layerData.rotation+"deg)");
+        }
+        
+        badge.append(layer);
+        
+        if (layerData.layerType == "TEXT" || layerData.layerType == "ATTENDEE_DATA") {
+            var textElem = layer.find(".text");
+            
+            var getTextWidth = function() {
+                var spanText = $("body #spanCalculateTextWidth");
+                if (spanText.size() <= 0) {
+                  spanText = $("<span id='spanCalculateTextWidth' style='filter: alpha(0);'></span>");
+                  spanText.appendTo("body");
+                }
+                var valu = layer.val();
+                if (!valu) valu = layer.text();
+                spanText.text(valu);
+                spanText.css({
+                  "fontSize": textElem.css('fontSize'),
+                  "fontWeight": layer.css('fontWeight'),
+                  "fontFamily": layer.css('fontFamily'),
+                  "textTransform": layer.css('textTransform'),
+                  "position": "absolute",
+                  "top": 0,
+                  "opacity": 0,
+                  "left": -2000
+                });
+                return spanText.outerWidth() + parseInt(layer.css('paddingLeft')) + 'px';
+            };
+                
+            var getTextHeight = function() {
+                var spanText = $("body #spanCalculateTextWidth");
+                if (spanText.size() <= 0) {
+                  spanText = $("<span id='spanCalculateTextWidth' style='filter: alpha(0);'></span>");
+                  spanText.appendTo("body");
+                }
+                var valu = layer.val();
+                if (!valu) valu = layer.text();
+                spanText.text(valu);
+                spanText.css({
+                  "fontSize": textElem.css('fontSize'),
+                  "fontWeight": layer.css('fontWeight'),
+                  "fontFamily": layer.css('fontFamily'),
+                  "textTransform": layer.css('textTransform'),
+                  "position": 'absolute',
+                  "top": 0,
+                  "opacity": 0,
+                  "left": -2000,
+                  "lineHeight": 1
+                });
+                return spanText.innerHeight() + 'px';
+            };
+            
+            var autoTextSize = function(minSize, maxSize) {
+                var _self = layer,
+                    _text = layer.find(".text"),
+                    _width = layer.width(),
+                    _height = layer.height(),
+                    _textWidthUnrotated = parseInt(getTextWidth()),
+                    _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated)),
+                    _fontSize = parseInt(_text.css('font-size'));
+                
+                var rot = _text.css("transform");
+                if (rot == "none" || !rot) {
+                    var _rotation = 0;
+                } else {
+                    var rotValues = rot.split('(')[1].split(')')[0].split(',');
+                    var rotA = rotValues[0];
+                    var rotB = rotValues[1];
+                    var rotC = rotValues[2];
+                    var rotD = rotValues[3];
+                    var _rotation = Math.atan2(rotB, rotA);
+                }
+                
+                if (_rotation < 0) {
+                    _rotation += Math.PI * 2;
+                }
+                
+                var _rotationDeg = _rotation * 180 / Math.PI;
+                if (_rotationDeg > 90 && _rotationDeg <= 180) {
+                    _rotationDeg = 180 - _rotationDeg;
+                    _rotation = _rotationDeg * Math.PI / 180;
+                } else if (_rotationDeg > 180 && _rotationDeg <= 270) {
+                    _rotationDeg = _rotationDeg - 180;
+                    _rotation = _rotationDeg * Math.PI / 180;
+                } else if (_rotationDeg > 270 && _rotationDeg <= 360) {
+                    _rotationDeg = 360 - _rotationDeg;
+                    _rotation = _rotationDeg * Math.PI / 180;
+                }
+                
+                var trig1 = Math.cos(_rotation),
+                    trig2 = Math.cos((Math.PI/2)-_rotation),
+                    trig3 = Math.sin(_rotation),
+                    trig4 = Math.sin((Math.PI/2)-_rotation);
+                
+                var _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                var _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                
+                if (!_textWidth) return false;
+                
+                if ( (_rotationDeg >= 0 && _rotationDeg <= 45) ) {
+                    if (_width > _textWidth) {
+                        while (_width > _textWidth) {
+                            _fontSize++;
+                            _text.css('font-size', _fontSize + 'px');
+                            
+                            _textWidthUnrotated = parseInt(getTextWidth());
+                            _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                            _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                            _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                        }
+                        _fontSize--;
+                        _text.css('font-size', _fontSize + 'px');
+                        _textWidthUnrotated = parseInt(getTextWidth());
+                        _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                        _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                        _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                    } else {
+                        while (_width < _textWidth || (maxSize && _fontSize > parseInt(maxSize))) {
+                            if (minSize && _fontSize <= parseInt(minSize)) break;
+                            
+                            _fontSize--;
+                            _text.css('font-size', _fontSize + 'px');
+                            
+                            _textWidthUnrotated = parseInt(getTextWidth());
+                            _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                            _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                            _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                        }
+                    }
+                
+                    while (_textHeight > _height) {
+                        _fontSize--;
+                        _text.css('font-size', _fontSize + 'px');
+                        
+                        _textWidthUnrotated = parseInt(getTextWidth());
+                        _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                        _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                        _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                    }
+                } else {
+                    if (_height > _textHeight) {
+                        while (_height > _textHeight) {
+                            _fontSize++;
+                            _text.css('font-size', _fontSize + 'px');
+                            
+                            _textWidthUnrotated = parseInt(getTextWidth());
+                            _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                            _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                            _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                        }
+                        _fontSize--;
+                        _text.css('font-size', _fontSize + 'px');
+                        _textWidthUnrotated = parseInt(getTextWidth());
+                        _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                        _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                        _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                    } else {
+                        while (_height < _textHeight || (maxSize && _fontSize > parseInt(maxSize))) {
+                            if (minSize && _fontSize <= parseInt(minSize)) break;
+                            
+                            _fontSize--;
+                            _text.css('font-size', _fontSize + 'px');
+                            
+                            _textWidthUnrotated = parseInt(getTextWidth());
+                            _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                            _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                            _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                        }
+                    }
+                
+                    while (_textWidth > _width) {
+                        _fontSize--;
+                        _text.css('font-size', _fontSize + 'px');
+                        
+                        _textWidthUnrotated = parseInt(getTextWidth());
+                        _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                        _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                        _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                    }
+                }
+                
+                _text.css('line-height', _width * trig3 + _height * trig4 + "px");
+                _text.css('top', '50%');
+                _text.css('marginTop', (_width * trig3 + _height * trig4)/2*-1 + "px");
+                
+                var align = _text.parent().css('text-align');
+                if (!align || align == "left" || align == "start") {
+                    _text.css('left', 0);
+                    _text.css('marginLeft', _textWidthUnrotated/2*-1 + _textWidth/2);
+                    _text.css('right', 'auto');
+                    _text.css('marginRight', 0);
+                } else if (align == "center") {
+                    _text.css('left', '50%');
+                    _text.css('marginLeft', _textWidthUnrotated/2*-1);
+                    _text.css('right', 'auto');
+                    _text.css('marginRight', 0);
+                } else if (align == "right") {
+                    _text.css('right', '0');
+                    _text.css('left', 'auto');
+                    _text.css('marginLeft', 0);
+                    _text.css('marginRight', _textWidthUnrotated/2*-1 + _textWidth/2);
+                }
+                
+                textWidth = _textWidth;
+                textWidthUnrotated = _textWidthUnrotated;
+            }
+            
+            autoTextSize();
+        }
+    }
+}
+
+</script>
+
+<apex:stylesheet value="{!URLFOR($Resource.badgeToolRenderAssets, 'styles/build/main.css')}" />
+<body>
+<script type="text/javascript">
+  WebFontConfig = {
+    google: { families: [ 'Droid+Serif:400,700,400italic,700italic:latin', 'Raleway:400,700:latin' ] }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })(); </script>
+</body>
+</apex:page>

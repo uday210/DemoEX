@@ -1,0 +1,191 @@
+<apex:page showHeader="false" cache="true" standardStylesheets="false" sidebar="false" controller="BLN_SurveyByTicketTabReportCon" contentType="application/vnd.ms-excel#SurveyByTicketResponses.xls" action="{!exportResponsesByPoolLinesBatch}">
+<apex:form >
+<apex:outputpanel rendered="{!unsRespPoolList.size<=1000}">
+ <h3> SUMMARY </h3>
+   <table border="1">
+      <tr>
+         <td>Ticket</td>
+         <td>Question</td>
+         <td>Answer</td>
+         <td>Total Count</td>
+         <td>Response Count</td>
+         <td>Response Percentage</td>
+         <td>Skip</td>
+         <td>Skip Percentage</td>
+      </tr>
+       
+      <apex:variable var="responded" value="{!surveyAttendeeInnerList2.size}"/>
+      <!--<apex:variable var="respondedforallattendees" value="{!0}"/>
+      <apex:repeat value="{!surveyAttendeeInnerList1}" var="answer11">
+         <apex:variable var="responded" value="{!responded+1}"/>
+      </apex:repeat>-->
+      <tr>
+         <td>
+            <!--<apex:outputText value="Event Level" rendered="{!selectedItemName==null}"/>-->
+            <apex:outputText value="{!selectedItemPoolName}" />
+         </td>
+         <td>
+            <!--<apex:variable value="{!0}" var="loop1"/>
+            <apex:repeat value="{!surveyAttendeeInnerList2}" var="answer">
+               <apex:variable value="{!loop1+1}" var="loop1"/>
+               <apex:variable value="{!0}" var="loop2"/>
+               <apex:repeat value="{!answer.ticketsData1}" var="usrAnswers">
+                  <apex:variable value="{!loop2+1}" var="loop2"/>
+                  <apex:outputText value="{!usrAnswers.item_question__r.question__r.Question_Text__c}" rendered="{!(loop2==1 && loop1==1)}"/>
+               </apex:repeat>
+            </apex:repeat>-->
+            
+            <apex:repeat value="{!questionsForItemPoolMAP}" var="key">
+                <apex:repeat value="{!questionsForItemPoolMAP[key]}" rendered="{!key == SelectedItempoolQuestion}" var="k">
+                    {!k.Question__r.Question_Text__c}
+                </apex:repeat>
+            </apex:repeat>
+         </td>
+         <td></td>
+         <td><b>{!totalOrderpools}</b></td>
+         <td><b>
+            <apex:variable value="{!respondedItemPoolAttendees}" var="respondedPool"/> 
+                                       {!respondedPool}
+            </b>
+         </td>
+         <td>
+            <apex:outputText value="{0, Number, #0.00}">
+              <apex:param value="{!(respondedPool*100/totalOrderpools)}" />
+           </apex:outputText>
+         </td>
+         <td><b>{!(totalOrderpools-respondedPool)}
+            </b>
+         </td>
+         <td>
+            <apex:outputText value="{0, Number, #0.00}">
+              <apex:param value="{!((totalOrderpools-respondedPool)*100/totalOrderpools)}" />
+           </apex:outputText>
+         </td>
+      </tr>
+      <apex:repeat value="{!responsesItemPoolInnerList}" var="summary">
+         <apex:outputText rendered="{!(itemAnswerType != 'Text' && itemAnswerType != 'Paragraph text')}">
+            <tr>
+               <td></td>
+               <td>
+                  <apex:variable value="{!0}" var="loop1"/>
+                  <apex:repeat value="{!surveyAttendeeInnerList2}" var="answer">
+                     <apex:variable value="{!loop1+1}" var="loop1"/>
+                     <apex:variable value="{!0}" var="loop2"/>
+                     <apex:repeat value="{!answer.ticketsData1}" var="usrAnswers">
+                        <apex:variable value="{!loop2+1}" var="loop2"/>
+                        <apex:outputText value="{!usrAnswers.item_question__r.question__r.Question_Text__c}" rendered="{!(loop2==1 && loop1==1)}"/>
+                     </apex:repeat>
+                  </apex:repeat>
+
+               </td>
+               <td>{!summary.itemPoolanswerType}</td>
+               <td></td>
+               <td>{!summary.itemPoolanswerCount}</td>
+               <td>
+                  <apex:outputText value="{0, Number, #0.00}">
+                     <apex:param value="{!((summary.itemPoolanswerCount)*100/(responded))}" />
+                  </apex:outputText>
+               </td>
+               <td></td>
+               <td></td>
+            </tr>
+         </apex:outputText>
+      </apex:repeat>
+   </table>
+   <!-- =====================Detail view of questions======================= --> 
+   <br/>
+   <br/>
+   <br/>
+    <h3> DETAIL </h3>   
+   <table border="1">
+      <tr>
+         <th>Ticket Name</th>
+         <th>Attendee Name</th>
+         <th>Email</th>
+         <th>Order Id</th>
+         <th>Ticket Id</th>
+         <th>Question</th>
+         <th>Answer</th>
+      </tr>
+      <apex:variable value="" var="questionCount"/> 
+      <apex:repeat value="{!unsRespPoolList}" var="answer"> 
+       <apex:outputText rendered="{!answer.item_question__r.question__r.Answer_Type__c!='Checkboxes'}">
+           <tr>
+              <td>
+                 <apex:outputText value="Event Level" rendered="{!answer.item_question__r.Question_Level__c='Event Level'}"/>
+                 <apex:outputText value="{!answer.item_question__r.item__r.item_name__c}" rendered="{!answer.item_question__r.Item__c!=null}"/>
+                 <apex:outputText value="{!answer.item_question__r.item_pool__r.Item_Pool_Name__c}" rendered="{!answer.item_question__r.Item_Pool__c!=null}"/>
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.ticket__r.tkt_profile__r.First_Name__c} {!answer.ticket__r.tkt_profile__r.Last_Name__c}"/>
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.ticket__r.tkt_profile__r.Email__c}"/>
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.ticket__r.order__r.name}"/>
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.ticket__r.name}"/>
+              </td>
+              <td>
+                 <apex:outputText rendered="true" value="{!answer.item_question__r.question__r.Question_Text__c}"/>
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.UAnswer_Text__c}"/>
+              </td>
+           </tr> 
+           </apex:outputText>
+           
+          <apex:outputText rendered="{!(!Contains(questionCount,answer.Item_Question__r.Question__c+' '+answer.ticket__r.tkt_profile__r.Email__c))}">
+            <apex:variable value="{!(questionCount+answer.Item_Question__r.Question__c+' '+answer.ticket__r.tkt_profile__r.Email__c)}" var="questionCount"/>
+             <apex:outputText rendered="{!answer.item_question__r.question__r.Answer_Type__c=='Checkboxes'}">
+            <tr>
+                <td>
+                 <!--<apex:outputText value="Event Level" rendered="{!answer.item_question__r.Question_Level__c='Event Level'}"/>
+                 <apex:outputText value="{!answer.item_question__r.item__r.item_name__c}" rendered="{!answer.item_question__r.Item__c!=null}"/>
+                 <apex:outputText value="{!answer.item_question__r.item_pool__r.Item_Pool_Name__c}" rendered="{!answer.item_question__r.Item_Pool__c=null}"/>-->
+                 {!selectedItemPoolName}
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.ticket__r.tkt_profile__r.First_Name__c} {!answer.ticket__r.tkt_profile__r.Last_Name__c}"/>
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.ticket__r.tkt_profile__r.Email__c}"/>
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.ticket__r.order__r.name}"/>
+              </td>
+              <td>
+                 <apex:outputText value="{!answer.ticket__r.name}"/>
+              </td>
+              <td>
+                 <apex:outputText rendered="true" value="{!answer.item_question__r.question__r.Question_Text__c}"/>
+              </td>
+              <td>
+                 <apex:variable value="" var="resultitemcheckbox2"/>
+                    <apex:variable value="{!answer.Item_Question__r.question__r.id}" var="QueId1"/>
+                    <apex:repeat value="{!unsRespPoolList}" var="ticket1">
+                        <apex:outputText rendered="{!IF((ticket1.Item_Question__r.question__r.id==QueId1 && ticket1.ticket__r.id==answer.ticket__r.id),True,False)}">
+                            <apex:outputText rendered="{!ticket1.item_question__r.question__r.Answer_Type__c=='Checkboxes'}">
+                                <apex:variable value="{!IF(resultitemcheckbox2==Null,ticket1.UAnswer_Text__c,', '+ticket1.UAnswer_Text__c)}" var="resultitemcheckbox2" />
+                                <apex:outputText value="{!resultitemcheckbox2}"> </apex:outputText>
+                            </apex:outputText>
+                        </apex:outputText>
+                    </apex:repeat> 
+              </td>
+                 
+            </tr>
+             </apex:outputText>
+        </apex:outputText>
+      </apex:repeat>
+   </table>
+   <!-- ================================================ Survey By Question Export Excel End================================================== -->            
+   
+ </apex:outputpanel> 
+ 
+    <apex:outputpanel rendered="{!unsRespPoolList.size>1000}"> 
+      Please Check your Email
+   </apex:outputpanel>           
+</apex:form>
+</apex:page>

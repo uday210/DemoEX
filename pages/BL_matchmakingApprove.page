@@ -1,0 +1,89 @@
+<apex:page controller="BL_MatchMakingApproveCon" showHeader="false">
+ 
+   <style>
+      .pophead{
+            background-color:#54b5f1;
+            height:35px;
+            width:100%;
+            color:#FFFFFF;
+            font-size:18px;
+            text-align:center;
+      }
+   
+   </style>
+ 
+  <apex:form >
+   <table style="width:100%;line-height:30px;" cellpadding="0" cellspacing="0">
+    
+    <tr style="font-weight:bold;" class="pophead">
+     <td colspan="4" style="color:#FFFFFF;">Approval required Users</td>
+     </tr>
+     
+     
+   <tr style="font-weight:bold;background-color:#CCCCCC;" border="1">
+     <td style="border: 1px solid white;padding-left:20px;">Company</td>
+     <td style="border: 1px solid white;padding-left:20px;">Name</td>
+     <td style="border: 1px solid white;padding-left:20px;">Email </td>
+      <td style="border: 1px solid white;padding-left:20px;">Action</td> </tr>
+   
+   
+    <apex:repeat value="{!upes}" var="r">
+     <tr >
+     <td style="padding-left:10px;">{!r.Attendee_Summary__r.AS_Company__c} </td>
+     <td>{!r.User_id__r.Name}</td>
+     <td>{!r.User_id__r.UserName}</td> 
+     <td>
+     <apex:commandLink value="Accept" action="{!acceptRequest}">
+      <apex:param name="accept" value="{!r.id}-acc"/>
+     </apex:commandLink> &nbsp;&nbsp;
+     
+     <apex:commandLink value="Reject" action="{!acceptRequest}">
+      <apex:param name="accept" value="{!r.id}-rej"/>
+     </apex:commandLink> 
+     </td>
+     
+     </tr>
+    </apex:repeat> 
+   </table>
+   
+   
+   <table style="width:100%;line-height:30px;" cellpadding="0" cellspacing="0">
+    
+    <tr style="height:45px;"><td colspan="4"></td></tr>
+    
+    <tr style="font-weight:bold;" class="pophead">
+     <td colspan="4" style="color:#FFFFFF;">Available users </td>
+     </tr>
+     
+     
+   <tr style="font-weight:bold;background-color:#CCCCCC;" border="1">
+     <td style="border: 1px solid white;padding-left:20px;">Company</td>
+     <td style="border: 1px solid white;padding-left:20px;">Name</td>
+     <td style="border: 1px solid white;padding-left:20px;">Email </td>
+      <td style="border: 1px solid white;padding-left:20px;">Action</td> </tr>
+   
+     <apex:repeat value="{!usersListforchangeStatus}" var="yu" id="re">
+      <tr >
+     <td style="padding-left:10px;">{!yu.Attendee_Summary__r.AS_Company__c} </td>
+     <td>{!yu.User_id__r.Name}</td>
+     <td>{!yu.User_id__r.UserName}</td> 
+     <td>
+       <apex:inputField value="{!yu.MAtchMakingProfile__c}">
+        <apex:actionSupport action="{!ChangeStatus}" event="onchange" rerender="re">
+           <apex:param value="{!yu.id}" name="changevalue"/>
+        </apex:actionSupport>
+      
+       </apex:inputField>
+     </td>
+     
+     </tr>
+     
+     </apex:repeat>
+   
+   
+   
+   
+   </table>
+   
+  </apex:form>
+</apex:page>

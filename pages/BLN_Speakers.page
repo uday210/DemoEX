@@ -1,0 +1,419 @@
+<apex:page controller="BLN_MyticketsCon"  action="{!displayPermissions1}" standardStylesheets="false" showHeader="false" id="speakerpage">
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+     <!-----------datatable stylescss------------->
+      <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-speaker.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <style>
+    .chzn-container-single .chzn-drop {
+    width: 220px !important;
+    }
+    
+    .cke_dialog_background_cover{z-index: 1000000000 !important;}
+    
+    .cke_dialog {z-index: 100000000000000 !important;}
+   
+    
+    
+      .youtube_frame iframe{ width:100% !important ; height:100% !important; }
+      </style>
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+    <!-----------//datatable stylescss------------->
+    <!-------------basic template html component------------------------------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="comp"> 
+        <apex:form id="showSpeakersForm">
+        <!-- script for DRAG & DROP Functionality -->
+        <c:ed_RowDragAndDrop ></c:ed_RowDragAndDrop><!-- component for drag and drop -->
+        <script> 
+            window.onload=function() {      
+            var table = document.getElementById('speakerTableId');    
+            var tableDnD = new TableDnD();
+            tableDnD.init(table);
+        }
+        </script> 
+        <!-- DRAG and DROP Functionality End --> 
+    <!----------Start Action function for updating reordered rows of agenda table table ---------------------->             
+         <apex:actionFunction action="{!updateSpeakerOrder}" name="rowOrderDisplay" reRender="speakerTableId" >
+            <apex:param value="" name="speakerOrder"/>
+        </apex:actionFunction>
+    <!----------End Action function for updating reordered rows of agenda table table ---------------------->  
+        
+        
+            <!---------------------template code------------------>
+              <!---start of speakertblbox---->
+ <div id="speakertblbox" class="datatable-wrapper" >  
+<div id="Speakerrgrp" ><!--start of speakergrp----> 
+
+<apex:outputpanel id="Speakerpanel">
+<!---start of  output table----->
+<table class="example display" id="speakerTableId">
+  <thead>
+    <tr>
+     <th width ="2%"></th>
+      <th width="20%">Image</th>
+      <th width="20%">Speaker Name</th>
+      <th width="19%" >Role</th>
+      
+       <th>Company</th>
+      <th width="12%">Action</th>
+     
+    </tr>
+  </thead>
+  <tbody>
+    <!---repeat---->
+    <apex:repeat id="logscreen" value="{!speakBalList}" var="l" > 
+    <!-----------parent first record-------->
+    
+    <tr Id="{!l.ticket.ID}">
+   
+      <!------------>
+      <td  width="2%" ><apex:image url="{!$Resource.DragButton}"  style="margin-left:-5px;" /> </td>
+        <td class="textcenter">
+        <apex:outputPanel rendered="{!IF(l.ticket.tkt_profile__r.User_Pic__c == null,'TRUE','FALSE')}"> 
+         <div class="fixedimg_div" style="">
+         <img class="fixedimg" src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/noimage.jpg')}" />
+         </div>
+       </apex:outputPanel>
+       <apex:outputPanel rendered="{!IF(l.ticket.tkt_profile__r.User_Pic__c != null,'TRUE','FALSE')}"> 
+         <div class="fixedimg_div" style="">
+         <img class="fixedimg" src="/servlet/servlet.ImageServer?id={!l.ticket.tkt_profile__r.User_Pic__c}&oid={!$Organization.Id}" />
+         </div>
+       </apex:outputPanel>
+        
+        </td>
+       
+            <td><apex:commandLink status="AjaxLoader" styleclass="a_underline" action="{!viewTicket}" title="View" rerender="viewticketpanel"><apex:param value="{!l.ticket.id}" name="TicketIdparam"/> {!l.ticket.tkt_profile__r.First_Name__c} {!l.ticket.tkt_profile__r.Last_Name__c}</apex:commandLink></td>
+            <td >
+            <apex:repeat value="{!participantmap}" var="x">
+            <apex:outputtext rendered="{!l.ticket.tkt_profile__c == x}" value="{!participantmap[x]}"/>
+            </apex:repeat>
+            </td>
+           
+            <td>{!l.ticket.tkt_profile__r.TKT_Company__c}</td>
+            <td width="12.1%" class=" textcenter">
+           <apex:commandLink action="{!editTicket}" title="Edit" >
+           
+                            <i class=" fa fa-pencil fa-edit20px  btnEditar"></i>
+                             <apex:param value="{!l.ticket.id}" name="TicketIdparam"/>
+                          </apex:commandLink>
+            <!--<a class="delete-link" title="Delete"><i class="fa fa-trash-o fa-delete20px btnExcluir "></i></a>-->
+            </td>
+            
+    </tr>
+    <!--end of parentfirst-------------------------------------------> 
+    </apex:repeat> 
+    <!--- //repeat ---->
+    
+   
+    
+  </tbody>
+</table>
+<!---end of output table----->
+</apex:outputpanel>
+</div>
+<!--close of speakergrp---> 
+
+
+
+</div>
+<!--close of speakertblbox----> 
+               <!-----------------//template code----------------------->
+        <script>
+try{
+calldt();
+}catch(e){}
+</script>
+        </apex:form>
+    </c:ed_basictemplate>
+    <!-------------//end of basic template component------------------------>
+   <!------------start of popup component function------------------>
+    <c:ed_popupbox >
+    </c:ed_popupbox>
+    <!------------/close of popup component function------------------>
+    <script>
+    /*******creating instances for calling popups*******/
+    var Alert_spkdetails = new Custom_formPopup(); //speaker details popup 
+    var Alert_role = new Custom_formPopup(); //Role popup
+      /***************/   
+</script>
+<apex:outputpanel id="viewticketpanel">
+   <!---------popup for Speaker Details------->
+<div class="dialogoverlay" id="spkr_dialogoverlay" style="z-index:99999;"></div>
+<!----------------->
+    <!--close of dialogoverlay-->
+    <div  id="dialogbox_spkr" style=" display:none;z-index:999991; width:75%; margin-left:12.5%;">
+    <a id="close" onclick="Alert_spkdetails.Cancel()" style="margin-top:-6px;">×</a>
+      <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+     <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;">
+    
+    <!----------->
+    <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+       <!-- <div class="title-grid">Speaker Details</div>-->
+        <div class="content-gird" style="padding:0px;">
+        <!--------------> 
+       <div  class="popup-bg">
+       <!-------left side---------->
+       <div class="form-embed-div" style=" float:left; width:23%; margin-top:0px;">
+     <div class="form-content-div" style=" background-color:#f6f6f6; padding:0px; min-height:150px; max-height:530px;">
+     <!---------------------->
+     <div class="popup-left-top">
+    <!---------> 
+      <apex:outputPanel rendered="{!IF(Tictktprof.Tkt_profile__r.User_Pic__c != null,'TRUE','FALSE')}"> 
+            <div class="round-imgdiv" style=" background-image:url('/servlet/servlet.ImageServer?id={!Tictktprof.Tkt_profile__r.User_Pic__c}&oid={!orgId}');" >
+
+ <!--    <img src="edsr_root/images/Carly-Fiorina.png" />-->
+     </div><!---close of round--imgdiv--->
+     </apex:outputPanel>
+     
+     <apex:outputPanel rendered="{!IF(Tictktprof.Tkt_profile__r.User_Pic__c == null,'TRUE','FALSE')}"> 
+     <div class="round-imgdiv" style="background-image:url('{!URLFOR($Resource.edsr_master,'edsr_root/images/noimage.jpg')}');" >
+ <!--    <img src="edsr_root/images/Carly-Fiorina.png" />-->
+     </div><!---close of round--imgdiv--->
+     </apex:outputPanel>
+     
+     <p class="textcenter custh1">{!Tictktprof.Tkt_profile__r.First_Name__c} {!Tictktprof.Tkt_profile__r.Last_Name__c}</p>
+     <!---------> 
+      <p class="textcenter custh2" >{!Tictktprof.Tkt_profile__r.TKT_Job_Title__c}</p>
+    <!---------> 
+     <p class="textcenter custh2" style="padding-top: 0px;">{!roleselectid}</p>
+     </div><!--close of popup-left-top---->
+     <!--------------------->
+     <apex:outputpanel rendered="{!Tictktprof.Tkt_profile__r.FaceBookId__c!=null&&Tictktprof.Tkt_profile__r.FaceBookId__c!=''}" layout="none">
+     <div class="popup-left-btm"><!--close of popup-left-bottom---->
+     <div class="left-icodiv">
+     <i title="facebook" class="fa fa-facebook-square fa-social-20x" style="color:#3b5998;"></i>
+     </div>
+     <div class="right-icodiv">
+     <a href="{!if(CONTAINS(LOWER(Tictktprof.Tkt_profile__r.FaceBookId__c),'facebook.com'),Tictktprof.Tkt_profile__r.FaceBookId__c,'http://www.facebook.com/'+Tictktprof.Tkt_profile__r.FaceBookId__c)}" target="_blank" class="">https://www.facebook.com/</a>
+     </div>
+     <div class="clear"></div>
+     </div><!--close of popup-left-bottom---->
+     </apex:outputpanel>
+   <!--------->  
+     
+       <!--------------------->
+       <apex:outputpanel rendered="{!Tictktprof.Tkt_profile__r.TwitterId__c!=null&&Tictktprof.Tkt_profile__r.TwitterId__c!=''}" layout="none">
+     <div class="popup-left-btm"><!--close of popup-left-bottom---->
+     <div class="left-icodiv">
+    <i title="twitter" class="fa fa-twitter-square fa-social-20x" style="color:#56a3d9;"></i>
+     </div> 
+     <div class="right-icodiv">
+     <a href="{!if(CONTAINS(LOWER(Tictktprof.Tkt_profile__r.TwitterId__c),'twitter.com'),Tictktprof.Tkt_profile__r.TwitterId__c,'https://twitter.com/'+Tictktprof.Tkt_profile__r.TwitterId__c)}" target="_blank" class="">https://twitter.com/</a>
+     </div>
+     <div class="clear"></div>
+     </div><!--close of popup-left-bottom---->
+      </apex:outputpanel>
+   <!---------> 
+   
+   <!--------------------->
+   <apex:outputpanel rendered="{!Tictktprof.Tkt_profile__r.LinkedInId__c!=null&&Tictktprof.Tkt_profile__r.LinkedInId__c!=''}" layout="none">
+     <div class="popup-left-btm"><!--close of popup-left-bottom---->
+     <div class="left-icodiv">
+     <i title="twitter" class="fa fa-linkedin-square fa-social-20x" style="color:#56a3d9;"></i>
+     </div> 
+     <div class="right-icodiv" >
+     <a href="{!if(CONTAINS(LOWER(Tictktprof.Tkt_profile__r.LinkedInId__c),'linkedin.com'),Tictktprof.Tkt_profile__r.LinkedInId__c,'http://www.linkedin.com/'+Tictktprof.Tkt_profile__r.LinkedInId__c)}" target="_blank" class="">https://linkedin.com/</a>
+     </div>
+     <div class="clear"></div>
+     </div><!--close of popup-left-bottom---->
+     </apex:outputpanel>
+   <!---------> 
+   <apex:outputpanel rendered="{!Tictktprof.Tkt_profile__r.Blogger__c!=null&&Tictktprof.Tkt_profile__r.Blogger__c!=''}" layout="none">
+     <div class="popup-left-btm"><!--close of popup-left-bottom---->
+     <div class="left-icodiv">
+    <img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/blogger.png')}" style=" margin-bottom:-2px;" />
+   
+     </div> 
+     <div class="right-icodiv" >
+     <a href="{!Tictktprof.Tkt_profile__r.Blogger__c}" target="_blank" class="">https://www.blogger.com</a>
+     </div>
+     <div class="clear"></div>
+     </div><!--close of popup-left-bottom---->
+     </apex:outputpanel>
+     <!--------------------->
+     <apex:repeat value="{!attlist}" var="attachment">
+     <div class="popup-left-btm"><!--close of popup-left-bottom---->
+     <div class="left-icodiv">
+   <i title="twitter" class="fa fa-paperclip fa-social-20x" style="color:#f2b013;"></i>
+    
+     </div> 
+     <div class="right-icodiv">
+     <a href="/servlet/servlet.FileDownload?file={!attachment.id}" target="_blank" class="">{!attachment.Name}</a>
+     </div>
+     <div class="clear"></div>
+     </div><!--close of popup-left-bottom---->
+     </apex:repeat>
+   <!---------> 
+     
+     
+     </div><!----close of form-content-div----->
+     </div> <!----close of form-embed-div(left)------>  
+
+       <!-------start of right--------> 
+       <div class=" right popup-right-box">
+       <!--------->
+        <apex:outputText rendered="{!IF(Tictktprof.Tkt_profile__r.Biography__c != null,'TRUE','FALSE')}">   
+       <p class="custh1">Biography</p>
+       
+       <apex:outputText styleclass="content_par" escape="false" value="{!Tictktprof.Tkt_profile__r.Biography__c}">
+       </apex:outputText>
+      </apex:outputText>
+      
+      
+       <!------content_par----->
+         <apex:outputText rendered="{!IF(Tictktprof.Tkt_profile__r.Video__c != null,'TRUE','FALSE')}"> 
+         <p class="custh1">Youtube Videos</p>
+         <apex:repeat value="{!videoyoutube}" var="yt">    
+         <div class="youtube_frame"><apex:outputtext value="{!yt}" escape="false" /></div>
+         </apex:repeat>
+        </apex:outputText>
+         
+       <!---------------------->
+       </div><!-- // popup-right-box---->
+        <div class="clear"></div>
+       <!----------------->
+        </div><!--close of pop-bg---->
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+       <!----->
+        </div><!----close of form-content-div----->
+        </div> <!----close of form-embed-div------>   
+        </div><!--close of dialogbox---->
+        <script>
+if('{!viewticket}'=='true')
+Alert_spkdetails.render('dialogbox_spkr','spkr_dialogoverlay','Alert_spkdetails' ,this);
+</script>
+</apex:outputpanel>
+    <!------------end of popup for Speaker Details------------->
+    
+       <!---------popup for Add Role------->
+<div class="dialogoverlay" id="role_dialogoverlay" style="z-index:99999;"></div>
+<!----------------->
+    <!--close of dialogoverlay-->
+    <div  id="dialogbox_role" style=" display:none;z-index:999991; width:40%; margin-left:29%;">
+    <a id="close" onclick="Alert_role.Cancel()" style="margin-top:-6px;">×</a>
+      <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+     <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;">
+    <!----------->
+    <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+        <div class="title-grid">Roles</div>
+        <div class="content-gird" >
+        <!--------------> 
+      
+      <div id="seminarform" class="createform">
+     <div class="content-top-btn-box" style="">
+     <button type="button" id="new_campaign" class="togglebtn roleadd" style=" padding:5px;" onclick="">Add Role</button>
+     </div><!--close of content-top-btn-box--->
+      <div class="clear"></div> 
+      
+      
+      <!---------role table--------->
+      <div class="tablewrapper"><!--start of tablewrapper---->
+     
+      
+      </div><!--close of tablewrapper---->  
+      
+       <!---------------> 
+        </div><!--close of seminarform---->
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+       <!----->
+        </div><!----close of form-content-div----->
+        </div> <!----close of form-embed-div------>   
+        </div><!--close of dialogbox---->
+    <!------------end of popup for Add Role------------->   
+    <!--/*********************Java Script Section*******************/-->
+     <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+
+    <script type="text/javascript" class="init">
+var j = jQuery.noConflict();
+function calldt()
+{
+  j('.example').dataTable( {
+        "pagingType": "full_numbers",
+        
+        // "aLengthMenu": [[ 5, 15,20,25, -1], [ 5,15,20, 25, "All"]],
+        //"iDisplayLength": 5,
+        "aLengthMenu": [[ 100], [100]],
+        "iDisplayLength": 100,
+    
+        /**default orderid in asc sorting**/
+         "order": [[ 0, "asc" ]],
+    "bSort": false,
+    "bAutoWidth": false, // Disable the auto width calculation
+
+        /**sorting coloumn disable**/
+        /*"aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] },
+     
+   ]*/
+   
+        
+    } );
+    <!----/************************Datepicker js************************************************/-->
+    
+    }
+j(document).ready(function() {
+    j('.example').dataTable( {
+        "pagingType": "full_numbers",
+        
+        // "aLengthMenu": [[ 5, 15,20,25, -1], [ 5,15,20, 25, "All"]],
+        //"iDisplayLength": 5,
+        "aLengthMenu": [[ 100], [100]],
+        "iDisplayLength": 100,
+    
+        /**default orderid in asc sorting**/
+         "order": [[ 0, "asc" ]],
+    "bSort": false,
+    "bAutoWidth": false, // Disable the auto width calculation
+
+        /**sorting coloumn disable**/
+        /*"aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] },
+     
+   ]*/
+   
+        
+    } );
+
+})
+</script>
+
+
+    <!--------//end of datatable js component------------->
+ <apex:include pageName="BLN_Attendeeinfo_popup" rendered="true" /> 
+ <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+    <script>
+var dt = jQuery.noConflict();        
+dt('.ED').datetimepicker({
+timepicker:false,
+format:'m/d/Y',
+formatDate: 'm/d/Y',
+
+});
+</script>
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+    <!-----------choosen multiselect function----------------------> 
+
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script> 
+<script>
+    $(document).ready(function() {
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+     
+    });
+
+
+</script> 
+<!---------------------------end of display.js---------------------------------------> 
+   
+    
+    <!-----/*********************//Java Script Section*******************/-->
+        
+</apex:page>

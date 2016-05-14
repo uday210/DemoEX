@@ -1,0 +1,186 @@
+<apex:page controller="BLN_GoScheduleCon" sidebar="false" showheader="false" standardStylesheets="false">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+ 
+<style type="text/css">
+
+
+textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+    -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+    -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+    transition: border linear 0.2s, box-shadow linear 0.2s;
+}
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    display: inline-block;
+    height: 20px;
+    padding: 4px 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #555555;
+    vertical-align: middle;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    display: inline-block;
+    
+    padding: 4px 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 35px;
+    color: #555555;
+    vertical-align: middle;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.styled-select{
+   background: transparent;
+   width: 268px;
+   padding: 5px;
+   font-size: 16px;
+   line-height: 1;
+   border: 0;
+   border-radius: 0;
+   height: 34px;
+   -webkit-appearance: none;
+   }
+    .TFtable{
+        width:100%; 
+        border-collapse:collapse; font-family: Verdana,sans-serif; font-size:13px;
+    }
+    .TFtable td{ 
+        padding:7px; border:#4e95f4 1px solid;
+    }
+    /* provide some minimal visual accomodation for IE8 and below */
+    .TFtable tr{
+        background: #b8d1f3;
+    }
+    /*  Define the background color for all the ODD background rows  */
+    .TFtable tr:nth-child(odd){ 
+        background: #b8d1f3;
+    }
+    /*  Define the background color for all the EVEN background rows  */
+    .TFtable tr:nth-child(even){
+        background: #dae5f4;
+    }
+    .button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+.button3 {background-color: #f44336;} /* Red */ 
+</style>
+
+
+<apex:form >
+
+
+<table width="50%" border="0" cellspacing="0" cellpadding="0" class="TFtable">
+  <tr>
+    <td>Event Name</td>
+    <td><apex:inputText value="{!eventName}"/></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Ticket Name</td>
+    <td><apex:inputText value="{!itemName}"/></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Time(UTC) to Start From</td>
+    <td><apex:inputText value="{!lsttime}"/></td>
+    <td>e.g:2016-02-25 13:00:00</td>
+  </tr>
+  <tr>
+    <td>API Event Name</td>
+    <td><apex:inputText value="{!apieventname}"/></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Run after every</td>
+    <td><apex:inputText value="{!no}"/></td>
+    <td><apex:selectlist value="{!opt}" size="1" style="width:200px;  line-height:35px;height: 30px;">
+<apex:selectOption itemvalue="Minute" itemLabel="Minute"></apex:selectOption>
+<apex:selectOption itemvalue="Hour" itemLabel="Hour"></apex:selectOption>
+<apex:selectOption itemvalue="Day" itemLabel="Day"></apex:selectOption>
+</apex:selectlist></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><apex:commandButton value="Schedule" action="{!GoSchedule}" styleClass="button "/>&nbsp;<apex:commandButton value="UnSchedule" styleClass="button button3" action="{!UnSchedule}"/></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+   
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--Event Name:<apex:inputText value="{!eventName}"/><br/><br/>
+Ticket Name:<apex:inputText value="{!itemName}"/><br/><br/>
+Time(UTC) to Start From:<apex:inputText value="{!lsttime}"/><br/>
+e.g:2016-02-25 13:00:00
+<br/><br/>
+API Event Name:<apex:inputText value="{!apieventname}"/><br/>
+Run after every:<apex:inputText value="{!no}"/>
+<apex:selectlist value="{!opt}" size="1">
+<apex:selectOption itemvalue="Minute" itemLabel="Minute"></apex:selectOption>
+<apex:selectOption itemvalue="Hour" itemLabel="Hour"></apex:selectOption>
+<apex:selectOption itemvalue="Day" itemLabel="Day"></apex:selectOption>
+</apex:selectlist>
+<br/><br/>
+<apex:commandButton value="Schedule" action="{!GoSchedule}"/>
+
+<apex:commandButton value="UnSchedule" action="{!UnSchedule}"/>-->
+</apex:form>
+</apex:page>

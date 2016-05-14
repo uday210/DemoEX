@@ -1,0 +1,2275 @@
+<apex:component controller="BLN_ReUse_EventsEditCon"   id="mycompss" >
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<apex:attribute name="module" description="This is the value of module name." type="String" required="true"/>
+<c:ed_commonstyles ></c:ed_commonstyles>
+<c:ValidationsCommon ></c:ValidationsCommon>
+ <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-paymentsettings.css')}" />
+<apex:form >
+<apex:actionFunction name="CallPayGType" action="{!Refresh}"  rerender="paysblock" >
+    <apex:param name="modules" assignTo="{!modules}" value="" />
+    <apex:param name="componenteventid" assignTo="{!componenteventid}" value="" />
+</apex:actionFunction>
+
+
+<apex:actionFunction name="getStripeAccessToken" action="{!getStripeAccessToken}"  rerender="stripeadaptivepanel">
+</apex:actionFunction>
+
+</apex:form>
+
+
+<script>
+CallPayGType('{!module}',eventmand.EventID);
+
+</script> 
+<script>
+var pgtexcep=false;
+function paymentload()
+{
+var idtosend='';
+if('{!$CurrentPage.parameters.id}'!='')
+idtosend='{!$CurrentPage.parameters.id}';
+else if(eventmand.EventID!='')
+idtosend=eventmand.EventID;
+
+  if(idtosend!=undefined&&idtosend!='')
+  Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getnewEvents}',
+            idtosend,
+           function(result, event){
+         
+           try{
+           if(result.ble.Event_Pay_Gateway__r!=undefined)
+           for(b=0;b<result.ble.Event_Pay_Gateway__r.length;b++)
+           {
+              if(result.ble.Event_Pay_Gateway__r[b].Registration_Type__c==$('.current').attr('id')){
+              if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r==undefined)
+              continue;
+              if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='Check'&&result.ble.Event_Pay_Gateway__r[b].Accept_Min_Max_Range__c==true)
+              {
+                document.getElementById('acceptrangeforcheck').checked=true;
+                document.getElementById('mincheck').value=result.ble.Event_Pay_Gateway__r[b].Min_amount_to_accept__c;
+                showchecktminmax();
+              }
+               if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name!='Check'&&result.ble.Event_Pay_Gateway__r[b].Accept_Min_Max_Range__c==true)
+              {
+                document.getElementById('acceptrangeforgt').checked=true;
+                document.getElementById('mingt').value=result.ble.Event_Pay_Gateway__r[b].Min_amount_to_accept__c;
+                showpgtminmax();
+               
+              }
+               document.getElementById('acceptrangeforgtdiv').style.display='';
+               //document.getElementById('spkey').value='';
+                if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='Stripe'&&result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Adaptive_Type__c=='Direct'){
+                $("input[name=orpg][value="+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+"]").attr('checked', true);
+                $('input[name="strcatg"][value="' +(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Adaptive_Type__c)+ '"]').attr("checked",true);
+                mainradioshow();
+                showpackage('osstripebox','osstripeadpbox');
+              }
+                if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='Stripe'&&result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Adaptive_Type__c=='Adaptive'){
+                 $("input[name=orpg][value="+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+"]").attr('checked', true);
+                $('input[name="strcatg"][value="' +(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Adaptive_Type__c)+ '"]').attr("checked",true);
+                mainradioshow();
+                 showpackage('osstripeadpbox','osstripebox');         
+                }
+                if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='PayPal'&&result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Adaptive_Type__c=='Direct'){
+                $("input[name=orpg][value="+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+"]").attr('checked', true);
+                $('input[name="ppcatg"][value="' +(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Adaptive_Type__c)+ '"]').attr("checked",true);
+                mainradioshow();
+                showpackage('osppbox','osppadpbox');
+              }
+                if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='PayPal'&&result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Adaptive_Type__c=='Adaptive'){
+                 $("input[name=orpg][value="+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+"]").attr('checked', true);
+                $('input[name="ppcatg"][value="' +(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Adaptive_Type__c)+ '"]').attr("checked",true);
+                 mainradioshow();
+                showpackage('osppadpbox','osppbox');    
+                }
+                if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='Authorize.Net'){
+                
+                  $("input[name=orpg][value='"+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+"']").attr('checked', true);
+                mainradioshow();
+                }
+                if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='TrustCommerce'){
+                  $("input[name=orpg][value="+result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name+"]").attr('checked', true);
+                  mainradioshow();
+                }
+                
+                if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='Check'){
+                document.getElementById("ospbc").checked=true;
+                hidethischeck();
+                try{
+                showchk_content(document.getElementById("ospbc"),'ospaybychkbox');}catch(e){}
+                
+                
+                }
+                if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='Cash'){
+                 document.getElementById("orac").checked=true;
+                }
+                 if(result.ble.Event_Pay_Gateway__r[b].Pay_Gateway__r.PGateway_Type__r.Name=='External Pay Gateway'){
+                document.getElementById("orext").checked=true;
+
+                }
+              }  
+              
+           }
+           //pgshowhidediv(document.getElementById("mpg"));
+           //pgshowhidediv(document.getElementById("epg"));
+           }catch(e){
+           //alert(e);
+           AlertNew.render(e,'Alert!','ok');
+           }
+         
+           showpaymentfeebox();
+            }, 
+            {escape: true}
+        );
+        
+} 
+          function getchequestatejs(val,dfltsate)
+         {              
+                            
+                            Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.statesBasedOnCountry}',
+            val,
+            function(result, event){
+            var opt;
+            $('#chqstate').empty(); 
+            opt = document.createElement('option');
+             opt.value = '';
+             opt.innerHTML = '';
+             document.getElementById('chqstate').add(opt); 
+           $.each(result, function (i, vals) {
+          
+             opt = document.createElement('option');
+             opt.value = vals.Id;
+             opt.innerHTML = vals.Long_Name__c;
+             document.getElementById('chqstate').add(opt);
+             });
+             if(dfltsate!='')
+             document.getElementById('chqstate').value=dfltsate;      
+            }, 
+            {escape: true}
+        );
+        }
+        
+        
+         function savespaymentfunction()
+        {
+            var paygateway={};
+            var cashcheckexternalcardcustomerid='';
+            var cashcheckexternalcarddetails='';
+            
+        
+        paygateway.pgopt=document.querySelector('input[name="orpg"]:checked').value;
+       
+        try{
+        if(paygateway.pgopt=="Stripe")
+        {
+           if(document.querySelector('input[name="strcatg"]:checked').value=="StripeAdaptive")
+           {
+           if(document.querySelector('input[name="osfstradp"]:checked').value=='on')
+           {
+            //alert('Please select a key');
+            AlertNew.render('Please select a key' ,'Alert!','ok');
+            return false;
+           }
+           paygateway.firstparam=document.querySelector('input[name="osfstradp"]:checked').value;
+           }
+           else{
+           if(document.querySelector('input[name="osfstr"]:checked').value=='on')
+           {
+            //alert('Please select a key');
+            AlertNew.render('Please select a key' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;
+           }
+           if(document.getElementById('checkradio').checked==false&&document.getElementById('creditradio').checked==false)
+        {
+             //alert('Please select fee payment option');
+           AlertNew.render('Please select fee payment option' ,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+           return false; 
+        }
+           if(document.getElementById('checkradio').checked==true)
+           {
+              paygateway.secondparam='Check';
+           }
+           else
+           {
+           if(document.getElementById('paydirectcardno').value==''||document.getElementById('paydirectmonth').value=='---Month---'||document.getElementById('paydirectyear').value=='---Year---'||document.getElementById('paydirectcvv').value=='')
+           {
+            if(PGAuthKey==''){
+            //alert('Please enter credit card details');
+            AlertNew.render('Please enter credit card details' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;}
+           }
+           paygateway.secondparam=document.getElementById('paydirectcardno').value+";"+document.getElementById('paydirectmonth').value+";"+document.getElementById('paydirectyear').value+";"+document.getElementById('paydirectcvv').value;
+           var cardno=document.getElementById('paydirectcardno').value;
+            paygateway.fourthparam=GetCardType(document.getElementById('paydirectcardno').value)+";"+cardno.substr(cardno.length - 4);
+          
+           }
+           paygateway.firstparam=document.querySelector('input[name="osfstr"]:checked').value;
+            paygateway.thirdparam='Direct';
+            }
+          
+        }
+        else if(paygateway.pgopt=="PayPal")
+        {
+           if(document.querySelector('input[name="ppcatg"]:checked').value=="PayPalAdaptive")
+           {
+             if(document.querySelector('input[name="osfpp"]:checked').value=='on')
+           {
+            //alert('Please select a key');
+            AlertNew.render('Please select a key' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;
+           }
+           paygateway.firstparam=document.querySelector('input[name="osfpp"]:checked').value;
+           }
+           else
+           {
+           if(document.querySelector('input[name="osfppd"]:checked').value=='on')
+           {
+                //alert('Please select a key');
+            AlertNew.render('Please select a key' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;
+           }
+           if(document.getElementById('checkradio').checked==false&&document.getElementById('creditradio').checked==false)
+        {
+            //alert('Please select fee payment option');
+           AlertNew.render('Please select fee payment option' ,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+           return false; 
+        }
+           if(document.getElementById('checkradio').checked==true)
+           {
+              paygateway.secondparam='Check';
+           }
+           else
+           {
+           if(document.getElementById('paydirectcardno').value==''||document.getElementById('paydirectmonth').value=='---Month---'||document.getElementById('paydirectyear').value=='---Year---'||document.getElementById('paydirectcvv').value=='')
+           {
+            if(PGAuthKey==''){
+          //alert('Please enter credit card details');
+            AlertNew.render('Please enter credit card details' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;}
+           }
+            paygateway.secondparam=document.getElementById('paydirectcardno').value+";"+document.getElementById('paydirectmonth').value+";"+document.getElementById('paydirectyear').value+";"+document.getElementById('paydirectcvv').value;
+           var cardno=document.getElementById('paydirectcardno').value;
+            paygateway.fourthparam=GetCardType(document.getElementById('paydirectcardno').value)+";"+cardno.substr(cardno.length - 4);
+           
+           }
+           paygateway.firstparam=document.querySelector('input[name="osfppd"]:checked').value;
+           paygateway.thirdparam='Direct';
+            
+           
+          
+           }
+           
+        }
+        else if(paygateway.pgopt=="Authorize.Net")
+        {
+        
+         if(document.querySelector('input[name="osfauth"]:checked').value=='on')
+           {
+             //alert('Please select a key');
+            AlertNew.render('Please select a key' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;
+           }
+           if(document.getElementById('checkradio').checked==false&&document.getElementById('creditradio').checked==false)
+        {
+             //alert('Please select fee payment option');
+           AlertNew.render('Please select fee payment option' ,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+           return false; 
+        }
+           if(document.getElementById('checkradio').checked==true)
+           {
+              paygateway.secondparam='Check';
+           }
+           else
+           {
+           if(document.getElementById('paydirectcardno').value==''||document.getElementById('paydirectmonth').value=='---Month---'||document.getElementById('paydirectyear').value=='---Year---'||document.getElementById('paydirectcvv').value=='')
+           {
+            if(PGAuthKey==''){
+            //alert('Please enter credit card details');
+            AlertNew.render('Please enter credit card details' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;}
+           }
+           paygateway.secondparam=document.getElementById('paydirectcardno').value+";"+document.getElementById('paydirectmonth').value+";"+document.getElementById('paydirectyear').value+";"+document.getElementById('paydirectcvv').value;
+            var cardno=document.getElementById('paydirectcardno').value;
+            paygateway.fourthparam=GetCardType(document.getElementById('paydirectcardno').value)+";"+cardno.substr(cardno.length - 4);
+           
+           }
+           paygateway.firstparam=document.querySelector('input[name="osfauth"]:checked').value;
+           paygateway.thirdparam='Direct';
+           
+        }
+        else if(paygateway.pgopt=="TrustCommerce")
+        {
+          if(document.querySelector('input[name="osftrust"]:checked').value=='on')
+           {
+             //alert('Please select a key');
+            AlertNew.render('Please select a key' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;
+           }
+           if(document.getElementById('checkradio').checked==false&&document.getElementById('creditradio').checked==false)
+        {
+           //alert('Please select fee payment option');
+           AlertNew.render('Please select fee payment option' ,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+           return false; 
+        }
+           if(document.getElementById('checkradio').checked==true)
+           {
+              paygateway.secondparam='Check';
+           }
+           else
+           {
+           if(document.getElementById('paydirectcardno').value==''||document.getElementById('paydirectmonth').value=='---Month---'||document.getElementById('paydirectyear').value=='---Year---'||document.getElementById('paydirectcvv').value=='')
+           {
+            if(PGAuthKey==''){
+            //alert('Please enter credit card details');
+            AlertNew.render('Please enter credit card details' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;}
+           }
+           paygateway.secondparam=document.getElementById('paydirectcardno').value+";"+document.getElementById('paydirectmonth').value+";"+document.getElementById('paydirectyear').value+";"+document.getElementById('paydirectcvv').value;
+           var cardno=document.getElementById('paydirectcardno').value;
+            paygateway.fourthparam=GetCardType(document.getElementById('paydirectcardno').value)+";"+cardno.substr(cardno.length - 4);
+            
+           }
+           paygateway.firstparam=document.querySelector('input[name="osftrust"]:checked').value;
+            paygateway.thirdparam='Direct';
+            
+        }
+        
+        }catch(e){
+         //alert('Please select a key');
+        AlertNew.render('Please select a key' ,'Alert!','ok');
+        try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+        return false;}
+        if(document.getElementById('ospbc').checked)
+        {
+        
+        if(document.getElementById('ospbc').checked==true&&(document.getElementById('chqaddr1').value==''||document.getElementById('chqZip').value==''||document.getElementById('chqcountry').value=='None'||document.getElementById('chqstate').value==''||document.getElementById('chqcity').value==''))
+        {
+        //alert('Please enter the mandatory fields for check address');
+        AlertNew.render('Please enter the mandatory fields for check address' ,'Alert!','ok');
+        try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+        return false;}
+        if(document.getElementById('chqZip').value!='')
+        {
+            var country = jQuery('#chqcountry :selected').text();
+            var val = document.getElementById('chqZip').value;
+            var len = val.length;
+            if(country == 'India')
+            {
+                if(len<6 || len>6){                
+                    //alert('ZipCode should contains 6 digits');
+                    AlertNew.render('ZipCode should contains 6 digits' ,'Alert!','ok');
+                    try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+                    return false;
+                }
+            }
+            if(country == 'United States Of America')
+            {
+                if(len<5 || len>5){
+                   //alert('ZipCode should contains 5 digits');
+                    Alert.render('ZipCode should contains 5 digits' ,'Alert!','ok');
+                    try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+                    return false;
+                }
+            }
+        }
+        if(document.getElementById('checkradio').checked==false&&document.getElementById('creditradio').checked==false)
+        {
+          //alert('Please select fee payment option');
+           AlertNew.render('Please select fee payment option' ,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+           return false; 
+        }
+        if(document.getElementById('checkradio').checked==true)
+           {
+              cashcheckexternalcardcustomerid='Check';
+           }
+           else
+           {
+        if(document.getElementById('paydirectcardno').value==''||document.getElementById('paydirectmonth').value=='---Month---'||document.getElementById('paydirectyear').value=='---Year---'||document.getElementById('paydirectcvv').value=='')
+           {
+            if(PGAuthKey==''){
+            //alert('Please enter credit card details');
+            AlertNew.render('Please enter credit card details' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;}
+           }
+           var cardno=document.getElementById('paydirectcardno').value;
+           cashcheckexternalcardcustomerid=document.getElementById('paydirectcardno').value+";"+document.getElementById('paydirectmonth').value+";"+document.getElementById('paydirectyear').value+";"+document.getElementById('paydirectcvv').value;
+           cashcheckexternalcarddetails=GetCardType(document.getElementById('paydirectcardno').value)+";"+cardno.substr(cardno.length - 4);
+          
+           }
+            Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.createCompanyExtDetails}',
+            eventmand.EventID,
+            companyextid,
+            document.getElementById('chqaddr1').value,
+            document.getElementById('chqaddr2').value,
+            document.getElementById('chqcity').value,
+            document.getElementById('chqcountry').value,
+            document.getElementById('chqstate').value,
+            document.getElementById('chqZip').value,
+            function(result, event){
+            if (event.status){
+            companyextid=result;
+            }
+            }
+            );
+        }
+        
+        if(document.getElementById('orac').checked)
+        {
+        if(document.getElementById('checkradio').checked==false&&document.getElementById('creditradio').checked==false)
+        {
+          //alert('Please select fee payment option');
+           AlertNew.render('Please select fee payment option' ,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+           return false; 
+        }
+        if(document.getElementById('checkradio').checked==true)
+           {
+              cashcheckexternalcardcustomerid='Check';
+           }
+           else
+           {
+       if(document.getElementById('paydirectcardno').value==''||document.getElementById('paydirectmonth').value=='---Month---'||document.getElementById('paydirectyear').value=='---Year---'||document.getElementById('paydirectcvv').value=='')
+           {
+            if(PGAuthKey==''){
+            //alert('Please enter credit card details');
+            AlertNew.render('Please enter credit card details' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;}
+           }
+           var cardno=document.getElementById('paydirectcardno').value;
+           cashcheckexternalcardcustomerid=document.getElementById('paydirectcardno').value+";"+document.getElementById('paydirectmonth').value+";"+document.getElementById('paydirectyear').value+";"+document.getElementById('paydirectcvv').value;
+           cashcheckexternalcarddetails=GetCardType(document.getElementById('paydirectcardno').value)+";"+cardno.substr(cardno.length - 4);
+           }
+          }
+          
+          if(document.getElementById('orext').checked)
+        {
+        if(document.getElementById('checkradio').checked==false&&document.getElementById('creditradio').checked==false)
+        {
+         //alert('Please select fee payment option');
+           AlertNew.render('Please select fee payment option' ,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+           return false; 
+        }
+        if(document.getElementById('checkradio').checked==true)
+           {
+              cashcheckexternalcardcustomerid='Check';
+           }
+           else
+           {
+       if(document.getElementById('paydirectcardno').value==''||document.getElementById('paydirectmonth').value=='---Month---'||document.getElementById('paydirectyear').value=='---Year---'||document.getElementById('paydirectcvv').value=='')
+           {
+            if(PGAuthKey==''){
+            //alert('Please enter credit card details');
+            AlertNew.render('Please enter credit card details' ,'Alert!','ok');
+            try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;}
+           }
+           var cardno=document.getElementById('paydirectcardno').value;
+           cashcheckexternalcardcustomerid=document.getElementById('paydirectcardno').value+";"+document.getElementById('paydirectmonth').value+";"+document.getElementById('paydirectyear').value+";"+document.getElementById('paydirectcvv').value;
+           cashcheckexternalcarddetails=GetCardType(document.getElementById('paydirectcardno').value)+";"+cardno.substr(cardno.length - 4);
+           }
+          }
+        
+        var external="false";
+        //if(document.querySelector('input[name="pgo"]:checked').value=='External Pay Gateway')
+        //external="true";
+        console.log(paygateway);
+       if('{!$CurrentPage.Name}'=='BLN_TicketsNew')
+       {
+        
+         Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.new_savesPaymentOption}',
+            JSON.stringify(paygateway),
+            eventmand.EventID,
+            document.getElementById('ospbc').checked,
+            document.getElementById('orac').checked,
+            document.getElementById('orext').checked,
+            cashcheckexternalcardcustomerid,
+            cashcheckexternalcarddetails,
+            '',
+            '',
+            '{!module}',
+            'pc',
+             document.getElementById('acceptrangeforgt').checked,
+            document.getElementById('mingt').value,
+            document.getElementById('acceptrangeforcheck').checked,
+            document.getElementById('mincheck').value,
+            
+            function(result, event){
+            if (event.status){
+            if(result!='success')
+            {
+            //alert(result);
+            AlertNew.render(result,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;
+            }
+            else{
+            AlertNew.render('Payment Gateways Saved Successfully','Alert!','ok');
+            HideLoader(); 
+            try{Alert_paymentopt.Cancel();}catch(e){}  
+            }
+             } 
+             else if (event.type === 'exception') {
+                     //alert(event.message + " " + event.where + " ");
+                    AlertNew.render(event.message + " " + event.where + " " ,'Alert!','ok');
+                    try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+                } else {
+                     //alert(event.message);
+                    AlertNew.render(event.message ,'Alert!','ok');
+                    try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+                }          
+            }, 
+            {escape: true}
+        );
+        }
+       else
+       {
+        
+         Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.new_savesPaymentOption}',
+            JSON.stringify(paygateway),
+            eventmand.EventID,
+            document.getElementById('ospbc').checked,
+            document.getElementById('orac').checked,
+            document.getElementById('orext').checked,
+            cashcheckexternalcardcustomerid,
+            cashcheckexternalcarddetails,
+            document.querySelector('input[name="tckopt"]:checked').value,
+            document.querySelector('input[name="feeopt"]:checked').value,
+            '{!module}',
+            'pc',
+             document.getElementById('acceptrangeforgt').checked,
+            document.getElementById('mingt').value,
+            document.getElementById('acceptrangeforcheck').checked,
+            document.getElementById('mincheck').value,
+            
+            function(result, event){
+            if (event.status){
+            if(result!='success')
+            {
+            //alert(result);
+            AlertNew.render(result,'Alert!','ok');
+           try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+            return false;
+            }
+            else
+            {
+             AlertNew.render('Payment Gateways Saved Successfully','Alert!','ok');
+             HideLoader();
+             try{Alert_paymentopt.Cancel();}catch(e){}  
+            }
+             } 
+             else if (event.type === 'exception') {
+                    //alert(event.message + " " + event.where + " ");
+                    AlertNew.render(event.message + " " + event.where + " ",'Alert!','ok');
+                     try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+                } else {
+                     //alert(event.message);
+                    AlertNew.render(event.message,'Alert!','ok');
+                     try{ticketclick=false;document.getElementById("ticketloader").style.display="none";HideLoader(); }catch(e){}
+                }          
+            }, 
+            {escape: true}
+        );
+        }
+        
+        }
+  
+                    
+                    </script>
+<script>
+
+var companyextid='';
+function hidethischeck() {
+    if(document.getElementById('ospbc').checked){
+     if('{!$CurrentPage.parameters.id}'!='')
+     eventmand.EventID='{!$CurrentPage.parameters.id}';
+        
+        //Load the Event data
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getCompanyExtDetails}',
+            eventmand.EventID,
+           function(result, event){
+           if (event.status){
+           companyextid=result.Id;
+           document.getElementById('chqaddr1').value=result.Business_Address1__c==undefined?'':result.Business_Address1__c;
+           document.getElementById('chqaddr2').value=result.Business_Address2__c==undefined?'':result.Business_Address2__c;
+           document.getElementById('chqcity').value=result.Business_City__c==undefined?'':result.Business_City__c;
+           document.getElementById('chqcountry').value=result.BLN_Business_Country__c==undefined?'':result.BLN_Business_Country__c;
+           document.getElementById('chqZip').value=result.Business_Zipcode__c==undefined?'':result.Business_Zipcode__c;
+           getchequestatejs(document.getElementById('chqcountry').value,result.BLN_Business_State__c);
+           }
+           
+           });
+          
+        }
+   
+}
+
+</script>
+<script>
+function osshowhidediv( rad )
+    {
+        var rads = document.getElementsByName( rad.name );
+        //alert(rad.id);
+        document.getElementById( 'mainpaypalbox' ).style.display = ( rads[0].checked ) ? 'block' : 'none';
+        document.getElementById('mainstripebox').style.display = ( rads[1].checked ) ? 'block' : 'none';
+        document.getElementById( 'osauthbox' ).style.display = ( rads[2].checked ) ? 'block' : 'none';
+        document.getElementById( 'ostrustbox' ).style.display = ( rads[3].checked ) ? 'block' : 'none';
+    
+    }
+
+
+
+
+</script>
+    <!-----------script for onsite registration ppadp------------->
+    <script>
+    function savecommonpaymentfunction(pgopt,objthis,paygatewayid,paygatewaykeyname,paygatewayfirstparam,paygatewaysecondparam,paygatewaythirdparam,paygatewayfourthparam)
+{
+
+var paygateway={};
+ paygateway.pgopt=pgopt;
+ paygateway.firstparam=paygatewayfirstparam;
+ paygateway.secondparam=paygatewaysecondparam;
+ paygateway.thirdparam=paygatewaythirdparam;
+paygateway.fourthparam=paygatewayfourthparam;
+  
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.new_savesPaymentGateways}',
+            JSON.stringify(paygateway),
+            eventmand.EventID,
+            paygatewaykeyname,
+            paygatewayid,
+           '{!module}',
+            function(result, event){
+            if (event.status){
+            console.log(result);
+            if(result.firstparam=='Success'){
+           //alert('Saved Successfully');
+           AlertNew.render('Payment Gateways Saved Successfully' ,'Alert!','ok');
+           objthis.val(result.secondparam);
+           pgtexcep=false;
+           }
+           else
+           {
+           //alert(result.secondparam);
+           AlertNew.render(result.secondparam,'Alert!','ok');
+           setthis=$(objthis).parent().parent();
+           if(pgopt=='Stripe'&&paygatewaythirdparam=='Adaptive')
+           osstradpedit();
+           else if(pgopt=='Stripe'&&paygatewaythirdparam=='Direct')
+           osstredit();
+           else if(pgopt=='Authorize.Net'&&paygatewaythirdparam=='Direct')
+           osauthedit();
+           else if(pgopt=='TrustCommerce'&&paygatewaythirdparam=='Direct')
+           ostrustedit();
+           else if(pgopt=='PayPal'&&paygatewaythirdparam=='Adaptive')
+           osppedit();
+           else if(pgopt=='PayPal'&&paygatewaythirdparam=='Direct')
+           osppdedit();
+           pgtexcep=true;
+           }
+             } 
+             else if (event.type === 'exception') {
+                    //alert(event.message + " " + event.where + " ");
+                    AlertNew.render(event.message + " " + event.where + " " ,'Alert!','ok');
+                    setthis=$(objthis).parent().parent();
+           if(pgopt=='Stripe'&&paygatewaythirdparam=='Adaptive')
+           osstradpedit();
+           else if(pgopt=='Stripe'&&paygatewaythirdparam=='Direct')
+           osstredit();
+           else if(pgopt=='Authorize.Net'&&paygatewaythirdparam=='Direct')
+           osauthedit();
+           else if(pgopt=='TrustCommerce'&&paygatewaythirdparam=='Direct')
+           ostrustedit();
+           else if(pgopt=='PayPal'&&paygatewaythirdparam=='Adaptive')
+           osppedit();
+           else if(pgopt=='PayPal'&&paygatewaythirdparam=='Direct')
+           osppdedit();
+            pgtexcep=true;
+                } else {
+                    //alert(event.message);
+                    AlertNew.render(event.message ,'Alert!','ok');
+                    setthis=$(objthis).parent().parent();
+           if(pgopt=='Stripe'&&paygatewaythirdparam=='Adaptive')
+           osstradpedit();
+           else if(pgopt=='Stripe'&&paygatewaythirdparam=='Direct')
+           osstredit();
+           else if(pgopt=='Authorize.Net'&&paygatewaythirdparam=='Direct')
+           osauthedit();
+           else if(pgopt=='TrustCommerce'&&paygatewaythirdparam=='Direct')
+           ostrustedit();
+           else if(pgopt=='PayPal'&&paygatewaythirdparam=='Adaptive')
+           osppedit();
+           else if(pgopt=='PayPal'&&paygatewaythirdparam=='Direct')
+           osppdedit();
+            pgtexcep=true;
+                }          
+            }, 
+            {escape: true}
+        );
+           
+    
+       
+}
+
+function deletecommonpaymentfunction(paygatewayid)
+{
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.deletePaymentGateways}',
+            paygatewayid,
+           function(result, event){
+            if (event.status){
+           //alert('Deleted Successfully');
+           AlertNew.render('Deleted Successfully' ,'Alert!','ok');
+             } 
+             else if (event.type === 'exception') {
+                    //alert(event.message + " " + event.where + " ");
+                } else {
+                    //alert(event.message);
+                }          
+            }, 
+            {escape: true}
+        );
+           
+    
+       
+}
+ 
+
+var oskn=1;
+function osppadd(){
+
+
+    $(".ospptbl tbody").append(
+
+        "<tr>"+
+        "<td class='btntd'><input type='radio' name='osfpp' checked/></td>"+
+        "<td width='25%'><input type='text' onChange='pgtexcep=true;'  value='key"+oskn+"'/></td>"+
+        "<td ><input type='text' onChange='pgtexcep=true;'/></td>"+
+        "<td colspan='2' class='textright' style='padding-right:7px;'><a class='osppsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; </i></a><a class='osppdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");
+        oskn++;
+    
+        $(".osppsave").die('click').live("click",osppsave);      
+        $(".osppdel").die('click').live("click",osppdel);
+}; 
+
+ 
+
+function osppsave(){
+    var par = $(this).parent().parent(); //tr
+    var tdppkeyname = par.children("td:nth-child(2)");
+    var tdppemail = par.children("td:nth-child(3)");
+    var tdButtons = par.children("td:nth-child(4)");
+    savecommonpaymentfunction('PayPal',par.children("td:nth-child(1)").children("input[type=radio]"),par.children("td:nth-child(1)").children("input[type=radio]").val(),tdppkeyname.children("input[type=text]").val(),tdppemail.children("input[type=text]").val(),'','Adaptive','');
+    tdppkeyname.html(tdppkeyname.children("input[type=text]").val());
+    tdppemail.html(tdppemail.children("input[type=text]").val());
+    tdButtons.html("<a class='osppedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osppdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+   $(".osppedit").die('click').live("click",osppedit);
+    $(".osppdel").die('click').live("click",osppdel);
+        <!--------------------------------------->   
+
+}; 
+
+function osppedit(){
+    var par;
+//tr
+if(setthis=='')
+par = $(this).parent().parent(); 
+else
+par=setthis;
+
+    var tdppkeyname = par.children("td:nth-child(2)");
+    var tdppemail = par.children("td:nth-child(3)");
+    var tdButtons = par.children("td:nth-child(4)");
+
+    tdppkeyname.html("<input type='text' onChange='pgtexcep=true;' value='"+tdppkeyname.html()+"'/>");
+    tdppemail.html("<input type='text' onChange='pgtexcep=true;'  value='"+tdppemail.html()+"'/>");
+    tdButtons.html("<a class='osppsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; </i></a><a class='osppdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".osppsave").die('click').live("click", osppsave);
+    $(".osppedit").die('click').live("click", osppedit);
+    $(".osppdel").die('click').live("click", osppdel);
+    setthis='';
+};
+
+
+
+function osppdel(){
+    var par = $(this).parent().parent(); //tr
+    deletecommonpaymentfunction(par.children("td:nth-child(1)").children("input[type=radio]").val());
+    par.remove();
+}; 
+
+ 
+ </script>
+    <!-----------//script for onsite registration ppadp------------->
+
+    <!-----------script for onsite registration ppdirect------------->
+    <script>
+ <!---for paypal---------->
+
+var oskn1=1;
+function osppdadd(){
+
+
+    $(".osppdtbl tbody").append(
+
+        "<tr>"+
+        "<td class='btntd'><input type='radio' name='osfppd' checked/></td>"+
+        "<td width='11%'><input type='text' onChange='pgtexcep=true;'  value='key"+oskn1+"'/></td>"+
+        "<td ><input type='text' onChange='pgtexcep=true;' style='width:83%;'></td>"+
+        " <td ><input type='password' onChange='pgtexcep=true;' style='width:83%;' ></td>"+
+        "<td ><input type='text' onChange='pgtexcep=true;' style='width:87%;' ></td>"+
+        "<td colspan='2' class='textright' style='padding-right:7px;'><a class='osppdsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; </i></a><a class='osppddel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");
+        oskn1++;
+    
+        $(".osppdsave").die('click').live("click",osppdsave);        
+        $(".osppddel").die('click').live("click",osppddel);
+}; 
+
+ 
+
+function osppdsave(){
+    var par = $(this).parent().parent(); //tr
+    var tdppkeyname = par.children("td:nth-child(2)");
+    var tdppusername = par.children("td:nth-child(3)");
+    var tdpppassword = par.children("td:nth-child(4)");
+    var tdppsignature = par.children("td:nth-child(5)");
+    var tdButtons = par.children("td:nth-child(6)");
+    savecommonpaymentfunction('PayPal',par.children("td:nth-child(1)").children("input[type=radio]"),par.children("td:nth-child(1)").children("input[type=radio]").val(),tdppkeyname.children("input[type=text]").val(),tdppusername.children("input[type=text]").val(),tdpppassword.children("input[type=password]").val(),'Direct',tdppsignature.children("input[type=text]").val());
+   
+     tdppkeyname.html(tdppkeyname.children("input[type=text]").val());
+    tdppusername.html(tdppusername.children("input[type=text]").val());
+    tdpppassword.html(tdpppassword.children("input[type=password]").val());
+    tdppsignature .html(tdppsignature.children("input[type=text]").val());
+    tdButtons.html("<a class='osppdedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osppddel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+   $(".osppdedit").die('click').live("click",osppdedit);
+    $(".osppddel").die('click').live("click",osppddel);
+        <!--------------------------------------->   
+
+}; 
+
+function osppdedit(){
+    var par;
+//tr
+if(setthis=='')
+par = $(this).parent().parent(); 
+else
+par=setthis;
+
+    var tdppkeyname = par.children("td:nth-child(2)");
+    var tdppusername = par.children("td:nth-child(3)");
+    var tdpppassword = par.children("td:nth-child(4)");
+    var tdppsignature = par.children("td:nth-child(5)");
+    var tdButtons = par.children("td:nth-child(6)");
+
+    tdppkeyname.html("<input type='text' onChange='pgtexcep=true;'  value='"+tdppkeyname.html()+"'/>");
+    tdppusername.html("<input type='text' onChange='pgtexcep=true;'  value='"+tdppusername.html()+"'/>");
+    tdpppassword.html("<input type='password' onChange='pgtexcep=true;'  value='"+tdpppassword.html()+"'/>");
+    tdppsignature.html("<input type='text' onChange='pgtexcep=true;'  value='"+tdppsignature.html()+"'/>");
+    tdButtons.html("<a class='osppdsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; </i></a><a class='osppddel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".osppdsave").die('click').live("click", osppdsave);
+    $(".osppdedit").die('click').live("click", osppdedit);
+    $(".osppddel").die('click').live("click", osppddel);
+    setthis='';
+};
+
+
+
+function osppddel(){
+    var par = $(this).parent().parent(); //tr
+    deletecommonpaymentfunction(par.children("td:nth-child(1)").children("input[type=radio]").val());
+    par.remove();
+}; 
+
+ 
+ </script>
+    <!-----------//script for onsite registration ppdirect------------->
+
+
+
+
+    <!---script for onsite registration stripeadaptive---------->
+    <script>
+var osstripeadp=1;
+function osstradpadd(){
+
+var refretokenvalue=document.getElementById("spkey").value;
+var acctokenvalue=document.getElementById("spkey1").value;
+    $(".osstradptbl tbody").append(
+
+        "<tr>"+
+        "<td class='btntd'><input type='radio' name='osfstradp' checked/></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;'  value='key"+osstripeadp+"' /></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;' style='width:84%;' value='"+refretokenvalue+"'/></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;' style='width:84%;' value='"+acctokenvalue+"'/></td>"+
+        "<td colspan='2' class='textright' style='padding-right:14px;'><a class='osstradpsave'><i class='fa fa-save  fa-save22px' title='Save'>&nbsp;</i></a><a class='osstradpdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");   
+    
+osstripeadp++;
+        $(".osstradpsave").die('click').live("click",osstradpsave);      
+        $(".osstradpdel").die('click').live("click", osstradpdel);
+}; 
+
+
+function osstradpsave(){
+    var par = $(this).parent().parent(); //tr
+    var tdstrkeyname = par.children("td:nth-child(2)");
+    var tdstrsecretid  = par.children("td:nth-child(3)");
+    var tdstrpublishkey = par.children("td:nth-child(4)");
+    var tdButtons = par.children("td:nth-child(5)");
+    savecommonpaymentfunction('Stripe',par.children("td:nth-child(1)").children("input[type=radio]"),par.children("td:nth-child(1)").children("input[type=radio]").val(),tdstrkeyname.children("input[type=text]").val(),tdstrsecretid.children("input[type=text]").val(),tdstrpublishkey.children("input[type=text]").val(),'Adaptive',''); 
+    tdstrkeyname.html(tdstrkeyname.children("input[type=text]").val());
+    tdstrsecretid.html(tdstrsecretid.children("input[type=text]").val());
+    tdstrpublishkey.html(tdstrpublishkey.children("input[type=text]").val());
+    tdButtons.html("<a class='osstradpedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osstradpdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".osstradpedit").die('click').live("click", osstradpedit);
+    $(".osstradpdel").die('click').live("click", osstradpdel);
+    
+        
+
+}; 
+
+
+
+function osstradpedit(){
+    var par;
+//tr
+if(setthis=='')
+par = $(this).parent().parent(); 
+else
+par=setthis;
+
+    var tdstrkeyname = par.children("td:nth-child(2)");
+    var tdstrsecretid = par.children("td:nth-child(3)");
+    var tdstrpublishkey = par.children("td:nth-child(4)");
+    var tdButtons = par.children("td:nth-child(5)");
+
+    tdstrkeyname.html("<input type='text' onChange='pgtexcep=true;' id='tdstrkeyname' value='"+tdstrkeyname.html()+"'/>");
+    tdstrsecretid.html("<input type='text' onChange='pgtexcep=true;' style='width:84%;' value='"+tdstrsecretid.html()+"'/>");
+    tdstrpublishkey.html("<input type='text' onChange='pgtexcep=true;' style='width:84%;' value='"+tdstrpublishkey.html()+"'/>");
+    tdButtons.html("<a class='osstradpsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; </i></a><a class='osstradpdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+    
+    
+    $(".osstradpsave").die('click').live("click",osstradpsave);
+    $(".osstradpedit").die('click').live("click",osstradpedit);  
+    $(".osstradpdel").die('click').live("click",osstradpdel);
+    
+    setthis='';
+
+};
+
+
+
+function osstradpdel(){
+    var par = $(this).parent().parent(); //tr
+     deletecommonpaymentfunction(par.children("td:nth-child(1)").children("input[type=radio]").val());
+    par.remove();
+}; 
+
+
+
+
+
+
+</script>
+    <!---//script for onsite registration stripeadaptive---------->
+
+    <!---script for onsite registration stripe---------->
+    <script>
+var osstripe=1;
+function osstradd(){
+
+    $(".osstrtbl tbody").append(
+        "<tr>"+
+        "<td class='btntd'><input type='radio' name='osfstr' checked/></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;'  value='key"+osstripe+"' /></td>"+
+        "<td><input type='password' onChange='pgtexcep=true;' style='width:84%;' /></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;' style='width:84%;'/></td>"+
+        "<td colspan='2' class='textright' style='padding-right:14px;'><a class='osstrsave'><i class='fa fa-save  fa-save22px' title='Save'>&nbsp;</i></a><a class='osstrdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");   
+    
+osstripe++;
+        $(".osstrsave").die('click').live("click",osstrsave);        
+        $(".osstrdel").die('click').live("click", osstrdel);
+}; 
+
+
+function osstrsave(){
+    var par = $(this).parent().parent(); //tr
+    var tdstrkeyname = par.children("td:nth-child(2)");
+    var tdstrsecretid  = par.children("td:nth-child(3)");
+    var tdstrpublishkey = par.children("td:nth-child(4)");
+    var tdButtons = par.children("td:nth-child(5)");
+    
+    savecommonpaymentfunction('Stripe',par.children("td:nth-child(1)").children("input[type=radio]"),par.children("td:nth-child(1)").children("input[type=radio]").val(),tdstrkeyname.children("input[type=text]").val(),tdstrsecretid.children("input[type=password]").val(),tdstrpublishkey.children("input[type=text]").val(),'Direct','');  
+    tdstrkeyname.html(tdstrkeyname.children("input[type=text]").val());
+    tdstrsecretid.html(tdstrsecretid.children("input[type=password]").val());
+    tdstrpublishkey.html(tdstrpublishkey.children("input[type=text]").val());
+    tdButtons.html("<a class='osstredit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osstrdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".osstredit").die('click').live("click", osstredit);
+    $(".osstrdel").die('click').live("click", osstrdel);
+
+}; 
+
+
+
+function osstredit(){
+    var par;
+//tr
+if(setthis=='')
+par = $(this).parent().parent(); 
+else
+par=setthis;
+
+    var tdstrkeyname = par.children("td:nth-child(2)");
+    var tdstrsecretid = par.children("td:nth-child(3)");
+    var tdstrpublishkey = par.children("td:nth-child(4)");
+    var tdButtons = par.children("td:nth-child(5)");
+
+    tdstrkeyname.html("<input type='text' onChange='pgtexcep=true;' id='tdstrkeyname' value='"+tdstrkeyname.html()+"'/>");
+    tdstrsecretid.html("<input type='password' onChange='pgtexcep=true;' style='width:84%;' value='"+tdstrsecretid.html()+"'/>");
+    tdstrpublishkey.html("<input type='text' onChange='pgtexcep=true;' style='width:84%;' value='"+tdstrpublishkey.html()+"'/>");
+    tdButtons.html("<a class='osstrsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; </i></a><a class='osstrdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+    
+    
+    $(".osstrsave").die('click').live("click",osstrsave);
+    $(".osstredit").die('click').live("click",osstredit);    
+    $(".osstrdel").die('click').live("click",osstrdel);
+setthis='';
+};
+
+
+
+function osstrdel(){
+    var par = $(this).parent().parent(); //tr
+     deletecommonpaymentfunction(par.children("td:nth-child(1)").children("input[type=radio]").val());
+    par.remove();
+}; 
+
+
+
+
+
+
+</script>
+    <!---//script for onsite registration stripe---------->
+
+    <!---script for onsite registration authorize net---------->
+    <script>
+var osauth=1;
+function osauthadd(){
+
+    $(".osauthtbl tbody").append(
+
+        "<tr>"+
+        "<td class='btntd'><input type='radio' name='osfauth' checked/></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;'  value='key"+osauth+"' /></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;' style='width:84%;' /></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;' style='width:84%;'/></td>"+
+        "<td colspan='2' class='textright' style='padding-right:14px;'><a class='osauthsave'><i class='fa fa-save  fa-save22px' title='Save'>&nbsp;</i></a><a class='osauthdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");   
+    
+osauth++;
+        $(".osauthsave").die('click').live("click",osauthsave);      
+        $(".osauthdel").die('click').live("click", osauthdel);
+}; 
+
+
+function osauthsave(){
+
+    var par = $(this).parent().parent(); //tr
+    var tdstrkeyname = par.children("td:nth-child(2)");
+    var tdstrsecretid  = par.children("td:nth-child(3)");
+    var tdstrpublishkey = par.children("td:nth-child(4)");
+    var tdButtons = par.children("td:nth-child(5)");
+   
+     savecommonpaymentfunction('Authorize.Net',par.children("td:nth-child(1)").children("input[type=radio]"),par.children("td:nth-child(1)").children("input[type=radio]").val(),tdstrkeyname.children("input[type=text]").val(),tdstrsecretid.children("input[type=text]").val(),tdstrpublishkey.children("input[type=text]").val(),'Direct',''); 
+     
+    tdstrkeyname.html(tdstrkeyname.children("input[type=text]").val());
+    tdstrsecretid.html(tdstrsecretid.children("input[type=text]").val());
+    tdstrpublishkey.html(tdstrpublishkey.children("input[type=text]").val());
+    tdButtons.html("<a class='osauthedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osauthdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+   
+    $(".osauthedit").die('click').live("click", osauthedit);
+    $(".osauthdel").die('click').live("click", osauthdel);
+    
+        
+
+}; 
+
+
+var setthis='';
+function osauthedit(){
+var par;
+//tr
+if(setthis=='')
+par = $(this).parent().parent(); 
+else
+par=setthis;
+
+    var tdstrkeyname = par.children("td:nth-child(2)");
+    var tdstrsecretid = par.children("td:nth-child(3)");
+    var tdstrpublishkey = par.children("td:nth-child(4)");
+    var tdButtons = par.children("td:nth-child(5)");
+
+    tdstrkeyname.html("<input type='text' onChange='pgtexcep=true;'  id='tdstrkeyname' value='"+tdstrkeyname.html()+"'/>");
+    tdstrsecretid.html("<input type='text' onChange='pgtexcep=true;' style='width:84%;'  value='"+tdstrsecretid.html()+"'/>");
+    tdstrpublishkey.html("<input type='text' onChange='pgtexcep=true;' style='width:84%;' value='"+tdstrpublishkey.html()+"'/>");
+    tdButtons.html("<a class='osauthsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; </i></a><a class='osauthdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+    
+    
+    $(".osauthsave").die('click').live("click",osauthsave);
+    $(".osauthedit").die('click').live("click",osauthedit);  
+    $(".osauthdel").die('click').live("click",osauthdel);
+setthis='';
+};
+
+
+
+function osauthdel(){
+    var par = $(this).parent().parent(); //tr
+    deletecommonpaymentfunction(par.children("td:nth-child(1)").children("input[type=radio]").val());
+    par.remove();
+}; 
+
+
+
+
+
+</script>
+    <!---//script for onsite registration authorize net---------->
+
+    <!---script for onsite registration trust commerce---------->
+    <script>
+var ostrust=1;
+function ostrustadd(){
+
+    $(".ostrusttbl tbody").append(
+
+        "<tr>"+
+        "<td class='btntd'><input type='radio' name='osftrust' checked/></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;'  value='key"+ostrust+"' /></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;' style='width:84%;' /></td>"+
+        "<td><input type='text' onChange='pgtexcep=true;' style='width:84%;'/></td>"+
+        "<td><input type='checkbox'  onChange='pgtexcep=true;' onclick='checkboxfunction(this);' style='width:84%;'/></td>"+
+        "<td colspan='2' class='textright' style='padding-right:14px;'><a class='ostrustsave'><i class='fa fa-save  fa-save22px' title='Save'>&nbsp;</i></a><a class='ostrustdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");   
+    
+ostrust++;
+        $(".ostrustsave").die('click').live("click",ostrustsave);        
+        $(".ostrustdel").die('click').live("click", ostrustdel);
+}; 
+
+
+function ostrustsave(){
+    var par = $(this).parent().parent(); //tr
+    var tdstrkeyname = par.children("td:nth-child(2)");
+    var tdstrsecretid  = par.children("td:nth-child(3)");
+    var tdstrpublishkey = par.children("td:nth-child(4)");
+    var tdstrusehost = par.children("td:nth-child(5)");
+    var tdButtons = par.children("td:nth-child(6)");
+    
+    savecommonpaymentfunction('TrustCommerce',par.children("td:nth-child(1)").children("input[type=radio]"),par.children("td:nth-child(1)").children("input[type=radio]").val(),tdstrkeyname.children("input[type=text]").val(),tdstrsecretid.children("input[type=text]").val(),tdstrpublishkey.children("input[type=text]").val(),'Direct',tdstrusehost.children().attr('checked')); 
+    tdstrkeyname.html(tdstrkeyname.children("input[type=text]").val());
+    tdstrsecretid.html(tdstrsecretid.children("input[type=text]").val());
+    tdstrpublishkey.html(tdstrpublishkey.children("input[type=text]").val());
+    tdstrusehost.html(tdstrusehost.children("input[type=text]").val());
+    tdButtons.html("<a class='ostrustedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='ostrustdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".ostrustedit").die('click').live("click", ostrustedit);
+    $(".ostrustdel").die('click').live("click", ostrustdel);
+    
+        
+
+}; 
+
+
+
+function ostrustedit(){
+    var par;
+//tr
+if(setthis=='')
+par = $(this).parent().parent(); 
+else
+par=setthis;
+
+    var tdstrkeyname = par.children("td:nth-child(2)");
+    var tdstrsecretid = par.children("td:nth-child(3)");
+    var tdstrpublishkey = par.children("td:nth-child(4)");
+    var tdstrusehost = par.children("td:nth-child(5)");
+    var tdButtons = par.children("td:nth-child(6)");
+    
+
+    tdstrkeyname.html("<input type='text' onChange='pgtexcep=true;'   value='"+tdstrkeyname.html()+"'/>");
+    tdstrsecretid.html("<input type='text' onChange='pgtexcep=true;' style='width:84%;'  value='"+tdstrsecretid.html()+"'/>");
+    tdstrpublishkey.html("<input type='text' onChange='pgtexcep=true;' style='width:84%;' value='"+tdstrpublishkey.html()+"'/>");
+    if(tdstrusehost.children().attr('checked'))
+    tdstrusehost.html("<input type='checkbox' onclick='checkboxfunction(this);' onChange='pgtexcep=true;' style='width:84%;' checked='checked'/>");
+    else
+    tdstrusehost.html("<input type='checkbox' onclick='checkboxfunction(this);' onChange='pgtexcep=true;' style='width:84%;' />");
+    tdButtons.html("<a class='ostrustsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; </i></a><a class='ostrustdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+    
+    
+    $(".ostrustsave").die('click').live("click",ostrustsave);
+    $(".ostrustedit").die('click').live("click",ostrustedit);    
+    $(".ostrustdel").die('click').live("click",ostrustdel);
+setthis='';
+};
+
+
+
+function ostrustdel(){
+    var par = $(this).parent().parent();
+    deletecommonpaymentfunction(par.children("td:nth-child(1)").children("input[type=radio]").val());
+    par.remove();
+}; 
+
+
+
+
+
+
+</script>
+    <!---//script for onsite registration trust commerce---------->
+    <!---//end of custom javascript------>
+
+<!--newly added script end-->
+
+ <apex:outputpanel id="paysblock" layout="block">
+   
+                   
+                    <p class="padding-5px bg-font" style="  padding: 13px;padding-top: 25px;padding-left: 9px;">Payment Gateway Options</p>
+                        
+<div class="paymentoptions_box">
+                                        <ul>
+                                            <!---->
+                                            <li style="display:{!IF(paygtype['PayPal,Adaptive']==false&&paygtype['PayPal,Direct']==false,'none','')}">
+                                            <input id="orpp" type="radio" name="orpg"
+                                                onclick="osshowhidediv(this);showpaymentfeebox();document.getElementById('acceptrangeforgtdiv').style.display='';" value="PayPal"/> <label for="orpp">
+                                                    <img
+                                                    src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/paypal.png')}" />
+                                            </label></li>
+                                            <!---->
+
+                                            <!---->
+                                            <li style="display:{!IF(paygtype['Stripe,Adaptive']==false&&paygtype['Stripe,Direct']==false,'none','')}"><input id="orstradp" type="radio" name="orpg"
+                                                onclick="osshowhidediv(this);showpaymentfeebox();document.getElementById('acceptrangeforgtdiv').style.display='';" value="Stripe"/> <label for="orstradp">
+                                                    <img
+                                                    src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/stripe.png')}" />
+                                            </label></li>
+                                            <!---->
+                                            <li style="display:{!IF(paygtype['Authorize.Net,Direct']==false,'none','')}"><input id="orauth" type="radio" name="orpg"
+                                                onclick="osshowhidediv(this);showpaymentfeebox();document.getElementById('acceptrangeforgtdiv').style.display='';" value="Authorize.Net"/> <label for="orauth">
+                                                    <img
+                                                    src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/authorize.png')}" />
+                                            </label></li>
+                                            <!---->
+                                            <li style="display:{!IF(paygtype['TrustCommerce,Direct']==false,'none','')}"><input id="ortc" type="radio" name="orpg"
+                                                onclick="osshowhidediv(this);showpaymentfeebox();document.getElementById('acceptrangeforgtdiv').style.display='';" value="TrustCommerce"/> <label for="ortc">
+                                                    <img
+                                                    src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/trustcommerce.png')}" />
+                                            </label></li>
+                                            <!---->
+                                            <li><input type="radio" id="ornone" checked="true"
+                                                name="orpg" onclick="osshowhidediv(this);showpaymentfeebox();document.getElementById('acceptrangeforgtdiv').style.display='none';" value="None"/> <label
+                                                for="ornone"> <img
+                                                    src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/none.png')}" />
+                                            </label></li>
+                                            <!---->
+                                            <!---->
+                                        </ul>
+
+                                    </div>
+                                    <!--close of paymentoptions_box-->
+                                    <br />
+                                    <!----------------------------------start of Paypal box--------------------->
+                                    <div id="mainpaypalbox" style="display: none">
+                                        <!---------------------start of onsite paypaladp box------------------>
+                                        <p class="sm-subheading" style="display:{!IF(paygtype['PayPal,Adaptive']==false,'none','')}">
+                                            <input type="radio" name="ppcatg"
+                                                onclick="showpackage('osppadpbox','osppbox');showpaymentfeebox();"
+                                                class="margin-ryt-5px" value="PayPalAdaptive"/>For Paypal Adaptive (Credit Card
+                                            Not Required)
+                                        </p>
+                                        <!--close of black-title-->
+                                        <div id="osppadpbox" style="display: none;">
+                                            <div class="form-embed-div"
+                                                style="width: 50%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                                <div class="form-content-div" style="padding: 0px;">
+
+                                                    <!---start of ospaypal table--->
+                                                    <table class="display ospptbl" style="border: none;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="13%">Select</th>
+                                                                <th>Key Name</th>
+                                                                <th>Pay Pal Email Address</th>
+                                                                <th width="13%">Action</th>
+                                                                <th><a class="osppadd" title="Add New"><i
+                                                                        class="fa fa-plus-square-o fa-add-23x"></i></a></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <apex:repeat value="{!paygateways['PayPal,Adaptive']}" var="pp">
+                                                            <tr>
+                                                                <td class="btntd"><input type="radio" name="osfpp" value="{!pp.id}"/></td>
+                                                                <td width="25%">{!pp.Paygateway_name__c}</td>
+                                                                <td>{!pp.PG_Email_Id__c}</td>
+                                                                <td colspan="2" class="textright"
+                                                                    style="padding-right: 7px;"><a class='osppedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osppdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>
+
+                                                            </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+                                                    </table>
+                                                   
+                     
+                     <script>
+                          var payadapflag=0;                      
+                      <apex:repeat value="{!paygateways['PayPal,Adaptive']}" var="pps">
+                      if('{!pps.Event_Pay_Gateway__r.size}'!=0){
+                     
+                     $("input[name=osfpp][value="+"{!pps.id}"+"]").attr('checked', true);
+                     payadapflag=1;
+                     }
+                     else
+                     {
+                         if('{!pps.Active_Paygateway__c}'=='true'&&payadapflag==0){
+                        $("input[name=osfauth][value="+"{!pps.id}"+"]").attr('checked', true);
+                         }
+                     }
+                     </apex:repeat>
+                     </script>
+                                                    <!---end of paypal table--->
+
+
+                                                </div>
+                                                <!--form-embed-div-->
+                                            </div>
+                                        </div>
+                                        <!--close of osppadpbox-->
+                                        <!---------------------end of onsite paypaladp box------------------>
+
+                                        <!---------------------start of onsite paypal box------------------>
+                                        <p class="sm-subheading" style="display:{!IF(paygtype['PayPal,Direct']==false,'none','')}">
+                                            <input type="radio" name="ppcatg"
+                                                onclick="showpackage('osppbox','osppadpbox');showpaymentfeebox();"
+                                                class="margin-ryt-5px" value="PayPalDirect"/>For Paypal Direct (Authorization
+                                            Required For Credit Card) <font color="#FF6600">You must have PayPal Business Pro Account to use this payment method</font>
+                                        </p>
+                                        <!--close of black-title-->
+                                        <div id="osppbox" style="display: none;">
+                                            <div class="form-embed-div"
+                                                style="width: 94%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                                <div class="form-content-div" style="padding: 0px;">
+
+                                                    <!---start of ospaypal table--->
+                                                    <table class="display osppdtbl" style="border: none;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="7%">Select</th>
+                                                                <th width="11%">Key Name</th>
+                                                                <th width="22%">API Username</th>
+                                                                <th width="22%">API Password</th>
+                                                                <th width="28%">Signature</th>
+                                                                <th>Action</th>
+                                                                <th><a class="osppdadd" title="Add New"><i
+                                                                        class="fa fa-plus-square-o fa-add-23x"></i></a></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <apex:repeat value="{!paygateways['PayPal,Direct']}" var="ppa">
+                                                            <tr>
+                                                                <td class="btntd"><input type="radio" name="osfppd" value="{!ppa.id}"/></td>
+                                                                <td>{!ppa.Paygateway_name__c}</td>
+                                                                <td>{!ppa.PG_User_Key__c}</td>
+                                                                <td>{!ppa.PG_Pass_Secret__c}</td>
+                                                                <td>{!ppa.PG_Signature__c}</td>
+                                                                <td colspan="2" class="textright"
+                                                                    style="padding-right: 7px;"><a class='osppdedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osppddel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>
+                                                            </tr>
+                                                            </apex:repeat>
+
+                                                        </tbody>
+                                                    </table>
+                                                    <!---end of paypal table--->
+<script>
+                          var paystandflag=0;                      
+                      <apex:repeat value="{!paygateways['PayPal,Direct']}" var="ppsa">
+                      if('{!ppsa.Event_Pay_Gateway__r.size}'!=0){
+                     
+                     $("input[name=osfppd][value="+"{!ppsa.id}"+"]").attr('checked', true);
+                     paystandflag=1;
+                     }
+                     else
+                     {
+                         if('{!ppsa.Active_Paygateway__c}'=='true'&&paystandflag==0){
+                        $("input[name=osfppd][value="+"{!ppsa.id}"+"]").attr('checked', true);
+                         }
+                     }
+                     </apex:repeat>
+                     var PGAuthKey='{!PGAuthKey}';
+                     </script>
+
+                                                </div>
+                                                <!--form-embed-div-->
+                                            </div>
+                                            <br />
+                    </div>
+                                        <!--close of osppbox-->
+                                        <!---------------------end of onsite paypal box------------------>
+
+                                    </div>
+                                    <!---close of mainpaypal
+  <!-------------------end of paypal box--------------------->
+                                    <!----------------------------------start of stripe box--------------------->
+                                    <div id="mainstripebox" style="display: none">
+                                    
+                                        <!---start of onsite stripeadptive box------>
+                                        <p class="sm-subheading" style="display:{!IF(paygtype['Stripe,Adaptive']==false,'none','')}">
+                                            <input type="radio" name="strcatg"
+                                                onclick="showpackage('osstripeadpbox','osstripebox');showpaymentfeebox();"
+                                                class="margin-ryt-5px" value="StripeAdaptive"/>For Stripe Adaptive (Credit Card
+                                            Not Required)
+                                           <style>
+.sm-subheading a.tooltip > span{
+width: 450px; 
+padding: 7px 10px; 
+margin-top: 25px; 
+opacity: 0; 
+visibility: hidden; 
+z-index: 10; 
+position: absolute; 
+display: none; 
+margin-left: -400px;
+}
+
+.sm-subheading a.tooltip:hover span{ 
+color: #000000; 
+border: 1px solid #000000; 
+background: #ffeaf3;
+display: inline; 
+} 
+
+.sm-subheading a.tooltip:hover > span{ 
+opacity: 1; 
+visibility: visible; 
+overflow: visible; 
+}
+                                        </style>
+                                        
+                                            <a href="#" class="tooltip">
+                                              &nbsp;&nbsp;&nbsp;&nbsp;Note:
+                                                     <apex:image value="{!$Resource.BL_HelpIcon}" style="border:0px; width:20px;height:20px; border: 0px solid #ddd; margin:0px 0px 0px 0px;padding:0px;"  /> 
+                                                     
+                                                            <span style="text-align:left;">Please set the Redirect URIs to {!$Label.siteurl}/apex/BLN_TicketsNew, {!$Label.siteurl}/apex/BLN_EventNew under Account Settings->Platform Settings.</span>
+                                                        </a> 
+                                        </p>
+                                        <!--close of black-title-->
+                                        <div id="osstripeadpbox" style="display: none;">
+                                          <div class="stradp-topbox">
+                                                <p>
+                                                    Eventdex would like you to start accepting payments with
+                                                    Stripe. Click below to connect.<br /> <apex:outputLink value="{!authorizationCodeURI}" style="padding-left:15px;" onclick="copysessionvalue();" ><input type="button"
+                                                        class="secondarybtn margintp-5px"
+                                                        value="Connect With Stripe" /></apex:outputLink>  
+                                                        <script>
+         function copysessionvalue()
+         {
+             try{
+             if(sessionStorage['ticket']!=null){
+             sessionStorage['ticketcopy']=sessionStorage.getItem('ticket');
+             sessionStorage['blps']=JSON.stringify(boothleadproduct);
+             }
+             }catch(e){}
+            
+             //window.location.href="{!authorizationCodeURI}";
+             return true;
+         }
+         </script> 
+                                                </p>
+                                                <!---->
+                                                
+                                                <div class="margintp-5px">
+                                                <apex:outputpanel id="stripeadaptivepanel">
+                                                    <label>Refresh Token:</label> <input type="text" 
+                                                        style="width: 15%;" value="{!jsonWrapObj.refresh_token}" id="spkey"/> <label style="margin-left: 10px">Access
+                                                        Token:</label> <input type="text" style="width: 15%;" value="{!jsonWrapObj.access_token}" id="spkey1"/> 
+                                                   </apex:outputpanel>    
+                                                         <input
+                                                        type="button" onclick="getStripeAccessToken();return false;" class="secondarybtn margintp-5px"
+                                                        value="Get" />
+                                                        <input
+                                                        type="button" class="osstradpadd secondarybtn margintp-5px"
+                                                        value="Add" />
+                                                </div>
+                                                <!---->
+                                            </div>
+                                            <div class="form-embed-div"
+                                                style="width: 75%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                                <div class="form-content-div" style="padding: 0px;">
+
+                                                    <!---start of osstripe table--->
+                                                    <table class="display osstradptbl" style="border: none;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="10%">Select</th>
+                                                                <th width="17%">Key Name</th>
+                                                                <th>Refresh Token</th>
+                                                                <th>Access Token</th>
+                                                                <th>Action</th>
+                                                                <th width="5.8%"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <apex:repeat value="{!paygateways['Stripe,Adaptive']}" var="strad">
+                                                            <tr>
+                                                                <td class="btntd"><input type="radio"
+                                                                    name="osfstradp" value="{!strad.id}"/></td>
+                                                                <td>{!strad.Paygateway_name__c}</td>
+                                                                <td>{!strad.PG_Signature__c}</td>
+                                                                <td>{!strad.PG_User_Key__c}</td>
+                                                                <td colspan="2" class="textright"
+                                                                    style="padding-right: 14px;"><a class='osstradpedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osstradpdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>
+                                                            </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+                                                    </table>
+                                                    <!---end of osstripe table--->
+                                              
+                     <script>
+                          var stripeadapflag=0;                      
+                      <apex:repeat value="{!paygateways['Stripe,Adaptive']}" var="strads">
+                      if('{!strads.Event_Pay_Gateway__r.size}'!=0){
+                     
+                     $("input[name=osfstradp][value="+"{!strads.id}"+"]").attr('checked', true);
+                     stripeadapflag=1;
+                     }
+                     else
+                     {
+                         if('{!strads.Active_Paygateway__c}'=='true'&&stripeadapflag==0){
+                        $("input[name=osfstradp][value="+"{!strads.id}"+"]").attr('checked', true);
+                         }
+                     }
+                     </apex:repeat>
+                     </script>
+
+                                                </div>
+                                                <!--form-embed-div-->
+                                            </div>
+
+
+                                        </div>
+                                        <!--close of osstripeadpbox-->
+                                        <!---end of onsite stripeadptive box------->
+
+                                        <!---------------------start of onsite stripe box------------------>
+                                        <p class="sm-subheading" style="display:{!IF(paygtype['Stripe,Direct']==false,'none','')}">
+                                            <input type="radio" name="strcatg"
+                                                onclick="showpackage('osstripebox','osstripeadpbox');showpaymentfeebox();"
+                                                class="margin-ryt-5px" value="StripeDirect"/>For Stripe Direct (Authorization
+                                            Required For Credit Card)
+                                        </p>
+                                        <!--close of black-title-->
+                                        <div id="osstripebox" style="display: none;">
+                                            
+                                            <!--close of stradp-topbox--->
+                                            <div class="form-embed-div"
+                                                style="width: 75%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                                <div class="form-content-div" style="padding: 0px;">
+
+                                                    <!---start of osstripeadp table--->
+                                                    <table class="display osstrtbl" style="border: none;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="10%">Select</th>
+                                                                <th width="17%">Key Name</th>
+                                                                <th>Secret Key</th>
+                                                                <th>Publishable Key</th>
+                                                                <th>Action</th>
+                                                                <th width="5.8%"><a class="osstradd"
+                                                                    title="Add New"><i
+                                                                        class="fa fa-plus-square-o fa-add-23x"></i></a></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <apex:repeat value="{!paygateways['Stripe,Direct']}" var="st">
+                                                            <tr>
+                                                                <td class="btntd"><input type="radio" name="osfstr" value="{!st.id}" /></td>
+                                                                <td>{!st.Paygateway_name__c}</td>
+                                                                <td>{!st.PG_Pass_Secret__c}</td>
+                                                                <td>{!st.PG_User_Key__c}</td>
+                                                                <td colspan="2" class="textright"
+                                                                    style="padding-right: 14px;"><a class='osstredit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osstrdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>
+                                                            </tr>
+                                                         </apex:repeat>
+                                                        </tbody>
+                                                    </table>
+                                                    
+                     
+                     <script>
+                          var stripestandflag=0;                      
+                      <apex:repeat value="{!paygateways['Stripe,Direct']}" var="sts">
+                      if('{!sts.Event_Pay_Gateway__r.size}'!=0){
+                     
+                     $("input[name=osfstr][value="+"{!sts.id}"+"]").attr('checked', true);
+                     stripestandflag=1;
+                     }
+                     else
+                     {
+                         if('{!sts.Active_Paygateway__c}'=='true'&&stripestandflag==0){
+                       $("input[name=osfstr][value="+"{!sts.id}"+"]").attr('checked', true);
+                         }
+                     }
+                     </apex:repeat>
+                     </script>
+                                                    <!---end of osstripeadp table--->
+
+
+                                                </div>
+                                                <!--form-embed-div-->
+                                            </div>
+                                            <br />
+                                           
+                                        </div>
+                                        <!--close of osstripeadpbox-->
+                                        <!---------------------end of onsite stripe box------------------>
+
+                                    </div>
+                                    <!--close of mainstripebox----->
+                                    <!----------------------------------End of stripe box--------------------->
+
+
+
+
+                                    <!---------------------start of onsite registration Authorize.net box------------------>
+                                    <div id="osauthbox" style="display: none;">
+                                        <p class="sm-subheading">For Authorize.Net:</p>
+                                        <!--close of black-title-->
+
+                                        <div class="form-embed-div"
+                                            style="width: 75%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                            <div class="form-content-div" style="padding: 0px;">
+
+                                                <!---start of osfauth table--->
+                                                <table class="display osauthtbl" style="border: none;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th width="10%">Select</th>
+                                                            <th width="17%">Key Name</th>
+                                                            <th>Authorize.net Id</th>
+                                                            <th>Authorize.net Key</th>
+                                                            <th>Action</th>
+                                                            <th width="5.8%"><a class="osauthadd"
+                                                                title="Add New"><i
+                                                                    class="fa fa-plus-square-o fa-add-23x"></i></a></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <apex:repeat value="{!paygateways['Authorize.Net,Direct']}" var="at">
+                                                        <tr>
+                                                            <td class="btntd"><input type="radio" name="osfauth" value="{!at.id}"/></td>
+                                                            <td>{!at.Paygateway_name__c}</td>
+                                                            <td>{!at.PG_User_Key__c}</td>
+                                                            <td>{!at.PG_Signature__c}</td>
+                                                            <td colspan="2" class="textright"
+                                                                style="padding-right: 14px;"><a class='osauthedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='osauthdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>
+                                                        </tr>
+                                                    </apex:repeat>
+                                                    </tbody>
+                                                </table>
+                                                <script>
+                          var flagauth=0;                      
+                      <apex:repeat value="{!paygateways['Authorize.Net,Direct']}" var="ats">
+                      if('{!ats.Event_Pay_Gateway__r.size}'!=0){
+                     
+                     $("input[name=osfauth][value="+"{!ats.id}"+"]").attr('checked', true);
+                     flagauth=1;
+                     }
+                     else
+                     {
+                         if('{!ats.Active_Paygateway__c}'=='true'&&flagauth==0){
+                         $("input[name=osfauth][value="+"{!ats.id}"+"]").attr('checked', true);
+                         }
+                     }
+                     </apex:repeat>
+                     </script>
+                                                <!---end of ososfauth table--->
+                                            </div>
+                                            <!--form-embed-div-->
+                                        </div>
+                                        <br />
+                                        
+                                    </div>
+                                    <!--close of osauthbox-->
+                                    <!---------------------end of onsite registration Authorize.net box------------------>
+
+                                    <!---------------------start of onsite registration TrustCommerce box------------------>
+                                    <div id="ostrustbox" style="display: none;">
+                                        <p class="sm-subheading">For TrustCommerce:
+                                        <style>
+                                        .sm-subheading a.tooltip > span{
+width: 450px; 
+padding: 7px 10px; 
+margin-top: 25px; 
+opacity: 0; 
+visibility: hidden; 
+z-index: 10; 
+position: absolute; 
+display: none; 
+margin-left: -400px;
+}
+
+.sm-subheading a.tooltip:hover span{ 
+color: #000000; 
+border: 1px solid #000000; 
+background: #ffeaf3;
+display: inline; 
+} 
+
+.sm-subheading a.tooltip:hover > span{ 
+opacity: 1; 
+visibility: visible; 
+overflow: visible; 
+}
+                                        </style>
+                                        
+                                            <a href="#" class="tooltip">
+                                              &nbsp;&nbsp;&nbsp;&nbsp;Note:
+                                                     <apex:image value="{!$Resource.BL_HelpIcon}" style="border:0px; width:20px;height:20px; border: 0px solid #ddd; margin:0px 0px 0px 0px;padding:0px;"  /> 
+                                                     
+                                                            <span style="text-align:left;margin-left:-200px;">If you are using <b>Host Page</b> then you have to set <b>Successful Payment URL</b> to <b>{!$Label.siteurl}/BLN_Success</b> and <b> Enable transaction output to URL</b> under TC Trustee Host.</span>
+                                                        </a>
+                                            
+                                            
+                                        </p>
+                                        <!--close of black-title-->
+
+                                        <div class="form-embed-div"
+                                            style="width: 80%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                            <div class="form-content-div" style="padding: 0px;">
+
+                                                <!---start of osftrust table--->
+                                                <table class="display ostrusttbl" style="border: none;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th width="10%">Select</th>
+                                                            <th width="17%">Key Name</th>
+                                                            <th>User Name</th>
+                                                            <th>API Password</th>
+                                                            <th>Use Host Page</th>
+                                                            <th>Action</th>
+                                                            <th width="5.8%"><a class="ostrustadd"
+                                                                title="Add New"><i
+                                                                    class="fa fa-plus-square-o fa-add-23x"></i></a></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <apex:repeat value="{!paygateways['TrustCommerce,Direct']}" var="tt">
+                                                        <tr>
+                                                            <td class="btntd"><input type="radio"
+                                                                name="osftrust" value="{!tt.id}"/></td>
+                                                            <td>{!tt.Paygateway_name__c}</td>
+                                                            <td>{!tt.PG_User_Key__c}</td>
+                                                            <td>{!tt.PG_Signature__c}</td>
+                                                            <td>
+                                                            <apex:outputpanel rendered="{!tt.Use_Host_Page__c}" layout="none">
+                                                            
+                                                             
+                                                            <input type="checkbox"  onChange="pgtexcep=true;" onclick="checkboxfunction(this);" style="width: 84%;" checked="checked"/></apex:outputpanel>
+                                                            <apex:outputpanel rendered="{!!tt.Use_Host_Page__c}" layout="none">
+                                                            <input type="checkbox"  onChange="pgtexcep=true;" onclick="checkboxfunction(this);" style="width: 84%;" />
+                                                            </apex:outputpanel>
+                                                            </td>
+                                                            <td colspan="2" class="textright"
+                                                                style="padding-right: 14px;"><a class='ostrustedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp;</i></a><a class='ostrustdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>
+                                                        </tr>
+                                                     </apex:repeat>    
+                                                    </tbody>
+                                                </table>
+                                                <!---end of osftrust table--->
+                                            <script>
+                                                           function checkboxfunction(checkbox){
+                                                           
+                                                                if (checkbox.checked)
+                                                                    {
+                                                            Alert.render('If you are using <b>Host Page</b> then you have to set <b>Successful Payment URL</b> to <b>{!$Label.siteurl}/BLN_Success</b> and <b> Enable transaction output to URL</b> under TC Trustee Host.','Alert','ok');
+                                                                    }       
+                                                            
+                                                            
+                                                            }
+                                                            
+                                                            
+                                                            </script>
+                                            <script>
+ 
+ 
+                          var flagtrust=0;                      
+                      <apex:repeat value="{!paygateways['TrustCommerce,Direct']}" var="tts">
+                      if('{!tts.Event_Pay_Gateway__r.size}'!=0){
+                     
+                     $("input[name=osftrust][value="+"{!tts.id}"+"]").attr('checked', true);
+                     flagtrust=1;
+                     }
+                     else
+                     {
+                         if('{!tts.Active_Paygateway__c}'=='true'&&flagtrust==0){
+                         $("input[name=osftrust][value="+"{!tts.id}"+"]").attr('checked', true);
+                         }
+                     }
+                     </apex:repeat>
+                     </script>
+
+                                            </div>
+                                            <!--form-embed-div-->
+                                        </div>
+                                        <br />
+                                        <!-----------Credit Card-------------->
+                                        <!------- strip ccbox-------->
+                                               <!-------------------------------------- --------->
+                                               
+                                    </div>
+                                    <!--close of ostrustbox-->
+                                    <!--start of min max range for payment gateways-->
+                                    <div id="acceptrangeforgtdiv" style="display:none">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="acceptrangeforgt" onclick="showpgtminmax()"/>&nbsp;Accept range for Payment Gateway
+                                    </div>
+                                    <div style="display:none" id="pgtminmax">
+                                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Minimum amount to accept&nbsp;<input type="text" id="mingt" class="secondarybtn margintp-5px" style="Width:20%"/>
+                                         </div>
+                                    <script>
+                                    function showpgtminmax()
+                                    {
+                                      if(document.getElementById("acceptrangeforgt").checked)
+                                      document.getElementById("pgtminmax").style.display="block";
+                                      else
+                                      document.getElementById("pgtminmax").style.display="none";
+                                    }
+                                    </script>
+                                    <!--end of min max range for payment gateways-->
+                                    <!---------------------end of onsite registration TrustCommerce box------------------>
+                                    <br />
+                                    <div class="otherpaymentbox">
+                                        <!---start of otherpaymentbox--->
+                                        <!----->
+                                        <ul>
+                                            <li style="display:{!IF(paygtype['Check,Direct']==false,'none','')}"><input id="ospbc" type="checkbox"
+                                                onClick="showpaymentfeebox();hidethischeck();showchk_content(this ,'ospaybychkbox');" /> <label
+                                                for="ospbc" class="strong_700">Pay By Check</label></li>
+                                            <li style="display:{!IF(paygtype['Cash,Direct']==false,'none','')}"><input id="orac" type="checkbox" onClick="showpaymentfeebox();"/> <label
+                                                for="orac" class="strong_700">Pay By Cash</label></li>
+                                            <li style="display:{!IF(paygtype['External Pay Gateway,Direct']==false,'none','')}"><input id="orext" type="checkbox" onClick="showpaymentfeebox();"/> <label
+                                                for="orext" class="strong_700">Pay By External
+                                                    Gateway</label></li>    
+                                        </ul>
+                                        <!----->
+                                    </div>
+                                    <!--close of otherpaymentbox--->
+
+                                    <!---start of paybackcheckform--->
+                                    <div id="ospaybychkbox" class="paybychkbox"
+                                        style="display: none;">
+                                        <!----->
+                                        <div class="form-embed-div"
+                                            style="width: 75%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                            <div class="form-content-div">
+                                                <!---Add1-->
+                                                <div class="left" style="width: 49%;">
+                                                    <div class="fieldswrap">
+                                                        <label>Address 1:<span id="mandatory">*</span></label> <input
+                                                            type="text" id="chqaddr1"/>
+                                                    </div>
+                                                    <!---Add2---->
+                                                    <div class="fieldswrap">
+                                                        <label>Address 2:&nbsp;</label> <input
+                                                            type="text" id="chqaddr2"/>
+                                                    </div>
+                                                    <!-------->
+                                                        <!----city--->
+                                                        <div class="fieldswrap">
+                                                            <label>City:<span
+                                                                id="mandatory">*</span></label> <input type="text" id="chqcity"/>
+                                                        </div>
+                                                        <!-------->
+                                                </div>
+                                                <!-----------------------close of left-------------------->
+                                                    <!------->
+                                                 <div class="right" style="width: 49%;">
+                                                    <div class="fieldswrap">
+                                                            <label style="margin-right: 14px;">Country:<span
+                                                            id="mandatory">*</span></label> <select class="selectlist" id="chqcountry" onchange="getchequestatejs(this.value,'');" style="width:70%">
+    <apex:repeat value="{!Country}" var="ecc">
+                           <option value="{!ecc.value}">{!ecc.label}
+                            </option>
+    </apex:repeat>
+    </select>
+                                                    </div>
+
+                                                    <!------->
+                                                    <div class="fieldswrap">
+                                                        <label style="margin-left: 35px;">State:<span
+                                                            id="mandatory">*</span></label> <select class="selectlist"  id="chqstate" style="width:70%">
+    
+    </select>
+                                                    </div>
+                                                    <!------->
+                                                    <div class="fieldswrap">
+                                                        <label style="margin-left: 14px;">Zip Code:<span
+                                                            id="mandatory">*</span></label> 
+                                                            <input type="text" id="chqZip" onkeyup="zipcodes(this)" onchange="isValidPostalCode(this);"/>
+                                                    </div>
+                                                    <!-------->
+                                                </div>
+                                                <!--close of right--->
+                                                <div class="clear"></div>
+                                                <!------>
+                                            </div>
+                                            <!--form-content-div-->
+                                        </div>
+                                        <!--form-embed-div-->
+                                        <!----->
+                                        <!--start of min max range for payment gateways-->
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="acceptrangeforcheck" onclick="showchecktminmax()"/>&nbsp;Accept range for Check
+                                    <div style="display:none" id="checkminmax">
+                                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Minimum amount to accept&nbsp;<input type="text" id="mincheck" class="secondarybtn margintp-5px" style="Width:20%"/>
+                                        </div>
+                                    <script>
+                                    function showchecktminmax()
+                                    {
+                                      if(document.getElementById("acceptrangeforcheck").checked)
+                                      document.getElementById("checkminmax").style.display="block";
+                                      else
+                                      document.getElementById("checkminmax").style.display="none";
+                                    }
+                                    </script>
+                                    <!--end of min max range for payment gateways-->
+                                    </div>
+                                    <!---close of paybackcheckform--->
+<div id="pfeeoption">
+<p class="padding-5px bg-font" style="padding: 13px;padding-top: 25px;padding-left: 9px;">Payment options for Eventdex Fee</p>
+ <div style="padding: 10px;margin-top:10px">
+<div style="display:{!if(creditcardoverwrite==true,'','none')}"><input type="radio" id="checkradio" value="Check" name="creditoverwrite"  onClick="showpackage('checkcommon','creditcardcommon') " /> Check</div><br/>
+<input type="radio" id="creditradio" value="CreditCard" name="creditoverwrite" onClick="showpackage('creditcardcommon','checkcommon') " /> Credit Card(The charges will be applied to your credit card at the end of the event)
+</div>
+<script>
+$( document ).ready(function() {
+
+if('{!PGAuthKey}'=='Check')
+{
+ document.getElementById('checkradio').checked=true; 
+ showpackage('checkcommon','creditcardcommon') ;
+}
+else
+{
+document.getElementById('creditradio').checked=true; 
+showpackage('creditcardcommon','checkcommon');
+
+}
+});
+</script>
+<div id="checkcommon"/>
+<div id="creditcardcommon" style="display:none">
+<!--common code for credit card box-->
+<div id="carddetailsstrip" class="ccdetails_strip" style="display:{!if(PGAuthKey!=''&&PGAuthKey!='Check','','none')}">
+                                               <div class="form-embed-div" style=" width:80%; padding:8px; margin-top:0px; margin-left:25px;"> 
+                                                  <div class="form-content-div" style="padding:0px;">
+                                                 <p class="ccstriph1" >Your Credit Card</p>
+                                                   <div class="clear"></div>
+                                            <!-------------->  
+                                              
+                                               <div  class="ccdetails_stripbox left" >
+                                                <p class="left"  style="width:40%;">
+                                                <i class="fa  fa-cc-mastercard fa-cc-25x"></i>
+                                                <i class="fa  fa-cc-visa fa-cc-25x" style="display:none;"></i>
+                                                <i class="fa  fa-cc-discover fa-cc-25x" style="display:none;"></i>
+                                                <i class="fa  fa-cc-amex fa-cc-25x" style="display:none;"></i>
+                                                <span class="strong_700">{!PGAuthCardType} card ending with {!PGAuthlastfour}</span>
+                                                
+                                                </p>
+                                                <!---->
+                                                 </div>
+                                                <button  type="button" class="togglebtn" style="margin-top:10px;" onClick="showpackage('ccbox','carddetailsstrip') ">Update Details</button> 
+                                              <div class="clear"></div>
+                                            <!-------------->  
+                                               </div><!---clode of form-content-div----->
+                                               </div><!---close of form-embed-div------->
+                                              </div><!---close of ccdetails_strip---->
+                                               <!------------------------------------------------>
+                                            <!-------//strip ccbox-------->                              
+                                            <!-----------Credit Card-------------->
+                                            <div id="ccbox" class="ccbox" style="display:{!if(PGAuthKey==''||PGAuthKey=='Check','','none')}">
+                                                <!--start of ccbox--------->
+                                                <p class="sm-subheading">Pay By Credit Card:</p>
+                                                <!--close of black-title-->
+                                                <div class="form-embed-div"
+                                                    style="width: 35%; padding: 8px; margin-top: 0px; margin-left: 25px;">
+                                                    <div class="form-content-div" style="padding: 0px;">
+
+                                                        <!----start of creditcardbox---->
+                                                        <!------------->
+                                                        <div class="ccheader">
+                                                            <p class="left bg-font">Enter Details</p>
+                                                            <ul class="right">
+                                                                <li><i class="fa  fa-cc-mastercard fa-cc-25x"></i></li>
+                                                                <li><i class="fa  fa-cc-visa fa-cc-25x"></i></li>
+                                                                <li><i class="fa  fa-cc-discover fa-cc-25x"></i></li>
+                                                                <li><i class="fa  fa-cc-amex fa-cc-25x"></i></li>
+                                                            </ul>
+                                                            <div class="clear"></div>
+                                                        </div>
+                                                        <!--close of ccheader---->
+                                                        <!------------>
+                                                        <div class="cccontent textcenter padding-5px">
+                                                            <p class="padding-5px strong_700 textleft">Card
+                                                                Number</p>
+                                                            <input type="text" id="paydirectcardno"/>
+                                                            <!-------->
+                                                            <div class="left" style="width: 60%;">
+                                                                <p class="padding-5px strong_700 textleft">Expiration</p>
+                                                                <span> <!------> <select class="cclist"
+                                                                    style="width: 45%;" id="paydirectmonth">
+                                                                        <option>---Month---</option>
+                                                                        <option>01</option>
+                                                                        <option>02</option>
+                                                                        <option>03</option>
+                                                                        <option>04</option>
+                                                                        <option>05</option>
+                                                                        <option>06</option>
+                                                                        <option>07</option>
+                                                                        <option>08</option>
+                                                                        <option>09</option>
+                                                                        <option>10</option>
+                                                                        <option>11</option>
+                                                                        <option>12</option>
+                                                                </select> <!-------->
+                                                                </span> <span> <select class="cclist"
+                                                                    style="width: 50%;" id="paydirectyear">
+                                                                        <!-------->
+                                                                        <option>---Year---</option>
+                                                                        <option value="2014">2014</option>
+                                                                        <option value="2015">2015</option>
+                                                                        <option value="2016">2016</option>
+                                                                        <option value="2017">2017</option>
+                                                                        <option value="2018">2018</option>
+                                                                        <option value="2019">2019</option>
+                                                                        <option value="2020">2020</option>
+                                                                        <option value="2021">2021</option>
+                                                                        <option value="2022">2022</option>
+                                                                        <option value="2023">2023</option>
+                                                                        <option value="2024">2024</option>
+                                                                        <option value="2025">2025</option>
+                                                                        <option value="2026">2026</option>
+                                                                        <option value="2027">2027</option>
+                                                                        <option value="2028">2028</option>
+                                                                        <option value="2029">2029</option>
+                                                                        <option value="2030">2030</option>
+
+                                                                </select> <!-------->
+                                                                </span>
+                                                            </div>
+                                                            <!--close left--->
+                                                            <!------>
+                                                            <!-------->
+                                                            <div class="right" style="width: 39%;">
+                                                                <p class="padding-5px strong_700 textleft">CVV/CVC</p>
+                                                                <input class="cvvtext" type="text" id="paydirectcvv"/>
+                                                            </div>
+                                                            <!--close left--->
+                                                            <!------>
+                                                            <div class="clear"></div>
+                                                    </div>
+                                                    <!--close of cc content-->
+                                                    <!-------------->
+                                                </div>
+                                                <!--form-embed-div-->
+                                            </div>
+                                            <!-----form-content-div-------->
+                                        </div>
+                                        <!--close of ccbox--------->
+
+<!--end of-->
+ </div>   
+ </div><!--end of payment setting fee option-->                                        
+            
+            <script>
+           
+
+           
+              
+              function checkloadcall()
+              {
+                try{
+                getchequestatejs(document.getElementById('chqcountry').value,'');
+                }catch(e){}
+                 
+                   if('{!$CurrentPage.parameters.id}'!=''||eventmand.EventID!=''){
+                   paymentload();
+                   }
+                
+              }
+              
+               //$( document ).ready(function() {
+            try{
+               checkloadcall();
+               }
+               catch(e){}
+               
+               //}); 
+                
+                function showpaymentfeebox()
+{
+
+
+  if($('input[name="orpg"]:checked').val()=='Authorize.Net'||$('input[name="orpg"]:checked').val()=='TrustCommerce'||$('input[name="ppcatg"]:checked').val()=='PayPalDirect'||$('input[name="strcatg"]:checked').val()=='StripeDirect'||document.getElementById('ospbc').checked==true||document.getElementById('orac').checked==true||document.getElementById('orext').checked==true)
+  {
+  
+  document.getElementById('pfeeoption').style.display='';
+  
+  }
+  else
+  document.getElementById('pfeeoption').style.display='none';
+}
+
+
+                
+            </script>
+              <!--close of form--> 
+              
+              </apex:outputpanel>
+              
+ <script>
+  $( document ).ready(function() {
+ 
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".osppedit").die('click').live("click",osppedit);
+    $(".osppdel").die('click').live("click",osppdel);
+    $(".osppadd").die('click').live("click",osppadd);
+    $(".osppsave").die('click').live("click",osppsave);
+});
+
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".osppdedit").die('click').live("click",osppdedit);
+    $(".osppddel").die('click').live("click",osppddel);
+    $(".osppdadd").die('click').live("click",osppdadd);
+    $(".osppdsave").die('click').live("click",osppdsave);
+});
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+   
+    $(".osstradpedit").die('click').live("click",osstradpedit);  
+    $(".osstradpdel").die('click').live("click",osstradpdel);
+    $(".osstradpadd").die('click').live("click", osstradpadd);
+    $(".osstradpsave").die('click').live("click" ,osstradpsave);
+});
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".osstredit").die('click').live("click",osstredit);    
+    $(".osstrdel").die('click').live("click",osstrdel);
+    $(".osstradd").die('click').live("click", osstradd);
+    $(".osstrsave").die('click').live("click",osstrsave);
+});
+
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".osauthedit").die('click').live("click",osauthedit);  
+    $(".osauthdel").die('click').live("click",osauthdel);
+    $(".osauthadd").die('click').live("click", osauthadd);
+    $(".osauthsave").die('click').live("click",osauthsave);
+});
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".ostrustedit").die('click').live("click",ostrustedit);    
+    $(".ostrustdel").die('click').live("click",ostrustdel);
+    $(".ostrustadd").die('click').live("click", ostrustadd);
+    $(".ostrustsave").die('click').live("click",ostrustsave);
+    
+});
+});
+</script>             
+              
+ <script type="text/javascript">
+function GetCardType(number)
+{
+    // visa
+    var re = new RegExp("^4");
+    if (number.match(re) != null)
+        return "Visa";
+
+    // Mastercard
+    re = new RegExp("^5[1-5]");
+    if (number.match(re) != null)
+        return "Mastercard";
+
+    // AMEX
+    re = new RegExp("^3[47]");
+    if (number.match(re) != null)
+        return "AMEX";
+
+    // Discover
+    re = new RegExp("^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)");
+    if (number.match(re) != null)
+        return "Discover";
+
+    // Diners
+    re = new RegExp("^36");
+    if (number.match(re) != null)
+        return "Diners";
+
+    // Diners - Carte Blanche
+    re = new RegExp("^30[0-5]");
+    if (number.match(re) != null)
+        return "Diners - Carte Blanche";
+
+    // JCB
+    re = new RegExp("^35(2[89]|[3-8][0-9])");
+    if (number.match(re) != null)
+        return "JCB";
+
+    // Visa Electron
+    re = new RegExp("^(4026|417500|4508|4844|491(3|7))");
+    if (number.match(re) != null)
+        return "Visa Electron";
+
+    return "";
+}
+
+
+</script>                
+<c:ed_popupbox ></c:ed_popupbox>              
+</apex:component>

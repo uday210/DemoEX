@@ -1,0 +1,642 @@
+<apex:page controller="BLN_MyticketsCon"  standardStylesheets="false" showHeader="false" id="thepage">
+  <apex:variable value="{!se.BLN_Country__r.Currency__r.Currency_Symbol__c}" var="curSym"/>
+  <c:ed_popupbox ></c:ed_popupbox>
+  <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+  <apex:form id="frm2" >
+    <script> 
+   
+  /*******creating instances for calling popups*******/
+ 
+  var Alert_orderview = new Custom_formPopup(); //Order popup     
+  </script>
+    
+    
+    <!---------popup for Order view------->
+    
+    <div class="dialogoverlay" id="orderview_dialogoverlay" style="z-index:0;"></div>
+    <!-----------------> 
+    <!--close of dialogoverlay-->
+    <div  id="dialogbox_orderview" style=" display:none;z-index:0; width:94%; margin-left:3%;"> <a id="close" onClick="Alert_orderview.Cancel()" style="margin-top:-6px;">×</a>
+      <div class="form-embed-div" style=" width:98%; margin-top:20px;">
+        <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;"> 
+          <!-----------> 
+          <!----------->
+          <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;"> 
+            <!-- <div class="title-grid">Speaker Details</div>-->
+            
+            <div class="content-gird" style="padding:0px;"> 
+              <!-------------->
+              <apex:repeat value="{!ValuesOfseletedorder}" var="current" >
+                <div  class="popup-bg" style="background-color:#F6F6F6;"> 
+                  <!-------left side----------> 
+                  <!-------left side---------->
+                  <div class="form-embed-div" style=" float:left; width:17%; margin-top:0px;">
+                    <div class="form-content-div" style=" background-color:#f6f6f6; padding:0px; min-height:150px;">
+                      <div class=" padding-5px"> 
+                        <!---------------------->
+                        <p class="bg-font padding-5px" style="padding-left:0px;">Order Summary</p>
+                        <hr class="hr_engrave"/>
+                        <!----->
+                        <div class="ordersummary_sect"> 
+                          <!----->
+                          <div class="padding-2px">
+                            <label class=" strong_700">Order #:</label>
+                            <span id="{!current.orderInn.id}" class="labeltitles orderId">{!current.orderInn.Name}</span> </div>
+                          <!------> 
+                          <!----->
+                          <div class="padding-2px strong_700">
+                            <label class="">
+                            <c:EV_FormatDt date_Timevalue="{!current.orderInn.createdDate}" t_Zone="{!current.orderInn.Events__r.Time_Zone__c}" ></c:EV_FormatDt>
+                             <!-- <c:MFSI_FormatDateTime date_Timevalue="{!current.orderInn.createdDate}"/> -->
+                            </label>
+                          </div>
+                          <!------> 
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Reg Type:</label>
+                            <span class="blueanchor">{!current.paymentInn.Registration_Type__c}</span> </div>
+                          <!------>
+                          <hr class="hr_engrave"/>
+                         
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Ordered BY:</label>
+                            <span class=" labeltitles">{!current.orderInn.BLN_TKT_profile__r.First_Name__c} {!current.orderInn.BLN_TKT_profile__r.Last_Name__c}</span> </div>
+                          <!------> 
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Company:</label>
+                            <span>
+                            <apex:outputText value="{!current.orderInn.BLN_TKT_profile__r.TKT_Company__c}" />
+                            </span> </div>
+                          <!------> 
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Email:</label>
+                            <span class="blueanchor"> {!current.orderInn.BLN_TKT_profile__r.Email__c}</span> </div>
+                          <!------> 
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Phone:</label>
+                            <span>{!current.orderInn.BLN_TKT_profile__r.Mobile__c}</span> </div>
+                          <!------>
+                         
+                         
+                          <hr class="hr_engrave"/>
+                          
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Total Order:</label>
+                            <span>{!curSym}&nbsp;
+                            <apex:outputText value="{!current.orderInn.Order_Sub_Total__c}"> </apex:outputText>
+                            </span> </div>
+                          <!------> 
+                          
+                          <!----->
+                        <!--  <div class="padding-2px">
+                            <label class="strong_700">Promo Code:</label>
+                            <span>SAVE50</span> </div>  --> 
+                          <!------> 
+                          
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Fee:</label>
+                            <span>{!curSym}&nbsp;{!current.orderInn.Fee_Amount__c}</span> </div>
+                          <!------> 
+                          
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Tax:</label>
+                            <span>{!curSym}&nbsp;{!current.orderInn.Order_Taxes__c}</span> </div>
+                          <!------> 
+                          
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Final Order:</label>
+                            <span>{!curSym}&nbsp;{!current.orderInn.Order_Total__c}</span> </div>
+                          <!------>
+                          <hr class="hr_engrave"/>
+                          
+                          <!----->
+                          <div class="padding-2px">
+                            <label class=" strong_700">Paid Amount:</label>
+                            <span>{!curSym}&nbsp;{!current.orderInn.Amount_Paid__c}</span> </div>
+                          <!------> 
+                          
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Payment Status:</label>
+                            <apex:outputPanel rendered="{!IF(current.orderInn.Order_Status__c=='Fully Paid',true,false)}" >
+                             <span class="pstatus greentxt strong_700">{!current.orderInn.Order_Status__c}</span></apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(current.orderInn.Order_Status__c!='Fully Paid',true,false)}" > 
+                            <span class="pstatus redtxt strong_700">{!current.orderInn.Order_Status__c}</span>
+                            </apex:outputPanel>
+                            <apex:outputpanel rendered="{!IF(current.paymentInn.Payment_Mode__c =='Check' && current.orderInn.Order_Status__c!='Cancelled' ,true,false)}"> 
+                           <span class="imghold">
+                              <i  class="fa fa-pencil fa-edit20px edit_pspop"></i>
+                            </span>
+                             </apex:outputpanel> 
+                          </div>
+                          <!------>
+                          <!------> 
+                          
+                          <!----->
+                          <div class="padding-2px">
+                            <label class="strong_700">Payment Type:</label>
+                            <span id="{!current.paymentInn.id}" class="labeltitles paymentId"> {!current.paymentInn.Payment_Mode__c}</span> </div>
+                          
+                          <!------> 
+                          
+                          <!----->
+                          <div class="padding-2px">
+                            <apex:outputPanel rendered="{!IF(current.paymentInn.Payment_Mode__c!='Check',true,false)}">
+                              <label class="strong_700">Credit Card Type:</label>
+                              <span class="labeltitles">{!current.paymentInn.credit_card_type__c}</span> </apex:outputPanel>
+                          </div>
+                      <!--    <div class="padding-2px">
+                           <apex:outputPanel rendered="{!IF(current.paymentInn.Payment_Mode__c!='Check',true,false)}">
+                              <label class="strong_700">Credit Card Type:</label>
+                              <span class="labeltitles">{!current.paymentInn.credit_card_type__c}</span> </apex:outputPanel>
+                          </div>-->
+                          <div class="padding-2px">
+                            <label class="strong_700">
+                              <apex:outputText rendered="{!IF(current.paymentInn.Payment_Mode__c!='Check' ,True,false)}"> Trasaction Id : </apex:outputText>
+                              <apex:outputText rendered="{!IF(current.paymentInn.Payment_Mode__c!='Check' ,false,true)}"> Check No : </apex:outputText>
+                            </label>
+                             <span class="chknotxt" style="word-wrap:break-word;"> {!current.paymentInn.Payment_Ref_Number__c}</span> 
+                         <apex:outputText rendered="{!IF(current.paymentInn.Payment_Mode__c=='Check' && current.orderInn.Order_Status__c!='Cancelled',true,false)}"> 
+                        
+                            <span class="imghold">
+                              <i  class="fa fa-pencil fa-edit20px edit_chkno"></i>
+                            </span>
+                          
+                         </apex:outputText></div>
+                          <apex:outputPanel rendered="{!IF(current.paymentInn.credit_card_last_4digits__c !=null,true,false)}">
+                            <div class="padding-2px">
+                              <label class="strong_700">Card No:</label>
+                              <span class="labeltitles">XXXX-XXXX-XXXX-{!current.paymentInn.credit_card_last_4digits__c}</span> </div>
+                          </apex:outputPanel>
+                          <apex:outputPanel rendered="{!IF(current.paymentInn.Payment_Mode__c!='Check',true,false)}">
+                            <div class="padding-2px">
+                              <label class="strong_700">Pay  Gateway:</label>
+                              <span class="labeltitles">{!current.paymentInn.BLN_Pay_Gateway__r.PGateway_Type__r.Name}</span> </div>
+                          </apex:outputPanel>
+                         <!--  <apex:variable value="{!0.00}" var="itcan"/>
+                          <apex:repeat value="{!current.orderItemInn}" var="cus" >
+                            <apex:variable value="{!IF(cus.Status__c=='Cancelled', itcan+(cus.Item_Total__c+cus.Item_Discount__c+cus.Item_Fee__c+cus.Tax__c),0.00)}" var="itcan"/>
+                          </apex:repeat>
+                         <div class="padding-2px">
+                            <label class="strong_700">Final Order:</label>
+                            <span class="labeltitles"> {!curSym}&nbsp;{!current.orderInn.Order_Total__c+(itcan)}</span> </div>-->
+                          
+                          <!------> 
+                          
+                          <!-----> 
+                          <!-- <div class="padding-2px">
+     <label class="strong_700">Payment Due:</label>
+     <span>$30</span>
+     </div>--> 
+                          <!------> 
+                          <!-- <hr class="hr_engrave"/>---> 
+                          
+                          <!-----> 
+                          <!---<div class="padding-2px">
+     <label class="strong_700">Refund Amount:</label>
+     <span>$45.00</span>
+    </div>---> 
+                          <!------> 
+                          
+                          <!-----> 
+                          <!---<div class="padding-2px">
+     <label class="strong_700">Refund Type:</label>
+     <span class="labeltitles">Credit</span>
+     </div>---> 
+                          <!------> 
+                          
+                          <!-----> 
+                          <!---<div class="padding-2px">
+     <label class="strong_700">Refund Date:</label>
+     <span>05/29/2014</span> 
+     </div>---> 
+                          <!------> 
+                          <!-----> 
+                          <!---<div class="padding-2px">
+     <label class="strong_700">Transaction #:</label>
+     <span class="labeltitles">T-14235</span>
+     </div>---> 
+                          <!------> 
+                          
+                          <!------>
+                          <hr class="hr_engrave"/>
+                          
+                        </div>
+                        <!------> 
+                        
+                        <!-----> 
+                      </div>
+                      <!---close of paddingbox---> 
+                      
+                      <!-------> 
+                      
+                      <!-----------------------> 
+                    </div>
+                    <!----close of form-content-div-----> 
+                  </div>
+                  <!----close of form-embed-div(left)------> 
+                  
+                  <!-------start of right-------->
+                  <div class=" right popup-right-box" style="width: 80%;"> 
+                    <!-----Order Details section---->
+                    <div class="rytsect_box">
+                      <div class=" padding-5px">
+                        <p class=" left bg-font padding-5px" style="padding-left:0px;">Order Details</p>
+                        <div class="right">
+                         <!--  <button class="togglebtn" style="padding: 3px 5px;" title="Email Order"> <i class="fa fa-envelope fa-1x" style="font-size:15px;"></i></button> --> 
+                         <!-- <button class="togglebtn" style="padding: 3px 5px;" title="Print Invoive"> <i class="fa  fa-print" style="font-size:15px;"></i></button> -->
+                          <apex:commandlink styleClass="togglebtn" style="padding: 3px 5px;" title="Print Order Summary" action="{!printordersummary}" Target="_blank"> <i class="fa  fa-print" style="font-size:15px; color:#fff;"></i>
+                                                            <apex:param name="eveid1" value="{!current.orderInn.Events__c}"/>
+                                                        </apex:commandlink>
+                        </div>
+                        <div class="clear"></div>
+                        <hr class="hr_engrave"/>
+                        
+                        <table width="100%" class="display" cellpadding="0" cellspacing="0" border="0">
+                          <thead>
+                            <tr>
+                              <th>Ticket Name</th>
+                              <th style="width:11%;">Ticket Qty</th>
+                              <th style="width:11%;">Ticket Price</th>
+                              <th style="width:11%;">Total Price</th>
+                              <!--<apex:repeat value="{!current.orderItemInn}" var="cus">
+                              <th style="display:{!IF(cus.Promotion__r.Promo_Code__c!=null,'','none')};width:11%;">Promo Code</th>
+                              </apex:repeat>-->
+                              <apex:variable value="{!0}" var="check"/>
+                              <apex:repeat value="{!current.orderItemInn}" var="cus">
+                              <th style="display:{!IF(cus.Promotion__r.Promo_Code__c!=null && check == 0,'','none')};width:11%;">Promo Code</th>
+                              <apex:outputText rendered="{!IF(cus.Promotion__r.Promo_Code__c!=null,true,false)}">
+                                  <apex:variable value="{!check+1}" var="check"/>
+                              </apex:outputText>
+                              </apex:repeat>
+                               <th style="width:8%;">Discount</th>
+                              <th style="width:8%;">Fee</th>
+                              <th style="width:8%;">Tax</th>
+                              <th style="width:13%;">Final Sale Price</th>
+                              <th style="width:8%;">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!--- apex:repeat start--->
+                            <apex:repeat value="{!current.orderItemInn}" var="cus" >
+                              <tr>
+                                <td>{!cus.item__r.item_name__c}</td>
+                                <td>{!cus.Item_Quantity__c} </td>
+                                <td>{!curSym}&nbsp;{!cus.Each_Ticket_Price__c}</td>
+                                <td>{!curSym}&nbsp;{!cus.Item_Total__c}</td>
+                                 <apex:variable value="{!0}" var="check1"/>
+                                <td style="display:{!IF(cus.Promotion__r.Promo_Code__c!=null,'','none')}">
+                                    <apex:outputText value="{!cus.Promotion__r.Promo_Code__c}">
+                                    <apex:variable value="{!check1+1}" var="check1"/>
+                              </apex:outputText>
+                              
+                                </td>
+                                <td style="display:{!IF(check!=0 && cus.Promotion__r.Promo_Code__c==null,'','none')}">
+                                    <apex:outputText value="{!cus.Promotion__r.Promo_Code__c}">
+                                   
+                              </apex:outputText>
+                              
+                                </td>
+                                <td>{!curSym}&nbsp;{!cus.Item_Discount__c}</td>
+                                
+                                <td>{!curSym}&nbsp;{!cus.Item_Fee__c}</td>
+                                <td>{!curSym}&nbsp;{!cus.Tax__c}</td>
+                                <td>{!curSym}&nbsp;
+                                <apex:outputText value="{!IF(cus.Status__c=='Cancelled', (cus.Item_Total__c+cus.Item_Discount__c+cus.Item_Fee__c+cus.Tax__c),(cus.Item_Total__c-cus.Item_Discount__c+cus.Item_Fee__c+cus.Tax__c))}"> </apex:outputText> 
+                               <!-- {!(cus.Item_Total__c-cus.Item_Discount__c)+cus.Item_Fee__c+cus.Tax__c}-->
+                               
+                                </td>
+                                <td><apex:outputPanel rendered="{!IF(CONTAINS(orderItemIdsCan,cus.Item__c),false,true)}">
+                                    <div  title="Cancel" style="cursor:pointer; margin-left:35%;">
+                                      <apex:outputPanel > <a class="delete-link" id="cancelOrd" title="Cancel" href="" onClick="canceltickets('{!cus}','{!cus.Item_Quantity__c}',this)" style="color:blue;cursor:pointer;"> <i class="fa fa-trash-o fa-delete20px"></i> </a> </apex:outputPanel>
+                                    </div>
+                                  </apex:outputPanel></td>
+                              </tr>
+                            </apex:repeat>
+                            <!---- //apex:repeat end--->
+                            
+                          </tbody>
+                        </table>
+                      </div>
+                      <!---close of padding-5px----> 
+                    </div>
+                    <!--close of rytsect_box----> 
+                    <!----//end of Order Details section------------------> 
+                    
+                    <!----Tickets Details----->
+                    <apex:outputPanel rendered="{!IF(current.ticketsInn.size>0,true,false)}">
+                      <div class="rytsect_box">
+                        <div class=" padding-5px">
+                          <p class="bg-font padding-5px" style="padding-left:0px;">Ticket Details</p>
+                          <hr class="hr_engrave"/>
+                          <table width="100%" class="display" cellpadding="0" cellspacing="0" border="0">
+                            <thead>
+                              <tr>
+                                <th style="width:11%;">Ticket ID</th>
+                                <th style="width:11%;">Ticket Name</th>
+                                <th>First Name</th>
+                                <th style="width:11%;">Last Name</th>
+                                <th style="width:14%;">Email Address</th>
+                                <th style="width:11%;">Phone</th>
+                                <th style="width:11%;">Company</th>
+                                <th style="width:11%;">Badge Label</th>
+                                <th style="width:8%;">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <!--- apex:repeat start--->
+                              <apex:variable value="" var="PckStr"/><!-- This variable is useful for display delete button at parent level if ticket is package -->
+                              <apex:repeat value="{!current.ticketsInn}" var="cust" >
+                                <tr id="order_details_tr" style="display:{!If(cust.Item_Pool__r.Item_Type__r.Name=='Package','none','')}">
+                                  <td>{!cust.Name}</td>
+                                  <td><apex:outputText rendered="{!If(cust.item__r.Item_Type__r.Name!='Package',true,false)}"> {!cust.item__r.item_name__c}</apex:outputText>
+                                    <apex:outputText rendered="{!If(cust.item__r.Item_Type__r.Name=='Package',true,false)}"> {!cust.Item_Pool__r.Item_Pool_Name__c} <br/> <font size="1" color="blue"> ({!cust.item__r.item_name__c}) </font></apex:outputText></td>
+                                  <td>{!cust.TKT_profile__r.First_Name__c} </td>
+                                  <td>{!cust.TKT_profile__r.Last_Name__c} </td>
+                                  <td>{!cust.TKT_profile__r.Email__c}</td>
+                                  <td>{!cust.TKT_profile__r.Mobile__c}</td>
+                                  <td><apex:outputText value="{!cust.TKT_profile__r.TKT_Company__c}"/></td>
+                                  <td>{!cust.Badge_Label__c}</td>
+                                  <td><apex:commandLink action="{!editTicket}" title="Edit" status="AjaxLoader"> <i class=" fa fa-pencil fa-edit20px"></i>
+                                      <apex:param value="{!cust.id}" name="TicketIdparam"/>
+                                    </apex:commandLink>
+                                    
+                                    <!--  <apex:image url="{!URLFOR($Resource.DataTable, 'datatable/images/editico.png')}"  title="Edit" style="cursor:pointer;"/>--> 
+                                    <!--<a class="" title="Print">
+                                    <i class="fa fa-print fa20x-printbl"></i></a>-->
+                                   
+                                    <apex:outputPanel rendered="{!if(cust.Item_Type__r.Name!='Package',true,false)}"><!-- for first ticket ticket this will display cancel button --> 
+                                       <a class="delete-link" id="cancelTic" title="Cancel" href="" onClick="canIndividualtickest('{!cust.id}',this);" style="color:blue;cursor:pointer;">
+                                       <i class="fa fa-trash-o fa-delete20px"></i> </a>
+                                    </apex:outputPanel>
+                                    <apex:variable value="{!PckStr+cust.Parent_ID__c}" var="PckStr"/> 
+                                    </td>
+                                </tr>
+                              </apex:repeat>
+                              <!---- //apex:repeat end--->
+                              
+                            </tbody>
+                          </table>
+                        </div>
+                        <!---close of padding-5px----> 
+                      </div>
+                      <!--close of rytsect_box----> 
+                    </apex:outputpanel>
+                    <!---//end of Ticket Details------------------->
+                    <apex:outputPanel rendered="{!if(current.cancelledTickets.size>0,true,false)}"  id="canid"> 
+                      <!----Cancelled Tickets----->
+                      <div class="rytsect_box">
+                        <div class=" padding-5px">
+                          <p class="bg-font padding-5px" style="padding-left:0px;">Cancelled Tickets</p>
+                          <hr class="hr_engrave"/>
+                          <table width="100%" class="display" cellpadding="0" cellspacing="0" border="0">
+                            <thead>
+                              <tr>
+                                <th style="width:11%;">Ticket ID</th>
+                                <th style="width:10%;">Ticket Name</th>
+                                <th style="width:12%;">First Name</th>
+                                <th style="width:12%;">Last Name</th>
+                                <th style="width:16%;">Email Address</th>
+                                <th style="width:10%;">Phone</th>
+                                <th style="width:12%;">Company</th>
+                                <th style="width:10%;">Badge Label</th>
+                                <th>Price</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <apex:repeat value="{!current.cancelledTickets}" var="custcan" >
+                                 <tr style="display:{!IF(custcan.Parent_ID__c ==null && custcan.Item_Type__r.name=='Package','none','')}">
+                                  <td>{!custcan.Name}</td>
+                                  <td>{!custcan.item__r.item_name__c}</td>
+                                  <td>{!custcan.TKT_profile__r.First_Name__c} </td>
+                                  <td>{!custcan.TKT_profile__r.Last_Name__c}</td>
+                                  <td>{!custcan.TKT_profile__r.Email__c}</td>
+                                  <td>{!custcan.TKT_profile__r.Mobile__c}</td>
+                                  <td>{!custcan.TKT_profile__r.tkt_Company__c}</td>
+                                  <td>{!custcan.Badge_Label__c} </td>
+                                  <td>{!curSym}&nbsp;{!custcan.Order_Item__r.Each_Ticket_Price__c}</td>
+                                 <!-- </apex:outputPanel>-->
+                                </tr>
+                                
+                              </apex:repeat>
+                            </tbody>
+                          </table>
+                        </div>
+                        <!---close of padding-5px----> 
+                      </div>
+                      <!--close of rytsect_box----> 
+                    </apex:outputpanel>
+                    <!---//end of Cancelled Ticket-------------------> 
+                    
+                  </div>
+                  <!-- // popup-right-box---->
+                  
+                  <div class="clear"></div>
+                  
+                  <!-----------------> 
+                </div>
+                <!--close of pop-bg----> 
+              </apex:repeat>
+            </div>
+            <!--close of content-grid---> 
+          </div>
+          <!--close of grid-1-----> 
+          <!-----> 
+          <!-----> 
+        </div>
+        <!----close of form-content-div-----> 
+      </div>
+      <!----close of form-embed-div------> 
+    </div>
+    <!--close of dialogbox----> 
+    <!------------end of popup for  Order View-------------> 
+    
+    <!----------------------------- ACTION FUNCTION -------------------------------------->
+    <apex:actionFunction action="{!cancelPerticularGuestsTic}" name="cavticIndividual" reRender="frm2" status="AjaxLoader">
+      <apex:param value="" name="canticId"/>
+    </apex:actionFunction>
+    <apex:actionFunction action="{!cancelDirectTicket}" name="candirectTic" reRender="frm2" status="AjaxLoader">
+      <apex:param value="" name="canordItemId"/>
+    </apex:actionFunction>
+    
+    <!----------------------------- #ACTION FUNCTION --------------------------------------> 
+    <script>
+  
+  if('{!orddetailbool}'=='true'){
+  //alert('coming');
+  try{
+  Alert_orderview.render('dialogbox_orderview','orderview_dialogoverlay','Alert_orderview' ,this);
+  }catch(e){
+  //alert(e);
+  }
+  }
+  </script>
+    <!-----start of inline editing of order popup------> 
+    <script>
+       <!-----start of inline editing of order popup------> 
+    $(document).ready(function() {
+    
+     
+    /*******Inline Editing for Updating Payment Status on order popup**********/        
+        function edit_pspop(){
+           // alert('Hi '+$(this).parent().parent().parent().children().length);
+            var pstatus=$(this).parent().parent().parent().children(':nth-child(2)').children(".pstatus");
+            
+            var imgholder=$(this).parent().parent().children(".imghold");
+            pstatus.html("<select id='selectList_pst' class='selectlist-datatable' style='width:auto;'><option value='Fully Paid'>Fully Paid</option><option value='Partial Paid'>Partial Paid</option><option value='Not Paid'>Not Paid</option></select>");
+                 imgholder.html(" <i class='fa fa-save  fa-save20px pstatussave' title='Save' >&nbsp;</i>");
+            }
+           $(".edit_pspop").live("click" , edit_pspop); 
+            
+        ////on click of save    
+        function pstatussave(){
+            var pstatus=$(this).parent().parent().children(':nth-child(2)').children(".pstatus");
+            var imgholder=$(this).parent().parent().children(".imghold");
+            //alert(pstatus.html());
+            //(in case of fullyPaid =='green color')
+            var Rvalue = $("#selectList_pst option:selected").text();
+            var RecordId= "";
+            var ClsList = document.getElementsByClassName('orderId');
+            for(var i=0;i <= ClsList.length;i++){
+              RecordId = ClsList[0].id; 
+            }
+            var rType ="Order";
+           // alert('PPPPPPPP '+);
+            saveChekinput(rType,RecordId,Rvalue );
+            if($("#selectList_pst option:selected").text()=="Fully Paid"){
+                pstatus.html($("#selectList_pst option:selected").text());
+                imgholder.html("<i class='fa fa-pencil fa-edit20px edit_pspop'></i>");
+                pstatus.removeClass("redtxt");
+                pstatus.addClass("greentxt");
+            }
+          //(in case of Partial Paid and Not Paid ==red color)
+            else {
+                pstatus.html($("#selectList_pst option:selected").text());
+                imgholder.html("<i class='fa fa-pencil fa-edit20px edit_pspop' title='Edit'></i>");
+                pstatus.removeClass("greentxt");
+                pstatus.addClass("redtxt");
+            }
+         }   
+        $(".pstatussave").live("click", pstatussave);
+        
+        
+    /******* End of Inline Editing for Updating Payment Status on order popup**********/
+/*******Inline Editing for CheckNumber**********/       
+        function edit_chkno(){
+            var chkno=$(this).parent().parent().children(".chknotxt");
+            var chknoval=chkno.text();
+           
+            //alert(chknoval);
+            var imgholder=$(this).parent().parent().children(".imghold");
+            chkno.html("<textarea id='chknotxtarea'  style='width:136px; height:72px;'></textarea>");
+            $("#chknotxtarea").val(chknoval);
+            imgholder.html(" <i class='chknosave fa fa-save  fa-save20px ' title='Save' >&nbsp;</i>");
+            }
+        $(".edit_chkno").live("click" , edit_chkno);    
+        
+        ////on click of save    
+        function chknosave(){
+            var chkno=$(this).parent().parent().children(".chknotxt");
+            var imgholder=$(this).parent().parent().children(".imghold");
+             var chknoval= $("#chknotxtarea").val();
+             var res = Checknum(chknoval);
+             if ((chknoval != res) || (!chknoval)) {
+                 Alert.render('Please enter valid check number', 'Alert !', 'ok', 'Alertconfirm');
+                 document.getElementById("chknotxtarea").style.border = "thin solid red";
+        
+             } else {
+                 chkno.html(res);
+            imgholder.html("<i class='fa fa-pencil fa-edit20px edit_chkno' title='Edit'></i>");
+             }
+            var RecordId = "";
+             var ClsList = document.getElementsByClassName('paymentId');
+            for(var i=0;i<ClsList.length;i++){
+              RecordId = ClsList[0].id; 
+            }
+            saveChekinput('Payment',RecordId,chknoval);
+         
+            }   
+        $(".chknosave").live("click",chknosave);
+        
+        
+    /******* End of Inline Editing for Check Number*********/
+    
+    })
+    <!-----//end of inline editing of order popup------> 
+        
+    
+    </script> 
+    <!-----//end of inline editing of order popup------> 
+    
+    <script>
+  
+ var tcid='';
+ function canIndividualtickest(tcid1,clkbtn1 ){
+     tcid=tcid1;
+     Alertconfirm.render('Are you sure, you want cancel the ticket?' , 'Confirmation',clkbtn1,'Yes','No','Alertconfirm');
+      //var r=confirm("Are you sure, you want cancel ticket?");
+     //  if (r == true) {
+       //    cavticIndividual(tcid);
+        //  return true;
+      // } else {
+       
+       // return false;
+       //}
+   }
+    
+    var orderItemId='';
+   function canceltickets(orderItemId1,itemQuan,clkbtn){
+   orderItemId=orderItemId1;
+          if(itemQuan >= 1){
+          
+           //var r=confirm("Do you want to delete "+ itemQuan  +" tickets?");
+            //if (r == true) {
+             //candirectTic(orderItemId);
+             //}
+             
+             Alertconfirm.render('Are you sure, you want to cancel '+ itemQuan  +' tickets?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+         }
+     }  
+     
+     function callbackcancel(clkbtn , cnclbtnn){
+   var r=false;
+}
+
+function callback(clkbtn , okbtnn){
+    if(clkbtn.id=='cancelOrd'){
+        //alert(clkbtn.id);
+        candirectTic(orderItemId);
+    }else if(clkbtn.id=='cancelTic'){
+        //alert(clkbtn.id);
+         cavticIndividual(tcid);
+    }
+}
+  
+  </script> 
+  </apex:form>
+ <script>
+   
+   function saveChekinput(typetoSave,rId,rVal) {
+     // alert('hI '+typetoSave+' rid '+rId+' rVal '+rVal );
+       Visualforce.remoting.Manager.invokeAction(
+                                     '{!$RemoteAction.BLN_MyticketsCon.saveChkInfo}',
+                                         typetoSave,rId,rVal, 
+                                        function(result, event){
+                                        
+            }, 
+        {escape: true}
+      );
+      
+   } 
+ </script>  
+  <apex:include pageName="BLN_Attendeeinfo_popup" id="editingpopup" rendered="true" />
+
+</apex:page>

@@ -1,0 +1,171 @@
+<apex:page controller="BLN_RoomsCon" showHeader="false" id="thePage" standardStylesheets="false">
+  
+    <head>
+        <title>Boothleads-Rooms</title>
+    </head>
+    
+           <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+    
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    
+    <!--<apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/style.css')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/nwbuttons.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/tables.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/chosen.css')}"/>-->
+   <!-- <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/responsive.css')}"/> -->
+  
+  
+    <script type="text/javascript">
+    function confirmsave(){
+        var roomname = document.getElementById('{!$Component.thePage.j_id7.commoncomponent.editRoom.RoomName}');
+        if(roomname.value == ''){
+            alert('Room name is required');
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
+    function showToEnterRoomScreen(){
+        
+         document.getElementById('roomEntryForm').style.display = 'block';
+         document.getElementById('existingRec').style.display = 'none';
+        
+    }
+    function validateSave(){
+        var Rname = document.getElementById('RoomNameHTML').value ;
+        var RNum  = document.getElementById('RoomNoHTML').value ;
+        
+        alert('FFFFFFFFFFFFFFFF    '+ Rname+'     '+ RNum);
+        
+        saveTracks(Rname, RNum);
+    }
+    </script>
+   <!-- <apex:form id="reFresh" >
+        roomsDisplay();
+        <script>
+        
+          function roomsDisplay(){
+                alert('FFFFFFFFFFFFFFFF  WWWWWWW  ');
+                document.getElementById('roomEntryForm').style.display = 'none';
+                document.getElementById('existingRec').style.display = 'block';
+            }    
+        </script>
+    </apex:form> -->
+    
+    
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!roomsComponent}">  
+    
+    <apex:form id="roomsListForm"> 
+        <apex:actionFunction action="{!saveTrack}" reRender="reFresh" name="saveTracks" oncomplete="roomsDisplay();">
+            <apex:param value="" name="roomEntry"/>
+            <apex:param value="" name="roomNum"/>
+        </apex:actionFunction>     
+    
+      <div class="grid-1" id="existingRec"  >  
+        <apex:outputPanel id="roomsListPannel" rendered="{!NOT(addEditRoomBool)}"  >   <!---- rendered="{!NOT(addEditRoomBool)}"  ---->
+        <div class="grid-1" >
+    
+        <div class="title-grid-selectevent"></div>
+            <div class="content-gird-selectevents"> 
+              <!---  <input type="button" value="Room ?" onclick="showToEnterRoomScreen();"/> ----->
+                <apex:commandLink value="New Room" action="{!editRoom}" styleclass="button-a blue" style="line-height: 28px;margin-bottom: 5px; float:right; color:#FFFFFF;"></apex:commandLink>     
+            </div>
+            <!--close of content-grid--> 
+        </div>
+        <!--title-grid--> 
+        
+        
+        <!--Statistic-->
+        <div class="grid-1" > 
+            <!--Room table-->
+            
+            <table class="display" id="RoomTable">
+                <thead>
+                    <tr>
+                        <th width="10%">Action</th>
+                        <th width="60%">Room Name</th>
+                        <th width="30%">Room No</th>
+                    </tr>
+                </thead>
+                <tbody>               
+                    <apex:repeat value="{!roomslist}" var="rl">
+                        <tr class="item">
+                            <td class="subject">
+                            <!--  reRender="editRoom, roomsListForm" -->
+                                <apex:commandLink action="{!editRoom}" id="edtRoom" style="text-decoration:none;cursor: pointer;" title="Edit" >
+                                    <apex:param value="{!rl.id}" name="editedRoomId"/>
+                                    <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/edit-1.png')}" />
+                                </apex:commandLink>
+                                <apex:commandLink action="{!removeRoom}" onclick="if(!confirm('Are you sure?')){return};" id="removeroom" style="text-decoration:none;cursor: pointer;" title="Remove" reRender="editRoom, roomsListForm">
+                                    <apex:param value="{!rl.id}" name="removedRoomId"/>
+                                    <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/remove.png')}"/>
+                                </apex:commandLink>
+                            </td>
+                            <td class="name">
+                                <apex:outputText value="{!rl.Name}"/>
+                            </td>
+                            <td class="name">
+                                <apex:outputText value="{!rl.Room_Number__c}"/>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </div>
+        <!--close of grid-1--> 
+    
+        </apex:outputPanel> 
+     </div>   
+    </apex:form>
+
+    
+    <apex:form id="editRoom" rendered="{!addEditRoomBool}">
+        <apex:outputPanel >
+        <!-- Add Room  -->
+            <div class="grid-1" style="width:70%;align:center;" id="roomEntryForm">
+        
+            <div class="content-gird" style="border:none;">
+
+            <div class="elem">
+                <label><apex:outputText value="Room Name:"></apex:outputText></label><label id="mandatory">*</label>    
+                <div class="indent" style="margin-left:100px;">   
+                    <apex:inputField value="{!addEditRoom.Name}" styleClass="medium" style="width:80%;" id="RoomName"/>
+                  <!------  <input type="text" styleClass="medium" style="width:80%;" id="RoomNameHTML"/>  ----->
+                </div>
+            </div>
+            <div class="elem">
+                <label><apex:outputText value="Room No:"></apex:outputText></label>
+                <div class="indent" style="margin-left:100px;">   
+                    <apex:inputField value="{!addEditRoom.Room_Number__c}" styleClass="medium" style="width:80%;" id="RoomNo"/>
+                   <!----- <input type="text" styleClass="medium" style="width:80%;" id="RoomNoHTML"/>  ------>
+                </div>
+            </div>
+            
+            <div class="clear"> </div>
+
+            </div>
+            <!--------------------------------------------------------------------------------->
+            <!-- reRender="editRoom, roomsListForm" -->
+                <div style="width:99%; text-align:center;vertical-align:middle; margin-top:-3px;">
+                   <!------ <input type="button" value="Save HTML" onclick="validateSave();" />   ---------->
+                    <apex:commandButton value="Save" action="{!saveTrack}" styleclass="button-a blue" onclick="return confirmsave();"/>&nbsp;&nbsp;  <!---- reRender="editRoom, roomsListForm" ---->
+                    <apex:commandButton value="Cancel" action="{!cancelTrack}"  immediate="true" styleclass="button-a dark-blue"/>
+                    
+                    <div class="clear"></div>
+                
+                </div><!--close of grid-->
+            </div><!--add room-->
+        </apex:outputPanel>
+    </apex:form>
+
+    
+    </c:ed_basictemplate>
+    
+    <!------------common js libraries component------------>
+
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+</apex:page>

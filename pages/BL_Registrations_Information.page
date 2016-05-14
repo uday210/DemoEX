@@ -1,0 +1,617 @@
+<apex:page controller="testgroupingCon" showHeader="false" standardStylesheets="true">
+
+<head>
+<title>Boothleads</title>
+</head>
+
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/>  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.js" type="text/javascript"></script>
+
+<style>
+
+.newbtn {  padding: 6px 19px; font-size: 13px;    line-height: 18px;   transition: all 0.2s ease-out 0s;   background: none repeat scroll 0 0 #2c88c2;
+    border:none;    color: #FFFFFF!important;   border-radius:6px;  font-weight:300; cursor:pointer;}
+    
+.newbtn:hover {    background: none repeat scroll 0 0 #51a7dd;    color: #FFFFFF!important;}
+
+.newbtn-lg {   padding: 11px 19px; font-size: 18px;    border-radius:6px;}
+
+.newbtn-sm {   padding: 2px 10px;  font-size: 11px;    padding: 7px 13px;}
+
+.newbtn-xs {   border-radius: 4px 4px 4px 4px; font-size: 10px;    padding: 4px 7px;}
+
+.newbtn-link { padding: 0; text-shadow: none;  text-transform: none;}
+
+.newbtn i:before { text-align: left;}
+
+.newbtn-buy {  background: none repeat scroll 0 0 #E7573C; color:#fff;}
+
+
+
+
+.grid{ 
+width: 100%; 
+border-collapse: collapse; 
+}
+/* Zebra striping */
+.grid tr:nth-of-type(odd) { 
+background: #eee;
+padding:0px;
+}
+.grid tr:hover{ 
+background: #f3f3f3; 
+}
+.grid th { 
+background: #CCCCCC;
+color: #414141; 
+font-weight: bold; 
+background: #eaeaea; /* Old browsers */
+background: -moz-linear-gradient(top,  #eaeaea 0%, #f3f3f3 39%, #f3f3f3 58%, #eaeaea 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eaeaea), color-stop(39%,#f3f3f3), color-stop(58%,#f3f3f3), color-stop(99%,#eaeaea)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* IE10+ */
+background: linear-gradient(to bottom,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#eaeaea',GradientType=0 ); /* IE6-9 */
+    }
+    .grid td{ 
+        padding:2px; 
+        border-bottom:1px solid #eaeaea; 
+        text-align: left;
+      border-right:0px;; 
+    }
+    .grid th { 
+        padding:2px; 
+        padding-left:5px; 
+        border: 1px solid #D3D3D3; 
+        font-size:11px;
+        text-align: left; 
+        height:19px;
+    }
+    .grid1 td{
+    border-right:0px solid #F00; 
+  
+    }
+ .grid tr:nth-child(odd)     { background-color:#fafafa; }
+ .grid tr:nth-child(even)      { background-color:#fff; }
+ 
+  .grid tr:hover{background-color:#eaeaea;} 
+  
+.glossy{background: #d8e5f5; /* Old browsers */
+background: -moz-linear-gradient(top,  #d8e5f5 0%, #cfdff3 45%, #c6d9f1 48%, #b6ceee 48%, #aec9ed 48%, #bed4f0 73%, #caddf3 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8e5f5), color-stop(45%,#cfdff3), color-stop(48%,#c6d9f1), color-stop(48%,#b6ceee), color-stop(48%,#aec9ed), color-stop(73%,#bed4f0), color-stop(100%,#caddf3)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e5f5', endColorstr='#caddf3',GradientType=0 ); /* IE6-9 */
+ border-top:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;
+}
+.gridbottom{border-bottom:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;background-color:#d6e3f2; padding:3px; border-top:1px solid #91b5db;}
+.trwhite{ background-color: #FFFFFF; }
+.trwhite:hover { background-color: #FFFFFF; }
+</style>
+<style type='text/css'>
+
+
+.hidedivtext{font-size:14px; padding-left:6px;text-align:left;}
+#B {
+position: absolute;
+}
+
+#B {
+top: 228px;
+right:0px;
+width:auto;
+height:auto;
+z-index:999;
+display:none;
+background:#FFFFFF;
+border:0px solid #226b86;
+padding:10px;
+ border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px;
+-webkit-box-shadow: 0 8px 6px 6px #cccccc;
+-moz-box-shadow: 0 8px 6px 6px #cccccc;
+box-shadow: 0 8px 6px 6px #cccccc;
+}
+
+#BB {
+top: 0px;
+left: 0px;
+right: 0;
+bottom: 0px;
+
+align:left;
+float:left;
+// background:green;
+}
+
+
+
+
+.grid{ 
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    /* Zebra striping */
+   .grid tr:nth-of-type(odd) { 
+        background: #eee; 
+    }
+     .grid tr:hover{ 
+        background: #f3f3f3; 
+    }
+   .grid th { 
+        background: #CCCCCC;
+        color: #414141; 
+        font-weight: bold; 
+        background: #eaeaea; /* Old browsers */
+background: -moz-linear-gradient(top,  #eaeaea 0%, #f3f3f3 39%, #f3f3f3 58%, #eaeaea 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eaeaea), color-stop(39%,#f3f3f3), color-stop(58%,#f3f3f3), color-stop(99%,#eaeaea)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* IE10+ */
+background: linear-gradient(to bottom,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#eaeaea',GradientType=0 ); /* IE6-9 */
+ border-right:1px solid #91b5db; 
+ border-left:1px solid #91b5db; 
+    }
+    .grid td{ 
+        padding:2px; 
+        border-bottom:1px solid #CCCCCC; 
+        text-align: left;
+      border-right:0px;; 
+    }
+    .grid th { 
+        padding:2px; 
+        text-align: left; 
+    }
+    .grid1 td{
+    border-right:0px solid #F00; 
+    }
+ .grid tr:nth-child(odd)     { background-color:#fafafa; }
+ .grid tr:nth-child(even)      { background-color:#fff; }
+ 
+  .grid tr:hover{background-color:#eaeaea;} 
+  
+.glossy{background: #d8e5f5; /* Old browsers */
+background: -moz-linear-gradient(top,  #d8e5f5 0%, #cfdff3 45%, #c6d9f1 48%, #b6ceee 48%, #aec9ed 48%, #bed4f0 73%, #caddf3 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8e5f5), color-stop(45%,#cfdff3), color-stop(48%,#c6d9f1), color-stop(48%,#b6ceee), color-stop(48%,#aec9ed), color-stop(73%,#bed4f0), color-stop(100%,#caddf3)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e5f5', endColorstr='#caddf3',GradientType=0 ); /* IE6-9 */
+ border-top:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;
+}
+.gridbottom{border-bottom:1px solid #91b5db; border-right:0px solid #91b5db; border-left:0px solid #91b5db;background-color:#d6e3f2; padding:3px;}
+.trwhite{ background-color: #FFFFFF; padding:0px;}
+.trwhite:hover { background-color: #FFFFFF; }
+</style>
+
+
+<head>
+<title>Boothleads</title>
+</head>
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/> 
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.js" type="text/javascript"></script>
+<style>
+ .slidingDiv 
+ {
+    float:right;
+    height:270px;
+    width:200px;
+    background-color: #99CCFF;
+    padding:10px;
+    margin-top:0px;
+    margin-right:0px;
+    border-bottom:5px solid #3399FF;
+    z-index:99999;
+    position:absolute;
+    text-align:left;
+ }
+
+.show_hide {
+ float:right;
+    display:block;
+    position :relative;
+}
+
+</style>
+<script>
+$('#icons').hide();
+$('#iconlink').click(function() {
+$('#icons').show('slide', 400);
+return false;
+});
+</script>
+<script type="text/javascript">
+
+$(document).ready(function()
+{
+$(".slidingDiv").hide();
+$(".show_hide").show();    
+$('.show_hide').click(function(){
+$(".slidingDiv").slideToggle();
+});
+});
+
+</script>
+<style>
+a.nav:link {color: #000000; text-decoration: none;}
+a.nav:visited {color: #000000; text-decoration: none;}
+a.nav:hover {color: #000000; text-decoration: underline;}
+a.nav:active {color: #000000; text-decoration: none;}
+.x-grid3-hd-inner { white-space: normal; }
+</style>
+
+
+
+<apex:form id="customerinfo">
+<!-- Start: page-top-outer -->
+<div id="page-top-outer">    
+<!-- Start: page-top -->
+<div id="page-top">
+
+<!-- Start logo -->
+<div id="logo">  
+</div>
+<!-- End logo -->
+
+<!--  start top-search -->
+<div id="top-search">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="welcome"> Welcome  :
+<span class="username">{!$User.Firstname}&nbsp;{!$User.Lastname}</span>
+</td>
+</tr>
+</table>
+</div>
+<!--  end top-search -->
+<div class="clear">
+</div>
+</div>
+<!-- End: page-top -->
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat...........START -->
+<div class="nav-outer-repeat"> 
+
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+<div id="nav-right">
+        
+               
+<!----LOGOUT ACTION START-->
+<div class="nav">
+ <div class="table">
+
+<!--<apex:form >-->
+<div class="nav-divider">&nbsp;</div>
+ 
+ <apex:outputLink value="/apex/BL_Eventadmin_Profile" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:outputLink>
+<div class="nav-divider">&nbsp;</div>
+ <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+ </div>
+</div>
+   
+<!----LOGOUT ACTION END--->
+
+ <div class="clear">&nbsp;</div>
+ </div>
+ <!-- end nav-right -->
+
+
+<!--  start nav -->
+<div class="nav">
+<div class="table">
+  
+<!--<div class="nav-divider">&nbsp;</div>-->
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_EA_dashboard?id={!eventid}"><b>Dashboard</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>                    
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_EventAdmin_Events?id={!eventid}"><b>Events</b></apex:outputLink></li></ul>
+           
+ <ul class="select"><li>
+ <div class="nav-divider">&nbsp;</div>
+ <apex:outputLink value="/apex/BL_Eventadmin_BoothAdmins?id={!eventid}"><b>Booths</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>
+ <ul class="select"><li>
+ <apex:outputLink value="/apex/BL_Eventadmin_Attendees?id={!eventid}"><b>Attendees</b></apex:outputLink></li></ul>
+ 
+ <div class="nav-divider">&nbsp;</div>
+ <ul class="current"><li>
+ <apex:outputLink value="/apex/BL_EA_Reports?id={!eventid}"><b>Reports</b></apex:outputLink></li></ul>
+        
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+</div>
+<!--  start nav -->
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................ END -->
+
+ <div class="clear"></div>
+               
+<!-- start content-outer ................... START -->
+<div id="content-outer">
+<!-- start content -->
+<div id="content">
+
+<!--  start page-heading -->
+
+<div id="page-heading" width="30%">
+ 
+</div>
+
+<table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+<!--<tr>
+    <th rowspan="3" class="sized">
+    <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt="" /></th>
+    <th class="topleft"></th>
+    <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+    <th class="topright"></th>
+    <th rowspan="3" class="sized">
+    <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+</tr>-->
+<tr>
+<td id="tbl-border-left"> </td>
+<td>
+<!--  start content-table-inner ...................... START -->
+<div id="content-table-inner">
+
+<!--  start table-content  -->
+<div id="table-content">
+<apex:outputPanel rendered="{!completegrid}" id="maingrid">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+   <td align="left"><b><apex:outputLink value="/apex/BL_EA_Reports?id={!eventid}"  styleClass="newbtn  newbtn-default">Back</apex:outputLink></b></td> 
+
+ <td align="right"><b>View Amount Generated </b></td>
+   <td align="right"><b>From :</b></td><td style="width:40px;"> <apex:inputField value="{!dt.Start_Date__c}" id="StartDateId"/></td>
+  <td  align="right"><b>To :</b></td><td style="width:25px;"><apex:inputField value="{!dt.End_Date__c}" id="EndDateId"/></td>
+    <td>  <apex:commandButton value="Run Report" action="{!amountgenerated}" styleClass="newbtn  newbtn-default"/></td>
+   
+   
+   <td align="right">
+       <apex:commandButton value="Print All" action="{!export}" styleClass="newbtn  newbtn-default"></apex:commandButton>&nbsp; &nbsp;
+       <apex:commandButton value="Export All" action="{!ExportSummaryReportasCSV}"  styleClass="newbtn  newbtn-default"></apex:commandButton>&nbsp; &nbsp;
+   
+   </td>                       
+  </tr>
+</table>
+
+<div style="height:10px;"></div>
+     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="grid">
+     <div style="width:99.8%; height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+      <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Report on Payment Details</div>
+ <!--     <div style="font-weight:bold; float:right; color:#04408c;">Total Amount - {!selectedoption} : ${!TicketCategoryWiseAmount}</div> -->
+     </div> 
+<tr>    
+  <!-- <th style="width:10%;">Registration Type</th>  --> 
+      <th style="width:12%;">
+   <apex:commandLink value="Company{!IF(sortField=='Company__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Company__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>
+   <th style="width:12%;">
+       <apex:commandLink value="Name{!IF(sortField=='Last_Name__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Last_Name__c" assignTo="{!sortField}"/>
+       </apex:commandLink>
+   </th>
+   <th style="width:12%;">
+   <apex:commandLink value="Email{!IF(sortField=='Email__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Email__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>
+   <th style="width:8%;">
+   <apex:commandLink value="Phone{!IF(sortField=='Phone__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Phone__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>
+   <th style="width:7%;">
+   <apex:commandLink value="Payment Type{!IF(sortField=='Payment_Type__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Payment_Type__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>    
+   <th style="width:10%;">
+   <apex:commandLink value="Payment Status{!IF(sortField=='Payment_Status__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Payment_Status__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>
+   <th style="width:12%;">
+   <apex:commandLink value="Registered Date{!IF(sortField=='Registered_Date__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="Registered_Date__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th> 
+   <th style="width:13%;">
+   <apex:commandLink value="Ticket Type{!IF(sortField=='TicketTypes__r.TT_Name__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="TicketTypes__r.TT_Name__c" assignTo="{!sortField}"/>
+   </apex:commandLink>&nbsp;
+   <apex:selectList value="{!selectedoption}" size="1" >
+       <apex:actionSupport action="{!customerreport}" event="onchange"/> 
+       <apex:selectOptions value="{!atttypeoption}"/>
+   </apex:selectList>
+   </th>   
+   <th style="width:7%;">
+   <apex:commandLink value="Amount Paid{!IF(sortField=='TicketAmount__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="TicketAmount__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th>  
+   <th style="width:7%;">
+   <apex:commandLink value="Discount{!IF(sortField=='DiscountValue__c',IF(sortDir='ASC','▼','▲'),'')}" style="color:blue;" action="{!toggleSort}" reRender="maingrid"> 
+            <apex:param name="sortField" value="DiscountValue__c" assignTo="{!sortField}"/>
+   </apex:commandLink>
+   </th> 
+</tr>
+
+<tr>
+<td colspan="10" class="trwhite" style="border-right:1px solid #91b5db;border-left:1px solid #91b5db;">
+<DIV style="overflow:auto;width:100%;height:350px;">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:11px;" class="grid">
+     <apex:repeat var="a" value="{!dummylist}">
+     <tr>             
+        <td style="padding-left:5px;color:#04408c;width:12%;"><b><apex:outputText value="{!a.dummyCompany}"/></b></td>
+     </tr>
+     <apex:repeat var="c" value="{!a.liDummys}">
+     <tr style="border-top:1pt solid silver;">
+        <td style="padding-left:5px;"></td>        
+        <td style="padding-left:5px;width:12%;"><apex:outputText value="{!c.First_Name__c} {!c.Last_Name__c}"/></td>
+        <td style="padding-left:5px;width:12%;"><apex:outputText value="{!LEFT(c.Email__c, 17)}..."/></td>
+        <td style="padding-left:2px;width:8%;"><apex:outputText value="{!c.Phone__c}"/></td>
+        <td style="padding-left:2px;width:7%;"><apex:outputText value="{!c.Payment_Type__c}"/></td>
+        <td style="padding-left:2px;width:10%;">
+            <apex:commandLink value="{!c.Payment_Status__c}" action="{!changestatus}" style="color:#0000ff" rendered="{!IF(c.TicketTypes__r.TT_TicketType__c == 'Paid',TRUE,FALSE)}">
+                <apex:param name="mycheck" value="{!c.id}"/>
+            </apex:commandLink>
+        </td>     
+        <td style="padding-left:2px;width:12%;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Registered_Date__c - 0.208333333}"/></apex:outputText></td>
+        <td style="padding-left:2px;width:13%;"><apex:outputText value="{!c.TicketTypes__r.TT_Name__c}"/></td>
+        <td style="padding-left:2px; padding-right:10px;width:7%;text-align:right;"><apex:outputText value="{!c.IndividualAmount__c}"/></td>
+        <td style="padding-left:2px;width:7%;text-align:right;"><apex:outputText value="{!c.DiscountValue__c}"/></td>
+     </tr>
+     </apex:repeat>
+ </apex:repeat>
+</table>
+
+</div></td>
+</tr>
+</table>
+
+     
+<div class="gridbottom" style="height:20px;width:99.5%; border-right:1px solid #91b5db; border-left:1px solid #91b5db; border-top:0px solid #91b5db;padding:3px 0 0 8px;font-weight:bold; color:#04408c; ">
+<div style="float:left;">
+Total Amount Through: &nbsp; Credit Card: &nbsp;&nbsp; ${!TotalCCAmount} &nbsp;&nbsp;&nbsp;&nbsp; / &nbsp;
+Check: &nbsp; ${!TotalCheckAmount} &nbsp;&nbsp;&nbsp;&nbsp; / &nbsp;
+Invoice: &nbsp; ${!TotalInvoiceAmount} &nbsp;&nbsp;&nbsp;&nbsp;/ &nbsp;
+<apex:outputPanel >
+<apex:outputText value="Attendees : {!attendeecount}" id="attcount" rendered="{!IF(selectedoption=='Attendee',true,false)}"></apex:outputText>
+<apex:outputText value="Exhibitors : {!bacount}" rendered="{!IF((selectedoption== 'Exhibitor' || selectedoption== 'Sponsor'),true,false)}" id="exhcount"></apex:outputText>
+</apex:outputPanel>
+</div>
+
+<div style="float:right;">
+Total Amount: &nbsp; ${!TotalAmount} &nbsp;
+</div>
+
+</div>                    
+</apex:outputPanel>
+<!------ GNESMSDC_RegistrationReport End ------>  
+
+
+<!------------------------ GNESMSDC_Complete_RegistrationReport Start ---------------------------> 
+
+<!------------------------ GNESMSDC_Complete_RegistrationReport Start --------------------------->  
+
+</div>
+<!--  end content-table  -->
+ <!--------------------------------------------------statuschange--------------------------------->
+    <apex:outputPanel >
+    
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!statuschange}" />
+    <apex:outputPanel styleClass="custPopup" layout="block"  style="width:40%;" rendered="{!statuschange}" >
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" valign="top">
+    <tr bgcolor="#75b9fe" height="35px">    
+    <td colspan="2" align="left"> <apex:outputText value="Change your Payment Status" style="font-size:16px;font-weight:bold;padding-left:15px; color:#FFFFFF;" />
+    <div style="float:right;  padding-right:5px;">   
+    <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" style="height:25px; width:25px;"  /> </div>
+    </td>
+    </tr>
+    <tr height="10px"><td></td></tr>
+    <tr>
+    <td>
+    <table cellpadding="0" cellspacing="5px" border="0" width="98%" align="center">
+    <tr height="35px">
+        <td align="right" width="49%">Payment Status: &nbsp;&nbsp;&nbsp;</td>
+        <td width="49%" align="left">
+            <apex:selectList value="{!statusvalue}" size="1">
+             <apex:selectOptions value="{!paymentstatus}">  
+            </apex:selectOptions>
+            </apex:selectList>
+        </td>
+    </tr>
+    <tr height="35px">
+        <td align="right" width="49%">Check No.: &nbsp;&nbsp;&nbsp;</td>
+        <td width="49%" align="left">
+            <apex:inputText value="{!checknumber}"/>           
+        </td>
+    </tr>
+    <tr height="35px">
+        <td align="right" width="49%">Amount Received: &nbsp;&nbsp;&nbsp;</td>
+        <td width="49%" align="left">
+            <apex:inputText value="{!checkamount}"/>
+        </td>
+    </tr>
+    <tr height="10px"><td></td></tr>
+    <tr height="35px">  
+        <td colspan="2" align="center">
+            <apex:commandButton action="{!changingpaymentstatus}" value="Save Change" styleClass="awesome"/>
+        </td>
+    </tr>
+    </table>
+    
+    </td>
+    <td>
+    
+    
+    </td>  </tr>
+    </table>
+    </apex:outputpanel>
+    </apex:outputpanel> 
+    <!------------------------------------------------------------------------------------------------>
+    
+<div class="clear"></div>
+         
+</div>
+<!--  end content-table-inner ....................END  -->
+</td>
+ <td id="tbl-border-right"></td>
+ </tr>
+<!-- <tr>
+    <th class="sized bottomleft"></th>
+    <td id="tbl-border-bottom">&nbsp;</td>
+    <th class="sized bottomright"></th>
+ </tr>-->
+ </table>
+ <div class="clear">&nbsp;</div>
+</div>
+ 
+<!--  end content -->
+<div class="clear">&nbsp;</div>
+</div>
+<!--  end content-outer..........................END -->
+
+<div class="clear">&nbsp;</div>
+    
+<!-- start footer -->
+       
+<div id="footer">
+ <!--  start footer-left -->
+  <div id="footer-left">&copy; Copyright Globalnest Ltd. <span id="spanYear"></span> 
+  <a href="">www.globalnest.com</a>. All rights reserved.</div>
+ <!--  end footer-left -->
+ <div class="clear">&nbsp;</div>
+</div>
+
+<!-- end footer -->
+</apex:form>
+
+</apex:page>

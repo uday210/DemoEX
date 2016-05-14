@@ -1,0 +1,1435 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_AttendeeDetailReportCon" action="{!hideEventsTab}" id="pgid" readOnly="true">
+   <c:DateFormatChange />
+    <c:ed_commonstyles ></c:ed_commonstyles>
+   
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/style.css')}" />
+   <style>
+      //.expcolp_img { background-color: #FFF; no-repeat left top; width:30px; height:19px; margin-bottom:-2px; float:right; cursor:pointer; display:inline-block;}
+      .expcolp_img { background:transparent url(https://developer-boothleads.cs7.force.com/Eventdex/resource/1446119577000/edsr_master/edsr_root/images/expcolp.png) no-repeat left top; width:30px; height:19px; margin-bottom:-2px; float:right; cursor:pointer; display:inline-block;}
+      .up { background-position:left bottom;}
+   </style>
+   <c:ed_popupbox ></c:ed_popupbox>
+   <style>
+   #alert_dialogboxbody{
+   
+   word-break:break-all;
+       height: 190px;
+    overflow-y: scroll;
+   }
+   
+   </style> 
+       <script>
+    $(document).ready(function() {
+   try{
+    ShowLoader();
+     Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_AttendeeDetailReportCon.allstats}',
+            '{!selectedEvent}',
+           function(stats, eventd){
+           HideLoader();
+           if(stats.attendeesCount!='0')
+           $('#trackedAttendees').html(stats.attendeesCount);
+           else
+           {
+          
+           $( "#trackedAttendees" ).prev().remove(); $( "#trackedAttendees" ).remove();
+           }
+           if(stats.ExhibitorCount!='0')
+           $('#trackedExhibitors').html(stats.ExhibitorCount);
+           else
+           {
+           
+           $( "#trackedExhibitors" ).prev().remove();$( "#trackedExhibitors" ).remove();
+           }
+           if(stats.sponsorCount!='0')
+           $('#trackedSponsors').html(stats.sponsorCount);
+           else
+           {
+           
+           $( "#trackedSponsors" ).prev().remove();$( "#trackedSponsors" ).remove();
+           }
+           if(stats.speakerCount!='0')
+           $('#trackedSpeakers').html(stats.speakerCount);
+           else
+           {
+           
+           $( "#trackedSpeakers" ).prev().remove();$( "#trackedSpeakers" ).remove();
+           }
+           if(stats.MLbuyerCount!='0')
+           $('#matchLeadBuyerCount').html(stats.MLbuyerCount);
+           else
+           {
+           
+           $( "#matchLeadBuyerCount" ).prev().remove();$( "#matchLeadBuyerCount" ).remove();
+           }
+           if(stats.MLsellerCount!='0')
+           $('#matchLeadSellerCount').html(stats.MLsellerCount);
+           else
+           {
+           
+           $( "#matchLeadSellerCount" ).prev().remove();$( "#matchLeadSellerCount" ).remove();
+           }
+           if(stats.chekinCont!='0')
+           $('#totalCheckIns').html(stats.chekinCont);
+           else
+           {
+           
+           $( "#totalCheckIns" ).prev().remove();$( "#totalCheckIns" ).remove();
+           }
+           if(stats.checloutCnt !='0')
+            $('#totalCheckOuts').html(stats.checloutCnt );
+            else
+           {
+           
+           $( "#totalCheckOuts" ).prev().remove();$( "#totalCheckOuts" ).remove();
+           }
+            if(stats.badgePrinted!='0')
+             $('#totalBadgePrint').html(stats.badgePrinted);
+             else
+           {
+           
+           $( "#totalBadgePrint" ).prev().remove();$( "#totalBadgePrint" ).remove();
+           }
+            if(stats.badgeNotPrinted!='0')
+              $('#totalBadgeNotPrint').html(stats.badgeNotPrinted);
+              else
+           {
+          
+           $( "#totalBadgeNotPrint" ).prev().remove(); $( "#totalBadgeNotPrint" ).remove();
+           }
+            
+           }
+           );
+    }catch(e){}
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+     
+    });
+
+</script>
+   <!-------------fromdate and todate validations -------->
+   <script>
+      function vdate(){
+      
+      var frmdate = $("[id$='fdate']").val();
+      
+      var ttdate = $("[id$='tdate']").val();
+      
+      if(frmdate > ttdate){
+     // alert('From Date should not be greater than To Date');
+      Alert.render('From Date should not be greater than To Date' ,'Alert','ok');
+      return false;
+      }
+      else{
+      return true;
+      }
+      
+      }
+   </script>
+   
+   <!-------------fromdate and todate validations End -------->
+   <!------------common styles component------------>
+   
+   <!------------//common styles component---------->
+   <!-----------datatable stylescss------------->
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-attendeedetails-report.css')}" />
+   <!-----------//datatable stylescss------------->
+   <!-------------basic template html component------------------------------------->
+   <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="compid">
+   <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"></c:AjaxLoader>
+      <apex:form id="frmid">
+      <apex:actionFunction action="{!exportAttendeesInDetail}" name="attendeeDetailsExport" reRender="bbbb"  />
+     <!--   <apex:actionfunction action="{!showColumns}" name="showColumns" rerender="statrender" status="AjaxLoader"/>  -->
+         <!---------------------template code------------------>
+         <!-------------------------print and export button-------------------------------------------->
+         <div class="print_export_cont" style="width: 100%;">
+            <!--<apex:commandLink styleClass="datatables_btn"
+               action="{!exportAttendeesInDetail}">
+               <span>Export</span>
+            </apex:commandLink>-->
+            <!-------->
+          <!--  <apex:commandLink styleClass="datatables_btn"
+               action="{!printAttendeesInDetail}" target="_blank">
+               <span>Print</span>
+            </apex:commandLink>  -->
+            <apex:outputText rendered="{!ticksList.size<1000}">
+                      <input type="button" class="datatables_btn" onclick="attendeeDetailsExport();return false;" value="Export"/>
+                  </apex:outputText>
+                  <apex:outputText rendered="{!ticksList.size>1000}">
+                      <input type="button" class="datatables_btn" onclick="continueToBatch('sendToMail');" value="Export"/>
+                  </apex:outputText>
+         </div>
+         <!--------------------------//end of print and export button---------------------------------->
+         <div class="datatable-wrapper">
+            <!-------->
+            <div class="top-stats" style="">
+            <apex:outputpanel id="statrender" styleclass="top-stats">
+    <!-- Label name from display settings start-->
+    <apex:variable value="Attendee" var="AttendeeName"/> 
+    <apex:repeat value="{!RegList}" var="r">        
+        <apex:variable value="{!r.Label_Name__c}" var="AttendeeName" rendered="{!r.Column_Name__c=='Attendee'}"/>      
+    </apex:repeat>
+    
+    <apex:variable value="Exhibitor" var="ExhibitorName"/> 
+    <apex:repeat value="{!RegList}" var="r">        
+        <apex:variable value="{!r.Label_Name__c}" var="ExhibitorName" rendered="{!r.Column_Name__c=='Exhibitor'}"/>      
+    </apex:repeat>
+    
+    <apex:variable value="Sponsor" var="SponsoreName"/> 
+    <apex:repeat value="{!RegList}" var="r">        
+        <apex:variable value="{!r.Label_Name__c}" var="SponsoreName" rendered="{!r.Column_Name__c=='Sponsor'}"/>      
+    </apex:repeat>
+    
+    <apex:variable value="Speaker" var="SpeakerName"/> 
+    <apex:repeat value="{!RegList}" var="r">        
+        <apex:variable value="{!r.Label_Name__c}" var="SpeakerName" rendered="{!r.Column_Name__c=='Speaker'}"/>      
+    </apex:repeat>
+    <!-- Label name from display settings close-->
+    
+    <ul class="left" style="width: 150%; height: 10px;"> 
+        <apex:outputText >
+            <li class="labeltitles">{!AttendeeName} :</li>
+            <li class="labeloutput" id="trackedAttendees"></li>
+        </apex:outputText>
+        
+        <apex:outputText >
+            <li class="labeltitles">{!ExhibitorName} :</li>
+            <li class="labeloutput" id="trackedExhibitors"></li>
+        </apex:outputText>
+        
+        <apex:outputText >
+            <li class="labeltitles">{!SponsoreName} :</li>
+            <li class="labeloutput" id="trackedSponsors"></li>
+        </apex:outputText>
+        
+        <apex:outputText >
+            <li class="labeltitles">{!SpeakerName} :</li>
+            <li class="labeloutput" id="trackedSpeakers"></li>
+        </apex:outputText>
+        
+        <apex:outputText >
+            <li class="labeltitles">MatchLeads Buyer :</li>
+            <li class="labeloutput" id="matchLeadBuyerCount"></li>
+        </apex:outputText>
+        
+        <apex:outputText >
+            <li class="labeltitles">MatchLeads Seller :</li>
+            <li class="labeloutput" id="matchLeadSellerCount"></li>
+        </apex:outputText>
+     </ul>
+     <br/><br/> 
+      <ul class="left" style="width: 150%; height: 10px;">  
+        <li class="labeltitles">Checkins :</li>
+        <li class="labeloutput" id="totalCheckIns"></li>
+        
+        <li class="labeltitles">Checkouts :</li>
+        <li class="labeloutput" id="totalCheckOuts"></li>
+        
+        <!--<li class="labeltitles">NotCheckin :</li>
+        <li class="labeloutput">{!notCheckIns}</li>-->
+        
+        <li class="labeltitles">Badge Printed :</li>
+        <li class="labeloutput" id="totalBadgePrint"></li>
+        
+        <li class="labeltitles">Badge Not Printed :</li>
+        <li class="labeloutput" id="totalBadgeNotPrint"></li>
+        
+        <!--<li class="labeltitles">No Badge :</li>
+        <li class="labeloutput">{!totalNoBadgePrint}</li>-->
+    </ul>
+    </apex:outputpanel>
+               <!--------->
+               <!-----start of from date and to date----->
+              <p class="right" style="text-align: right;">
+                  <span class="labeltitles">From Date:</span> 
+                  <span>
+                     <apex:inputText value="{!sdte}" styleClass="ED"
+                        style="width:18%; height:20px;" id="fdate"/>
+                  </span>
+                  <span class="labeltitles">To Date:</span> 
+                  <span>
+                     <apex:inputText value="{!edte}" styleClass="ED"
+                        style="width:18%; height:20px;" id="tdate"/>
+                  </span>
+                  <span>
+                     <apex:commandLink styleClass="secondarybtn" 
+                        action="{!displayAttendeesInDetail}" onclick="return vdate();">
+                        <i class="fa fa-search fa-1x" style='color: #ffffff;'></i>
+                     </apex:commandLink>
+                  </span>
+               </p> 
+               <br/><br/>
+               <ul class="right" style="margin-top: 5px;">
+                        <li class="labeltitles">Filter:</li>
+                        <li> 
+                            <apex:selectList value="{!selectedTicketName}"
+                                styleClass="selectlist-datatable" multiselect="false" size="1" onchange="table.draw();" id="selectticket">
+                                <apex:selectOptions value="{!ticketNames}"/> 
+                            </apex:selectList> 
+                        </li>
+                    </ul>
+               <div id="example_filter" align="left"><label>Search:<input type="text" id="searchKey" class="" aria-controls="example" onkeyup="table.draw();" style="width:20%"/></label></div>
+               <!---------end of from date and to date--------------->
+              
+               <div class="clear"></div>
+               <!--close of clear-->
+               <!---->
+            </div>
+            <!--close of top-stats-->
+            <!-----datatable start----->
+            <table id="example" class="display">
+               <thead>
+                  <tr>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cPrefix__c')}">
+                        <th>Prefix</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cFirst_Name__c')}">
+                        <th >First Name</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cLast_Name__c')}">
+                        <th>Last Name</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cSuffix__c')}">
+                        <th>Suffix</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cEmail__c')}">
+                        <th>Email</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company__cName')}">
+                        <th>Company Name</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cTitle__c')}">
+                        <th >Designation </th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cPhone__c')}">
+                        <th >Mobile Number</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork_Phone__c')}">
+                        <th >Work Phone Number</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cHome_Phone__c')}">
+                        <th >Home Phone Number</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cAge__c')}">
+                        <th >Age</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cGender__c')}">
+                        <th >Gender</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cDOB__c')}">
+                        <th >DOB</th>
+                     </apex:outputText>
+                     <th>Ticket Type</th>
+                     <th>Ticket Name</th>
+                     <th>Seat No</th>
+                     <th>Badge Status</th>
+                     <th>Checkin Status</th>
+                     <th>Pay Type</th>
+                     <th>Buyer Name</th>
+                     <th>Tag</th>
+                     <th>Order Id</th>
+                     <th>Ticket Id</th>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cPrimary_Business_Category__c')}">
+                        <th >Primary Business Category</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cSecondary_Business_Category__c')}">
+                        <th >Secondary Business Category</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cEstablished_Date__c')}">
+                        <th >Business Established Date</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cDuns_Number__c')}">
+                        <th >Business Duns Number</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cRevenue__c')}">
+                        <th >Business Revenue</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cNumber_Of_Employees__c')}">
+                        <th > No. Of Employees</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cTax_Id__c')}">
+                        <th >Business Tax Id</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company__cWebsite_URL__c')}">
+                        <th >Website URL</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cBlog_URL__c')}">
+                        <th >Blog URL</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company__cDescription__c')}">
+                        <th >Business Description</th>
+                     </apex:outputText>
+                     <!-- work address -->
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                        <th >Business Address1</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                        <th >Business Address2</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                        <th >Business City</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                        <th >Business State</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                        <th >Business Country</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                        <th >Business Zip Code</th>
+                     </apex:outputText>
+                     <!-- Billing address -->
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                        <th >Billing Address1</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                        <th >Billing Address2</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                        <th >Billing City</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                        <th >Billing State</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                        <th >Billing Country</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                        <th >Billing Zip</th>
+                     </apex:outputText>
+                     <!-- Home address -->
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                        <th >Home Address1</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                        <th >Home Address2</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                        <th >Home City</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                        <th >Home State</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                        <th >Home Country</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                        <th >Home Zip</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cNAICS Codes')}">
+                        <th >NAICS Codes</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cDiversity Type')}">
+                        <th >Diversity Type</th>
+                     </apex:outputText>
+                     <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cSpeakerBlogger')}">
+                        <th >Blogger</th>
+                     </apex:outputText>
+                     <th>Order Date</th>
+                     
+                     <th>Custom Barcode</th>
+                     
+                  </tr>
+               </thead>
+               
+               <tbody>
+                  <apex:repeat value="{!ListTickets}" var="ticket">
+                     <apex:variable value="" var="contentHiding"/>
+                     <apex:repeat value="{!ticket.regSetData}" var="r">
+                        <apex:variable value="{!(contentHiding+r.Table_Name__c+r.Column_Name__c+',')}" var="contentHiding" rendered="{!r.Included__c==true}"/>
+                     </apex:repeat>
+                     <apex:repeat value="{!ticket.regSetDataPool}" var="r1">
+                        <apex:variable value="{!(contentHiding+r1.Table_Name__c+r1.Column_Name__c+',')}" var="contentHiding" rendered="{!r1.Included__c==true}"/>
+                     </apex:repeat>
+                  </apex:repeat>
+               </tbody>
+            </table>
+            <!-----------end of datatable report-->
+         </div>
+         <!--close of datatable-wrapper-->
+         <!-----------------//template code----------------------->
+      </apex:form>
+   </c:ed_basictemplate>
+   
+   <!-------------//end of basic template component------------------------>
+   <!--/*********************Java Script Section*******************/-->
+   <!--------//start of datatable js component------------->
+   <c:ed_datatablejs ></c:ed_datatablejs>
+   <!--------//End of datatable js component------------->
+   <script type="text/javascript" class="init">
+       
+       var columnhid = '{!checkUnionForAttRep}' ;
+                              // console.log(columnhid );
+                            
+         var rowindex=0;
+         var table;
+         var j = jQuery.noConflict();
+         j(document).ready(function() {
+         
+         var frmdate = new Date(($("[id$='fdate']")).val());
+         var ttdate = new Date(($("[id$='tdate']")).val());
+         var frmdate1 = ($("[id$='fdate']")).val();
+         var ttdate1 = ($("[id$='tdate']")).val();
+         
+        if(frmdate1.length != 0 && ttdate1.length != 0){
+
+        document.getElementById("{!$Component.pgid:compid:commoncomponent:frmid:fdate}").value= changedate(frmdate);
+        document.getElementById("{!$Component.pgid:compid:commoncomponent:frmid:tdate}").value= changedate(ttdate);
+         }  
+         table = j('#example').DataTable( 
+         {
+              "scrollX": true, 
+         "sScrollX": "1300%", 
+         
+             "pagingType": "full_numbers",
+             "columnDefs": [
+
+    { "width": "2%", "targets": 32 }
+
+  ],
+             
+             "aLengthMenu": [[10, 15,20,25,50], [10,15,20, 25,50]],
+             "iDisplayLength": 10,
+                           "sDom": 'W<"clear">lfrtip', 
+             
+             /**default orderid in asc sorting**/
+              "order": [[0, "asc"]],
+         "bSort": false,
+         "bAutoWidth": false, // Disable the auto width calculation
+         "bFilter": false,
+         //"oColumnFilterWidgets": {
+         //"aiExclude": [ 0,2,4,5,6,7,9,10 ]
+         
+         //},
+         
+         "processing": true,
+             "serverSide": true,
+                            "ajax": '{!$Page.BLN_Attendee_report_helperpage}',
+                            
+                             
+                            "fnServerData" : function ( sSource, aoData, fnCallback ) {
+         
+         aoData.push({ "name": "fdate", "value": document.getElementById("{!$Component.pgid:compid:commoncomponent:frmid:fdate}").value });
+         aoData.push({ "name": "tdate", "value": document.getElementById("{!$Component.pgid:compid:commoncomponent:frmid:tdate}").value });
+         aoData.push({ "name": "selectticket", "value": document.getElementById("{!$Component.pgid:compid:commoncomponent:frmid:selectticket}").value });
+         aoData.push({ "name": "searchKey", "value": document.getElementById("searchKey").value });
+         
+         //console.log(aoData);
+         
+         j.ajax( {
+         "dataType": 'json',
+         "type": "GET",
+         "url": '{!$Page.BLN_Attendee_report_helperpage}',
+         "data": aoData,
+         "success": fnCallback,
+         "error": function (e) {
+             //   console.log(e);
+            }
+         } );
+         
+         },
+                 "fnPreDrawCallback": function() {
+                            try{
+                            var info = table.page.info();
+                    rowindex=parseInt(info.start);
+                    }catch(e){}
+                              },
+                              <!---columns---->
+                           
+                             
+                              "columns": [
+                               
+                               
+                               {
+                             
+                               
+                               data:   "item",
+                               
+                                 render: function ( data, type, row ) {
+                                    
+                                     return row.ticketData.tkt_profile__r.Prefix__c;
+                                  
+                                 
+                                }
+                                 
+                               },
+                               
+                              
+                             
+                             
+                              {
+                                data:   "item",
+                                 render: function ( data, type, row ) {
+                                 
+                              
+                                     return row.ticketData.tkt_profile__r.First_Name__c;
+                             
+                                 }
+                             },
+                               
+                              
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cLast_Name__c')}">
+                               {
+                               
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                
+                                     return row.ticketData.tkt_profile__r.Last_Name__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cSuffix__c')}">  
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.Suffix__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cEmail__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.Email__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company__cName')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.TKT_Company__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cTitle__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.TKT_Job_Title__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cPhone__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.Mobile__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork_Phone__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.Work_Phone__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cHome_Phone__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.Home_Phone__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cAge__c')}">
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.Age__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                                <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cGender__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.Gender__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                                <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cDOB__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.tkt_profile__r.DOB__c;
+                                
+                                 }
+                               },
+                               </apex:outputText>
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 var s=row.ticketData.Item_Type__r.Name;
+                                    <apex:variable value="" var="LabelName"/>   
+                                    if(s=='Admissions'){
+                                        <apex:repeat value="{!RegList}" var="r">        
+                                            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Attendee'}"/>      
+                                        </apex:repeat>
+                                        s='{!LabelName}';
+                                    }
+                                
+                                    if(s=='Exhibitor'){
+                                        <apex:repeat value="{!RegList}" var="r">        
+                                            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Exhibitor'}"/>     
+                                        </apex:repeat>
+                                        s='{!LabelName}';
+                                     }
+                                     
+                                    if(s=='Sponsor'){
+                                        <apex:repeat value="{!RegList}" var="r">        
+                                            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Sponsor'}"/>       
+                                        </apex:repeat>
+                                        s='{!LabelName}';
+                                     }
+                                 
+                                    if(s=='Speaker'){
+                                        <apex:repeat value="{!RegList}" var="r">        
+                                            <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Speaker'}"/>       
+                                        </apex:repeat>
+                                        s='{!LabelName}';
+                                     }
+                                    return s;
+                                
+                                 }
+                               },
+                               
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.Item__r.item_name__c;
+                                
+                                 }
+                               },
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.Tag_No__c;
+                                
+                                 }
+                               },
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 var status = '';
+                                 if (row.ticketData.Badge_ID__c!=null) {
+                                     status = 'Printed';
+                                 }else {
+                                     status= 'Not Printed';
+                                  }
+                                   return status;  
+                                 }
+                               },
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 var tstatusname = '';
+                                    if (row.ticketData.Tstatus_Id__c!=null) {
+                                     
+                                        if (row.ticketData.Tstatus_Id__r.Tstatus_name__c==true,true,false) {
+                                        tstatusname = 'Checked In';
+                                        } else {
+                                        tstatusname = 'Checked Out';
+                                        }
+                                    } else {
+                                     tstatusname = 'Checked Out';
+                                    } 
+                                    return tstatusname;
+                                
+                                 }
+                               },
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.Item__r.Payment__c;
+                                
+                                 }
+                               },
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 var fnmlnm = row.ticketData.Order__r.BLN_TKT_profile__r.First_Name__c+' '+row.ticketData.Order__r.BLN_TKT_profile__r.Last_Name__c;
+                                     return fnmlnm;
+                                
+                                 }
+                               },
+                               
+                                {
+                               data:   "item",
+                                   render: function ( data, type, row ) {
+                                   var tg='';
+                                   <apex:repeat value="{!tagsmap1}" var="x">
+                                   if(row.Item_Pool__c == '{!x}')
+                                    tg=tg+"{!tagsmap1[x]}";
+                                              
+                                   </apex:repeat>
+                                   tg=tg+'&nbsp;';
+                                   <apex:repeat value="{!tickettagsmap1}" var="x">
+                                   if(row.Id == '{!x}')
+                                    tg=tg+"{!tickettagsmap1[x]}";
+                                               </apex:repeat>
+                                         
+                                   return tg;
+                                 
+                                 }
+                               },
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.Order__r.Name;
+                                
+                                 }
+                               },
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                     return row.ticketData.Name;
+                                
+                                 }
+                               },
+                               
+                                <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cPrimary_Business_Category__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 
+                                 return row.ticketData.tkt_profile__r.Primary_Business_Category__c;
+                                     
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cSecondary_Business_Category__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                
+                                 return row.ticketData.tkt_profile__r.Secondary_Business_Category__c;
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                                <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cEstablished_Date__c')}">
+                               
+                                {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                     return row.ticketData.tkt_profile__r.Established_Date__c; 
+                                   
+                                     }
+                                 
+                               },
+                              </apex:outputtext>
+                              <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cDuns_Number__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                  
+                                     return row.ticketData.tkt_profile__r.Duns_Number__c; 
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cRevenue__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                    
+                                     <apex:outputText rendered="{!Contains(contentHiding,'Company_Ext__cRevenue__c')}">
+                                     return row.ticketData.tkt_profile__r.Revenue__c; 
+                                    </apex:outputText>
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cNumber_Of_Employees__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                     return row.ticketData.tkt_profile__r.Number_Of_Employees__c; 
+                                                               
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                              <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cTax_Id__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                     return row.ticketData.tkt_profile__r.Tax_Id__c; 
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company__cWebsite_URL__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                     return row.ticketData.tkt_profile__r.Company_Website_URL__c; 
+                                                             
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cBlog_URL__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                    
+                                     return row.ticketData.tkt_profile__r.Blog_URL__c; 
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company__cDescription__c')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 var strr =  row.ticketData.tkt_profile__r.Company_Description__c+'123456';
+
+                                                               
+
+                                 var  strr3 = strr.slice(0, -6);
+
+                                 var strr1 = strr3.substring(0,20)+'.....';
+                                   
+                                    if(row.ticketData.tkt_profile__r.Company_Description__c != undefined && strr3.length>20){  
+
+                                   
+                                
+                   return '<span>'+ strr1 +'</span>'+ '<a onclick=morefunction("'+ encodeURIComponent(strr3) +'",this);>More</a>';
+
+                           }
+
+                       else if(row.ticketData.tkt_profile__r.Company_Description__c != undefined && strr3.length<=20){
+
+                       return '<span>'+ strr3 +'</span>'
+
+                                 }
+
+                           else if(row.ticketData.tkt_profile__r.Company_Description__c != undefined){
+
+                            return '';
+
+                           } }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                   if(row.ticketData.tkt_profile__r.Work_Address__r != undefined){
+                                    return row.ticketData.tkt_profile__r.Work_Address__r.Address1__c; 
+                                    }else{
+                                    return '';
+                                    }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                   if(row.ticketData.tkt_profile__r.Work_Address__r != undefined){
+                                     return row.ticketData.tkt_profile__r.Work_Address__r.Address2__c;
+                                     } else {
+                                     return '';
+                                     }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                    
+                                     if(row.ticketData.tkt_profile__r.Work_Address__r != undefined){
+                                     return row.ticketData.tkt_profile__r.Work_Address__r.City__c; 
+                                     } else {
+                                      return '';
+                                      }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                    
+                                    
+                                     if(row.ticketData.tkt_profile__r.Work_Address__r != undefined){
+                                     if(row.ticketData.tkt_profile__r.Work_Address__r.State__r!=undefined){
+                                     return row.ticketData.tkt_profile__r.Work_Address__r.State__r.Long_Name__c; 
+                                     }
+                                     } else {
+                                      return '';
+                                    } 
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                   if(row.ticketData.tkt_profile__r.Work_Address__r != undefined){
+                                   if(row.ticketData.tkt_profile__r.Work_Address__r.Country__r!=undefined){
+                                     return row.ticketData.tkt_profile__r.Work_Address__r.Country__r.Long_Name__c; 
+                                     }
+                                     }else {
+                                     return '';
+                                     }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cWork Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                   if(row.ticketData.tkt_profile__r.Work_Address__r != undefined){
+                                     return row.ticketData.tkt_profile__r.Work_Address__r.ZipCode__c; 
+                                     }else {
+                                     return '';
+                                     }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                    
+                                    if(row.ticketData.tkt_profile__r.Billing_Address__r != undefined){
+                                     return row.ticketData.tkt_profile__r.Billing_Address__r.Address1__c; 
+                                     } else {
+                                     return '';
+                                     }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                    if(row.ticketData.tkt_profile__r.Billing_Address__r != undefined){
+                                     return row.ticketData.tkt_profile__r.Billing_Address__r.Address2__c; 
+                                     } else {
+                                     return '';
+                                     }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                    
+                                     if(row.ticketData.tkt_profile__r.Billing_Address__r != undefined){
+                                     return row.ticketData.tkt_profile__r.Billing_Address__r.City__c; 
+                                     } else {
+                                     return '';
+                                     }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                   if(row.ticketData.tkt_profile__r.Billing_Address__r != undefined){ 
+                                   if(row.ticketData.tkt_profile__r.Billing_Address__r.State__r != undefined){ 
+                           
+                                     return row.ticketData.tkt_profile__r.Billing_Address__r.State__r.Long_Name__c; 
+                                    }
+                                     } else {
+                                     return '';
+                                     }
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 
+                                 if(row.ticketData.tkt_profile__r.Billing_Address__r != undefined){ 
+                                 if(row.ticketData.tkt_profile__r.Billing_Address__r.Country__r!= undefined ){ 
+                                  return row.ticketData.tkt_profile__r.Billing_Address__r.Country__r.Long_Name__c; 
+                                  } 
+                                  } else {
+                                   return '';
+                                  }
+                                 
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Pay_Address__cBilling Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                   if(row.ticketData.tkt_profile__r.Billing_Address__r != undefined){ 
+                                     return row.ticketData.tkt_profile__r.Billing_Address__r.ZipCode__c; 
+                                    } else {
+                                   return '';
+                                  } 
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                    
+                                    if(row.ticketData.tkt_profile__r.Home_Address__r!= undefined){ 
+                                     return row.ticketData.tkt_profile__r.Home_Address__r.Address1__c; 
+                                     } else {
+                                   return '';
+                                  }  
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                  if(row.ticketData.tkt_profile__r.Home_Address__r!= undefined){  
+                                     return row.ticketData.tkt_profile__r.Home_Address__r.Address2__c; 
+                                   } else {
+                                   return '';
+                                  }     
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   
+                                    if(row.ticketData.tkt_profile__r.Home_Address__r!= undefined){  
+                                     return row.ticketData.tkt_profile__r.Home_Address__r.City__c; 
+                                     } else {
+                                   return '';
+                                  }  
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                  
+                                  if(row.ticketData.tkt_profile__r.Home_Address__r!= undefined){
+                                  if(row.ticketData.tkt_profile__r.Home_Address__r.State__r!= undefined){
+                                     return row.ticketData.tkt_profile__r.Home_Address__r.State__r.Long_Name__c; 
+                                  }} else {
+                                   return '';
+                                  }    
+                                
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                              <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                  
+                                 if(row.ticketData.tkt_profile__r.Home_Address__r!= undefined){ 
+                                 if(row.ticketData.tkt_profile__r.Home_Address__r.Country__r!= undefined){ 
+                                     return row.ticketData.tkt_profile__r.Home_Address__r.Country__r.Long_Name__c; 
+                                 } 
+                                 } else {
+                                   return '';
+                                  }      
+                                
+                                 }
+                               },
+                              </apex:outputtext> 
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'User_Ext__cHome Address')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 
+                                 if(row.ticketData.tkt_profile__r.Home_Address__r!= undefined){  
+                                     return row.ticketData.tkt_profile__r.Home_Address__r.ZipCode__c; 
+                                 } else {
+                                   return '';
+                                  }     
+                                
+                                 }
+                               },
+                              </apex:outputtext> 
+                               
+                               <apex:outputText rendered="{!Contains(checkUnionForAttRep,'Company_Ext__cNAICS Codes')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   var NCCodes='';
+                                
+                                 if(row.companyNaicsCode != null){
+                                
+                                for(i=0;i<row.companyNaicsCode.length;i++){
+                               NCCodes= NCCodes +row.companyNaicsCode[i].BLN_NAICS_Code__r.Name+' '+row.companyNaicsCode[i].BLN_NAICS_Code__r.Description__c+', <br/>';
+                                }
+                                 }
+                                var strr5 =  NCCodes+'123456';
+                                var  strr6 = strr5.slice(0, -6);
+                                var strr7 = strr6.substring(0,20)+'.....';  
+                                  if(strr6.length>20){  
+                                    return '<span>'+ strr7 +'</span>'+ '<a onclick=morefunction1("'+ encodeURIComponent(strr6) +'",this);>More</a>';
+                                }
+                                    else if(strr6.length<=20){
+                                    return '<span>'+ strr6 +'</span>'
+                                 }
+                               
+                                 }
+                               },
+                              </apex:outputtext> 
+                               
+                               <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'Company_Ext__cDiversity Type')}">
+                                {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                   var CompanyNaics='';
+                                    if(row.companyDiversityData != null){
+                                
+                                for(i=0;i<row.companyDiversityData.length;i++){
+                               CompanyNaics= CompanyNaics+row.companyDiversityData[i].Diversity__r.Name+', <br/>';
+                                }
+                                 }
+                                    var strr8 =  CompanyNaics+'123456';
+                                    var  strr9 = strr8.slice(0, -6);
+                                    var strr10 = strr9.substring(0,20)+'.....';  
+                                    
+                                  if(strr9.length>20){  
+                                    return '<span>'+ strr10 +'</span>'+ '<a onclick=morefunction2("'+ encodeURIComponent(strr9) +'",this);>More</a>';
+                                    }
+                                    else if(strr9.length<=20){
+                                     return '<span>'+ strr9 +'</span>'
+                                    }
+                                 }
+                               },
+                               </apex:outputtext>
+                               
+                              <apex:outputText rendered="{!CONTAINS(checkUnionForAttRep,'GN_User__cSpeakerBlogger')}">
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                                 
+                                 return  row.ticketData.tkt_profile__r.Blogger__c;
+                                
+                                 }
+                               }, 
+                               </apex:outputtext>
+                               
+                               
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                               
+                               return  row.createdon;
+                                
+                                 }
+                               },
+                               {
+                               data:   "item",
+                                 render: function ( data, type, row ) {
+                               
+                               return  row.ticketData.Custom_Barcode__c;
+                                
+                                 }
+                               }
+                               
+                                
+                               
+                               ]
+                              
+                              
+                              
+                             
+         } ); 
+         
+          
+         
+             
+        
+        
+         
+         } );
+         
+   </script>   
+   <!--------//end of datatable js component------------->
+   <!----/************************Datepicker js************************************************/-->
+   <script type="text/javascript"
+      src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+   <script>
+      var dt = jQuery.noConflict();        
+      dt('.ED').datetimepicker({
+      timepicker:false,
+      format:'m/d/Y',
+      formatDate: 'm/d/Y',
+      
+      });
+      
+   </script>
+
+  
+         <script>
+         
+         function continueToBatch(clkbtn)
+         {
+          
+             Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+         }
+         
+         function callback(clkbtn , okbtnn){
+             if(clkbtn =='sendToMail')
+             {
+                
+                 attendeedetailslistxport();
+             }
+             
+        }
+        function callbackcancel(clkbtn,cnclbtnn)
+        {
+            if(clkbtn =='sendToMail')
+             {
+                 //alert('cancel');
+             }
+             
+        }
+        </script>  
+         <script> 
+        function attendeedetailslistxport(){
+             detailExportlist();
+         }
+         function detailExportlist(){
+             attendeeDetailsExport();
+         }
+      </script>  
+ 
+       
+  <script> 
+         function exporder(){
+               
+                         constructstr();
+              } 
+      
+        
+       function constructstr(){
+               individualexport(document.getElementById("{!$Component.pgid:copid:commoncomponent:myForm:fdate}").value,document.getElementById("{!$Component.pgid:copid:commoncomponent:myForm:tdate}").value,document.getElementById("{!$Component.pgid:copid:commoncomponent:myForm:selectorder}").value,document.getElementById("searchKey").value );
+               
+               }
+   </script>
+   
+   
+   <!------------common js libraries component------------>
+   <c:ed_commonjs ></c:ed_commonjs>
+   <!------------//common js libraries component------------>
+   <!-----/*********************//Java Script Section*******************/-->
+   <script>
+
+  function morefunction(descri){
+
+  var descri1 = decodeURIComponent(descri);
+ //alert(descri1);
+ Alert.render(descri1,'Description','ok'); 
+
+  }
+  </script>
+
+<script>
+function morefunction1(descri){
+  var descri1 = decodeURIComponent(descri);
+ Alert.render(descri1,'Naics Codes','ok'); 
+}
+</script>
+
+<script>
+  function morefunction2(descri){
+  var descri1 = decodeURIComponent(descri);
+  Alert.render(descri1,'Diversity Type','ok'); 
+  }
+  </script>
+   
+</apex:page>

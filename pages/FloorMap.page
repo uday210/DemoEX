@@ -1,0 +1,2528 @@
+<apex:page standardController="Event__c" Extensions="FloorMAPCon" sidebar="false" standardStylesheets="false" showheader="false">
+
+  <!----- Including Style Sheets ------>
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<style>
+ select, option{min-width:90px; max-width:170px)
+.eventtable{border-right:1px solid #cccccc;text-align:left;
+    background-color:#f3f3f3;height:10px;width:30%;
+    padding-left:25px;border-bottom:3px solid #FFFFFF;padding-left:10px;}
+.eventselect{border-right:1px solid #cccccc;text-align:left;
+    background-color:#b4dff9;height:10px;width:30%;padding-left:25px;
+    border-bottom:3px solid #FFFFFF;padding-left:10px;}
+.eventhover{background-color:#cccccc;}
+</style>
+<apex:includeScript value="{!$Resource.PhoneSetup}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<!-----End --->
+<div id="page-top-outer">    
+
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    <div id="logo">
+
+    </div>
+    <!-- end logo -->
+    
+    <!--  start top-search -->
+    <div id="top-search">
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+        <td>        
+        <font  Class="welcome">Welcome :</font>
+                   <font class="username">{!$User.Firstname}&nbsp;{!$User.Lastname} </font></td>        
+        </tr>
+        </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+<div id="nav-right">          
+        <!----LOGOUT ACTION -->
+        <div class="nav">
+        <div class="table">
+        <apex:form >
+        <div class="nav-divider">&nbsp;</div>
+        <!--<apex:commandLink action="{!ProfileSettings}" style="text-styl?id={!selectEvent}e:bold; color:#FFFFFF; padding:10px 15px 0 0;" value="Profile"/>-->
+        <apex:outputLink value="/apex/BL_Eventadmin_Profile" id="ProfileLink" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:outputLink>
+        <div class="nav-divider">&nbsp;</div>
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+        <div class="nav-divider">&nbsp;</div>
+       <!-- <apex:outputLink target="_new" value="/apex/Boothleads_Help_Booths" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" >Help</apex:outputLink>-->
+        </apex:form>
+        </div></div>           
+        <!----LOGOUT ACTION END--->
+        <div class="clear">&nbsp; </div>        
+        </div>
+        <!-- end nav-right 
+        ?id={!selectEvent}?id={!selectEvent} ?id={!selectEvent} ?id={!selectEvent} ?id={!selectEvent}-->
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">
+  
+         <!--<div class="nav-divider">&nbsp;</div>-->
+          <ul class="select"><li><apex:outputLink value="/apex/BL_EA_Dashboard" id="Dashboard" ><b>Dashboard</b> </apex:outputLink></li></ul>
+          <div class="nav-divider">&nbsp;</div>                    
+          <ul class="select"><li>
+          <apex:outputLink value="/apex/BL_EventAdmin_Events" id="Events"><b>Events</b></apex:outputLink></li></ul>
+         
+         <ul class="current"><li>
+         <div class="nav-divider">&nbsp;</div>
+         <apex:outputLink value="/apex/BL_Eventadmin_BoothAdmins" id="Booths"><b>Booths</b></apex:outputLink></li></ul>
+          <div class="nav-divider">&nbsp;</div>
+         <ul class="select"><li><apex:outputLink value="/apex/BL_Eventadmin_Attendees" id="Attendees"><b>Attendees</b> </apex:outputLink></li></ul>
+         <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li><apex:outputLink value="/apex/BL_EA_Reports" id="Reports"><b>Reports</b> </apex:outputLink>
+        
+        
+        
+        </li></ul>
+        
+        
+   
+        
+        
+        
+        
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <!--  start nav -->
+        
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................................................... END -->
+<div class="clear"></div>
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+ 
+<!-- start content -->
+<div id="content">
+    <!--  start page-heading -->
+    
+    <div id="page-heading">
+    <apex:form id="Form1">
+                 <table width="98%" border="0" cellpadding="0" cellspacing="0" style="margin:0px auto;">                   
+                      <td width="60%"> 
+                           <div style="float:right; width:400px;">
+                        
+   <!--<apex:outputPanel id="ButtonsForm"> 
+        <table align="right"><tr><td >
+       
+        <a class="awesome" style="text-decoration:none;" href="#openModal">
+        <apex:outputText rendered="{!NOT(ShowMap)}">Add Floor Map</apex:outputText>
+        <apex:outputText rendered="{!ShowMap}">Edit Floor Map</apex:outputText></a>  &nbsp;
+        <apex:outputText rendered="{!ShowMap}"><a class="awesome" style="text-decoration:none;" href="#openModal1">
+        Settings</a> </apex:outputText> &nbsp;      
+         </td></tr></table></apex:outputPanel> -->  
+                    </div>                   
+                           </td>
+                           
+             
+        </table>           
+   </apex:form>
+    </div> 
+     
+ 
+
+        
+         
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge"/> 
+<title>Insert title here</title>
+
+
+<script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.js"/>
+<script src="{!$Resource.kinetic}"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js"></script>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css"/>
+<apex:stylesheet value="{!URLFOR($Resource.Color_Picker, '/css/colorpicker.css')}"/>
+<script type="text/javascript" src="{!URLFOR($Resource.Color_Picker, '/js/colorpicker.js')}"></script>
+
+
+<style>
+    .colorpicker {
+        z-index: 99999;
+    }
+
+
+    .kineticjs-content  {
+    border: 1px solid #ccc;
+}
+
+.
+
+.item-color-selector {
+    width: 28px;
+    height: 28px;
+}
+
+#list-container {
+    position: absolute;
+    top: 230px;
+    right: 0px;
+    background-color: #EEEEEE;
+}
+
+#list-container a {
+    min-width: 180px;
+}
+</style>
+
+<script>
+
+(function( $ ) {
+
+    var regs = {
+        undHash: /_|-/,
+        colons: /::/,
+        words: /([A-Z]+)([A-Z][a-z])/g,
+        lowUp: /([a-z\d])([A-Z])/g,
+        dash: /([a-z\d])([A-Z])/g,
+        replacer: /\{([^\}]+)\}/g,
+        dot: /\./
+    },
+        getNext = function(current, nextPart, add){
+            return current[nextPart] || ( add && (current[nextPart] = {}) );
+        },
+        isContainer = function(current){
+            var type = typeof current;
+            return type && (  type == 'function' || type == 'object' );
+        },
+        getObject = function( objectName, roots, add ) {
+            
+            var parts = objectName ? objectName.split(regs.dot) : [],
+                length =  parts.length,
+                currents = $.isArray(roots) ? roots : [roots || window],
+                current,
+                ret, 
+                i,
+                c = 0,
+                type;
+            
+            if(length == 0){
+                return currents[0];
+            }
+            while(current = currents[c++]){
+                for (i =0; i < length - 1 && isContainer(current); i++ ) {
+                    current = getNext(current, parts[i], add);
+                }
+                if( isContainer(current) ) {
+                    
+                    ret = getNext(current, parts[i], add); 
+                    
+                    if( ret !== undefined ) {
+                        
+                        if ( add === false ) {
+                            delete current[parts[i]];
+                        }
+                        return ret;
+                        
+                    }
+                    
+                }
+            }
+        },
+
+        str = $.String = $.extend( $.String || {} , {
+         
+            getObject : getObject,
+        
+            capitalize: function( s, cache ) {
+                return s.charAt(0).toUpperCase() + s.substr(1);
+            },
+        
+            camelize: function( s ) {
+                s = str.classize(s);
+                return s.charAt(0).toLowerCase() + s.substr(1);
+            },
+         
+            classize: function( s , join) {
+                var parts = s.split(regs.undHash),
+                    i = 0;
+                for (; i < parts.length; i++ ) {
+                    parts[i] = str.capitalize(parts[i]);
+                }
+
+                return parts.join(join || '');
+            },
+           
+            niceName: function( s ) {
+                str.classize(parts[i],' ');
+            },
+
+           
+            underscore: function( s ) {
+                return s.replace(regs.colons, '/').replace(regs.words, '$1_$2').replace(regs.lowUp, '$1_$2').replace(regs.dash, '_').toLowerCase();
+            },
+           
+            sub: function( s, data, remove ) {
+                var obs = [];
+                obs.push(s.replace(regs.replacer, function( whole, inside ) {
+                    //convert inside to type
+                    var ob = getObject(inside, data, typeof remove == 'boolean' ? !remove : remove),
+                        type = typeof ob;
+                    if((type === 'object' || type === 'function') && type !== null){
+                        obs.push(ob);
+                        return "";
+                    }else{
+                        return ""+ob;
+                    }
+                }));
+                return obs.length <= 1 ? obs[0] : obs;
+            }
+        });
+
+})(jQuery);
+(function( $ ) {
+
+    // if we are initializing a new class
+    var initializing = false,
+        makeArray = $.makeArray,
+        isFunction = $.isFunction,
+        isArray = $.isArray,
+        extend = $.extend,
+        concatArgs = function(arr, args){
+            return arr.concat(makeArray(args));
+        },
+      
+        fnTest = /xyz/.test(function() {
+            xyz;
+        }) ? /\b_super\b/ : /.*/,
+       
+        inheritProps = function( newProps, oldProps, addTo ) {
+            addTo = addTo || newProps
+            for ( var name in newProps ) {
+                // Check if we're overwriting an existing function
+                addTo[name] = isFunction(newProps[name]) && 
+                              isFunction(oldProps[name]) && 
+                              fnTest.test(newProps[name]) ? (function( name, fn ) {
+                    return function() {
+                        var tmp = this._super,
+                            ret;
+
+                        // Add a new ._super() method that is the same method
+                        // but on the super-class
+                        this._super = oldProps[name];
+
+                        // The method only need to be bound temporarily, so we
+                        // remove it when we're done executing
+                        ret = fn.apply(this, arguments);
+                        this._super = tmp;
+                        return ret;
+                    };
+                })(name, newProps[name]) : newProps[name];
+            }
+        },
+  
+    clss = $.Class = function() {
+        if (arguments.length) {
+            clss.extend.apply(clss, arguments);
+        }
+    };
+
+    /* @Static*/
+    extend(clss, {
+        
+        callback: function( funcs ) {
+
+            //args that should be curried
+            var args = makeArray(arguments),
+                self;
+
+            funcs = args.shift();
+
+            if (!isArray(funcs) ) {
+                funcs = [funcs];
+            }
+
+            self = this;
+            
+            return function class_cb() {
+                var cur = concatArgs(args, arguments),
+                    isString, 
+                    length = funcs.length,
+                    f = 0,
+                    func;
+
+                for (; f < length; f++ ) {
+                    func = funcs[f];
+                    if (!func ) {
+                        continue;
+                    }
+
+                    isString = typeof func == "string";
+                    if ( isString && self._set_called ) {
+                        self.called = func;
+                    }
+                    cur = (isString ? self[func] : func).apply(self, cur || []);
+                    if ( f < length - 1 ) {
+                        cur = !isArray(cur) || cur._use_call ? [cur] : cur
+                    }
+                }
+                return cur;
+            }
+        },
+      
+        getObject: $.String.getObject,
+       
+        newInstance: function() {
+            var inst = this.rawInstance(),
+                args;
+            if ( inst.setup ) {
+                args = inst.setup.apply(inst, arguments);
+            }
+            if ( inst.init ) {
+                inst.init.apply(inst, isArray(args) ? args : arguments);
+            }
+            return inst;
+        },
+       
+        setup: function( baseClass, fullName ) {
+            this.defaults = extend(true, {}, baseClass.defaults, this.defaults);
+            return arguments;
+        },
+        rawInstance: function() {
+            initializing = true;
+            var inst = new this();
+            initializing = false;
+            return inst;
+        },
+     
+        extend: function( fullName, klass, proto ) {
+            // figure out what was passed
+            if ( typeof fullName != 'string' ) {
+                proto = klass;
+                klass = fullName;
+                fullName = null;
+            }
+            if (!proto ) {
+                proto = klass;
+                klass = null;
+            }
+
+            proto = proto || {};
+            var _super_class = this,
+                _super = this.prototype,
+                name, shortName, namespace, prototype;
+
+            // Instantiate a base class (but only create the instance,
+            // don't run the init constructor)
+            initializing = true;
+            prototype = new this();
+            initializing = false;
+            // Copy the properties over onto the new prototype
+            inheritProps(proto, _super, prototype);
+
+            // The dummy class constructor
+
+            function Class() {
+                // All construction is actually done in the init method
+                if ( initializing ) return;
+
+                if ( this.constructor !== Class && arguments.length ) { //we are being called w/o new
+                    return arguments.callee.extend.apply(arguments.callee, arguments)
+                } else { //we are being called w/ new
+                    return this.Class.newInstance.apply(this.Class, arguments)
+                }
+            }
+            // Copy old stuff onto class
+            for ( name in this ) {
+                if ( this.hasOwnProperty(name) ) {
+                    Class[name] = this[name];
+                }
+            }
+
+            // copy new props on class
+            inheritProps(klass, this, Class);
+
+            // do namespace stuff
+            if ( fullName ) {
+
+                var parts = fullName.split(/\./),
+                    shortName = parts.pop(),
+                    current = clss.getObject(parts.join('.'), window, true),
+                    namespace = current;
+
+                
+                current[shortName] = Class;
+            }
+
+            // set things that can't be overwritten
+            extend(Class, {
+                prototype: prototype,
+                namespace: namespace,
+                shortName: shortName,
+                constructor: Class,
+                fullName: fullName
+            });
+
+            //make sure our prototype looks nice
+            Class.prototype.Class = Class.prototype.constructor = Class;
+            var args = Class.setup.apply(Class, concatArgs([_super_class],arguments));
+
+            if ( Class.init ) {
+                Class.init.apply(Class, args || []);
+            }         
+            return Class;
+           
+           
+        }
+
+    })
+
+    clss.prototype.
+    callback = clss.callback;
+
+
+})(jQuery)
+
+
+$.Class('floormap.Stage', {
+    uniqueId: (function() {
+        var id = 1;
+
+        return function() {
+            
+            return 'unique' + (id++);
+        };
+    })()
+}, 
+{
+    init: function(config) {
+        this.config = config;
+        this.el = $('#' + config.elementId);
+        this.buttons = this.el.find('div[role=toolbar]');
+        this.initButtons();
+
+        var id = this.Class.uniqueId();
+        
+        this.canvas = this.el.find('.floormap-container').attr('id', id);
+
+        this.backgroundImage = new Image();
+        this.backgroundImage.onload = this.onImageLoad.bind(this);
+        this.backgroundImage.src = config.imageUrl;
+
+    },
+
+    onImageLoad: function() {
+        var width = this.backgroundImage.width;
+        var height = this.backgroundImage.height;
+
+        this.el.find('.col-sm-2').height(height);
+        this.canvas.width(width).height(height);
+        this.canvas.css('background-image', 'url(' + this.backgroundImage.src + ')');
+
+        this.stage = new Kinetic.Stage({
+            container: this.canvas.attr('id'),
+            width: width,
+            height: height,
+        });
+
+        this.dropController = new floormap.DropController({
+            id: this.canvas.attr('id'),
+            stage: this
+        });
+
+        $(document).on('redraw', this.onDraw.bind(this));
+
+        this.getLayer(); // to init the rectangle to draw.
+        this.load();
+
+    },
+
+    onDraw: function() {
+        if (this.drawTriggerId) {
+            clearTimeout(this.drawTriggerId);
+        }
+
+        this.drawTriggerId = setTimeout(this.doDraw.bind(this), 0);
+    },
+
+    doDraw: function() {
+       
+        this.getLayer().draw();
+    },
+    onClick: function(e) {
+
+        $.each(this.items || [], function(index, item) {
+            item.hideAnchors();
+        });
+
+        if (this.mode != 'polygon') {
+            return;
+        }
+
+        this.onMouseMove(e);
+
+        if (this.startedCapturingPolygon) {
+            this.updateTempPolygon({x: e.layerX, y: e.layerY});
+        }
+        else {
+            if (e.ctrlKey) {
+                this.startedCapturingPolygon = true;
+                this.updateTempPolygon({x: e.layerX, y: e.layerY});
+            }
+        }
+    },
+
+    onMouseMove: function(e) {
+        if (this.startedCapturingPolygon) {
+            if (!e.ctrlKey) {
+                this.startedCapturingPolygon = false;
+                this.addItem(new floormap.Polygon({
+                    polygon: this.tempPolygon,
+                    layer: this.getLayer(),
+                    boothConfig: this.getDefaultBoothConfig(),
+                    stage: this,
+                    dropController: this.dropController
+                }));
+                this.tempPolygon = null;
+                return;
+            }
+        }
+    },
+
+    getFillColor: function(config) {
+        var defaultColor;
+        config = config || {boothConfig: this.getDefaultBoothConfig()};
+        if (config.boothConfig.Sold__c) {
+            defaultColor = config.boothConfig.defaultColors.sold;
+        }
+        else if (config.boothConfig.Reserved__c) {
+            defaultColor = config.boothConfig.defaultColors.reserved;
+        }
+        else {
+            defaultColor = config.boothConfig.defaultColors.available;
+        }
+        defaultColor = '#' + defaultColor;
+        return defaultColor;
+    },
+
+    updateTempPolygon: function(config) {
+        if (!this.tempPolygon) {
+            this.tempPolygon = new Kinetic.Line({
+                points: [config.x, config.y],
+                fill: this.getFillColor(),
+                stroke: 'black',
+                strokeWidth: 3,
+                closed: true,
+                draggable: true,
+                Opacity : 0.4
+            });
+
+            this.tempPolygon.on('click', this.onMouseMove.bind(this));
+            this.getLayer().add(this.tempPolygon);
+            $(document).trigger('redraw');
+        }
+        else {
+            var points = this.tempPolygon.getAttr('points');
+            points.push(config.x);
+            points.push(config.y);
+            this.tempPolygon.setAttr('points', points);
+            $(document).trigger('redraw');
+        }
+    },
+
+    onDblClick: function(e, d, shape) {
+        if (shape == 'circle' || this.mode == 'circle') {
+            this.addItem(new floormap.Circle({
+                x: e.layerX,
+                y: e.layerY,
+                layer: this.getLayer(),
+                boothConfig: this.getDefaultBoothConfig(),
+                dropController: this.dropController,
+                stage: this
+            }));
+        }
+        else if (shape == 'rectangle' || this.mode == 'rectangle') {
+            this.addItem(new floormap.Rectangle({
+                x: e.layerX - 50,
+                y: e.layerY - 25,
+                layer: this.getLayer(),
+                boothConfig: this.getDefaultBoothConfig(),
+                dropController: this.dropController,
+                stage: this
+            }));
+        }
+         else if (this.mode == 'Image') {
+            this.addItem(new floormap.KioskImage({
+                x: e.layerX - 50,
+                y: e.layerY - 25,
+                layer: this.getLayer(),
+                boothConfig: this.getDefaultBoothConfig(),
+                dropController: this.dropController,
+                stage: this
+            }));
+        }
+    },
+
+    addItem: function(shape) {
+        if (!this.items) {
+            this.items = [];
+        }
+
+        this.getLayer().moveToTop();
+        this.items.push(shape);
+        $(document).trigger('redraw');
+
+    },
+
+    getLayer: function() {
+        if (!this.layer) {
+            this.layer = new Kinetic.Layer();
+            this.stage.add(this.layer);
+            var layer = this.layer;
+
+            var rect = new Kinetic.Rect({
+                x: 0,
+                y: 0,
+                width: this.stage.getAttr('width'),
+                height: this.stage.getAttr('height')
+            });
+            layer.add(rect);
+            layer.draw();
+            rect.on('dblclick', this.onDblClick.bind(this));
+            rect.on('click', this.onClick.bind(this));
+            rect.on('mousemove', this.onMouseMove.bind(this));
+            this.startedCapturingPolygon = false;
+        }
+        return this.layer;
+    },
+
+    initButtons: function() {
+        var names = ['div[name=circle]', 'div[name=rectangle]', 'button[name=polygon]' , 'button[name=Image]'];
+        $.each(names, (function(index, item) {
+            var btn = this.buttons.find(item);
+            btn.click((function() {
+                this.buttons.find('*[type=button]').removeClass('active');
+                this.mode = btn.attr('name');
+                btn.addClass('active');
+            }).bind(this));
+        }).bind(this));
+        
+        this.buttons.find('div[name=circle],div[name=rectangle]').draggable({    
+            containment: 'document',
+            helper: 'clone'
+        });
+
+        this.buttons.find('button[name=save]').click(this.onSave.bind(this));
+        this.buttons.find('button[name=clone]').click(this.onClone.bind(this));
+        this.buttons.find('button[name=delete]').click(this.onDelete.bind(this));
+        this.buttons.find('button[name=floormapedit]').click(this.onUpdateFloormap.bind(this));
+        this.buttons.find('button[name=globalsettings]').click(this.onGlobalSettings.bind(this));
+
+        __saveBooths = this.onSave.bind(this);
+    },
+
+    onGlobalSettings: function() {
+        $('#global-settings input').each(function(index, el) {
+            el = $(el);
+            el.css('background-color', '#' + el.val());
+            el.css('color', '#' + el.val());
+        });
+        $('#global-settings').modal();
+    },
+
+    onUpdateFloormap: function() {
+        $('#edit-floormap').modal();
+    },
+
+    setCurrentItem: function(item) {
+        $.each(this.items || [], function(index, k) {
+            if (k != item) {
+                k.hideAnchors();
+            }
+        });
+        
+        this.currentItem = item;
+        
+        $(document).trigger('redraw');
+    },
+
+    onClone: function() {
+        if (this.currentItem) {
+            this.currentItem.createClone();
+        }
+    },
+
+    onDelete: function() {
+        if (!this.currentItem) {
+            return;
+        }
+
+        var current = this.currentItem;
+        var sample = current.getSerializedParams();
+
+        if (sample.Id) {
+        var ToDelete =confirm("Are you sure to delete?");
+            if (ToDelete ==true){
+                SendToServerToDelete(sample.Id);
+            } else{
+
+            }
+        }
+        else {
+            var filtered = [];
+
+            $.each(this.items, function(index, item) {
+                if (item != current) {
+                    filtered.push(item.getSerializedParams());
+                }
+            });
+
+            this.layer.remove();
+            this.layer = null;
+            this.items = [];
+            this.getLayer();
+            this.doLoad(filtered);
+        }
+    },
+
+    
+    
+    onSave: function() {
+        var dataToSave = [];
+        
+            item = this.currentItem;
+            var params = item.getSerializedParams();
+            delete params.defaultColors;
+            dataToSave.push(params);
+        
+
+        /*$.each(this.items, function(index, item) {
+            var params = item.getSerializedParams();
+            delete params.defaultColors;
+            dataToSave.push(params);
+        });*/
+        
+        
+        // need to save this data into server. here I'm saving to browser storage.
+        SendToServer(JSON.stringify(dataToSave));
+
+    },
+
+
+    getDefaultBoothConfig: function() {
+        //alert('Event Information'+eventInfo);
+        var event = {!eventInfo};
+        
+        var sold = event.Sold__c || 'ff0000';
+        var reserved = event.Reserved__c || 'ffff00';
+        var available = event.Available__c || '00ff00';
+
+        return {
+            defaultColors: {
+                sold: sold,
+                reserved: reserved,
+                available: available
+            }
+        }
+    },
+
+    load: function() {
+        var items = {!items};
+        this.doLoad(items);
+
+    },
+
+
+    doLoad: function (items) {
+        
+        $.each(items, (function(index, item) {
+            item.defaultColors = this.getDefaultBoothConfig().defaultColors;
+
+            item.id = item.Id;
+            var params = $.parseJSON(item.Parameters__c);
+            if (params.type == 'circle') {
+                this.addItem(new floormap.Circle({
+                    boothConfig: item,
+                    id: item.id,
+                    x: params.params.x,
+                    y: params.params.y,
+                    radius: params.params.radius,
+                    layer: this.getLayer(),
+                    dropController: this.dropController,
+                    stage: this
+                }));
+            }
+            else if (params.type == 'rectangle') {
+                this.addItem(new floormap.Rectangle({
+                    boothConfig: item,
+                    id: item.id,
+
+                    x: params.params.x,
+                    y: params.params.y,
+                    width: params.params.width,
+                    height: params.params.height,
+                    layer: this.getLayer(),
+                    dropController: this.dropController,
+                    stage: this
+                }));
+            } else if (params.type == 'Image') {
+
+                this.addItem(new floormap.KioskImage({
+                    boothConfig: item,
+                    id: item.id,
+                    x: params.params.x,
+                    y: params.params.y,
+                    width: params.params.width,
+                    height: params.params.height,
+                    layer: this.getLayer(),
+                   
+                    stage: this
+                }));
+            }
+            else if (params.type == 'polygon') {
+
+                var line = new Kinetic.Line({
+                    points: params.params.points,
+                    fill: this.getFillColor({boothConfig:item}),
+                    stroke: 'black',
+                    strokeWidth: 3,
+                    closed: true,
+                    draggable: true,
+                    Opacity : 0.4
+                });
+                this.getLayer().add(line);
+                this.addItem(new floormap.Polygon({
+                    boothConfig: item,
+                    polygon: line,
+                    id: item.id,
+                    layer: this.getLayer(),
+                    dropController: this.dropController,
+                    stage: this
+                }));
+            }
+        }).bind(this));
+    }
+
+});
+
+// Circle
+
+$.Class('floormap.Circle', {
+
+}, {
+    init: function(config) {
+        this.config = config;
+        var radius = config.radius || {x: 40, y: 40};
+
+        this.config.boothConfig.Type__c = 'Booth';
+        this.shape = new Kinetic.Ellipse({
+            x: config.x,
+            y: config.y,
+            radius: radius,
+            fill: this.getFillColor(),
+            filltext:'Circle',
+            stroke: 'black',
+            storkeWidth: 3,
+            draggable: true,
+            Opacity : 0.4
+        });
+        
+        config.layer.add(this.shape);
+        this.shape.moveToTop();
+        this.shape.on('click', this.showAnchors.bind(this));
+        this.shape.on('dblclick', this.showProperties.bind(this));
+        this.shape.on('mouseenter', this.showHover.bind(this)); 
+        this.shape.on('mouseleave', this.hideHover.bind(this));
+        
+        config.dropController.initShape({
+            shape: this.shape,
+            item: this,
+            me: 'circle'
+        });
+    
+    },
+    
+    getFillColor: function() {
+        var defaultColor, config = this.config;
+       
+        if (config.boothConfig.Sold__c) {
+            defaultColor = config.boothConfig.defaultColors.sold;
+        }
+        else if (config.boothConfig.Reserved__c) {
+            defaultColor = config.boothConfig.defaultColors.reserved;
+        }
+        else {
+            defaultColor = config.boothConfig.defaultColors.available;
+        }
+        defaultColor = '#' + defaultColor;
+        return defaultColor;
+    },
+    
+    createClone: function() {
+        var stage = this.config.stage;
+        
+        stage.addItem(new floormap.Circle({
+            boothConfig: {defaultColors: this.config.boothConfig.defaultColors,Type__c : 'Booth'},
+            x: this.shape.getAttr('x') + 50,
+            y: this.shape.getAttr('y') + 50,
+            radius: this.shape.getAttr('radius'),
+            layer: stage.getLayer(),
+            stage: stage,
+            dropController:this.config.dropController
+        }));
+    },
+
+    getSerializedParams: function() {
+    
+        var boothConfig = this.config.boothConfig;
+        boothConfig.Parameters__c = JSON.stringify({
+            type: 'circle',
+            params: {
+                x: this.shape.getAttr('x'),
+                y: this.shape.getAttr('y'),
+                radius: this.shape.getAttr('radius')
+            }
+        })
+    
+        return boothConfig;
+    },
+
+    showProperties: function() {
+        floormap.BoothProperties.showBoothProperties({
+            boothConfig: this.config.boothConfig
+        });
+    },
+       
+    showHover: function(e) {
+        this.hideHover();
+        
+        var content = floormap.BoothProperties.getHoverContent(this.config.boothConfig);
+        
+        if (!content) {
+            return;
+        }
+        
+        this.hoverEl = $('<div/>', {style: 'position: absolute; left: 0; top: 0;'}).appendTo($(document.body)).popover({
+            html: true,
+            placement: 'top',
+            title: this.config.boothConfig.Type__c == 'Booth' ? 'Booth Info' : 'Kiosk Info',
+            content: content
+        });
+
+        var x = this.shape.getAttr('x') + (e.pageX - e.layerX);
+        var y = this.shape.getAttr('y') + (e.pageY - e.layerY);
+        var radius = this.shape.getAttr('radius');
+        var left = x;
+        var top = y - radius.y;
+
+        this.hoverEl.attr('style', 'position: absolute; left: ' + left + 'px; top: ' + top + 'px;');
+        this.hoverEl.popover('show');
+        
+        var hoverColor = this.config.boothConfig.on_Hover__c || 'CCCCCC';
+        hoverColor = '#' + hoverColor;
+        
+        
+            
+        this.shape.setAttr('fill', hoverColor);
+        $(document).trigger('redraw');
+    },
+
+    hideHover: function() {
+       
+        this.shape.setAttr('fill', this.getFillColor());
+        $(document).trigger('redraw');
+
+    
+        if (this.hoverEl) {
+            this.hoverEl.popover('hide');
+            this.hoverEl.popover('destroy');
+            this.hoverEl.remove();
+        }
+    },
+
+    showAnchors: function() {
+        this.config.stage.setCurrentItem(this);
+        if (!this.anchorController) {
+            this.anchorController = new floormap.AnchorController({
+                shape: this.shape,
+                layer: this.config.layer,
+                x: this.shape.getAttr('x') - this.shape.getAttr('radius').x,
+                y: this.shape.getAttr('y') - this.shape.getAttr('radius').y,
+                width: 2 * this.shape.getAttr('radius').x,
+                height: 2 * this.shape.getAttr('radius').y,
+                anchorMoveCallback: this.onAnchorMove.bind(this)
+            });
+
+            $(document).trigger('redraw');
+
+            this.shape.on('dragmove', this.updateAnchorPositions.bind(this));
+        }
+        else {
+            this.anchorController.show();
+        }
+    },
+
+    hideAnchors: function() {
+        if (this.anchorController) {
+            this.anchorController.hide();
+        }
+    },
+
+    updateAnchorPositions: function() {
+        this.anchorController.setAnchorPositions({
+            x: this.shape.getAttr('x') - this.shape.getAttr('radius').x,
+            y: this.shape.getAttr('y') - this.shape.getAttr('radius').y,
+            width: 2 * this.shape.getAttr('radius').x,
+            height: 2 * this.shape.getAttr('radius').y
+        });
+    },
+
+    onAnchorMove: function(config) {
+        this.shape.setAttrs({
+            x: config.x + config.width/2,
+            y: config.y + config.height/2,
+            radius: {
+                x: config.width/2,
+                y: config.height/2
+            }
+        });
+    }
+});
+
+$.Class('floormap.AnchorController', {
+
+}, {
+    init: function(config) {
+        this.config = config;
+
+        this.topleft = this.createAnchor({
+            x: config.x,
+            y: config.y,
+            cursor: 'nw-resize',
+            id: 'topleft'
+        });
+        this.topright = this.createAnchor({
+            x: config.x + config.width,
+            y: config.y,
+            cursor: 'ne-resize',
+            id: 'topright'
+        });
+        this.bottomleft = this.createAnchor({
+            x: config.x,
+            y: config.y + config.height,
+            cursor: 'sw-resize',
+            id: 'bottomleft'
+        });
+        this.bottomright = this.createAnchor({
+            x: config.x + config.width,
+            y: config.y + config.height,
+            cursor: 'se-resize',
+            id: 'bottomright'
+        });
+        
+        $(document).trigger('redraw');
+    },
+
+    createAnchor: function(config) {
+        var circle = new Kinetic.Circle({
+            x: config.x,
+            y: config.y,
+            radius: 5,
+            fill: 'orange',
+            stroke: 'black',
+            strokeWidth: 2,
+            draggable: true
+        });
+
+        this.config.layer.add(circle);
+
+        circle.on('mouseenter', function() {
+            $(document.body).css('cursor', config.cursor);
+        });
+
+        circle.on('mouseleave', function() {
+            $(document.body).css('cursor', 'default');
+        });
+
+        circle.on('dragstart', this.onDragStart.bind(this, config.id));
+        circle.on('dragmove', this.onMove.bind(this, config.id));
+        circle.on('dragend', this.onDragEnd.bind(this, config.id));
+
+        return circle;
+    },
+
+    onDragStart: function() {
+        this.onMove.apply(this, arguments);
+    },
+
+    onDragEnd: function() {
+        this.onMove.apply(this, arguments);
+    },
+
+    onMove: function(id, e) {
+        var x = y = width = height = null;
+
+        switch (id) {
+            case 'topleft':
+            case 'bottomright':
+                x = this.topleft.getAttr('x');
+                y = this.topleft.getAttr('y');
+                width = this.bottomright.getAttr('x') - x;
+                height = this.bottomright.getAttr('y') - y;
+                break;
+
+            case 'topright':
+            case 'bottomleft':
+                x = this.bottomleft.getAttr('x');
+                y = this.topright.getAttr('y');
+                width = this.topright.getAttr('x') - x;
+                height = this.bottomleft.getAttr('y') - y;
+                break;
+        }
+
+        var anchorPositionConfig = {
+            x: x,
+            y: y,
+            width: width,
+            height: height
+        };
+
+        this.setAnchorPositions(anchorPositionConfig);
+        this.config.anchorMoveCallback(anchorPositionConfig);
+    },
+
+    setAnchorPositions: function(config) {
+        this.topleft.setAttrs({
+            x: config.x,
+            y: config.y
+        });
+
+        this.topright.setAttrs({
+            x: config.x + config.width,
+            y: config.y
+        });
+
+        this.bottomleft.setAttrs({
+            x: config.x,
+            y: config.y + config.height
+        });
+
+        this.bottomright.setAttrs({
+            x: config.x + config.width,
+            y: config.y + config.height
+        });
+
+    },
+
+    getAnchors: function() {
+        return {
+            topleft: this.topleft,
+            topright: this.topright,
+            bottomleft: this.bottomleft,
+            bottomright: this.bottomright
+        };
+    },
+
+    show: function() {
+        $.each(this.getAnchors(), function(index, item) {
+            item.show();
+        });
+       $(document).trigger('redraw');
+    },
+
+    hide: function() {
+        $.each(this.getAnchors(), function(index, item) {
+            item.hide();
+        });
+        $(document).trigger('redraw');
+    }
+});
+
+
+// Rectangle
+
+
+$.Class('floormap.Rectangle', {
+
+}, {
+    init: function(config) {
+        this.config = config;
+        var defaultWidth = config.width || 100;
+        var defaultHeight = config.height || 50;
+        
+        this.config.boothConfig.Type__c = 'Booth';
+        this.shape = new Kinetic.Rect({
+            x: config.x,
+            y: config.y,
+            width: defaultWidth,
+            height: defaultHeight,
+            fill: this.getFillColor(),
+            stroke: 'black',
+            storkeWidth: 3,
+            draggable: true,
+            Opacity : 0.4
+        });
+
+        config.layer.add(this.shape);
+        this.shape.on('click', this.showAnchors.bind(this));
+        this.shape.on('dblclick', this.showProperties.bind(this));
+        this.shape.on('mouseenter', this.showHover.bind(this)); 
+        this.shape.on('mouseleave', this.hideHover.bind(this));
+        
+        config.dropController.initShape({
+            shape: this.shape,
+            item: this,
+            me: 'rectangle'
+        });
+    
+    
+    },
+    
+    getFillColor: function() {
+        var defaultColor, config = this.config;
+        if (config.boothConfig.Sold__c) {
+            defaultColor = config.boothConfig.defaultColors.sold;
+        }
+        else if (config.boothConfig.Reserved__c) {
+            defaultColor = config.boothConfig.defaultColors.reserved;
+        }
+        else {
+        
+        
+            defaultColor = config.boothConfig.defaultColors.available;
+        }
+        defaultColor = '#' + defaultColor;
+        return defaultColor;
+    },
+    
+    
+    createClone: function() {
+        var stage = this.config.stage;
+        
+        stage.addItem(new floormap.Rectangle({
+            boothConfig: {defaultColors: this.config.boothConfig.defaultColors,Type__c : 'Booth'},
+            x: this.shape.getAttr('x') + 50,
+            y: this.shape.getAttr('y') + 50,
+            width: this.shape.getAttr('width'),
+            height: this.shape.getAttr('height'),
+            layer: stage.getLayer(),
+            stage: stage,
+            dropController:this.config.dropController
+            
+        }));
+        $(document).trigger("redraw");        
+    }
+    
+    ,
+
+    getSerializedParams: function() {
+    
+     var boothConfig = this.config.boothConfig;
+     boothConfig.Parameters__c = JSON.stringify({
+            type: 'rectangle',
+                params: {
+                    x: this.shape.getAttr('x'),
+                    y: this.shape.getAttr('y'),
+                    width: this.shape.getAttr('width'),
+                    height: this.shape.getAttr('height')
+                }
+        })
+                
+            return boothConfig;
+    },
+    
+     showProperties: function() {
+        floormap.BoothProperties.showBoothProperties({
+            boothConfig: this.config.boothConfig
+        });
+    },
+    showHover: function(e) {
+        this.hideHover();
+        
+        var content = floormap.BoothProperties.getHoverContent(this.config.boothConfig);
+        
+        if (!content) {
+            return;
+        }
+        
+        this.hoverEl = $('<div/>', {style: 'position: absolute; left: 0; top: 0;'}).appendTo($(document.body)).popover({
+            html: true,
+            placement: 'top',
+            title: this.config.boothConfig.Type__c == 'Booth' ? 'Booth Info' : 'kiosk Info',
+            content: content
+        });
+
+        var x = this.shape.getAttr('x') + (e.pageX - e.layerX);
+        var y = this.shape.getAttr('y') + (e.pageY - e.layerY);
+       
+        var left = x + this.shape.getAttr('width')/2;
+        var top = y;
+
+        this.hoverEl.attr('style', 'position: absolute; left: ' + left + 'px; top: ' + top + 'px;');
+        this.hoverEl.popover('show');
+        
+        var hoverColor = this.config.boothConfig.on_Hover__c || 'CCCCCC';
+        hoverColor = '#' + hoverColor;
+        
+        this.shape.setAttr('fill', hoverColor);
+        $(document).trigger('redraw');
+    },
+
+    hideHover: function() {
+        if (this.hoverEl) {
+            this.hoverEl.popover('hide');
+            this.hoverEl.popover('destroy');
+            this.hoverEl.remove();
+        }
+        
+
+        this.shape.setAttr('fill', this.getFillColor());
+        $(document).trigger('redraw');
+    },
+
+    showAnchors: function() {
+        this.config.stage.setCurrentItem(this);
+        if (!this.anchorController) {
+            this.anchorController = new floormap.AnchorController({
+                shape: this.shape,
+                layer: this.config.layer,
+                x: this.shape.getAttr('x'),
+                y: this.shape.getAttr('y'),
+                width: this.shape.getAttr('width'),
+                height: this.shape.getAttr('height'),
+                anchorMoveCallback: this.onAnchorMove.bind(this)
+            });
+
+            $(document).trigger('redraw');
+
+            this.shape.on('dragmove', this.updateAnchorPositions.bind(this));
+        }
+        else {
+            this.anchorController.show();
+        }
+    },
+
+    hideAnchors: function() {
+        if (this.anchorController) {
+            this.anchorController.hide();
+        }
+    },
+
+    updateAnchorPositions: function() {
+        this.shape.moveToTop();
+        this.config.layer.draw();
+        this.anchorController.setAnchorPositions({
+            x: this.shape.getAttr('x'),
+            y: this.shape.getAttr('y'),
+            width: this.shape.getAttr('width'),
+            height: this.shape.getAttr('height')
+        });
+        $(document).trigger('redraw');
+    },
+
+    onAnchorMove: function(config) {
+        this.shape.setAttrs({
+            x: config.x,
+            y: config.y,
+            width: config.width,
+            height: config.height
+        });
+    }
+});
+
+$.Class('floormap.Polygon', {
+}, {
+    init: function(config) {
+        this.config = config;
+        this.config.boothConfig.Type__c = 'Booth';
+       // this.config.polygon.off('click');
+        this.config.polygon.on('click', this.showAnchors.bind(this));
+        this.config.polygon.on('dragmove', this.onMovePolygon.bind(this));
+        this.config.polygon.on('dblclick', this.showProperties.bind(this));
+        this.config.polygon.on('mouseenter', this.showHover.bind(this)); 
+        this.config.polygon.on('mouseleave', this.hideHover.bind(this));
+        this.updateInitialPoints();
+        
+        config.dropController.initShape({
+            shape: this.config.polygon,
+            item: this,
+            me: 'polygon'
+        });
+    },
+    
+    getFillColor: function() {
+        var defaultColor, config = this.config;
+        if (config.boothConfig.Sold__c) {
+            defaultColor = config.boothConfig.defaultColors.sold;
+        }
+        else if (config.boothConfig.Reserved__c) {
+            defaultColor = config.boothConfig.defaultColors.reserved;
+        }
+        else {
+            defaultColor = config.boothConfig.defaultColors.available;
+        }
+        defaultColor = '#' + defaultColor;
+        return defaultColor;
+    },
+    
+    createClone: function() {
+        var stage = this.config.stage;
+        
+        var points = this.getSerializedParams().Parameters__c;
+        points = $.parseJSON(points);
+        points = points.params.points;
+        
+        $.each(points, function(index, item) {
+            points[index] = item + 50;
+        });
+        
+        var line = new Kinetic.Line({
+            points: points,
+            fill: 'orange',
+            stroke: 'black',
+            stokeWidth: 3,
+            closed: true,
+            draggable: true,
+            Opacity: 0.4
+        });
+        
+        stage.getLayer().add(line);
+        stage.addItem(new floormap.Polygon({
+            boothConfig: {defaultColors: this.config.boothConfig.defaultColors,Type__c : 'Booth'},
+            polygon: line,
+            layer: stage.getLayer(),
+            stage: stage
+        }));
+    },
+    
+    getSerializedParams: function() {
+        var x = this.config.polygon.getAttr('x');
+        var y = this.config.polygon.getAttr('y');
+        var points = this.config.polygon.getAttr('points');
+        var pts = [];
+
+        for (var i = 0; i < points.length; i = i + 2) {
+            pts.push(points[i] + x);
+            pts.push(points[i+1] + y);
+        }
+        
+        var boothConfig = this.config.boothConfig;
+        boothConfig.Parameters__c = JSON.stringify({
+            type: 'polygon',
+            params: {
+                points: pts
+            }
+        });
+        
+        return boothConfig;
+    },
+    
+    showProperties: function() {
+        floormap.BoothProperties.showBoothProperties({
+            boothConfig: this.config.boothConfig
+        });
+        
+       
+    },
+     showHover: function(e) {
+        this.hideHover();
+        
+        var content = floormap.BoothProperties.getHoverContent(this.config.boothConfig);
+        
+        if (!content) {
+            return;
+        }
+        
+        this.hoverEl = $('<div/>', {style: 'position: absolute; left: 0; top: 0;'}).appendTo($(document.body)).popover({
+            html: true,
+            placement: 'top',
+            title: this.config.boothConfig.Type__c == 'Booth' ? 'Booth Info' : 'kiosk Info',
+            content: content
+        });
+        
+       
+        
+        
+       
+        
+        var points = this.config.polygon.getAttr('points');
+        var x,y;
+        for (var i = 0 ; i < points.length; i = i + 2) {
+            if (i == 0) {
+                x = points[i];
+                y = points[i+1];
+            }
+            else {
+                if (points[i + 1] < y) {
+                    x = points[i];
+                    y = points[i+1];
+                }
+            }
+        }
+        var left = x + (e.pageX - e.layerX);
+        var top = y + (e.pageY - e.layerY);
+
+        this.hoverEl.attr('style', 'position: absolute; left: ' + left + 'px; top: ' + top + 'px;');
+        this.hoverEl.popover('show');
+        
+       // var hoverColor = '#' + (this.config.boothConfig.on_Hover__c || 'CCCCCC');
+      //  this.config.polygon.setAttr('fill', hoverColor);
+       // $(document).trigger('redraw');
+       
+       
+        var hoverColor = this.config.boothConfig.on_Hover__c || 'CCCCCC';
+        hoverColor = '#' + hoverColor;
+        
+        
+      //  this.shape.setAttr('fill', hoverColor);
+     //   $(document).trigger('redraw');
+        
+        
+        this.config.polygon.setAttr('fill', hoverColor);
+       $(document).trigger('redraw');
+    },
+
+    hideHover: function() {
+    
+        if (this.hoverEl) {
+            this.hoverEl.popover('hide');
+            this.hoverEl.popover('destroy');
+            this.hoverEl.remove();
+        }
+
+        this.config.polygon.setAttr('fill', this.getFillColor());
+        $(document).trigger('redraw');
+
+    },
+
+    updateInitialPoints: function() {
+        this.initialPoints = [];
+        var points = this.config.polygon.getAttr('points');
+        for (var i = 0; i < points.length; i = i + 2) {
+            this.initialPoints.push({x: points[i], y: points[i+1]});
+        }
+    },
+
+    onAnchorDrag: function(e) {
+        // take each anchor note its x,y position and update the points of the polygon.
+        var points = [];
+        var x = this.config.polygon.getAttr('x');
+        var y = this.config.polygon.getAttr('y');
+
+        $.each(this.anchors, function(index, anchor) {
+            // get the center of anchor and push x,y into points.
+            points.push(anchor.getAttr('x') - x);
+            points.push(anchor.getAttr('y') - y);
+        });
+
+        //set the new points attribute to the polygon.
+        this.config.polygon.setAttr('points', points);
+        this.updateInitialPoints();
+
+    },
+
+    onMovePolygon: function(e) {
+        if (!this.anchorsVisible) {
+            return;
+        }
+
+        var points = this.initialPoints;
+        var x = this.config.polygon.getAttr('x');
+        var y = this.config.polygon.getAttr('y');
+
+        $.each(this.anchors || [], function(index, item) {
+            item.setAttrs({
+                x: points[index].x + x,
+                y: points[index].y + y
+            });
+        });
+        
+       
+    },
+
+    showAnchors: function() {
+        this.config.stage.setCurrentItem(this);
+        this.anchorsVisible = true;
+
+        if (!this.anchors) {
+            this.anchors = [];
+            var x = this.config.polygon.getAttr('x');
+            var y = this.config.polygon.getAttr('y');
+
+            $.each(this.initialPoints, (function(index, item) {
+                var circle = new Kinetic.Circle({
+                    x: item.x + x,
+                    y: item.y + y,
+                    radius: 5,
+                    fill: 'orange',
+                    stroke: 'black',
+                    strokeWidth: 2,
+                    draggable: true,
+                   
+                });
+
+                circle.on('mouseenter', function() {
+                    $(document.body).css('cursor', 'pointer');
+                });
+
+                circle.on('mouseleave', function() {
+                    $(document.body).css('cursor', 'default');
+                });
+
+                this.config.layer.add(circle);
+                this.anchors.push(circle);
+            }).bind(this));
+
+            $.each(this.anchors, (function(index, anchor) {
+                anchor.on('dragmove', this.onAnchorDrag.bind(this));
+            }).bind(this));
+        }
+        else {
+            this.onMovePolygon();
+        }
+
+        $.each(this.anchors, function(index, item) {
+            item.show();
+        });
+        
+        var hoverColor = this.config.boothConfig.on_Hover__c || 'CCCCCC';
+        hoverColor = '#' + hoverColor;
+        this.config.polygon.setAttr('fill', hoverColor);
+        $(document).trigger('redraw');
+    },
+
+    hideAnchors: function() {
+        this.anchorsVisible = false;
+
+        $.each(this.anchors || [], function(index, item) {
+            item.hide();
+        });
+        
+        $(document).trigger('redraw');
+    }
+});
+// Kiosk Image
+
+
+$.Class('floormap.KioskImage', {
+
+}, {
+    init: function(config) {
+    
+        this.config = config;
+        var defaultWidth = config.width || 50;
+        var defaultHeight = config.height || 50;
+        this.config.boothConfig.Type__c = "Kiosk";
+         var imageObj = new Image();
+         imageObj.onload = (function() {
+            this.shape = new Kinetic.Image({
+                 x: config.x,
+                 y: config.y,
+                 width: defaultWidth,
+                 height: defaultHeight,
+                 image: imageObj,
+                 draggable:true
+                //width: 106,
+                //height: 118
+            });
+            
+            config.layer.add(this.shape);
+            this.shape.on('click', this.showAnchors.bind(this));
+            this.shape.on('dblclick', this.showProperties.bind(this));
+            this.shape.on('mouseenter', this.showHover.bind(this)); 
+            this.shape.on('mouseleave', this.hideHover.bind(this));
+            
+            $(document).trigger('redraw');
+         }).bind(this);
+        
+        imageObj.src =  "/resource/1394458870000/KioskImage";
+        
+
+        
+        
+        
+    
+    },
+    
+    getFillColor: function() {
+        var defaultColor, config = this.config;
+        if (config.boothConfig.Sold__c) {
+            defaultColor = config.boothConfig.defaultColors.sold;
+        }
+        else if (config.boothConfig.Reserved__c) {
+            defaultColor = config.boothConfig.defaultColors.reserved;
+        }
+        else {
+        
+        
+            defaultColor = config.boothConfig.defaultColors.available;
+        }
+        defaultColor = '#' + defaultColor;
+        return defaultColor;
+    },
+    
+    
+    createClone: function() {
+        var stage = this.config.stage;
+        
+        stage.addItem(new floormap.KioskImage({
+            boothConfig: {defaultColors: this.config.boothConfig.defaultColors,Type__c : 'Booth'},
+            x: this.shape.getAttr('x') + 50,
+            y: this.shape.getAttr('y') + 50,
+            width: this.shape.getAttr('width'),
+            height: this.shape.getAttr('height'),
+            layer: stage.getLayer(),
+            stage: stage
+            
+            
+        }));
+        $(document).trigger("redraw");        
+    }
+    
+    ,
+
+    getSerializedParams: function() {
+    
+     var boothConfig = this.config.boothConfig;
+     boothConfig.Parameters__c = JSON.stringify({
+            type: 'Image',
+                params: {
+                    x: this.shape.getAttr('x'),
+                    y: this.shape.getAttr('y'),
+                    width: this.shape.getAttr('width'),
+                    height: this.shape.getAttr('height')
+                }
+        })
+                
+            return boothConfig;
+    },
+    
+     showProperties: function() {
+        floormap.BoothProperties.showBoothProperties({
+            boothConfig: this.config.boothConfig
+        });
+    },
+    showHover: function(e) {
+        this.hideHover();
+        
+        var content = floormap.BoothProperties.getHoverContent(this.config.boothConfig);
+        
+        if (!content) {
+            return;
+        }
+        
+        this.hoverEl = $('<div/>', {style: 'position: absolute; left: 0; top: 0;'}).appendTo($(document.body)).popover({
+            html: true,
+            placement: 'top',
+            title: 'kiosk Info',
+            content: content
+        });
+
+        var x = this.shape.getAttr('x') + (e.pageX - e.layerX);
+        var y = this.shape.getAttr('y') + (e.pageY - e.layerY);
+       
+        var left = x + this.shape.getAttr('width')/2;
+        var top = y;
+
+        this.hoverEl.attr('style', 'position: absolute; left: ' + left + 'px; top: ' + top + 'px;');
+        this.hoverEl.popover('show');
+        
+        var hoverColor = this.config.boothConfig.on_Hover__c || 'CCCCCC';
+        hoverColor = '#' + hoverColor;
+        
+        //this.shape.setAttr('fill', hoverColor);
+        $(document).trigger('redraw');
+    },
+
+    hideHover: function() {
+        if (this.hoverEl) {
+            this.hoverEl.popover('hide');
+            this.hoverEl.popover('destroy');
+            this.hoverEl.remove();
+        }
+        
+
+        //this.shape.setAttr('fill', this.getFillColor());
+        $(document).trigger('redraw');
+    },
+
+    showAnchors: function() {
+        this.config.stage.setCurrentItem(this);
+        /*
+        if (!this.anchorController) {
+            this.anchorController = new floormap.AnchorController({
+                shape: this.shape,
+                layer: this.config.layer,
+                x: this.shape.getAttr('x'),
+                y: this.shape.getAttr('y'),
+                width: this.shape.getAttr('width'),
+                height: this.shape.getAttr('height'),
+                anchorMoveCallback: this.onAnchorMove.bind(this)
+            });
+
+            $(document).trigger('redraw');
+
+            this.shape.on('dragmove', this.updateAnchorPositions.bind(this));
+        }
+        else {
+            this.anchorController.show();
+        }*/
+    },
+
+    hideAnchors: function() {
+        if (this.anchorController) {
+            this.anchorController.hide();
+        }
+    },
+
+    updateAnchorPositions: function() {
+        this.shape.moveToTop();
+        this.config.layer.draw();
+        this.anchorController.setAnchorPositions({
+            x: this.shape.getAttr('x'),
+            y: this.shape.getAttr('y'),
+            width: this.shape.getAttr('width'),
+            height: this.shape.getAttr('height')
+        });
+        $(document).trigger('redraw');
+    },
+
+    onAnchorMove: function(config) {
+        this.shape.setAttrs({
+            x: config.x,
+            y: config.y,
+            width: config.width,
+            height: config.height
+        });
+    }
+});
+
+
+// Booth Properties Panel.
+$.Class('floormap.BoothProperties', {
+    init: function() {
+        $(document).ready((function() {
+            var el = $('#boothProperties');
+            el.find('button[name=save]').click(this.saveChanges.bind(this));
+            
+        }).bind(this));
+    }, 
+    
+    labels: {
+        Name: 'Name',
+        //Booth_Size__c: 'Size',
+        
+        Booth_Location__c: 'Booth #',
+        //Booth_Price__c: 'Price'
+        //on_Hover__c : 'on_Hover__c ',
+        //on_Select__c : 'on_Select__c',
+        //By_Default__c : 'By_Default__c'
+    },
+
+    getHoverContent: function(boothConfig) {
+        if (!boothConfig.Id) {
+            return null;
+        }
+        
+        var attributes = [];
+        var labels = this.labels;
+        
+        if (boothConfig.Type__c == 'Booth') {
+              $.each(boothConfig, function(key, value) {
+                  if (!labels[key]) {
+                      return;
+                  }
+                  var label = labels[key];
+                  if (key == 'Name' && boothConfig.Booth__r && boothConfig.Booth__r.BT_Name__c) {
+                      label = 'Name';
+                      value = boothConfig.Booth__r.BT_Name__c;
+                  }
+                  else if (key == 'Name') {
+                      return;
+                  }
+                  
+                  attributes.push({
+                      label: label,
+                      value: value
+                  });
+              });
+          }
+          else {
+              attributes.push({
+                  label: 'ID',
+                  value: boothConfig.Name
+              });
+          }
+
+      var table = $('<table />').addClass('table table-bordered');
+
+      
+      $.each(attributes, function(index, item) {
+            var tr = $('<tr/>').appendTo(table);
+            
+            $('<td/>').html(item.label).appendTo(tr);
+            $('<td/>').html(item.value).appendTo(tr);
+      });
+      return $('<div/>').append(table).html();
+    },
+    
+   showBoothProperties: function(config) {
+        this.boothConfig = config.boothConfig;
+        
+        
+        
+        var el = $('#boothProperties');
+       
+        el.find('input[type=text]').each(function (index, item){
+            var el = $(item);
+            el.val('');
+        });
+        
+        $.each(this.boothConfig, function(key, value) {
+            
+            el.find('input[name=' + key + ']').val(value);
+            
+            el.find('output[name=' + key + ']').val(value);
+            
+            if(key == "Reserved__c" && value == false){
+            el.find('input[name=Reserved__c]').attr('checked',false);
+            }else if(key == "Reserved__c" && value == true){
+             el.find('input[name=Reserved__c]').attr('checked',true);
+            }
+            
+            if(key == "Sold__c" && value == false){
+            el.find('input[name=Sold__c]').attr('checked',false);
+            }else if(key == "Reserved__c" && value == true){
+             el.find('input[name=Sold__c]').attr('checked',true);
+            }
+           
+        });
+        
+         
+        this.doShowHideFields(this.boothConfig.Type__c);
+
+        
+        el.modal();
+    },
+    
+    doShowHideFields: function(type) {
+        
+        var el = $('#boothProperties');
+        
+        el.find('.form-group').each(function (index, item) {
+            var el = $(item);
+            if (el.attr('for')) {
+               
+                if (el.attr('for') == type) {
+                    el.show();
+                }
+                else {
+                   // el.hide();
+                     $(item).css("display","none");
+                }
+            }
+        });
+        
+    },
+    
+    saveChanges: function() {
+        var els = $('#boothProperties').find('input[type=text]');
+       
+        var elss = $('#boothProperties').find('input[type=checkbox]');
+        
+        
+        var boothConfig = this.boothConfig;
+        
+        
+        els.each(function(index, el) {
+            el = $(el);
+            boothConfig[el.attr('name')] = el.val();
+           
+        });
+       
+        
+        elss.each(function(index, item) {
+        var el = $(item);
+        boothConfig[el.attr('name')] = item.checked;
+        
+        });
+            
+            
+       
+            
+           
+           if($('#BoothNumber').val() == '' && this.boothConfig.Type__c == 'Booth'){
+              alert('Please Enter Booth Number');
+              return FALSE;
+              
+           }else if($('#BoothNumber').val() != ''){
+           
+           $('#boothProperties').modal('hide');
+            __saveBooths();
+           }
+           
+           if($('#KioskId').val() == '' && this.boothConfig.Type__c == 'Kiosk'){
+           
+              alert('Please Enter Kiosk Id');
+              return FALSE;
+              
+           }else if($('#KioskId').val() != ''){
+           
+               $('#boothProperties').modal('hide');
+                __saveBooths();
+           }
+       
+    }
+}, 
+{});
+
+//Drag and Drop
+
+$.Class('floormap.DropController', {
+
+}, {
+    init: function(config) {
+        this.initialConfig = config;
+        
+       $('#' + config.id).mousemove((function(e) {
+            this.currentMouseEvent = e.originalEvent;
+       }).bind(this));
+
+        $('#' + config.id).droppable({
+            drop: this.onDrop.bind(this)
+        });
+    },
+
+    initShape: function(config) {
+        config.shape.on('mouseenter', this.onMouseEnter.bind(this, config));
+        config.shape.on('mouseout', this.onMouseOut.bind(this, config));
+    },
+
+    onDrop: function(e, ui) {
+
+        if (ui.draggable.attr('type') == 'button') {
+            this.initialConfig.stage.onDblClick(this.currentMouseEvent, null, ui.draggable.attr('name'));
+            return;
+        }
+    
+        if (!this.currentConfig) {
+            return;
+        }
+        
+      
+        if(this.currentConfig.item.config.boothConfig.Booth_Location__c != undefined){ 
+         var a = this.currentConfig.item.config.id;
+         var b = this.currentConfig.item.config.boothConfig.Booth__c;
+        var ToAssign =confirm("Are you sure to assign Booth # "+ this.currentConfig.item.config.boothConfig.Booth_Location__c+" to " +ui.draggable.attr('companyName')+"?");
+            if (ToAssign ==true){
+           
+            SavingBooths(a,ui.draggable.attr('companyId'),b)
+            } else{
+            
+            }
+            
+      }   else{
+          
+          alert('Please add the Booth Number before assigning');
+          
+      }   
+        
+       // this.currentConfig.item.config.boothConfig.companyId = ui.draggable.attr('companyId');
+    },
+
+    onMouseEnter: function(config) {
+        this.currentConfig = config;
+    },
+
+    onMouseOut: function(config) {
+        this.currentConfig = null;
+    }
+});
+
+
+$(document).ready(function() {
+
+    new floormap.Stage({
+        elementId: 'floormap-container',
+        imageUrl: '/servlet/servlet.ImageServer?id={!ShowEvent.Floor_Map_Image__c}&oid={!$Organization.Id}'
+    });
+   
+
+});
+
+  </script>
+
+<script>
+function SendToServer(ShowValues){
+} 
+function SendToServerToDelete(DeleteValue){
+} 
+
+</script>
+
+
+
+</head>
+
+<body>
+
+
+<div id="floormap-container">
+    <div class="row" id="toolbar" style="margin: 5px;">
+        <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group">
+                <div type="button" name="circle" class="btn btn-default" title="Circle"><img src="{!$Resource.CircleImage}" width="20px" /></div>
+                <div type="button" name="rectangle" class="btn btn-default" title="Rectangle"><img src="{!$Resource.Rectangleimage}" width="30px" height="20px"/></div>
+                <button type="button" name="polygon" class="btn btn-default" title="Polygon"><img src="{!$Resource.PolygonImage}" height="20px" width="20px"/></button>
+                <button type="button" name="Image" class="btn btn-default" title="Kiosk"><apex:image id="theImage" value="{!$Resource.KioskImage}" width="30px" height="20px"/></button>
+
+            </div>
+            <div class="btn-group">
+                <button type="button" name="clone" class="btn btn-default" title="Copy"><img src="{!$Resource.Copy_Icon}" width="20px" height="20px"/></button>
+                <button type="button" name="delete" class="btn btn-default" title="Delete"><img src="{!$Resource.delete_icon}" width="20px" height="20px"/></button>
+            </div>
+            <div class="btn-group pull-right">
+            
+                  <button type="button" name="floormapedit" class="awesome" >
+                      <apex:outputText rendered="{!NOT(ShowMap)}">Add Floor map</apex:outputText>
+                      <apex:outputText rendered="{!ShowMap}">Edit Floor Map</apex:outputText>&nbsp;
+                  </button>
+                <apex:outputText rendered="{!ShowMap}"><button type="button" name="globalsettings" class="awesome">Settings</button></apex:outputText>
+            </div>
+        </div>
+    </div>
+   
+    <div class="row canvas" style="margin: 5px;">
+        <div class="col-sm-9" style="overflow: auto; height: 700px;">
+            <div class="floormap-container" style="min-width: 100px; min-height: 100px; background-repeat: no-repeat;">
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="panel panel-info" style="height:700px;overflow:scroll;">
+                <div class="panel-heading" >Companies</div>
+                <div class="panel-body" >
+                    <form role="form">
+                        <input type="text" name="companies-search" class="form-control" placeholder="Search ..." />
+                    </form>
+                </div>
+                <ul class="list-group  companies-list" >
+
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<apex:form >
+<div id="edit-floormap" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form role="form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Edit Floormap</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="uploadfloormapImage">Floormap Image</label>
+                     <!--   <input type="file" id="uploadfloormapImage" /> -->
+                     
+                     <apex:inputFile value="{!BlobFile}"/>
+                        <p class="help-block">Select the floormap image.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <apex:commandButton value="Save" action="{!SaveFloorMap}" styleclass="btn btn-primary" />
+                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+</apex:form>
+<div id="global-settings" class="modal fade">
+    <div class="modal-dialog" style="width: 350px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Settings</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="available" class="col-sm-4 control-label">Available</label>
+                        <div class="col-sm-5">
+                             <input id="colorpickerField1" type="text" name="Color1"  value="{!ShowEvent.Available__c}" class="form-control" style="width:100px;"/>  
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reserved" class="col-sm-4 control-label">Sold </label>
+                        <div class="col-sm-5">
+                           <input type="text" id="colorpickerField2" name="Color2" value="{!ShowEvent.Sold__c}" class="form-control" style="width:100px;"/> 
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="sold" class="col-sm-4 control-label">Reserved</label>
+                        <div class="col-sm-5">
+                             <input type="text" id="colorpickerField3" value="{!ShowEvent.Reserved__c}" name="Color3" class="form-control" style="width:100px;"/> 
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+               <button type="button" class="btn btn-primary" name="saveColors" onclick="SavingColors()">Save</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="boothProperties" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Booth Properties</h4>
+      </div>
+      <div class="modal-body">
+
+      <!--  dialog content -->
+
+<apex:form styleclass="form-horizontal" >
+
+
+  <div class="form-group" for="Booth">
+    <label for="inputPassword3" class="col-sm-2 control-label">Booth# <font color="red" size="3px">*</font></label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="BoothNumber" name="Booth_Location__c" placeholder="Enter the booth #"/>
+    </div>
+  </div>
+  <div class="form-group" for="Kiosk">
+    <label for="inputPassword3" class="col-sm-2 control-label">Kiosk Id</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="KioskId" name="Name" placeholder="Enter the Name of Kiosk"/>
+    </div>
+  </div>
+  <div class="form-group" for="Booth">
+    <label for="inputPassword3" class="col-sm-2 control-label">Size</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="BoothSize" name="Booth_Size__c" placeholder="Enter the Size of Booth"/>
+    </div>
+  </div>
+   <div class="form-group" for="Booth">
+    <label for="inputPassword3" class="col-sm-2 control-label">Area</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="BoothArea" name="Booth_Area__c" placeholder="Enter the Area of Booth"/>
+    </div>
+  </div>
+   <div class="form-group" for="Kiosk">
+    <label for="inputPassword3" class="col-sm-2 control-label">Description</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="KioskDesc" name="Description__c" placeholder="Enter the Decription of Kiosk"/>
+    </div>
+  </div>
+  <div class="form-group" for="Booth">
+    <label for="inputPassword3" class="col-sm-2 control-label">Price</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="BoothPrice" name="Booth_Price__c" placeholder="Enter the price of the booth"/>
+    </div>
+  </div>
+   
+  
+  <div class="form-group" for="Booth">
+    <label for="inputPassword3" class="col-sm-2 control-label">Reserved</label>
+    <div class="col-sm-10">
+      <input type="checkbox" name="Reserved__c"  value=""/>      </div>
+  </div>
+  
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-primary" name="save" >Save changes</button>    
+  </div>
+ 
+
+  
+</apex:form>
+
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script>
+
+</script>
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    
+    var adminlist = [];
+    
+    <apex:repeat value="{!BoothAdminsList}" var="Company">
+    adminlist.push({
+        name: "{!Company.BT_id__r.BT_Name__c}",
+        id: '{!Company.BT_id__r.id}',
+        hasLocation: {!IF(ISNULL(Company.BT_id__r.BT_Location__c), 'false', 'true')},
+        location: '{!Company.BT_id__r.BT_Location__c}'
+    });
+    </apex:repeat>
+
+    var el = $('.canvas .panel .list-group');
+    $.each(adminlist, function(index, item) {
+        var li = $('<li/>').appendTo(el);
+        
+        li.addClass('list-group-item')           
+            .attr('companyId', item.id)
+            .attr('companyName', item.name)                                                          
+            .html(item.name); 
+             if (item.hasLocation) {
+             li.append($('<span/>').addClass('badge').html(item.location))
+            }   
+            
+    });
+
+    $('.companies-list li').draggable({
+        containment: 'document',
+        helper: 'clone',
+        cursorAt: {
+            top: -10,
+            left: -10
+        }
+    });
+     $('.companies-list li').mouseover(function(e) {
+        $(e.currentTarget).css('background-color', '#d9edf7');
+    })
+    .mouseout(function(e) {
+        $(e.currentTarget).css('background-color', '#ffffff');
+    });
+    
+    $('input[name=companies-search]').keyup(function() {
+        var el = $('input[name=companies-search]');
+        var searchText = el.val().toLowerCase();
+        
+        $('.companies-list li').each(function(index, item) {
+            var el = $(item);
+            if (el.text().toLowerCase().indexOf(searchText) > -1) {
+                el.show();
+            }
+            else {
+                el.hide();
+            }
+        });
+    });
+    
+    $('#colorpickerField1, #colorpickerField2, #colorpickerField3').ColorPicker({
+        onSubmit: function(hsb, hex, rgb, el) {
+            $(el).val(hex);
+            $(el).ColorPickerHide();
+            $(el).css('background-color', '#' + hex);
+            $(el).css('color', '#' + hex);
+        },
+        onBeforeShow: function () {
+            $(this).ColorPickerSetColor(this.value);
+        }
+    });
+});
+
+</script>
+</body>
+
+<apex:form >
+  <apex:actionFunction name="SendToServer" action="{!TogetTheValues}" reRender="jsvalues">
+           
+            <apex:param name="x" value="" />
+          
+  </apex:actionFunction> 
+ 
+  <apex:actionFunction name="SendToServerToDelete" action="{!ToDeleteTheShape}" reRender="s">
+           
+            <apex:param name="DelId" value="" />
+          
+ </apex:actionFunction>
+ 
+ 
+ </apex:form>
+    
+   </html> 
+  
+
+<script>
+
+function SavingColors(){
+    
+    var Available = document.getElementsByName('Color1')[0].value;
+    var SoldOut= document.getElementsByName('Color2')[0].value;
+    var Reserved = document.getElementsByName('Color3')[0].value;
+    
+    SendColors(Available ,SoldOut ,Reserved );  
+    
+}
+function SendColors(A,S,R){
+}
+function SavingBooths(FloorMapID,BoothId,OldBoothId){
+}
+function DisplayBoothList(){
+}
+</script>
+<apex:form >
+
+ 
+<apex:actionFunction name="SendColors" action="{!ForSavingColors}" reRender="jsvalues">
+           
+            <apex:param name="A" value="" />
+            <apex:param name="S" value="" />
+            <apex:param name="R" value="" />
+          
+ </apex:actionFunction> 
+ <apex:actionFunction name="SavingBooths" action="{!ForSavingBooths}" reRender="jsvalues">
+           
+            <apex:param name="FloorID" value="" />
+            <apex:param name="BoothID" value="" />
+            <apex:param name="OldBoothId" value="" />
+           
+          
+ </apex:actionFunction> 
+ <apex:actionFunction name="DisplayBoothList" action="{!SowingListofBoothAdmins}" reRender="jsvalues">          
+ </apex:actionFunction> 
+ </apex:form>
+
+<!----------- ::::::::::: END :::::::::::::: -------------------> 
+ <!--  start actions-box ............................................... -->
+ 
+    <div class="clear">&nbsp;</div>
+</div>
+<!--  end content -->
+<div class="clear" id="clearDiv">&nbsp;</div>
+</div>
+<!--  end content-outer........................................................END -->
+<div class="clear">&nbsp;</div>
+
+    <!-- start footer -->         
+<apex:include pageName="QRCode_Footertemplate"/>
+<!-- end footer -->    
+<apex:form id="RefreshForm"></apex:form>
+</apex:page>

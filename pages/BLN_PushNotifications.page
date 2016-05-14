@@ -1,0 +1,746 @@
+<apex:page sidebar="false" showheader="false" controller="BLN_PushNotificationsCon" id="pageid" standardStylesheets="false"  action="{!displayPermissions}">
+  <!------------common styles component------------>
+  <c:ed_commonstyles ></c:ed_commonstyles>
+  <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+  <!------------//common styles component---------->
+  <!---------//CSS Stylesheets---------------------------------------->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-email.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/tinyeditor/tinyeditor.css')}" />
+  <!---datatablecss-->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}"/>
+  <!---/datablecss----->
+  <!-----------//datatable stylescss------------->
+  <c:ed_basictemplate BLN_UtillDisplayLinks="{!pushNotif}">
+    <!------------------Body Code------------------------------------->
+    <apex:form id="fm">
+    <div class="grid-1" >
+      <!--------------------------->
+      <div class="form-embed-div" style="width: 97%;">
+        <div class="form-content-div" style="padding: 0px;">
+          <!----------------topstats--------->
+          <!------------------------------------------------------------->
+                <div>
+                  <button class="togglebtn right margin-5px" id="new_push" onclick="showpopup(this);" style="padding: 5px;" type="button">New Push Message</button>
+                </div>
+                <!------->
+                <!--close of labelstickersbox--->
+                <!---start of table----->
+                <table id="example2" class="display">
+                  <thead>
+                    <tr>
+                      <th width="27.5%" style="background:none;">Message</th>
+                      <th width="18.75%" style="background:none;">To List</th>
+                      <th width="10%"  style="background:none;">Schedule</th>
+                      <th width="10%"  style="background:none;">Activity</th>
+                      <th width="18.75%" style="background:none;">Time</th>
+                      <th  width="15%" style="background:none;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody1">
+                    <apex:repeat value="{!EmailCampaignLst}" var="EClist">
+                    <apex:outputText rendered="{!(EClist.Email_Status__c == 'Scheduled' || EClist.Template_Status__c =='Inactive')}">
+                    <tr id="trRid">
+                      <td class='textcenter'><a class="blue_anchor">{!EClist.CampSubject__c}</a></td>
+                      <td class='textcenter'>{!EClist.ToList__c}</td>
+                      <td class='textcenter'>{!EClist.Email_Status__c}</td>
+                      <td class='textcenter'>{!EClist.Template_Status__c}</td>
+                      <td class='textcenter'><span id="spid"> 
+                          <apex:outputText rendered="{!(EClist.Email_Send_Date__c != null)}">
+                              <c:EV_FormatDt date_Timevalue="{!EClist.Email_Send_Date__c}" t_Zone="{!se.Time_Zone__c}"></c:EV_FormatDt>
+                              
+                          </apex:outputText>
+                      </span> </td>
+                      <td><a id="std_edit" onclick="viewfn1('{!EClist.Id}','Edit')" class="editclass">Edit </a>&nbsp; 
+                          <a id="std_edit" onclick="cloneRow1('{!EClist.Id}')">Clone </a>&nbsp; 
+                          <a id="del" onclick="delFn('{!EClist.Id}','{!EClist.CampSubject__c}',this);">Delete </a> 
+                      </td>
+                    </tr>
+                    </apex:outputText>
+                    <apex:outputText rendered="{!(EClist.Email_Status__c == 'Sent' && EClist.Template_Status__c =='Active')}">
+                    <tr id="trWid">
+                      <td class='textcenter'><a class="blue_anchor">{!EClist.CampSubject__c}</a></td>
+                      <td class='textcenter'>{!EClist.ToList__c}</td>
+                      <td class='textcenter'>{!EClist.Email_Status__c}</td>
+                      <td class='textcenter'>{!EClist.Template_Status__c}</td>
+                      <td class='textcenter'>
+                          <apex:outputText rendered="{!(EClist.Email_Send_Date__c != null)}">
+                              <c:EV_FormatDt date_Timevalue="{!EClist.Email_Send_Date__c}" t_Zone="{!se.Time_Zone__c}"></c:EV_FormatDt>
+                          </apex:outputText>
+                      </td>
+                      <td><a id="std_edit" onclick="viewfn1('{!EClist.Id}','View');" class="viewclass">View </a>&nbsp;
+                          <a id="std_edit" onclick="cloneRow1('{!EClist.Id}')">Clone </a>&nbsp; 
+                          <a id="del" onclick="delFn('{!EClist.Id}','{!EClist.CampSubject__c}',this);">Delete </a> 
+                      </td>
+                    </tr>
+                    </apex:outputText>
+                    </apex:repeat>
+                  </tbody>
+                </table>
+                
+<style>
+#newID #spid{
+display:none;
+
+}
+</style>
+
+    
+<script>
+function showpopup(clkbtn_id){
+dateformat();
+      if(clkbtn_id.id=="std_edit"){   
+      
+        document.getElementById("showscheduleoptions").style.display='none';
+        document.getElementById("custsendnwbutn").style.display='';
+        document.getElementById("custsaveasnwbutn").style.display='none';
+        npmpopup.render('text1','text2','npmpopup' ,clkbtn_id);
+      }           
+      if(clkbtn_id.id=="new_push"){   
+        document.getElementById("showscheduleoptions").style.display='none';
+        document.getElementById("custsendnwbutn").style.display='none';
+        document.getElementById("custsaveasnwbutn").style.display='';
+        npmpopup.render('text1','text2','npmpopup' ,clkbtn_id);
+      }  
+      
+      if(clkbtn_id=="std_edit"){   
+        document.getElementById("showscheduleoptions").style.display='none';
+        document.getElementById("custsendnwbutn").style.display='';
+        document.getElementById("custsaveasnwbutn").style.display='none';
+        npmpopup.render('text1','text2','npmpopup' ,clkbtn_id);
+      }            
+}       
+</script>
+                <!--close of datatable--->
+
+          <!--------------------------------------------->
+        </div>
+        <!--close fo form-content-div--->
+      </div>
+      <!--close of form-embed-div---->
+    </div>
+    <!--close of grid-1----->
+      <apex:actionFunction action="{!cloneNotification}" name="cloneFn" reRender="bbb">
+        <apex:param name="cloneEcId" value=""/>
+      </apex:actionfunction>
+      <apex:actionFunction action="{!delnotification}" name="delMethod" reRender="bbb">
+        <apex:param name="delEcId" value=""/>
+      </apex:actionfunction>
+      <apex:actionFunction action="{!sendnotification}" name="savefn" reRender="aaa">
+        <apex:param name="pnName" value=""/>
+        <apex:param name="pnMsg" value=""/>
+        <apex:param name="tolist" value="" assignTo="{!itype}"/>
+        <apex:param name="ActStatus" value=""/>
+        <apex:param name="SentStatus" value=""/>
+        <apex:param name="sendDate" value=""/>
+      </apex:actionfunction>
+
+      <!-- end of action function and action remote--->
+    
+    
+    <!------******************Start of popup****************************------>
+    <div class="dialogoverlay" id="text2" style="z-index: 99999; display: none;"></div>
+    <div id="text1" style="display: block; z-index: 999991; height: 100px; width: 46%;  display: none; margin-left: 7%; top: 10px; position: fixed;">
+      <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+        <div class="form-content-div" style=" padding:0px;"> <a id="close" onclick="npmpopup.Cancel()" style="margin-top:-26px;">x</a>
+          <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+            <div class="title-grid" id="sendnwhead">Push Message</div>
+             
+            <div class="content-gird">
+              <div class="form-embed-div" style="width:95%;">
+                <div class="form-content-div" style="padding:0px;" >
+                  <div style="width:96%; margin:0px auto; padding:5px 5px 5px 5px;" id="showscheduleoptions" >
+                    <div style="width:100%; margin-bottom:2px; border-bottom:1px solid #ddd;" >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-content-div" style="padding:0px;">
+                  <div style="width:96%; margin:0px auto; padding:5px 5px 5px 5px; ">
+                    <table class="display" width="100%">
+                      <tbody>
+                      <p  class="bg-font" style="margin-top:3px;margin-bottom:3px;">Title:  
+                        <input type="text" id="inputid" style="width:86%;" value=""/>
+                        <!--<apex:inputText value="{!ViewRecord.Name}" id="inputid" style="width:86%;"/>-->
+                      </p>
+                      <textarea class="medium" id="meventdesc" name="meventdesc" rows="3" style="width:95%;text-indent:3px;height:80px;resize:none;"></textarea>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="form-content-div" style="margin-top:5px;">
+                  <div>
+                    <p class="bg-font" style="margin-top:3px;margin-bottom:10px;">Event Contacts: </p>
+                  </div>
+                  <div style="width:96%; margin:0px auto; padding:0px 5px 5px 5px;">
+                    <table class="display" id="select-contacts-custom" width="100%">
+                      <tbody>
+                         <apex:repeat value="{!regsetting}" var="dspset"> 
+                         <tr style="display:{!if((dspset.Column_Name__c=='StopEmailsToAttendee' || dspset.Column_Name__c=='StopEmailsToEventAdmin'),'none','')}">
+                         <td>
+                             <apex:repeat value="{!regsettingmap}" var="key">
+                            
+                            <apex:outputText rendered="{!key == dspset.Column_Name__c}">
+                            <input type="checkbox" name="recipientslist" class="margin-ryt-5px" id="{!dspset.Column_Name__c}" value="{!dspset.Column_Name__c}"/><label  for="recipientslist">{!dspset.Label_Name__c}  ({!regsettingmap[dspset.Column_Name__c]})</label>
+                            </apex:outputText>
+                            </apex:repeat>
+                        </td>
+                        </tr>
+                        </apex:repeat>
+                        <!--<tr>
+                          <td><input class="margin-ryt-5px" type="checkbox" id="atid" value="Attendee"/>
+                            <label style="margin-left:1%">Attendee</label></td>
+                        </tr>
+                        <tr>
+                          <td><input class="margin-ryt-5px" type="checkbox" id="exid" value="Exhibitor"/>
+                            <label style="margin-left:1%">Exhibitor</label></td>
+                        </tr>
+                        <tr>
+                          <td><input class="margin-ryt-5px" type="checkbox" id="spoid" value="Sponsor"/>
+                            <label style="margin-left:1%">Sponsor</label></td>
+                        </tr>
+                        <tr>
+                          <td><input class="margin-ryt-5px" type="checkbox" id="skid" value="Speaker"/>
+                            <label style="margin-left:1%">Speaker</label></td>
+                        </tr>-->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="form-content-div" style="margin-top:5px;">
+                  <lable class="bg-font" style="margin-top:3px;">Activity Status: </lable>
+                  &nbsp;&nbsp;
+                  <input type="radio" value="Active" name="Inactive" checked="checked" id="activeid"/>
+                  Active&nbsp;&nbsp;&nbsp;
+                  <input type="radio" value="Inactive" id="inactiveid" name="Inactive"/>
+                  Inactive<br/>
+                </div>
+                <div class="form-content-div" id="scheduledivid" style="margin-top:5px;">
+                  <lable class="bg-font" style="margin-top:3px;">Schedule: </lable>
+                  &nbsp;&nbsp;
+                  <input type="radio" value="Now" name="now" id="nowid" class="nowclass" checked="checked" />
+                  Now&nbsp;&nbsp;&nbsp;
+                  <input type="radio" value="Later" name="now" id="laterid"/>
+                  Later
+                  <input class="datetimepickers" id="datetime"  style="width:30%;visibility:hidden;" type="text" autocomplete="off">
+                      <apex:outputText value="{0, date, MMMM d',' yyyy hh:mm a}">
+                          <apex:param id="paramId" value=""/>
+                      </apex:outputText>
+                  </input>
+                  <br/>
+                  <output type="text" id="sentDate" style="visibility:hidden;font-size:11px;color: red;" value="Sent On:"/>
+
+                </div>
+              </div>
+            </div>
+            <div style=" text-align:center; margin-top:10px;">
+              
+              <button class="button-a blue" id="custsendnwbutn" onclick="editSave(this);return false;">Send</button>
+              <button class="togglebtn" id="custsaveasnwbutn" onClick="saveNewfn();return false;" style="padding: 5px; margin-top: -2px;">Send</button>
+                
+              <button class="button-a dark-blue" onclick="npmpopup.Cancel()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!------******************End of popup****************************------>
+   
+    <c:ed_commonjs ></c:ed_commonjs>
+    <c:ed_datatablejs ></c:ed_datatablejs>
+    <script type="text/javascript" language="javascript" class="init">
+        
+var j = jQuery.noConflict();
+
+j(document).ready(function() {
+
+j('#example2').dataTable( {
+    "pagingType": "full_numbers",
+    "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+    "iDisplayLength": 10,
+    "bAutoWidth": false, // Disable the auto width calculation
+    /**default orderid in asc sorting**/
+    <!---//!important to hide the sorting in the header for checkbox td------>
+    "order": [[ 2, "asc" ]],
+     "sDom": 'W<"clear">lfrtip', 
+    "oColumnFilterWidgets": { 
+    "aiExclude": [0,1,4,5] 
+    }, 
+    
+    // To remove blank values from schedule filter
+    "fnDrawCallback":function(){
+        var aa = j('[class$=widget-2]').find('option');
+        j('[class$=widget-2]').find('option').each(function(){
+            var bb = j(this)[0].innerHTML;
+            if(bb=='' || bb==null || bb==undefined)
+            {
+                j(this).remove();
+            }
+        });
+    }
+    
+});
+})
+</script>
+
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}" > </script>
+    
+<c:ed_popupbox > </c:ed_popupbox>
+
+<script>
+var npmpopup = new Custom_formPopup();
+    
+$( document ).ready(function() {
+    $(".medium").keyup(function(e) {
+   
+    $(this).each(function(index, element) {
+       var current_field = $(this);
+       var maxLength = 255;
+       if(current_field.val()!==''){
+           $(".required-label").empty();
+           var length = $(this).val().length;
+           var length = maxLength-length;
+           $(current_field).val($(this).val().substring(0, maxLength)); 
+            current_field.after('<div class="required-label">'+length+'</div>');
+        }
+    });
+});
+})
+</script>
+<script>
+function dateformat(){
+var sendDt = new Date(jQuery('[id$=datetime]').val());
+var d1 = sendDt;
+var dt1 = d1.getDate();
+var m1 = d1.getMonth() + 1;
+var y1 = d1.getFullYear();
+var hours1 = d1.getHours();
+var AMPM='';
+if(hours1 >12){
+AMPM='PM';
+hours1 =hours1 - 12;
+}else{
+if(hours1 ==0){
+hours1  = 12;
+AMPM='AM';
+}
+}
+var min1 = d1.getMinutes();
+var timeStr1= hours1+':'+min1+' '+AMPM;   
+
+$m=jQuery.noConflict();
+
+$m(document).on('focus',".datetimepickers", function(){
+ $m('.datetimepickers').datetimepicker({
+     formatTime:'g:i A',
+     formatDate:'Y/m/d',
+     minDate: '{!YEAR(currentDate)}/{!MONTH(currentDate)}/{!DAY(currentDate)}',
+     step:15,
+     defaultDate: y1 + '/' + m1 + '/' + dt1,
+     defaultTime:timeStr1//,formatTime:'H:i'   
+     
+     });  
+});
+}
+
+var sendDt = new Date(jQuery('[id$=datetime]').val());
+var d1 = sendDt;
+var dt1 = d1.getDate();
+var m1 = d1.getMonth() + 1;
+var y1 = d1.getFullYear();
+var hours1 = d1.getHours();
+var min1 = d1.getMinutes();
+  
+if(hours1 >12){
+AMPM='PM';
+hours1 =hours1 - 12;
+}else{
+if(hours1 ==0){
+hours1  = 12;
+AMPM='AM';
+}
+}
+
+var timeStr1= hours1+':'+min1+' '+AMPM; 
+$m=jQuery.noConflict();
+
+$m(document).on('focus',".datetimepickers", function(){
+ $m('.datetimepickers').datetimepicker({
+     formatTime:'g:i A',
+     formatDate:'Y/m/d',
+     minDate: '{!YEAR(currentDate)}/{!MONTH(currentDate)}/{!DAY(currentDate)}',
+     step:15,
+     defaultDate: y1 + '/' + m1 + '/' + dt1,
+     defaultTime:timeStr1//,formatTime:'H:i' 
+     
+     });  
+});
+ 
+window.onbeforeunload = confirmExit;
+function confirmExit()
+{
+if(pgtexcep||ticketneedToConfirm)
+return "You have attempted to leave this page. If you have made any changes to the fields without clicking the Save button, your changes will be lost. Are you sure you want to exit this page?";
+}
+</script>
+
+<script>
+function disabledd(){
+
+document.getElementById("inputid").disabled = true;
+document.getElementById("meventdesc").disabled = true;
+document.getElementById("Attendee").disabled = true;
+document.getElementById("Exhibitor").disabled = true;
+document.getElementById("Sponsor").disabled = true;
+document.getElementById("Speaker").disabled = true;
+document.getElementById("nowid").disabled = true;
+document.getElementById("laterid").disabled = true;
+document.getElementById("activeid").disabled = true;
+document.getElementById("inactiveid").disabled = true;
+document.getElementById("datetime").disabled = true;
+document.getElementsByClassName("datetimepickers").disabled = true;
+document.getElementById("sentDate").style.visibility='visible';
+document.getElementById("custsendnwbutn").style.visibility='hidden';
+
+}
+
+$(".editclass").click(function(){
+document.getElementById("inputid").disabled = false;
+document.getElementById("meventdesc").disabled = false;
+document.getElementById("Attendee").disabled = false;
+document.getElementById("Exhibitor").disabled = false;
+document.getElementById("Sponsor").disabled = false;
+document.getElementById("Speaker").disabled = false;
+document.getElementById("nowid").disabled = false;
+document.getElementById("laterid").disabled = false;
+document.getElementById("activeid").disabled = false;
+document.getElementById("inactiveid").disabled = false;
+document.getElementById("datetime").disabled = false;
+document.getElementsByClassName("datetimepickers").disabled = false;
+document.getElementById("sentDate").style.visibility='hidden';
+document.getElementById("custsendnwbutn").style.visibility='visible';
+});
+
+$("#new_push").click(function(){
+document.getElementById("inputid").disabled = false;
+document.getElementById("meventdesc").disabled = false;
+document.getElementById("Attendee").disabled = false;
+document.getElementById("Exhibitor").disabled = false;
+document.getElementById("Sponsor").disabled = false;
+document.getElementById("Speaker").disabled = false;
+document.getElementById("nowid").disabled = false;
+document.getElementById("laterid").disabled = false;
+document.getElementById("activeid").disabled = false;
+document.getElementById("inactiveid").disabled = false;
+document.getElementById("datetime").disabled = false;
+document.getElementsByClassName("datetimepickers").disabled = false;
+document.getElementById("sentDate").style.visibility='hidden';
+});
+</script>
+<!--close of confirm_dialogbox-->
+
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script>
+<script>
+   
+$( "#laterid").click(function () {
+document.getElementById("datetime").style.visibility='visible'; 
+});
+   
+$( "#nowid").click(function () {
+document.getElementById("datetime").style.visibility='hidden';
+}); 
+ 
+$( "#inactiveid").click(function () {
+document.getElementById("scheduledivid").style.opacity='0.2';
+document.getElementById("nowid").disabled=true;
+document.getElementById("laterid").disabled=true;
+document.getElementById("datetime").disabled=true;
+$("#custsaveasnwbutn").html('Save');
+ $("#custsendnwbutn").html('Save');
+}); 
+ 
+$( "#activeid").click(function () {
+document.getElementById("scheduledivid").style.opacity='1.0';
+document.getElementById("nowid").disabled=false;
+document.getElementById("laterid").disabled=false;
+document.getElementById("datetime").disabled=false;
+$("#custsaveasnwbutn").html('Send');
+ $("#custsendnwbutn").html('Send');
+}); 
+</script>
+
+<script>
+var editId='';
+function viewfn1(ecID,action){
+  Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.BLN_PushNotificationsCon.viewDetails}',
+                                 ecID,'{!se.Time_Zone__c}',
+                  function(result, event){    
+                              
+                if(result.ViewRecord.Name!= '' ){
+                document.getElementById("inputid").value = result.ViewRecord.Name;
+                document.getElementById("meventdesc").value = result.ViewRecord.CampSubject__c;
+                if(result.ViewRecord.ToList__c.indexOf('Attendee') != -1){
+                    document.getElementById("Attendee").checked = true;
+                }
+                if(result.ViewRecord.ToList__c.indexOf('Exhibitor') != -1){
+                    document.getElementById("Exhibitor").checked = true;
+                }
+                if(result.ViewRecord.ToList__c.indexOf('Sponsor') != -1){
+                    document.getElementById("Sponsor").checked = true;
+                }
+                if(result.ViewRecord.ToList__c.indexOf('Speaker') != -1){
+                    document.getElementById("Speaker").checked = true;
+                }
+                
+                if(result.ViewRecord.Template_Status__c.indexOf('Active') != -1){
+                    document.getElementById("activeid").checked = true;
+                    $("#custsendnwbutn").html('Send');
+                }else if(result.ViewRecord.Template_Status__c.indexOf('Inactive') != -1){
+                    document.getElementById("inactiveid").checked = true;
+                    document.getElementById("scheduledivid").style.opacity='0.2';
+                    document.getElementById("nowid").disabled=true;
+                    document.getElementById("laterid").disabled=true;
+                    document.getElementById("datetime").disabled=true;
+                    $("#custsendnwbutn").html('Save');
+                }
+                if(result.ViewRecord.Email_Status__c == 'Scheduled'){
+                    document.getElementById("laterid").checked = true;
+                    
+                    document.getElementById("datetime").style.visibility='visible';
+                    document.getElementById("datetime").value = result.SendDate;
+                }
+
+                if(action =='View'){
+                disabledd();
+                document.getElementById("sentDate").value = 'Message Sent at: '+result.SendDate;
+                }else{
+                editId=result.ViewRecord.Id;
+                dateformat();
+                }
+                showpopup('std_edit');
+                }
+                else{
+               
+                 return false;
+                }
+             });   
+
+
+}
+var pnName1 ='';
+var pnMsg1 ='';
+var tolist1='';
+var ActStatus1='';
+var SentStatus1='';
+var sendDate1='';
+function editSave(clkbtn){
+pnName1 = document.getElementById("inputid").value;
+pnMsg1 = document.getElementById("meventdesc").value;
+
+                if(document.getElementById("Attendee").checked == true){
+                    tolist1+=document.getElementById("Attendee").value+',';
+                }
+                if(document.getElementById("Exhibitor").checked == true){
+                    tolist1+=document.getElementById("Exhibitor").value+',';
+                }
+                if(document.getElementById("Sponsor").checked == true){
+                    tolist1+=document.getElementById("Sponsor").value+',';
+                }
+                if(document.getElementById("Speaker").checked == true){
+                    tolist1+=document.getElementById("Speaker").value+',';
+                }
+tolist1 = tolist1.substring(0,tolist1.length-1);
+
+                if(document.getElementById("activeid").checked){
+                    ActStatus1='Active';
+                }else if(document.getElementById("inactiveid").checked){
+                    ActStatus1='Inactive';
+                    //document.getElementById("datetime").value='';
+                }
+
+
+                if(document.getElementById("nowid").checked){
+                    SentStatus1='Sent';
+                }else if(document.getElementById("laterid").checked){
+                    SentStatus1='Scheduled';
+                    sendDate1 = document.getElementById("datetime").value;
+                }
+var eveEdDtTime =new Date('{!eveEdTime}');
+var sendDate2=new Date(sendDate1);
+if(sendDate2 > eveEdDtTime){
+    Alertconfirm.render('Event is complete. Are you sure you want to send notification?', 'Confirmation', clkbtn, 'Ok', 'Cancel', 'Alertconfirm');
+    return false;
+}else{
+editfn();
+}             
+
+}
+
+function editfn(){
+Visualforce.remoting.Manager.invokeAction(
+    '{!$RemoteAction.BLN_PushNotificationsCon.saveEditNotif}',
+             editId,pnName1,pnMsg1,tolist1,ActStatus1,SentStatus1,sendDate1,'{!selectedEventId}','{!se.Time_Zone__c}',
+      function(result, event){ 
+          npmpopup.Cancel()
+          //location.reload();
+          window.location.href=window.location.href;
+      });
+}
+var pnName ='';
+var itype='';
+var lbl='';
+var tsize='';
+var tcheck ='';
+var sdate= '';
+var pnMsg ='';
+function saveNewfn(){
+
+pnName = document.getElementById("inputid").value;
+if(pnName=='' || pnName == null){
+    Alert.render('Please enter title' ,'Alert !','ok');//calling alert popup
+    return false;
+}
+
+pnMsg = document.getElementById("meventdesc").value;
+if(pnMsg =='' || pnMsg == null){
+    Alert.render('Please enter a message' ,'Alert !','ok');//calling alert popup
+    return false;
+}
+
+
+$("input:checkbox[name='recipientslist']:checked").each(function() {
+    itype=itype+$(this).val()+',';
+    lbl+=$('input:checked').next().text();
+});
+
+tsize= lbl.replace( /\D+/g, '');                                  
+if(itype==''){
+    Alert.render('Please select atleast one Contact' ,'Alert !','ok');//calling alert popup
+    return false;
+}
+
+tcheck = parseInt(tsize);
+if(tcheck==0){
+    Alert.render('Please select a contact that has atleast one user' ,'Alert !','ok');//calling alert popup
+    return false;
+}
+
+sdate= new Date(document.getElementById("datetime").value);
+var curDate= new Date('{!currDtTm}');
+if(sdate <= curDate){
+    Alert.render('Please select a future date' ,'Alert !','ok');//calling alert popup
+    return false;
+}
+
+var eveEdDtTime =new Date('{!eveEdTime}');
+if(sdate > eveEdDtTime){
+    Alertconfirm.render('Event is complete. Are you sure you want to send notification', 'Confirmation', this, 'Ok', 'Cancel', 'Alertconfirm');
+    return false;
+}else{
+newfn();
+}
+npmpopup.Cancel();
+
+}
+var delEcId='';
+function delFn(ecId,msg,clkbtn){
+delEcId = ecId;
+Alertconfirm.render('Are you really want to delete '+msg+'?','Confirmation',clkbtn,'Ok','Cancel','Alertconfirm');
+}
+
+/*function callback(clkbtn , okbtnn){
+    
+    delMethod(delEcId);
+}*/
+
+function cloneRow(){
+    var row = document.getElementById("trRid");
+    var table = document.getElementById("tbody1");
+    var clone = row.cloneNode(true);
+    
+    clone.id="newID";
+    table.appendChild(clone);
+}
+function cloneRow1(cloneEcId){
+    /*var row = document.getElementById("trWid");
+    var table = document.getElementById("tbody1");
+    var clone = row.cloneNode(true);
+    
+    clone.id="newID";
+    table.appendChild(clone);*/
+    cloneFn(cloneEcId);
+}
+function callbackcancel(clkbtn, cnclbtnn) {
+if(clkbtn.id != 'del'){
+return false;
+}else if(clkbtn.id == 'custsendnwbutn'){
+return false;
+}
+}
+
+function callback(clkbtn, okbtnn) {
+if(clkbtn.id == 'del'){
+delMethod(delEcId);
+}else if(clkbtn.id == 'custsendnwbutn') {
+
+editfn();
+
+}else{
+newfn();
+
+}
+}
+
+function newfn(){
+var tolist='';
+if(document.getElementById("Attendee").checked == true){
+    tolist+=document.getElementById("Attendee").value+',';
+}
+if(document.getElementById("Exhibitor").checked == true){
+    tolist+=document.getElementById("Exhibitor").value+',';
+}
+if(document.getElementById("Sponsor").checked == true){
+    tolist+=document.getElementById("Sponsor").value+',';
+}
+if(document.getElementById("Speaker").checked == true){
+    tolist+=document.getElementById("Speaker").value+',';
+}
+tolist=tolist.substring(0,tolist.length-1);
+var ActStatus='';
+if(document.getElementById("activeid").checked){
+    ActStatus='Active';
+}else if(document.getElementById("inactiveid").checked){
+    ActStatus='Inactive';
+}
+
+var SentStatus='';
+var sendDate='';
+if(document.getElementById("nowid").checked){
+    SentStatus='Sent';
+}else if(document.getElementById("laterid").checked){
+    SentStatus='Scheduled';
+    sendDate = document.getElementById("datetime").value;
+}
+
+savefn(pnName,pnMsg,tolist,ActStatus,SentStatus,sendDate);
+}
+</script>
+
+<script>
+
+
+$(document).ready(function(){
+
+
+});
+
+
+</script>
+
+
+    <!--------------**************end of Confirm box popup****************--------------------->
+</apex:form>
+<!--------------------//end of body code---------------------------->
+</c:ed_basictemplate>
+</apex:page>

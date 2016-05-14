@@ -1,0 +1,3533 @@
+<apex:page sidebar="false" showheader="false" controller="BLN_Email_Dashboardscon" id="pageid" standardStylesheets="false"  action="{!displayPermissions}">
+<!------------common styles component------------>
+<c:ed_commonstyles ></c:ed_commonstyles>
+ <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<style>
+.current{ background-color:#ffffcc; color:#333; font-weight:700;}
+#example4 tbody tr td  .subtbl{ vertical-align:top; width:100.5%; border:none;  height:100%;}
+#example4 tbody tr td  .subtbl tr:last-child td{ vertical-align:top;}
+#example4 tbody tr td  .subtbl tr:last-child td{ border-bottom:0px;}
+
+#emailstoattendee:hover,#emailstoadmin:hover
+{
+    color:blue;
+    text-decoration: underline;
+}
+</style>
+
+<!------------//common styles component---------->
+<!---------//CSS Stylesheets---------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-email.css')}" />
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+<!--<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/tinyeditor/tinyeditor.css')}" />-->
+<!---datatablecss-->
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+<!---/datablecss----->
+
+<!-----------//datatable stylescss------------->
+<c:ed_basictemplate BLN_UtillDisplayLinks="{!myemaildashboards}">
+
+<!------------------Body Code------------------------------------->
+<div class="grid-1" >
+<!--------------------------->
+<div class="form-embed-div" style="width: 97%;">
+<div class="form-content-div" style="padding: 0px;">
+<!----------------topstats--------->
+<button type="button" id="new_campaign" class="togglebtn right margin-5px" style="padding: 5px;" onclick="getcampname('Product Intro Of Match Leads','1');callpopup(this);">Create Campaign</button>
+<!------------------------------------------------------------->
+<div id="TabbedPanels1" class="TabbedPanels">
+<ul class="TabbedPanelsTabGroup">
+<li class="TabbedPanelsTab">Campaigns</li>
+<li class="TabbedPanelsTab">Campaigns Logs</li>
+<li class="TabbedPanelsTab">Campaign Templates</li>
+<li class="TabbedPanelsTab">System Templates</li>
+</ul>
+<div class="TabbedPanelsContentGroup">
+<!--------------------start of ist tab------------------>
+<div class="TabbedPanelsContent" style="padding: 5px;">
+<!------->
+<apex:outputpanel id="campstdcustpanel">
+<div class="labelstickerbox">
+<ul>
+<li><i class="fa fa-bullhorn fa-fontstkr-green"></i> <span>Announcement</span>
+</li>
+<li><i class="fa fa-clock-o fa-fontstkr-blue"></i> <span>Reminder</span>
+</li>
+</ul>
+</div>
+<!--close of labelstickersbox--->
+<!---start of table----->
+<table id="example" class="display">
+<thead>
+<tr>
+<th width="8%">Category</th>
+<th width="25%">Campaign Name</th>
+<th width="13%">Campaign Type</th>
+<th width="11%">Status</th>
+<th width="22%">Scheduled / Sent On</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="textcenter"><i class="fa fa-bullhorn fa-fontstkr-green"></i></td>
+<td><a id="stdCampName" class="blue_anchor">Product Intro Of Match Leads</a></td>
+<td>Standard</td>
+<td>{!pimlstat}</td>
+
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!pimldat}" />-->
+    <c:EV_FormatDt date_Timevalue="{!pimldat}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+<td> <span><i title="Send" id="std_send" onclick="getcampname('Product Intro Of Match Leads','1');callpopup(this);" class="fa fa-share-square-o fa-actionblue">&nbsp;
+&nbsp;</i></span> <span><i  id="std_asched" onclick="getcampname('Product Intro Of Match Leads','1');callpopup(this);" title="Auto Schedule"
+class="fa fa-clock-o fa-actionblue">&nbsp; &nbsp;</i></span> <span><i
+title="Edit" id="std_edit" onclick="getcampname('Product Intro Of Match Leads','1');callpopup(this);" class="fa fa-pencil fa-edit20px">&nbsp;
+&nbsp;</i></span>
+</td>
+</tr>
+<!----reminder row------>
+<tr>
+<td class="textcenter"><i class="fa fa-clock-o fa-fontstkr-blue"></i></td>
+<td><a id="stdCampName" class="blue_anchor">Lead Retrieval Sign Up Reminder</a></td>
+<td>Standard</td>
+<td>{!lrsrstat}</td> 
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!lrsrdat}" />-->
+<c:EV_FormatDt date_Timevalue="{!lrsrdat}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+<td><span><i title="Send" id="std_send" onclick="getcampname('Lead Retrieval Sign Up Reminder','3');callpopup(this);" 
+class="fa fa-share-square-o fa-actionblue">&nbsp;
+&nbsp;</i></span> <span><i  id="std_asched" onclick="getcampname('Lead Retrieval Sign Up Reminder','3');callpopup(this);"  title="Auto Schedule"
+class="fa fa-clock-o fa-actionblue">&nbsp; &nbsp;</i></span> <span><i
+title="Edit" id="std_edit" onclick="getcampname('Lead Retrieval Sign Up Reminder','3');callpopup(this);" class="fa fa-pencil fa-edit20px">&nbsp;
+&nbsp;</i></span></td>
+</tr>
+<!---//reminder row----->
+<tr>
+<td class="textcenter"><i class="fa fa-clock-o fa-fontstkr-blue"></i></td>
+<td><a id="stdCampName" class="blue_anchor">Match Leads Buyer Sign Up Reminder</a></td>
+<td>Standard</td>
+<td>{!mbsrstat}</td> 
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!mbsrdat}" />-->
+<c:EV_FormatDt date_Timevalue="{!mbsrdat}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+<td><span><i title="Send" id="std_send" onclick="getcampname('Match Leads Buyer Sign Up Reminder','2');callpopup(this);"
+class="fa fa-share-square-o fa-actionblue">&nbsp;
+&nbsp;</i></span> <span><i  id="std_asched" onclick="getcampname('Match Leads Buyer Sign Up Reminder','2');callpopup(this);"  title="Auto Schedule"
+class="fa fa-clock-o fa-actionblue">&nbsp; &nbsp;</i></span> <span><i
+title="Edit" id="std_edit" onclick="getcampname('Match Leads Buyer Sign Up Reminder','2');callpopup(this);" class="fa fa-pencil fa-edit20px">&nbsp;
+&nbsp;</i></span></td>
+</tr>
+
+<tr>
+<td class="textcenter"><i class="fa fa-bullhorn fa-fontstkr-green"></i></td>
+<td><a id="stdCampName" class="blue_anchor">Product Intro of Lead Retrieval</a></td>
+<td>Standard</td>
+<td>{!pilrstat}</td> 
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!pilrdat}" />-->
+<c:EV_FormatDt date_Timevalue="{!pilrdat}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+<td><span><i title="Send" id="std_send" onclick="getcampname('Product Intro of Lead Retrieval','0');callpopup(this);"
+class="fa fa-share-square-o fa-actionblue">&nbsp;
+&nbsp;</i></span> <span><i  id="std_asched" onclick="getcampname('Product Intro of Lead Retrieval','0');callpopup(this);"  title="Auto Schedule"
+class="fa fa-clock-o fa-actionblue">&nbsp; &nbsp;</i></span> <span><i
+title="Edit" id="std_edit" onclick="getcampname('Product Intro of Lead Retrieval','0');callpopup(this);" class="fa fa-pencil fa-edit20px">&nbsp;
+&nbsp;</i></span></td>
+</tr>
+
+<apex:repeat id="customteplates" value="{!loadcustomemc}" var="l" >
+<tr>
+<!-- <td ><i style="class:{if!l.CampType__c =='Announcements','fa fa-bullhorn fa-fontstkr-green','fa fa-clock-o fa-fontstkr-blue')}"></i></td> -->
+<td class="textcenter"> <i class="{!if(l.CampType__c =='Announcements' , 'fa fa-bullhorn fa-fontstkr-green', 'fa fa-clock-o fa-fontstkr-blue')}"></i></td>
+<td><a class="blue_anchor">{!l.name}</a></td>
+<td>Custom</td>
+<td>{!l.Email_Status__c}</td>                  
+<td>
+<!--<c:MFSI_FormatDateTime date_Timevalue="{!l.Email_Send_Date__c}" />-->
+<c:EV_FormatDt date_Timevalue="{!l.Email_Send_Date__c}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+<td><span><i title="Test Email" onclick ="sendingtestemail('{!l.id}');" 
+class="fa fa-share-square-o fa-actiongrey">&nbsp;
+&nbsp;</i></span> <span><i title="Resend"  style="display:{!if(l.Email_Status__c=='Sent'||l.Email_Status__c=='Scheduled','','none')}"  onclick="resendcampaign('{!l.id}')"
+class="fa fa-repeat fa-actionblue">&nbsp; &nbsp;</i></span> <span><i title="Send"  id="custom_sendbtn"  onclick="callpopup(this);campidsend('{!l.id}');"
+class="fa fa-share-square-o fa-actionblue" style="display:{!if(l.Email_Status__c=='Sent'||l.Email_Status__c=='Scheduled','none','')}">&nbsp;
+&nbsp;</i></span> <span><i title="Auto Schedule" id="cust_asched" onclick="callpopup(this);campidsend('{!l.id}');"
+class="fa fa-clock-o fa-actionblue" style="display:{!if(l.Email_Status__c=='Sent'||l.Email_Status__c=='Scheduled','none','')}" >&nbsp; &nbsp;
+&nbsp;</i></span> <span><i title="Delete"  onclick="Alertconfirmdel.render('Are you really want to delete ?' , 'Confirmation',this,'{!l.id}','Ok','Cancel','Alertconfirmdel')"
+class="fa fa-trash-o fa-delete20px">&nbsp; &nbsp;</i></span></td>
+<!-- <td><input type="button" value="Fetch Data" onclick="campaignreport1('{!l.Email_Campaign__c}','{!l.id}')" style="display:{!IF(l.Mail_Sent__c==null&&l.Delivered__c==null&&l.Failed__c==null,'','none')}"/></td> -->
+
+</tr>
+</apex:repeat>    
+</tbody>                  
+</table>
+<script>
+try{
+    calldt3();
+}catch(e){}
+
+</script>
+</apex:outputpanel>
+<!--close of datatable--->
+</div>
+<!--close of tab1 tabbedpanelscontent-->
+<!-------------------------->
+<!--------------------start of 2nd content------------------>
+
+<div class="TabbedPanelsContent" style="padding: 5px;">
+<apex:outputpanel id="logpanel">
+<!------->
+<table id="example2" class="display">
+<thead>
+<tr>
+<th width="22%">Campaign Name</th>
+<th width="1%">Template</th>
+<th width="10%">To List</th>
+<th >Date</th>
+<th width="3%">Mail Sent</th>
+<th  width="4%">Delivered</th>
+<th width="1%">Failed</th>
+<th width="1%">View Data</th>
+</tr>
+</thead>
+<tbody>
+
+<apex:repeat id="logscreen" value="{!logList}" var="l" >
+<tr>
+<td ><a class="blue_anchor">{!l.Email_Campaign__r.name}</a></td>
+<td>{!l.Email_Campaign__r.Template_Type__c}</td>
+<td>{!l.Email_Campaign__r.ToList__c}</td>
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!l.Sent_Date__c}" />-->
+<c:EV_FormatDt date_Timevalue="{!l.Sent_Date__c}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+<td class='textcenter'>{!l.Mail_Sent__c}</td>
+<td class='textcenter'>{!l.Delivered__c}</td>
+<td class='textcenter'>{!l.Failed__c}</td>
+<td class='textcenter'><input type="button" class="togglebtn" value="Fetch Data" onclick="campaignreport1('{!l.Email_Campaign__c}','{!l.id}')" style="display:{!IF(l.Mail_Sent__c==null&&l.Delivered__c==null&&l.Failed__c==null,'','none')}"/></td>
+</tr>
+</apex:repeat>    
+
+</tbody>
+</table>
+
+<!---------->
+<script>
+try{
+    calldt();
+}catch(e){}
+
+</script>
+</apex:outputpanel>
+
+</div>
+<!--close of tab2 tabbedpanelscontent-->
+<!--------------------start of 3rd content------------------>
+<div class="TabbedPanelsContent" style="padding: 5px;">
+<apex:outputpanel id="CusTempPanel">
+<!------->
+<table id="example3" class="display">
+<thead>
+
+<tr>
+<th width="35%">Template Name</th>
+<th width="25%">Template Type</th>
+<th width="20%">Created Date</th>
+<th width="20%">Last Modified Date</th>
+</tr>
+
+</thead>
+<tbody>
+
+<!----announcement row------>
+<apex:repeat value="{!emailcampslistnew}" var="ecl" >
+<tr>
+<td><a id="camp_edittemp" href="#" class="a_underline custtemp_edit" onclick="callpopup(this)" >{!ecl.name}</a></td><!-- <a href="#" class="a_underline"></a> -->
+<td>{!ecl.Template_Type__c}</td>
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!ecl.createdDate}" />-->
+<c:EV_FormatDt date_Timevalue="{!ecl.createdDate}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!ecl.LastModifiedDate}" />-->
+<c:EV_FormatDt date_Timevalue="{!ecl.LastModifiedDate}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+</tr>
+</apex:repeat>
+
+<apex:repeat id="Campcustomtemplates" value="{!ems}" var="li" >
+<tr>
+<td><a id="camp_edittemp" href="#" class="a_underline" onclick="callpopup(this)">{!custtempnamemap[li.id]}</a></td>
+<td>{!li.TemplateType}</td>
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!li.createdDate}" />-->
+<c:EV_FormatDt date_Timevalue="{!li.createdDate}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+<td><!--<c:MFSI_FormatDateTime date_Timevalue="{!li.LastModifiedDate}" />-->
+<c:EV_FormatDt date_Timevalue="{!li.LastModifiedDate}" t_Zone="{!Currentevent.Time_Zone__c}"/>
+</td>
+</tr>
+</apex:repeat>
+
+<!----custom reminder row------>
+
+</tbody>
+</table>
+<!--close of datatable--->
+<!---------->
+<script>
+try{
+    calldt2();
+}catch(e){}
+
+</script>
+
+</apex:outputpanel>
+</div>
+<!--close of tab3 tabbedpanelscontent-->
+
+<!--------------------start of 4th content------------------>
+<div class="TabbedPanelsContent" style="padding: 5px;">
+<apex:outputpanel id="SysTempPanel">
+<!------->
+
+<div style="float:right; display: flex;">
+
+<apex:outputpanel id="pnl1" rendered="{!IF(StopMailsToAttn==true,true,false)}">
+<label>
+<span style="text-align:right;margin-left:10px;cursor:pointer;" onmouseover="this.style.textDecoration='underline';"  onmouseout="this.style.textDecoration='none';this.style.color='black';">
+<input type="checkbox" value="false" onChange="UpdateEmailPrefAttn(this.value);" checked="checked" style="text-decoration:none;"/> Stop Emails To Attendees
+
+</span></label></apex:outputpanel><br/>
+
+<!--!NOT(r.isSuccess) -->
+<apex:outputpanel id="pnl2" rendered="{!IF(StopMailsToAttn==false,true,false)}">
+<label>
+<span style="text-align:right; margin-left:10px;cursor:pointer;" onmouseover="this.style.textDecoration='underline';"  onmouseout="this.style.textDecoration='none';this.style.color='black';">
+<input type="checkbox" value="true" onChange="UpdateEmailPrefAttn(this.value);" style="text-decoration:none;" /> Stop Emails To Attendees
+
+</span></label></apex:outputpanel>&nbsp;<br/>
+
+
+<apex:outputpanel id="pnl3" rendered="{!IF(StopMailsToEVadmn==true,true,false)}">
+<label>
+<span style="text-align:right; margin-left:10px;cursor:pointer;" onmouseover="this.style.textDecoration='underline';"  onmouseout="this.style.textDecoration='none';this.style.color='black';">
+
+<input type="checkbox" value="false" onChange="UpdateEmailPrefEvAdm(this.value);" Checked="checked" style="text-decoration:none;"/> Stop Emails To Event Admin
+</span></label></apex:outputpanel>&nbsp;<br/>
+
+
+<apex:outputpanel id="pnl4" rendered="{!IF(StopMailsToEVadmn==false,true,false)}">
+<label>
+<span style="text-align:right;margin-left:10px;cursor:pointer;" onmouseover="this.style.textDecoration='underline';"  onmouseout="this.style.textDecoration='none';this.style.color='black';">
+
+<input type="checkbox" value="true" onChange="UpdateEmailPrefEvAdm(this.value);"  style="text-decoration:none"/> Stop Emails To Event Admin
+</span></label></apex:outputpanel><br/>
+
+
+
+
+</div>
+<table id="example4" class="display" width="100%"  cellspacing="0" cellpadding="0">
+
+<thead>
+<tr>
+
+<th rowspan="2" style="width:25%;">Template Name</th>
+<th colspan="2">Template Type</th>
+<th rowspan="2" style=" width:13%;">Action</th>
+</tr>
+<tr>
+<th style="width:31%">Standard</th>
+<th style="31%">Custom</th>
+</tr>
+</thead>
+<tbody> 
+<!------------first parent record---------> 
+<tr>
+<td style="vertical-align:top;"><a class="blue_anchor">Order Confirmation</a></td>
+<!-----standard template td---->
+<td class="padding-0px" style="vertical-align:top;height: 100%;">
+<!-----standard temp table------->  
+<table class="display subtbl ">
+<!-----inside repeat----->   
+<apex:repeat value="{!StandardTempnamesorder}" var="STemp" > 
+<tr>
+<td class="current">
+<input  checked="checked" id="{!STemp.label}" value="{!STemp.value}" type="radio" name="stemporder"   onClick="getselvalues('{!STemp.value}');" />
+<label for="{!STemp.label}">{!STemp.label}</label>
+</td>
+</tr>
+</apex:repeat>
+<!----//end of inside repeat---->
+
+</table>
+<!-----end of standard temp table------->     
+</td>
+<!-----end of standard template td---->
+
+<!----- Custom template td---->
+<td class="padding-0px">
+<!-----cust temp table------->  
+<table class="display subtbl selcustom_temp">
+<!-----inside repeat----->  
+
+<apex:repeat value="{!emailcampslistordercust}" var="STemporder1" >
+<tr>
+<td>
+<apex:outputText rendered="{!STemporder1.Template_Status__c=='Active'}"> 
+<input  type="radio" checked="checked" name="stemporder" id="{!STemporder1.CampEmailTemplate__c}" value="{!STemporder1.id}" onClick="getselvaluesforcust('{!STemporder1.id}');" />
+<label for="{!STemporder1.CampEmailTemplate__c}">{!STemporder1.CampEmailTemplate__c}</label>
+</apex:outputText>
+
+<apex:outputText rendered="{!STemporder1.Template_Status__c!='Active'}"> 
+<input  type="radio" name="stemporder" id="{!STemporder1.CampEmailTemplate__c}" value="{!STemporder1.id}" onClick="getselvaluesforcust('{!STemporder1.id}');" />
+<label for="{!STemporder1.CampEmailTemplate__c}">{!STemporder1.CampEmailTemplate__c}</label>
+</apex:outputText>
+
+</td>
+</tr>
+</apex:repeat> 
+
+<!----//end of inside repeat---->
+
+</table>
+<!-----end of cust temp table------->     
+</td>
+<!-----end of custom template td---->
+
+<td style="vertical-align:top" class="textcenter"><span><a class="togglebtn" onclick="systempstatus();">Active</a></span> <span><a id="sys_tempedit" class="togglebtn systtemp_edit" onclick="callpopup(this)">Edit</a></span> </td>
+</tr>
+<!--------End of first parent record--------->  
+
+</tbody>
+</table>
+<!---------->
+<!--close of datatable--->
+<!---------->
+<script>
+try{
+    calldt1();
+}catch(e){}
+
+</script>
+</apex:outputpanel>
+</div>
+<!--close of tab4 tabbedpanelscontent-->
+
+<!--------------------End of tab content------------------>
+</div>
+<!--close of TabbedPanelsContentGroup-->
+</div>
+<!--close of tabbedpanelsgroup1-->
+<!--------------------------------------------->
+</div>
+<!--close fo form-content-div--->
+</div>
+<!--close of form-embed-div---->
+</div>
+<!--close of grid-1----->
+<!--------------------//end of body code---------------------------->
+</c:ed_basictemplate>
+<!----------------form Popup script----------------------------->
+<!------******************Start of popup for Campaigns****************************------>
+<div class="dialogoverlay" style="z-index: 0;"
+id="std_dialogoverlay"></div>
+<!----------------->
+<!--close of dialogoverlay-->
+<div id="dialogbox_campaign" style="z-index: 0; display: none; width: 90%; margin-left: 5%;">
+<a id="close"   onclick="Alert_campaign.Cancel();panelrerender();" style="margin-top:-5px;">x</a>
+<script>
+function panelrerender(){
+    window.location.reload()
+    rerenderTopPanel();
+}
+</script>
+<div class="form-embed-div" style=" width:95%; margin-top:20px;">
+<div class="form-content-div" style=""> 
+<div class="grid-1" style="width: 98%; margin-left: 1%; padding-right: 0px;">
+<div class="title-grid">Campaign</div>
+<!----close of title-grid------->
+<!----*************************SetUp(campdetails_form)**************----->
+<div id="camp_setup" class="camp_formdetails" style="display:;">
+<div class="content-gird">
+<!----------------->
+<div style="width: 100%; margin: 0px auto;">
+<!---------------->
+<div class="form-embed-div" style="width: 45%;">
+<div class="form-content-div">
+<p class="notemsg_red  textcenter">*Note: All the Fields are mandatory.</p>
+<br />
+<!-------------->
+<div style="width: 90%; margin: 0px auto;">
+<!------->
+<div class='formbox'>
+<div class="fieldswrap">
+<label>Campaign Type :<span id="mandatory">*</span></label> 
+<select id="camptypeslist" class="selectlist">
+<option value="Announcements">Announcements</option>
+<option value="Reminders">Reminders</option>
+</select>
+</div>
+<!------->
+
+<div class="fieldswrap" style="margin-left: 2.2%">
+<label style="margin-left: 14px;">From Name :<span
+id="mandatory">*</span></label> <input id="campfrmname_ip"
+type="text" value= "{!$User.firstname} {!$User.lastname}" />
+</div>
+
+<!-------->
+</div>
+<!---close of formbox---->
+<!------>
+</div>
+<!------------------->
+</div>
+<!---close of  form-content-div----->
+</div>
+<!-----close of form-embed-div----->
+<!-----------------navigation box for campaignform------------>
+<!---------------->
+<div class="form-embed-div" id="campsetup_nav" style="width: 80%;">
+<div class="email_breadnav form-content-div" style="background-color: whitesmoke;">
+<!-------------->
+<div class="breadnav_list" style="margin-left: 24%;">
+<!---start of bread nav list------->
+<!------>
+<ul>
+<li class="active">Setup <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Recipients <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Templates <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Confirm</li>
+</ul>
+<!------->
+</div>
+<!---close of  bread nav list--->
+<!---------->
+<button class="togglebtn right" type ="button" onClick="showmailchimptab()" style="padding: 5px; margin-top: -2px;">Next</button>
+<!------------->
+<!---------------->
+</div>
+<!---close of  form-content-div----->
+</div>
+<!-----close of form-embed-div----->
+<!-----------end of navigation box for campaignform---------->
+<!-----------------navigation box without temp------------>
+<!---------------->
+<div id="campntsetup_nav" class="form-embed-div" style="width:80%;">
+<div class="email_breadnav form-content-div"   style="background-color: whitesmoke;">
+<!-------------->
+<div class="breadnav_list" style="margin-left:33%;"><!---start of bread nav list------->
+<!------>  
+<ul>
+<li class="active">Setup 
+<span>
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Recipients
+<span>
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Confirm
+</li>
+</ul>
+<!-------> 
+</div><!---close of  bread nav list--->
+<!---------->
+<button class="togglebtn right" onClick="showmailchimptab()" style="padding:5px; margin-top:-2px;">Next</button>
+<!------------->  
+<!---------------->
+</div><!---close of  form-content-div----->
+</div> <!-----close of form-embed-div----->
+<!-----------end of navigation box without temp---------->
+</div>
+<!----close of insidewrap---->
+<!--------------->
+</div>
+<!--close of content-grid--->
+</div>
+<!----close of camp_formdetails----->
+<!----***********************end of SetUp(campdetails_form)*********************----->
+<!------->
+
+<!----***********************Recipients(campdetails_form)*********************----->
+
+<div id="camp_recipients" class="camp_formdetails" style="display: none;">
+
+<div class="content-gird">
+<!----------------->
+<div style="width: 100%; margin: 0px auto;">
+<!-------------Event Contact form---------------------->
+<div id="camp_ec" style="display:;">
+<!---->
+<div class="form-embed-div" style="width: 35%;">
+<div class="form-content-div">
+<!------------>
+<p class="bg-font" style="padding-bottom: 10px;">Event
+Contacts</p>
+<!--<hr style=""/>-->
+<!-------------->
+<div style="width: 96%; margin: 0px auto;">
+<!------>
+<table width="100%" class="display">
+
+<apex:repeat value="{!regsetting}" var="dspset">
+
+<tr id="select-contacts" >
+<td style="">
+<input id="remember" name="recipientslist" type="checkbox" class="margin-ryt-5px" value="{!dspset}"/><label  for="recipientslist" style="margin-left:1%">{!dspset}  ({!regsettingmap[dspset]})</label>
+</td>
+</tr>
+</apex:repeat> </table>
+<!------>
+</div>
+<!------------------->
+</div>
+<!---close of  form-content-div----->
+</div>
+<!--close of form-embed-div---->
+<!-----close of form-embed-div----->
+<!-----------------navigation box for event contacts------------>
+
+<div class="form-embed-div" id="campec_nav" style="width: 80%;">
+<!---event contact bread nav---------->
+<div id="ec_navbar" class="email_breadnav form-content-div" style="background-color: whitesmoke;">
+<!---------->
+<button class="togglebtn left" type="button" onClick="showpackage('camp_setup','camp_recipients');" style="padding: 5px; margin-top: -2px;">Previous</button>
+<!-------------->
+<div class="breadnav_list">
+<!---start of bread nav list------->
+<!------>
+<ul>
+<li>Setup <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li class="active">Recipients <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Templates <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Confirm</li>
+</ul>
+<!------->
+</div>
+<!---close of  bread nav list--->
+<!---------->
+<button class="togglebtn right" type="button" onClick="valeventcontacts();" style="padding: 5px; margin-top: -2px;">Next</button>
+<!------------->
+<!---------------->
+</div>
+<!---close of  ec_navbar  form-content-div----->
+<!---event contact bread nav---------->
+</div>
+<!----close of form-embed-div--->
+<!-----------------navigation box for event contacts------------>
+
+<!-----------------navigation box for event contacts without template------------>
+
+<div id="campntec_nav" class="form-embed-div" style="width:80%;">
+<!---event contact bread nav---------->   
+<div id="ec_navbar" class="email_breadnav form-content-div" style="background-color: whitesmoke;">
+<!---------->
+<button  type="button" class="togglebtn left" onClick="showpackage('camp_setup','camp_recipients');" style="padding:5px; margin-top:-2px;">Previous</button>
+<!-------------->
+<div class="breadnav_list" style="margin-left: 27%;"><!---start of bread nav list------->
+<!------>  
+<ul>
+<li>Setup 
+<span>
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li class="active">Recipients
+<span>
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Confirm
+</li>
+</ul>
+<!-------> 
+</div><!---close of  bread nav list--->
+<!---------->
+<button  class="togglebtn right" onClick="valeventcontacts()" style="padding:5px; margin-top:-2px;">Next</button>
+<!------------->  
+<!---------------->
+</div><!---close of  ec_navbar  form-content-div----->
+<!---event contact bread nav---------->    
+</div><!----close of form-embed-div--->
+<!-----------------navigation box for event contacts without template------------>
+</div>
+<!---close of campec--->
+<!------------- Close of Event Contact form---------------------->
+
+<!-------------Mail Chimp List form---------------------->
+<apex:form id="form1id">
+<div id="camp_mcl" style="display: none;">
+<!---->
+<div class="form-embed-div" style="width: 62%;">
+<div class="form-content-div">
+<!------------>
+<p class="bg-font" style="padding-bottom: 10px;">Mail Chimp List</p>
+<!-------------->
+<div style="width: 96%; margin: 0px auto;">
+<p>
+To send invitations you need to connect with Mail Chimp. <a class="a_underline" onclick="Alert_mailchimphelp.render('dialogbox_mailchimphelp','mailchimphelp_dialogoverlay','Alert_mailchimphelp' ,this);"> Click here</a> to see Mail Chimp Integration instructions
+</p>
+<br />
+<!------>
+<div class="formbox">
+<!------->
+<div class="fieldswrap" style="margin-left: 14%">
+<label>From Email Id :<span id="mandatory">*</span></label> 
+<input id="campfrmemail_id" value="" type="text" />
+<p id="mcapi_notemsg1" class="notemsg_red  textcenter" style="padding-bottom: 0px;">*Note: From email should be same to the email associated with your Mailchimp account.</p>
+</div>
+<div class="fieldswrap" style="margin-left: 8.7%">
+<label>Mail Chimp API Key :</label> <input id ="impmailchimptxt1" value="{!MCApiKeyInputVal}" class="margin-ryt-5px" type="text" /><span>
+<button type="button" class="togglebtn" onClick="saveapi()" style="padding: 5px;">Get Mail Chimp List</button>
+</span>
+</div>
+<!------->
+<div id="mcl_selectapi" class="fieldswrap" style="display: none; margin-left: 24%">
+<apex:outputPanel id="McImportedListsPanel">
+<label>Mail Chimp List : </label> 
+<apex:selectList id="SelListId" value="{!MCListId}" size="1" styleclass="selectlist" onChange="impSegs();" style=" width:45%;">                          
+<apex:selectOptions Value="{!ListIdsAndNames}" ></apex:selectOptions>                    
+</apex:selectList>
+</apex:outputPanel> 
+</div>
+<!------->
+<div id="mcl_selectsgmt" class="fieldswrap" style="display: none; margin-left: 29%">
+<apex:outputPanel id="Mcsegementlist"> 
+<label>Segments : </label>
+<apex:selectList id="selSegVal" value="{!MCSegmentId}" size="1" styleclass="selectlist" onChange="" style="width:48%;">                          
+<apex:selectOptions Value="{!SegmentIdsAndNames}"></apex:selectOptions>                    
+</apex:selectList>
+<span>
+<button type="button" class="togglebtn" onClick="showdiv('mcl_sgmtbox'), hidediv('mc_sgmtnotemsg')">
+<i  title="Add New Segment" class="fa fa-plus fa-1x" style="font-size: 14px; padding: 4px;"></i>
+</button>
+</span>
+<p id="mc_sgmtnotemsg" class="notemsg_red  textcenter" style="padding-bottom: 0px;">Note:When you select an existing segment,the segment will be appended.</p>
+</apex:outputPanel>         
+</div>
+<!--------->
+
+<div id="mcl_sgmtbox" style="display: none">
+<!--start of mcl segment box------>
+<!------->
+<div class="fieldswrap" style="margin-left: 24%">
+<label>Segment Name :</label> <input id="segmentvalue" type="text" style="width: 40%;" />
+</div>
+<!-------->
+<div class="fieldswrap" style="margin-left: 50%">
+<span><button id="addsegmentsave-btn" type ="button" onclick="createSegment();" class="togglebtn margin-ryt-5px;">Save</button></span> 
+<span><button onClick="hidediv('mcl_sgmtbox')" type="button" class="togglebtn">Cancel</button></span>
+</div>
+<!-------->
+</div>
+<!--close of mcl segment box------>
+<p id="mcapi_notemsg" class="notemsg_red  textcenter" style="padding-bottom: 0px;">*Note: Please Enter Your Mail Chimp API Key for successfully importing the list.</p>
+</div>
+<!------>
+</div>
+<!------------------->
+</div>
+<!---close of  form-content-div----->
+</div>
+<!-----close of form-embed-div----->
+<!-----------------navigation box for Mail Chimp List------------>
+<div class="form-embed-div" id="campmcl_nav"  style="width: 80%;">
+<!---event contact bread nav---------->
+<div id="mcl_navbar" class="email_breadnav form-content-div" style="background-color: whitesmoke;">
+<!---------->
+<button class="togglebtn left" type="button" onClick="showpackage('camp_ec','camp_mcl');" style="padding: 5px; margin-top: -2px;">Previous</button>
+<!-------------->
+<div class="breadnav_list">
+<!---start of bread nav list------->
+<!------>
+<ul>
+<li>Setup <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li class="active">Recipients <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Templates <span> <i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Confirm</li>
+</ul>
+<!------->
+</div>
+<!---close of  bread nav list--->
+<!---------->
+<button class="togglebtn right" type="button" onClick="showtempaltebox()" style="padding: 5px; margin-top: -2px;">Next</button>
+<!---<apex:commandButton styleclass="togglebtn right"  onClick="showtempaltebox()" style="padding: 5px; margin-top: -2px;" title="Next" status="AjaxLoader"  />--->
+<!------------->
+</div>
+<!---close of  ec_navbar  form-content-div----->
+<!---event contact bread nav---------->
+</div>
+<!----close of form-embed-div--->
+<!-----------------navigation box for Mail Chimp Lis without temp------------>
+<div id="campntmcl_nav" class="form-embed-div" style="width:80%;">
+<!---event contact bread nav---------->   
+<div id="mcl_navbar" class="email_breadnav form-content-div" style="background-color: whitesmoke;">
+<!---------->
+<button type="button" class="togglebtn left" onClick="showpackage('camp_ec','camp_mcl');" style="padding:5px; margin-top:-2px;">Previous</button>
+<!-------------->
+<div class="breadnav_list" style="margin-left: 27%;"><!---start of bread nav list------->
+<!------>  
+<ul>
+<li>Setup 
+<span>
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li class="active">Recipients
+<span>
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Confirm
+</li>
+</ul>
+<!-------> 
+</div><!---close of  bread nav list--->
+<!---------->
+<button  class="togglebtn right" type="button" onClick="showtempalteboxforstand();updatecamp_details();" style="padding:5px; margin-top:-2px;">Next</button> 
+<!---------------->
+</div><!---close of  ec_navbar  form-content-div----->
+<!---event contact bread nav---------->    
+</div><!----close of form-embed-div--->
+<!-----------------navigation box for Mail Chimp List without temp------------>
+</div>
+<!---close of campe_mcl--->
+</apex:form>
+<!------------- Close of Mail chimp List form---------------------->
+</div>
+<!----close of insidewrap---->
+<!--------------->
+</div>
+<!--close of content-grid--->
+</div>
+<!----close of camp_formdetails----->
+<!----***********************End of Recipients(campdetails_form)*********************----->
+<!----*************************Template(campdetails_form)**************----->
+<div id="camp_temp" style="display: none;">
+<div class="content-gird">
+<!----------------->
+<div style="width: 100%; margin: 0px auto;">
+<!---------------->
+<div class="form-embed-div" style="width: 95%;">
+<div class="form-content-div" style="padding: 0px; height: 410px;">
+<!-------------->
+<div class="templatebox" style="margin: 0px auto;">
+<!--*************start of left side select ticket box***********----->
+<div class="emailtempbox_left" >
+<!---->
+<div class="temptop_headingbox">
+<p class="bg-font padding-5px">Select Email Template</p>
+</div>
+<!---close of temptop_headingbox----->
+<!---->
+<div id="tempcategory_box" class="tempcategory_box">
+<!--select standard template table-->
+<table id="stdtemp_tbl" width="100%" class="display">
+<thead>
+<tr>
+<th colspan="2" style="color: #337AB7;">Standard Templates</th>
+</tr>
+</thead>
+<tbody>
+<apex:repeat value="{!StandardTempnames}" var="STemp" > 
+<tr>
+
+<tr>
+<td style="width: 11%"><input type="radio" name="stemp" id="{!STemp.label}"  value="{!STemp.value}" class="chkticket"  onClick="getselvalues('{!STemp.value}');" /></td>
+<td><label >{!STemp.label}</label></td>
+</tr>
+
+</tr>
+</apex:repeat>
+
+</tbody>
+</table>
+
+<table id="stdtemp_tblorder" width="100%" class="display" style="display:none">
+<thead>
+<tr>
+<th colspan="2" style="color: #337AB7;">Standard Template</th>
+</tr>
+</thead>
+<tbody>
+<apex:repeat value="{!StandardTempnamesorder}" var="STemp" > 
+<tr>
+
+<tr>
+<td style="width: 11%"><input type="radio" name="stemporder" id="{!STemp.label}"  value="{!STemp.value}" class="chkticket"  onClick="getselvalues('{!STemp.value}');" /></td>
+<td><label >{!STemp.label}</label></td>
+</tr>
+
+</tr>
+</apex:repeat>
+
+</tbody>
+</table>                                          
+
+<!---//close of select standard template table---->
+<!--select custom template table-->
+<table id="custtemp_tbl" width="100%" class="display">
+<thead>
+<tr>
+<th colspan="2" style="color: #337AB7;">Custom Templates</th>
+</tr>
+</thead>
+<tbody>
+<apex:repeat value="{!CustomTempnames}" var="STemp" > 
+<tr>
+<tr>
+<td style="width: 11%"><input type="radio" name="stemp" id="{!STemp.label}"   value="{!STemp.value}" class="chkticket"  onClick="getselvalues('{!STemp.value}');" /></td>
+<td><label >{!STemp.label}</label></td>
+</tr>
+</tr>
+</apex:repeat>
+</tbody>
+</table>
+<table id="custtemp_tblorder" width="100%" class="display" style="display:none;">
+<thead>
+<tr>
+<th colspan="2" style="color: #337AB7;">Custom Templates</th>
+</tr>
+</thead>
+<tbody>
+<apex:repeat value="{!CustomTempnamesorder}" var="STemp" > 
+<tr>
+<tr>
+<td style="width: 11%"><input type="radio" name="stemporder" id="{!STemp.label}"   value="{!STemp.value}" class="chkticket"  onClick="getselvaluesforcust('{!STemp.value}');" /></td>
+<td><label >{!STemp.label}</label></td>
+</tr>
+</tr>
+</apex:repeat>
+</tbody>
+</table>                                          
+<!---//close of custom template table---->
+</div>
+<!--close of tempcategory_box---->
+</div>
+<!--*************end of left side select ticket box***********----->
+<!--*************start of right side select emaileditor***********----->
+<div class="emailtempbox_right">
+<!--*****start of email template output box*******-->
+<div id="emailtempop_box">
+<div class="temptop_headingbox textcenter">
+<!---->
+<a class="togglebtn left margin-5px strong_700" style="padding: 5px; margin-top: 2px;" onClick="appendedittext()"> 
+<i class="fa fa-pencil-square-o fa-1x">&nbsp;</i>Edit
+</a>
+<p class="bg-font padding-5px">Email Body</p>
+</div>
+<!---close of temptop_headingbox----->
+<!---start of tempoutputet_view--->
+<div class="tempoutput_view">
+<!-------->
+<div class="emailsubject_outputtxt padding-5px" style="border-bottom: 1px solid #ddd;">
+<label class="labeltitles left margin-ryt-5px">Email Subject:</label>
+<p id="emailsubj_optext" class="strong_700 left">
+</p>
+<div class="clear"></div>
+</div>
+<!--close of emailsubject_outputtxt--->
+<div class="clear"></div>
+<!---------->
+<div class="emailbody_output padding-5px" style="line-height: 25px;" id="emailbody-temp">
+<table  width="99.9%" border="0" style="text-align: left;">
+<tr style="border-bottom: 1px solid #E5E5E5;">
+<td style="font-size: 20px;"><b>"{!eventname1}"</b></td>
+</tr>
+<tr>
+<td style="font-size: 18px;">*|IF:FNAME|*Dear *|TITLE:FNAME|*,*|ELSE:|*Dear,*|END:IF|* </td>
+</tr>
+<tr>
+<td style="font-size: 15px;">We are working with Eventdex to help you with your event "{!eventname1}".
+All badgeswill now have a QR code specific to your name and company.</td>
+</tr>
+<tr style="border-bottom: 1px solid #E5E5E5;">
+<td style="font-size: 15px;">You have been added to the Eventdex database for "{!eventname1}"</td>
+</tr>
+<tr>
+<td style="font-size: 15px;"><u>Now What?</u></td>
+</tr>
+<tr>
+<td style="font-size: 15px;">Here are some Youtube videos to give you an idea of what will happen.</td>
+</tr>
+<tr>
+<td style="font-size: 15px;"><b>1.</b> What is QR Code 
+<img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/YouTube.png')}" width="60" height="30" style="margin-left: 2%; margin-bottom: -10px;" /></td>
+</tr>
+<tr>
+<td style="font-size: 15px;"><b>2.</b> How to use Booth Admin Portal 
+<img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/YouTube.png')}" width="60" height="30" style="margin-left: 2%; margin-bottom: -10px;" /></td>
+</tr>
+<tr>
+<td style="font-size: 15px;">Next step. Download the appropriate app to your phone by either visiting 
+<a style="text-decoration: underline;">http://www.eventdex.com</a>
+    website or the appropriate app store / market place.
+    </td>
+</tr>
+<!----->
+<tr>
+<td style="font-size: 15px;">Here are some Youtube videos to give you an idea of what will happen.</td>
+</tr>
+<tr>
+<td style="font-size: 15px;"><b>1.</b> What is QR Code 
+<img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/YouTube.png')}" width="60" height="30" style="margin-left: 2%; margin-bottom: -10px;" /></td>
+</tr>
+<tr>
+<td style="font-size: 15px;"><b>2.</b> How to use Booth Admin Portal 
+<img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/YouTube.png')}" width="60" height="30" style="margin-left: 2%; margin-bottom: -10px;" /></td>
+</tr>
+<tr>
+<td style="font-size: 15px;">Next step. Download the appropriate app to your phone by either visiting <a style="text-decoration: underline;">http://www.eventdex.com</a>
+    website or the appropriate app store / market place.
+    </td>
+</tr>
+</table>
+</div>
+<!---close of emailbody_output----->
+<!----------->
+</div>
+<!--close of tempoutput_view----->
+<!-------->
+<!----->
+</div>
+<!--close of emailtempop_box---->
+
+<!--*****close of email template output box*******-->
+
+<!--*****start of email template Editor box*******-->
+<div id="emailtempeditor_box" style="display: none;">
+<div class="temptop_headingbox">
+<!------->
+<a id="stdtemp_saveas" class="togglebtn left margin-5px strong_700" style="padding: 5px; margin-top: 2px;" onclick="stdtempsaveas(this)"> 
+<i class="fa fa-floppy-o fa-1x">&nbsp;</i>Save As
+</a>
+<!---->
+<a id="stdtemp_save" class="togglebtn left margin-5px strong_700" style="padding: 5px; display: none; margin-top: 2px;" onclick="edittempsave()"> 
+<i class="fa fa-floppy-o fa-1x">&nbsp;</i>Save
+</a>
+<a id="sys_stdtemp_save" class="togglebtn left margin-5px strong_700" style="padding: 5px; display: none; margin-top: 2px;" onclick="sysedittempsave()"> 
+<i class="fa fa-floppy-o fa-1x">&nbsp;</i>Save
+</a>
+<!------>
+<a class="togglebtn left margin-5px strong_700" style="padding: 5px; margin-top: 2px;" onClick=" edittempcancel();"> 
+<i class="fa fa-times fa-1x">&nbsp;</i>Cancel
+</a>
+<p class="bg-font padding-5px" style="margin-left: 47%;">Email Body</p>
+</div>
+<!---close of temptop_headingbox----->
+<!---start of tempedit_view--->
+<div class="tempedit_view">
+<div class="emailseditor_fields padding-5px" style="border-bottom: 1px solid #ddd;">
+<!--------->
+<label class="labeltitles  margin-ryt-5px">Select Field:</label> 
+<span> <select id="select1" onChange="updatecopyfield(this)" class="selectlist-datatable" style="margin-top: -3px;">
+<option value="First Name">First Name</option>
+<option value="Last Name">Last Name</option>
+<!--<option value="Company">Company</option>
+<option value="username">User Name</option>
+<option value="useremail">User Email</option>-->
+<option value="eventname">Event Name</option>
+<option value="eventadminname">Event Admin Name</option>
+<option value="eventadminemail">Event Admin Email</option>
+<option value="eventdate">Event Date</option>
+<option value="eventlocation">Event Location</option>
+<!--<option value="company">User Company</option>-->
+<option value="address1">Event Address1</option>
+<option value="address2">Event Address2</option>
+<option value="city">Event City</option>
+<option value="state">Event State</option>
+<option value="zip">Zip</option>
+<!--<option value="Tickettype">Tickettype</option>-->
+</select>
+<select class="selectlist-datatable" id="select2" onChange="updatecopyfield1(this)" style="margin-top: -3px;display:none;">
+<option value="username">User Name</option>
+<option value="useremail">User Email</option>
+<option value="eventname">Event Name</option>
+<option value="eventadminname">Event Admin Name</option>
+<option value="eventadminemail">Event Admin Email</option>
+<option value="eventdate">Event Date</option>
+<option value="eventlocation">Event Location</option>
+<option value="Qrcode">QR code</option>
+<option value="company">User Company</option>
+<option value="address1">Event Address1</option>
+<option value="address2">Event Address2</option>
+<option value="city">Event City</option>
+<option value="state">Event State</option>
+<option value="zip">Zip</option>
+<option value="Tickettype">Tickettype</option>
+</select>
+</span>&nbsp;
+<!-------->
+<label class="labeltitles  margin-ryt-5px">Copy Field:</label> <span> 
+<input type="text" id="copyfield_txt" style="width: 28%; height: 20px; margin-top: -3px;" />
+</span> <br/>
+<!-------->
+<label class="labeltitles  margin-lft-5px margin-ryt-5px">Email Subject:</label> <span> 
+<input id="temp_emailsubtxt" type="text" style="width: 82%; height: 20px;" />
+</span>
+<!-------->
+<div class="clear"></div>
+</div>
+<!--close of emailseditor_fields --->
+<div class="clear"></div>
+<!-------*****--->
+<!--<textarea id="tinyeditor" style="width: 100%; height: 232px;"></textarea>-->
+<textarea id="tinyeditor" style="width: 100%; height: 232px;" class="mceEditor"></textarea>
+<!---------->
+</div>
+<!---close of tempedit_view---->
+</div>
+<!--close of emailtempeditor_box---->
+<!--*****close of email template Editor box*******-->
+<!----->
+</div>
+<!--*************End of right side select emaileditor***********----->
+<div class="clear"></div>
+</div>
+<!---close of templatebox----->
+<!------------------->
+</div>
+<!---close of  form-content-div----->
+</div>
+<!-----close of form-embed-div----->
+<!-----------------navigation box for Template------------>
+<!---------------->
+<div class="form-embed-div" id ="closenavigation" style="width: 80%;">
+<div class="email_breadnav form-content-div" style="background-color: whitesmoke;">
+<!---------->
+<button class="togglebtn left" type="button" onClick="showpackage('camp_recipients','camp_temp');" style="padding: 5px; margin-top: -2px;">Previous</button>
+<!-------------->
+<div class="breadnav_list">
+<!---start of bread nav list------->
+<ul>
+<li>Setup <span> 
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Recipients <span> 
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li class="active">Templates <span> 
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Confirm</li>
+</ul>
+</div>
+<!---close of  bread nav list--->
+<button class="togglebtn right" onClick="valtempbox();" style="padding: 5px; margin-top: -2px;">Next</button>
+</div>
+<!---close of  form-content-div----->
+</div>
+<!-----close of form-embed-div----->
+<!-----------end of navigation box for template---------->
+</div>
+<!----close of insidewrap---->
+<!--------------->
+</div>
+<!--close of content-grid--->
+</div>
+<!----close of camp_formdetails----->
+<!----***********************end of Template(campdetails_form)*********************----->
+<!----*************************Confirmation(campdetails_form)**************----->
+<div id="camp_confirmation" class="camp_formdetails" style="display: none;">
+<div class="content-gird">
+<!------------>
+
+<div style="width: 100%; margin: 0px auto;">
+<!---------------->
+<div class="form-embed-div" style="width: 40%;">
+<div class="form-content-div" style="padding: 0px;">
+<p class="bg-font" style="padding: 10px;">Campaign Details</p>
+<!-------------->
+<div style="width: 100.1%; margin: 0px auto;">
+<table width="100%" class="display">
+<tr>
+<td class="strong_700 textright" style="width: 36%;">Campaign Type:</td>
+<td class="textleft" id="updatefinalcamptype"></td>
+</tr>
+<tr>
+<td class="strong_700 textright">Email Subject:</td>
+<td class="textleft" id="updatefinalemail_subj"></td>
+</tr>
+<tr>
+<td class="strong_700 textright">From Name:</td>
+<td class="textleft" id="updatefinalfrmname"></td>
+</tr>
+<tr>
+<td class="strong_700 textright">From Email Id:</td>
+<td class="textleft" id="updatefinalfrmemailid"></td>
+</tr>
+<tr>
+<td class="strong_700 textright">Recipients:</td>
+<td class="textleft" id="updatefinalrecipients"></td>
+</tr>
+<tr>
+<td class="strong_700 textright">Template Name:</td>
+<td class="textleft" id="updatefinaltemplatename"></td>
+</tr>
+</table>
+<!------>
+</div>
+<!------------------->
+</div>
+<!---close of  form-content-div----->
+</div>
+<!-----close of form-embed-div----->
+<!-----------------navigation box for campaignform------------>
+<!---------------->
+<div class="form-embed-div" id="campconfirm_nav"  style="width: 80%;">
+<div class="email_breadnav form-content-div" style="background-color: whitesmoke;">
+<button class="togglebtn left" type="button" onClick="showpackage('camp_temp' ,'camp_confirmation');" style="padding: 5px; margin-top: -2px;">Previous</button>
+<!-------------->
+<div class="breadnav_list" style="margin-left: 24%;">
+<!---start of bread nav list------->
+<!------>
+<ul>
+<li>Setup <span> 
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Recipients <span> 
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Templates <span> 
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li class="active">Confirm</li>
+</ul>
+<!------->
+</div>
+<!---close of  bread nav list--->
+<!---------->
+<button class="togglebtn right" onClick="Alert_finalcampsaveas.render('dialogbox_finalcampsaveas','finalcampsaveas_dialogoverlay','Alert_finalcampsaveas',this)" style="padding: 5px; margin-top: -2px;">Save As</button>
+<!------------->
+</div>
+<!---close of  form-content-div----->
+</div>
+<!-----close of form-embed-div----->
+<!-----------end of navigation box for campaignform---------->
+<!-----------------navigation box for campaignform------------>
+<!---------------->
+<div id="campntconfirm_nav" class="form-embed-div" style="width:80%;">
+<div class="email_breadnav form-content-div" style="background-color: whitesmoke;">
+<button type="button" class="togglebtn left" onClick="showpackage('camp_recipients' ,'camp_confirmation');" style="padding:5px; margin-top:-2px;">Previous</button>
+<!-------------->
+<div class="breadnav_list" style="margin-left:27%;"><!---start of bread nav list------->
+<!------>  
+<ul>
+<li>Setup 
+<span>
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li>Recipients
+<span>
+<i class="fa fa-chevron-right fa-1x">&nbsp;&nbsp;</i>
+</span>
+</li>
+<li class="active">Confirm
+</li>
+</ul>
+<!-------> 
+</div><!---close of  bread nav list--->
+<!---------->
+<button id="std_atschedbtn"  class="togglebtn right" onclick="callpopup(this)" style="padding:5px; margin-top:-2px;">Schedule Now</button>
+<button id="std_sendbtn" class="togglebtn right" onclick="stdcampsaveas1();" style="padding:5px; margin-top:-2px;">Send</button>
+<!------------->  
+</div><!---close of  form-content-div----->
+</div> <!-----close of form-embed-div----->
+<!-----------end of navigation box for campaignform----------> 
+</div>
+<!----close of insidewrap---->
+<!--------------->
+</div>
+<!--close of content-grid--->
+</div>
+<!----close of camp_formdetails----->
+<!----***********************end of Confirmation(campdetails_form)*********************----->
+<!--------------------------->
+</div>
+<!--close of grid-1----->
+</div><!--close of form-content-div---->
+</div><!--close fo form-embed-div---->
+</div>
+<!--close of dialogbox---->
+<!------***********************end of popup for Campaigns****************************------>
+<!------******************Start of popup for mailchimphelp Campaigns****************************------>
+<div class="dialogoverlay" style=" z-index:99999;" id="mailchimphelp_dialogoverlay"></div>
+<!----------------->
+<!--close of dialogoverlay-->
+<div id="dialogbox_mailchimphelp" style="z-index:999901; display:none; width:40%; margin-left:30%;">
+<a id="close" onclick="Alert_mailchimphelp.Cancel()" style="margin-top:-5px;">×</a>
+<!------------>
+<div class="form-embed-div" style=" width:95%; margin-top:20px;">
+<div class="form-content-div" style=" padding:0px;"> 
+<!----------->
+<div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+<div class="title-grid">Mail Chimp Instructions</div>
+<div class="content-gird"> 
+<!-------------->
+<p class="bg-font strong_700" style="font-size:15px; margin-bottom:10px;">Get your Mail Chimp API Key</p>
+<style>
+.mailchimphelp_ul{ list-style:none; font-size:13px;}
+.mailchimphelp_ul li{ padding:5px;}
+</style>
+<ul class="mailchimphelp_ul">
+<li><b>1.</b> <a href="https://login.mailchimp.com/" target="_blank" class="a_underline">Sign in</a> to your MailChimp account, or <a href="http://mailchimp.com/monkey-rewards/?aid=5593a7f01b0cb0959d3d63519&amp;afl=1" target="_blank" class="a_underline"> Sign up for a new MailChimp account.</a></li>
+<li><b>2.</b> <a href="http://kb.mailchimp.com/lists/growth/create-a-new-list" target="_blank" class="a_underline"> Create a new list</a> in MailChimp.</li>
+<li><b>3.</b> <a href="http://kb.mailchimp.com/accounts/management/about-api-keys" target="_blank" class="a_underline"> Copy your API Key</a> from MailChimp.</li>
+</ul>
+<!-------------->
+</div><!---close of contentgrid---->
+</div><!--close of grid-1----->
+<!--------------->
+</div><!--close of form-content-div---->
+</div><!--close fo form-embed-div---->
+<!----------->
+
+</div><!---close of dialogbox_campaign-------->
+
+<!----------------****************end of popup for mail chimp help******************---------->
+<!------******************End of popup for Standard Template Save As****************************------>
+<div class="dialogoverlay" style="z-index: 99999;" id="stdtmpsaveas_dialogoverlay"></div>
+<div id="dialogbox_stdtmpsaveas" style="display: none; z-index: 999991; height: 100px; width: 46%; margin-left: 27%;">
+<a id="close" onClick="Alert_stdtempsaveas.Cancel()"  style="margin-top:-5px;" >x</a>
+<div class="form-embed-div" style=" width:95%; margin-top:20px;">
+<div class="form-content-div" style=" padding:0px;"> 
+<div class="grid-1" style="width: 98%; margin-left: 1%; padding-right: 0px;">
+<div class="title-grid">Template Save As</div>
+<!----close of title-grid------->
+<div class="content-gird">
+<div class="formbox">
+<div class="fieldswrap" style="">
+<label>Template Name :<span id="mandatory">*</span></label> 
+<input type="text" id="savecustomtemp" name="nw-customizetemp" />
+<p id="stdtemp-overwrite-error" class="notemsg_red  textcenter" style="display: none; padding-bottom: 0px;">
+*Note: You can not overwrite Standard Template, choose a unique name to save as a Custom Template.</p>
+</div>
+<br />
+<div class="textcenter  padding-5px">
+<button id="customsave_btn" class="button-a blue" onclick="" >Save</button>
+<button id="customsaveforstand_btn" class="button-a blue"  style="display:none;" >Save</button>
+&nbsp;&nbsp;
+<button class="button-a dark-blue" onClick="Alert_stdtempsaveas.Cancel()">Cancel</button>
+</div>
+</div>
+<!--close of formbox---->
+</div>
+<!--close of content-grid----->
+</div>
+<!---close of grid-1---->
+</div><!--close of form-content-div---->
+</div><!--close fo form-embed-div---->
+</div>
+<!--close of temp Save As dialogbox----->
+<!------******************End of popup for Standard Template Save As****************************------>
+<!------******************Start of popup for Final Campaign Save As****************************------>
+<div class="dialogoverlay" style="z-index: 99999;" id="finalcampsaveas_dialogoverlay"></div>
+<div id="dialogbox_finalcampsaveas" style="display: none; z-index: 999991; height: 100px; width: 46%; margin-left: 27%;">
+<a id="close" onClick="Alert_finalcampsaveas.Cancel()" style="margin-top:-5px;">x</a>
+<div class="form-embed-div" style=" width:95%; margin-top:20px;">
+<div class="form-content-div" style=""> 
+<div class="grid-1" style="width: 98%; margin-left: 1%; padding-right: 0px;">
+<div class="title-grid">Campaign Save As</div>
+<!----close of title-grid------->
+<div class="content-gird">
+<div class="formbox">
+<div class="fieldswrap" style="">
+<label>Campaign Name :<span id="mandatory">*</span></label>
+<input  type="text" id="custcampsave_tb" />
+<p id="campname-mandatory-error" class="notemsg_red  textcenter"
+style="display: none; padding-bottom: 0px;">*Note: You must
+enter new campaign name for successfull campaign creation .</p>
+</div>
+<br />
+<div class="textcenter  padding-5px">
+<button id="finalpopupcampsaveas_btn" onClick="finalcampaignsave()" class="button-a blue">Save</button>
+&nbsp;&nbsp;
+        <button class="button-a dark-blue" onClick="Alert_finalcampsaveas.Cancel()">Cancel</button>
+        </div>
+        </div>
+        <!--close of formbox---->
+        </div>
+        <!--close of content-grid----->
+        </div>
+        <!---close of grid-1---->
+        </div><!--close of form-content-div---->
+        </div><!--close fo form-embed-div---->
+        </div>
+        <!--close of final camp  Save As dialogbox----->
+
+        <!------******************End of popup for Final Campaign Save As****************************------>
+
+        <!------******************Start of popup for Std Autoschedule****************************------>
+        <div class="dialogoverlay" style=" z-index:99999;" id="stdautoschedule_dialogoverlay"></div>
+        <div id="dialogbox_stdautoschedule" style=" display:none; z-index:999991; height:100px; width:46%; margin-left:27%;">
+        <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+        <div class="form-content-div" style=" padding:0px;">
+        <a id="close" onClick="Alert_stdautoschedule.Cancel()"  style="margin-top:-5px;">x</a>
+        <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid" id="schednwhead" >Auto Schedule</div><!----close of title-grid------->
+        <div class="title-grid" id="sendnwhead" style="display:none;">Send Now</div><!----close of title-grid------->
+        <div class="content-gird" >
+
+        <div class="form-embed-div" style="width:75%;">
+        <div class="form-content-div" style="padding:0px;">
+        <div style="width:100%; margin-bottom:2px; border-bottom:1px solid #ddd;" id="showscheduleoptions">
+        <p class="bg-font padding-5px">Schedule</p>
+        <!------------>
+
+        <!--<hr style=""/>-->
+        <!--------------> 
+        <div style="width:96%; margin:0px auto; padding:0px 5px 5px 5px; ">
+        <!------>
+        <table width="100%" class="display">
+        <tbody><tr>
+        <td   style="width: 50%; border-right:0px;">
+        <input id="schddays" type="radio" checked='true' onChange="showpackage('autodays','autodate')"  name="asched" class="margin-ryt-5px" /> 
+        <label for="schddays">Days before the event</label>
+        </td>
+        <td>
+        <input id="schddate" type="radio" onChange="showpackage('autodate','autodays')" name="asched" class="margin-ryt-5px" />
+        <label for="schddate">Date</label>
+        </td>
+        </tr>
+        <tr id="autodays">
+        <td colspan="2">
+        <input type="text"  id="dayssbefore" class="margin-ryt-5px" style="width:10%;" /> 
+        <label>days before the event</label>
+        </td>
+        </tr>
+        <tr id="autodate" style="display:none;">
+        <td colspan="2">
+        <label class="margin-ryt-5px">Date:</label>
+        <input type="text" id="datetime" class="jqdatepicker" style="width:35%;" /> 
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        <!------>  
+        </div>
+        </div>
+        <!--------Start of Event Contact--------> 
+        <!------------>
+        <p class="bg-font padding-5px" id="showcontacts" > Event Contacts</p>
+        <!--<hr style=""/>-->
+        <!--------------> 
+        <div style="width:96%; margin:0px auto; padding:0px 5px 5px 5px;">
+        <!------>
+        <table width="100%" class="display" id="select-contacts-custom">
+        <apex:repeat value="{!regsetting}" var="dspset">    
+        <tr >
+        <td>
+        <input name="recipientslistautoschedule" type="checkbox" class="margin-ryt-5px" value="{!dspset}" disabled="disabled" /><label  for="recipientslist" style="margin-left:1%">{!dspset}  ({!regsettingmap[dspset]})</label>
+        </td>
+        </tr>
+        </apex:repeat>
+        </table>
+        <!------>  
+        </div>
+        <!--------End of Event Contact------->
+        </div><!---close of  form-content-div----->
+        </div>
+        <div style=" text-align:center; margin-top:10px;"> 
+        <button class="button-a blue" onClick="schecampaign();return false;" id="custschednwbtn">Schedule Now</button>
+        <button class="button-a blue" onClick="schedulestandard1();return false;" style="display:none;" id="stndfrschednwbtn">Schedule Now</button>
+        <button class="button-a blue"  onclick="sendcampaign();return false;"  id="custsendnwbutn" style="display:none;" >Send Now</button>
+        &nbsp;&nbsp;
+        <button class="button-a dark-blue" onclick="Alert_stdautoschedule.Cancel()">Cancel</button>
+        </div>    
+        </div><!--close of content-grid----->
+        </div><!---close of grid-1---->
+        </div><!--close of form-content-div---->
+        </div><!--close fo form-embed-div---->
+        </div><!--close of stdautoscheduledialogbox----->
+
+        <!------******************End of popup for Auto Schedule****************************------>
+
+        <!----------------end of form Popup script----------------------------->
+
+        <!------------common js libraries component------------>
+        <c:ed_commonjs ></c:ed_commonjs>
+        <!------------//common js libraries component------------>
+        <!--Intializing  tab function---->
+        <script type="text/javascript">
+
+        $("#example4 tbody tr  td .subtbl tbody tr td input:radio").click(function () {
+            //$(this).find('input:radio').attr('checked', true);
+            //alert("ddd");
+
+            $("#example4 tbody tr  td .subtbl tbody tr td").removeClass("current");
+            $(this).parent().toggleClass("current");
+        });
+        </script>
+        <script>
+        //code for tabs rendering by purna
+        var urlpage = window.location.href;
+     var n1 = urlpage.search("65");
+     var n2 = urlpage.search("66");
+     var n3 = urlpage.search("67");
+     var n4 = urlpage.search("68");
+      if (n1 != -1) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 0
+        });
+    } else if (n2 != -1) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 1
+        });
+    } else if (n3 != -1) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 2
+        });
+    } else if (n4 != -1) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 3
+        });
+    }else {
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 0
+        });
+    }
+        
+        function currTabIndex() {           
+        
+        var curIndex = TabbedPanels1.getCurrentTabIndex();
+        var curIndex2 = curIndex+65; 
+        currenttabindexp(curIndex2);
+        
+    }
+    function currTabIndexWithoutReload() {
+    var curIndex = TabbedPanels1.getCurrentTabIndex();
+    if (curIndex ==0) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 0
+        });
+    } else if (curIndex ==1) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 1
+        });
+    } else if (curIndex ==2) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 2
+        });
+    } else if (curIndex ==3) {
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 3
+        });
+    }else {
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1", {
+            defaultTab: 0
+        });
+    }
+}
+ </script>
+        
+        <script> 
+        $("#stdtemp_tbl tbody tr  ").click(function () {
+            //alert("ddd");
+            $(this).find('input:radio').attr('checked', true);
+            hidediv('stdtemp_save')
+        });
+
+        /*****toggle tr click fn for radio btn checked********/ 
+        </script>
+        <!----->
+        <!--------//start of datatable js component------------->
+        <c:ed_datatablejs ></c:ed_datatablejs>
+        <script type="text/javascript" language="javascript" class="init">
+        <!----------------start of datatable js------------------->
+        <!---------campaign table------------>
+        var j = jQuery.noConflict();
+
+        function calldt()
+        {
+            j('#example2').dataTable( {
+                "pagingType": "full_numbers",
+                "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+                "iDisplayLength": 10,
+                "bAutoWidth": false, // Disable the auto width calculation
+                /**default orderid in asc sorting**/
+                <!---//!important to hide the sorting in the header for checkbox td------>
+                "aoColumnDefs": [
+{ 'bSortable': false, 'aTargets': [] },
+],
+"order": [3,"desc"]
+        /***********/   
+            } );
+        }
+
+        function calldt1()
+        {
+            j('#example4').dataTable( {
+                "pagingType": "full_numbers",
+                "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+                "iDisplayLength": 10,
+                "bAutoWidth": false, // Disable the auto width calculation
+                /**default orderid in asc sorting**/
+                <!---//!important to hide the sorting in the header for checkbox td------>
+                "aoColumnDefs": [
+{ 'bSortable': false, 'aTargets': [] },
+],
+"order": [0,"desc"]
+        /***********/   
+            } );
+        }
+
+        function calldt2()
+        {
+            j('#example3').dataTable( {
+                "pagingType": "full_numbers",
+                "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+                "iDisplayLength": 10,
+                "bAutoWidth": false, // Disable the auto width calculation
+                /**default orderid in asc sorting**/
+                <!---//!important to hide the sorting in the header for checkbox td------>
+                "aoColumnDefs": [
+{ 'bSortable': false, 'aTargets': [] },
+],
+"order": [1,"desc"]
+        /***********/   
+            } );
+        }
+
+        function calldt3()
+        {
+            j('#example').dataTable( {
+                "pagingType": "full_numbers",
+                "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+                "iDisplayLength": 10,
+                "bAutoWidth": false, // Disable the auto width calculation
+                /**default orderid in asc sorting**/
+                <!---//!important to hide the sorting in the header for checkbox td------>
+                "aoColumnDefs": [
+{ 'bSortable': false, 'aTargets': [0,5,] },
+],
+"order": [[ 2, "desc" ]]
+        /***********/   
+            } );
+        }
+
+        j(document).ready(function() {
+            j('#example').dataTable( {
+                "pagingType": "full_numbers",
+                "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+                "iDisplayLength": 10,
+                "bAutoWidth": false, // Disable the auto width calculation
+                /**default orderid in asc sorting**/
+                <!---//!important to hide the sorting in the header for checkbox td------>
+                "aoColumnDefs": [
+{ 'bSortable': false, 'aTargets': [0,5,] },
+],
+"order": [[ 2, "desc" ]]
+        /***********/   
+            } );
+
+        })
+
+        <!---------//end of campaign table----->
+        <!---campaign logs----------->
+
+        j('#example2').dataTable( {
+            "pagingType": "full_numbers",
+            "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+            "iDisplayLength": 10,
+            "bAutoWidth": false, // Disable the auto width calculation
+            /**default orderid in asc sorting**/
+            <!---//!important to hide the sorting in the header for checkbox td------>
+            "aoColumnDefs": [
+{ 'bSortable': false, 'aTargets': [] },
+],
+"order": [3,"desc"]
+        /***********/   
+        } );
+        <!----------//campaign logs------------>
+        <!---campaign Templates----------->
+        j('#example3').dataTable( {
+            "pagingType": "full_numbers",
+            "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+            "iDisplayLength": 10,
+            "bAutoWidth": false, // Disable the auto width calculation
+            /**default orderid in asc sorting**/
+            <!---//!important to hide the sorting in the header for checkbox td------>
+            "aoColumnDefs": [
+{ 'bSortable': false, 'aTargets': [] },
+],
+"order": [1,"desc"]
+        /***********/   
+        } );
+
+        j('#example4').dataTable( {
+            "pagingType": "full_numbers",
+            "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+            "iDisplayLength": 10,
+            "bAutoWidth": false, // Disable the auto width calculation
+            /**default orderid in asc sorting**/
+            <!---//!important to hide the sorting in the header for checkbox td------>
+            "aoColumnDefs": [
+{ 'bSortable': false, 'aTargets': [] },
+],
+"order": [0,"desc"]
+        /***********/   
+        } );
+        <!----------//campaign Templates------------>
+        </script>
+        <!-------------------------------end of datatable js------>
+        <!-----------------start of Tinyeditor------------>
+        <!--<script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/tinyeditor/tiny.editor.packed.js')}"> </script>
+        <script>
+        var editor = new TINY.editor.edit('editor', {
+            id: 'tinyeditor',
+            width: '100%',
+            height: 232,
+
+            cssclass: 'tinyeditor',
+            controlclass: 'tinyeditor-control',
+            rowclass: 'tinyeditor-header',
+            dividerclass: 'tinyeditor-divider',
+            controls: ['bold', 'italic', 'underline', 'strikethrough', '|', 'subscript', 'superscript', '|',
+                       'orderedlist', 'unorderedlist', '|', 'outdent', 'indent', '|', 'leftalign',
+                       'centeralign', 'rightalign', 'blockjustify', '|', 'unformat', '|', 'undo', 'redo', 'n',
+                       'font', 'size', 'style', '|', 'image', 'hr', 'link', 'unlink', '|', 'print'],
+                       footer: true,
+                       fonts: ['Verdana','Arial','Georgia','Trebuchet MS'],
+                       xhtml: true,
+                       //cssfile: 'custom.css',
+                       bodyid: 'editor',
+                       footerclass: 'tinyeditor-footer',
+                       toggle: {text: 'source', activetext: 'wysiwyg', cssclass: 'toggle'},
+                       resize: {cssclass: 'resize'}
+        });
+        </script>-->
+        <!---------popup for Image Upload------->
+    <div class="dialogoverlay" style=" z-index:9999;" id="bl_dialogoverlay"></div>
+    <div  id="dialogbox_bl" style=" display:none;z-index:99991; width:40%; margin-left:29%;height:80%;overflow:auto"><a id="close" onclick="Alert_assignbl.Cancel()" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Image</div>
+        <div class="content-gird">
+       <!--------------> 
+        <div style="width:70%; margin:0px auto;">
+        <b>Upload New:</b><br/><br/>
+        <div>
+        <input type="file"  id="eventlogo" onchange="checkfile()" accept="image/jpeg,image/png,image/gif" style="width:95px;color:transparent;"/>
+    <img  width="50" height="50" id="savedimage"/>
+    <input type="button" value="Upload" onclick="uploadnewlogo()"/>
+    
+    <script>
+         function uploadnewlogo()
+         {
+           ShowLoader();
+             Visualforce.remoting.Manager.invokeAction(
+                                '{!$RemoteAction.BLN_Email_Dashboardscon.uploadimagedocuments}',
+                                contents,
+                               function(result, event){
+                                    if (event.status) {
+                                    if(result!='')
+                                    {
+                                      showimagedata();
+                                      alert("Succesfully Uploaded");
+                                      
+                                      
+                                    } }
+                                    HideLoader();
+                                    });
+         }
+         
+         function showimagedata()
+         {
+           
+            Visualforce.remoting.Manager.invokeAction(
+                                '{!$RemoteAction.BLN_Email_Dashboardscon.getuserdocuments}',
+                               function(result, event){
+                                    if (event.status) {
+                                     var html = '<table>';
+                                    $.each(result, function(i, resulteach){
+                                    html += '<tr><td>' + ' <input type="radio" name="imagerad" value="{!$Label.siteurl}/servlet/servlet.ImageServer?id='+resulteach.Id+'&oid={!orgId}"/><img src="/servlet/servlet.FileDownload?file='+resulteach.Id+'" height=50 width=50/>' + '</td></tr>';
+                                   
+                                    });
+                                    html += '</table>';
+                                    $("#eventlogos").empty();
+                                    $("#eventlogos").append(html);
+                                    
+                                    }});
+         }
+         var contents;
+         function checkfile()
+         {
+            var oFReader = new FileReader();
+          var f = document.getElementById("eventlogo").files[0];
+           var filesize= f.size;
+            if(filesize > 241664){
+             document.getElementById("eventlogo").value = null;
+             window.alert("Image size cannot be greater than 200KB!");
+             return false;
+            }
+
+           if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+      contents = e.target.result.split(',')[1];
+     document.getElementById('savedimage').src=e.target.result;
+     
+      
+                 
+      }
+      r.readAsDataURL(f);
+     
+    } else { 
+      alert("Failed to load file");
+    }
+
+         }
+         
+         function setImagevalue()
+         {
+           var s='<img src='+document.querySelector('input[name=imagerad]:checked').value+' width=50 height=50></img>';
+           tinyMCE.activeEditor.selection.setContent(s);
+           Alert_assignbl.Cancel();
+         }
+         </script>
+        </div>
+        <br/><br/>
+        <b>Already Existing:</b><br/><br/>
+     <div id="eventlogos">
+     
+       
+     </div>
+        </div><!--close of conteent-grid--->
+        
+         <!-----------------> 
+        <div style=" text-align:center; margin-top:10px;"> 
+     <button class="button-a blue" onclick="setImagevalue();">Apply</button>
+          &nbsp;&nbsp;
+     <button class="button-a dark-blue" onclick="Alert_assignbl.Cancel()">Cancel</button>
+                          </div>
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+       <!------------end of popup for Image Upload------------->  
+        <apex:includeScript value="{!URLFOR($Resource.tinymce, 'tinymce/js/tinymce/tinymce.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.tinymce, 'tinymce/js/tinymce/jquery.tinymce.min.js')}"/>
+        <script>
+       
+         tinymce.init({
+    theme: "modern",
+     mode : "specific_textareas",
+        editor_selector : "mceEditor",
+    // selector: "#mytextarea",  // change this value according to your HTML
+  toolbar: "fontsizeselect,code,widgets,myimageuploadbutton,mybutton,preview,media,insertdatetime,table,image,forecolor backcolor,anchor,ltr rtl",
+  plugins: "code,table,visualblocks,media,print,preview,charmap,textpattern,insertdatetime,importcss,hr,fullscreen,fullpage,table,emoticons,image imagetools,layer,textcolor colorpicker,anchor,autolink,autoresize,codesample,contextmenu,directionality",
+  contextmenu: "link image inserttable | cell row column deletetable",
+  body_class: 'uday123',
+  relative_urls : false,
+remove_script_host : false,
+convert_urls : true,
+image_advtab: true,
+ imagetools_toolbar: "imageoptions",
+   insertdatetime_formats: ["%H:%M:%S", "%Y-%m-%d", "%I:%M:%S %p", "%D"],
+   fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+  importcss_append: true,
+   textpattern_patterns: [
+     {start: '*', end: '*', format: 'italic'},
+     {start: '**', end: '**', format: 'bold'},
+     {start: '#', format: 'h1'},
+     {start: '##', format: 'h2'},
+     {start: '###', format: 'h3'},
+     {start: '####', format: 'h4'},
+     {start: '#####', format: 'h5'},
+     {start: '######', format: 'h6'},
+     {start: '1. ', cmd: 'InsertOrderedList'},
+     {start: '* ', cmd: 'InsertUnorderedList'},
+     {start: '- ', cmd: 'InsertUnorderedList'}
+  ],
+color_picker_callback: function(callback, value) {
+alert('coming');
+    callback('#FF00FF');
+  },
+  setup: function(editor) {
+ editor.on('keyup', function(e) {
+       //     alert('keyup occured');
+          
+        //  var valu = $(this).html();
+          console.log(e);
+           // check_submit(); //another function calling
+               $( "#map" ).resizable();
+
+        });
+    editor.addButton('mybutton', {
+      type: 'splitbutton',
+      text: 'Email Fields',
+      icon: false,
+      onclick: function() {
+      //  editor.insertContent('&nbsp;<strong>You clicked the button!</strong>');
+      },
+      
+      menu: [{
+        text: 'User Name',
+        onclick: function() {
+     editor.insertContent ("{!username}");
+     }
+      },{
+        text: 'User Email',
+        onclick: function() {
+      editor.insertContent("{!useremail}");
+      }
+      }, {
+        text: 'Event Name',
+        onclick: function() {
+          editor.insertContent("{!eventname}");
+        }
+      }, {
+        text: 'Event Admin Name',
+        onclick: function() {
+          editor.insertContent("{!eventadminname}");
+        }}, {
+        text: 'Event Admin Email',
+        onclick: function() {
+          editor.insertContent("{!eventadminemail}");
+        }}, {
+        text: 'Event Date',
+        onclick: function() {
+          editor.insertContent("{!eventdate}");
+        }}, {
+        text: 'Event Location',
+        onclick: function() {
+          editor.insertContent("{!eventlocation}");
+        }}, {
+        text: 'QR code',
+        onclick: function() {
+          editor.insertContent("{!qrcode}");
+        }}, {
+        text: 'User Company',
+        onclick: function() {
+          editor.insertContent("{!company}");
+        }}, {
+        text: 'Event Address1',
+        onclick: function() {
+          editor.insertContent("{!add1}");
+        }},{
+        text: 'Event Address2',
+        onclick: function() {
+          editor.insertContent("{!add2}");
+        }},{
+        text: 'Event City',
+        onclick: function() {
+        editor.insertContent("{!city}");
+       }}, {
+        text: 'Event State',
+        onclick: function() {
+          editor.insertContent("{!state}");
+        }}, {
+        text: 'Zip',
+        onclick: function() {
+          editor.insertContent("{!zip}");
+        }}
+        , {
+        text: 'Tickettype',
+        onclick: function() {
+          editor.insertContent("{!ticket}");
+        }}
+        , {
+        text: 'Promo Code Name',
+        onclick: function() {
+          editor.insertContent("{!PromotionName}");
+        }}
+        , {
+        text: 'Discount Amount',
+        onclick: function() {
+          editor.insertContent("{!Discount}");
+        }}
+        , {
+        text: 'Tax Rate',
+        onclick: function() {
+          editor.insertContent("{!TaxRate}");
+        }}
+        , {
+        text: 'Tax Amount',
+        onclick: function() {
+          editor.insertContent("{!Taxes}");
+        }}
+        , {
+        text: 'Fee Amount',
+        onclick: function() {
+          editor.insertContent("{!FeeAmount}");
+        }}
+      ]
+    });
+    
+    editor.addButton( 'myimageuploadbutton', {
+            text: 'Image Upload',
+            icon: false,
+            onclick: function() {
+            showimagedata();
+               Alert_assignbl.render('dialogbox_bl','bl_dialogoverlay','Alert_assignbl' ,this); 
+               
+            }
+        });
+    }
+  
+ 
+
+    });
+  
+
+
+
+</script>
+        
+
+        <!---close of tiny editor----------------->
+        <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}" > </script>
+
+        <script>
+        var dt = jQuery.noConflict();            
+        dt('.jqdatepicker').datetimepicker({
+            format: 'Y-m-d H:i:s',
+        });
+        </script>
+
+
+        <!---start  of emailtemplate.js------------------>
+        <script>
+        /*************todaysStart of script for calling popup on create event, standard send , auto schedule**********/  
+
+        function callpopup(clkbtn_id){
+
+            ///global var
+            var templatebox_id=document.getElementById("camp_temp");
+            var campsetup_nav=document.getElementById("campsetup_nav");
+            var campntsetup_nav=document.getElementById("campntsetup_nav");
+            var campec_nav=document.getElementById("campec_nav");
+            var campntec_nav=document.getElementById("campntec_nav");
+            var campntmcl_nav=document.getElementById("campntmcl_nav");
+            var campmcl_nav=document.getElementById("campmcl_nav");
+            var campntconfirm_nav=document.getElementById("campntconfirm_nav");
+            var campconfirm_nav=document.getElementById("campconfirm_nav");
+            var std_atschedbtn=document.getElementById("std_atschedbtn");
+            var std_sendbtn=document.getElementById("std_sendbtn");
+            var displaycontacts = document.getElementById("select-contacts-custom");
+            var evecontactsdis = document.getElementById("showcontacts");
+            var shdeuleoptions = document.getElementById("showscheduleoptions");
+            var shwcustschedbutn = document.getElementById("custschednwbtn");
+            var shwcustsendbutn = document.getElementById("custsendnwbutn");
+            var shwsendnwhead = document.getElementById("sendnwhead");
+            var shwschednwhead = document.getElementById("schednwhead");
+            var shwstndfrschednwbtn = document.getElementById("stndfrschednwbtn");
+
+            if(clkbtn_id.id=="std_send"){
+                //alert(clkbtn_id.id);
+                templatebox_id.style.display='none';
+                campntsetup_nav.style.display='';
+                campsetup_nav.style.display='none';              
+                campntec_nav.style.display='';               
+                campec_nav.style.display='none';               
+                campntmcl_nav.style.display='';               
+                campmcl_nav.style.display='none';               
+                campntconfirm_nav.style.display='';               
+                campconfirm_nav.style.display='none';              
+                std_atschedbtn.style.display='none';               
+                std_sendbtn.style.display='';
+                var stemp = stdcampname;
+                document.getElementById("emailsubj_optext").innerHTML= stdcampname;
+                var radioButtons = document.getElementsByName('stemp');
+                radioButtons[indexradio].checked = true;
+                $("input:radio[name=stemp]").each(function() {
+                    var value= $("input[name=stemp]:checked").val(); 
+                    getselvalues(value);
+                });
+                Alert_campaign.render('dialogbox_campaign','std_dialogoverlay','Alert_campaign' ,this);
+            }
+
+            else if(clkbtn_id.id=="new_campaign"){
+                // alert(clkbtn_id.id);
+
+                campntsetup_nav.style.display='none';
+                campsetup_nav.style.display='';
+                campntec_nav.style.display='none';
+                campec_nav.style.display='';
+                campntmcl_nav.style.display='none';
+                campmcl_nav.style.display='';
+                campntconfirm_nav.style.display='none';
+                campconfirm_nav.style.display='';
+                document.getElementById("emailsubj_optext").innerHTML= 'You have been invited for {!eventname1}';
+                var stemp = stdcampname;
+                var radioButtons = document.getElementsByName('stemp');
+                radioButtons[indexradio].checked = true;
+                $("input:radio[name=stemp]").each(function() {
+                    var value= $("input[name=stemp]:checked").val(); 
+                    getselvalues(value);
+                });
+                Alert_campaign.render('dialogbox_campaign','std_dialogoverlay','Alert_campaign' ,this);
+            }
+            else if(clkbtn_id.id=="sys_tempedit"){
+                //alert(clkbtn_id.id);
+                document.getElementById("camp_setup").style.display='none'; 
+                document.getElementById("closenavigation").style.display='none'; 
+                // document.getElementById("tempcategory_box").style.display='none';
+                document.getElementById("stdtemp_tbl").style.display='none'; 
+                document.getElementById("custtemp_tbl").style.display='none';
+                document.getElementById("custtemp_tblorder").style.display='';
+                document.getElementById("stdtemp_tblorder").style.display='';
+                document.getElementById("select1").style.display='none';
+                document.getElementById("select2").style.display=''; 
+                document.getElementById("customsaveforstand_btn").style.display=''; 
+                document.getElementById("customsave_btn").style.display='none';
+                // document.getElementById("appendval").style.display='none';
+                campsetup_nav.style.display='none'; 
+                templatebox_id.style.display='';
+                var radios = document.getElementsByName('stemporder');
+                var $radio = $('input[name=stemporder]:checked');
+                var templateid = $radio.val();
+                //alert(templateid);
+                var selectedtemp = $radio.attr('id');
+                //alert(selectedtemp);
+                getselvaluesforcust(templateid);
+                Alert_campaign.render('dialogbox_campaign','std_dialogoverlay','Alert_campaign' ,this);
+
+            }
+
+            else if(clkbtn_id.id=="camp_edittemp"){
+                // alert(clkbtn_id.id);
+                document.getElementById("camp_setup").style.display='none'; 
+                document.getElementById("closenavigation").style.display='none'; 
+                // document.getElementById("tempcategory_box").style.display='none';
+                document.getElementById("stdtemp_tbl").style.display=''; 
+                document.getElementById("custtemp_tbl").style.display='';
+                document.getElementById("custtemp_tblorder").style.display='none';
+                document.getElementById("stdtemp_tblorder").style.display='none';
+                document.getElementById("select1").style.display='';
+                document.getElementById("select2").style.display='none'; 
+                document.getElementById("customsaveforstand_btn").style.display='none'; 
+                document.getElementById("customsave_btn").style.display='';
+                // document.getElementById("appendval").style.display='none';
+                campsetup_nav.style.display='none'; 
+                templatebox_id.style.display='';
+                Alert_campaign.render('dialogbox_campaign','std_dialogoverlay','Alert_campaign' ,this);
+
+            }
+
+            else if(clkbtn_id.id=="std_edit"){
+                // alert(clkbtn_id.id);
+                campntsetup_nav.style.display='none';
+                campsetup_nav.style.display='';
+                campntec_nav.style.display='none';
+                campec_nav.style.display='';
+                campntmcl_nav.style.display='none';
+                campmcl_nav.style.display='';
+                campntconfirm_nav.style.display='none';
+                campconfirm_nav.style.display='';
+                document.getElementById("emailsubj_optext").innerHTML= stdcampname;
+                document.getElementById("custcampsave_tb").value= stdcampname;
+                var stemp = stdcampname;
+                var radioButtons = document.getElementsByName('stemp');
+                radioButtons[indexradio].checked = true;
+                $("input:radio[name=stemp]").each(function() {
+                    var value= $("input[name=stemp]:checked").val(); 
+                    getselvalues(value);
+                });
+                Alert_campaign.render('dialogbox_campaign','std_dialogoverlay','Alert_campaign' ,this);
+            }
+
+            else if(clkbtn_id.id=="std_asched"){
+                // alert(clkbtn_id.id);
+                templatebox_id.style.display='none';
+                campntsetup_nav.style.display='';
+                campsetup_nav.style.display='none';
+                campntec_nav.style.display='';
+                campec_nav.style.display='none';
+                campntmcl_nav.style.display='';
+                campmcl_nav.style.display='none';
+                campntconfirm_nav.style.display='';
+                campconfirm_nav.style.display='none';
+                std_sendbtn.style.display='none';
+                std_atschedbtn.style.display='';
+                displaycontacts.style.display='none';
+                evecontactsdis.style.display='none';
+                document.getElementById("emailsubj_optext").innerHTML= stdcampname;
+                document.getElementById("custcampsave_tb").value= stdcampname;
+                var stemp = stdcampname;
+                var radioButtons = document.getElementsByName('stemp');
+                radioButtons[indexradio].checked = true;
+                $("input:radio[name=stemp]").each(function() {
+                    var value= $("input[name=stemp]:checked").val(); 
+                    getselvalues(value);
+                });
+
+                Alert_campaign.render('dialogbox_campaign','std_dialogoverlay','Alert_campaign' ,this);
+            }
+
+            else if(clkbtn_id.id=="std_atschedbtn"){
+                // alert(clkbtn_id.id);
+                shwstndfrschednwbtn.style.display='';
+                shwcustschedbutn.style.display='none';
+                Alert_campaign.Cancel();
+                Alert_stdautoschedule.render('dialogbox_stdautoschedule','stdautoschedule_dialogoverlay',' Alert_stdautoschedule' ,this);
+            }
+
+            else if(clkbtn_id.id=="custom_sendbtn"){
+                // alert(clkbtn_id.id);
+                shdeuleoptions.style.display='none';
+                shwcustschedbutn.style.display='none'; 
+                shwcustsendbutn.style.display=''; 
+                shwsendnwhead.style.display=''; 
+                shwschednwhead.style.display='none'; 
+                Alert_stdautoschedule.render('dialogbox_stdautoschedule','stdautoschedule_dialogoverlay',' Alert_stdautoschedule' ,this);
+            }
+
+            else if(clkbtn_id.id=="cust_asched"){
+                //alert(clkbtn_id.parentNode.parentNode.parentNode.childNodes[11].innerHTML);
+                //var x =clkbtn_id.parentNode.parentNode.parentNode.childNodes[11];
+                //alert(x.children[2].innerHTML);
+                //alert(x.children[3].innerHTML);
+                Alert_stdautoschedule.render('dialogbox_stdautoschedule','stdautoschedule_dialogoverlay',' Alert_stdautoschedule' ,clkbtn_id.id);
+                //custautosched_hideicon(clkbtn_id);
+            }
+
+        }
+
+        function popup_savecallback(clkbtn){
+        if(clkbtn=='cust_asched')
+            {
+                //alert("yes")
+                //alert(document.getElementById(clkbtn).parentNode.parentNode.parentNode.childNodes[11].innerHTML);
+                var customactiontd=document.getElementById(clkbtn).parentNode.parentNode.parentNode.childNodes[11];
+                var customsendicon=customactiontd.children;
+                for (var i = 0; i < customsendicon.length; i++)
+                {
+                    if(i==1){
+                        customsendicon[1].style.display="none";
+                    }
+                    if(i==2){
+                        customsendicon[2].style.display="none";
+                    }
+                }
+                //document.getElementById(clkbtn).style.display="none";
+                //document.getElementById(clkbtn).customsendicon.style.display="none";
+            }
+            else{"no"}
+
+        }
+
+        /*********todaysEnd of script for calling popup on create event, standard send , auto schedule**********/           
+    /*************script for append the segment name value to the segment select list**********/
+        $(document).ready(function(){
+        <!---->
+            $("#addsegmentsave-btn").click(function(){
+                //alert("ddd")
+                if(document.getElementById("segmentvalue").value!=''){
+                    //alert("notnull");
+                    segmentvalue = document.getElementById("segmentvalue").value,//capturing segment text value
+                            select2 = document.getElementById("selSegVal");
+                    var nwsegmentlistopt = document.createElement('option');
+                    nwsegmentlistopt.value = segmentvalue;
+                    nwsegmentlistopt .innerHTML = segmentvalue;
+
+                    selSegVal.appendChild(nwsegmentlistopt);
+                    $("#selSegVal option").val(nwsegmentlistopt.value).attr("selected", true);
+                    document.getElementById("segmentvalue").value='';//clearing the segment text value  
+                    hidediv('mcl_sgmtbox');//closing the segment box
+                }
+                else{
+                    Alert.render('Please Provide a unique segment name' ,'Alert !','ok');
+                    hidediv('mcl_sgmtbox');//closing the segmentbox
+                };
+
+            })
+        });
+
+        /////////////////select script for copyfield
+        function updatecopyfield(selectid){
+            //var e = document.getElementById("select1");    
+            var stval = selectid.options[selectid.selectedIndex].value; 
+            if (stval=='First Name'){
+                alert(stval);
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="*|TITLE:FNAME|*";
+            }
+            else if(stval=='Last Name'){
+                alert(stval);
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="*|TITLE:LNAME|*";
+            }  
+
+            /*else if (stval=='username'){
+
+                document.getElementById("copyfield_txt").value="";
+
+                document.getElementById("copyfield_txt").value= "*|TITLE:USERNAME|*";
+            }
+            else if(stval=='useremail'){
+
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="*|TITLE:USEREMAIL|*";
+            }  */
+
+            else if(stval=='eventname'){
+
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.Name}';
+            } 
+
+            else if(stval=='eventadminname'){
+
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.owner.Name}';
+            }  
+
+            else if(stval=='eventadminemail'){
+
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.owner.username}';
+            }  
+
+            else if(stval=='eventdate'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.Start_Date__c}'+' - '+'{!eventslist.End_Date__c}';
+
+            }  
+
+            else if(stval=='eventlocation'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.Venue_Name__c}';
+
+            }  
+
+            /*else if(stval=='company'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="*|TITLE:COMPANY|*";
+
+            }*/
+
+            else if(stval=='address1'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.Street1__c}';
+            }
+
+            else if(stval=='address2'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.Street2__c}';
+
+            }
+
+            else if(stval=='city'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.City__c}';
+            }
+            else if(stval=='state'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.BLN_State__r.Short_Name__c}';
+            }
+            else if(stval=='zip'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value='{!eventslist.ZipCode__c}';
+            }
+            /*else if(stval=='Tickettype'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="*|TITLE:TICKETTYPE|*";
+            }*/
+            }
+
+        function updatecopyfield1(selectid){
+            //var e = document.getElementById("select2");    
+            var stval = selectid.options[selectid.selectedIndex].value; 
+            if (stval=='username'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value= "{!username}";
+            }
+            else if(stval=='useremail'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!useremail}";
+            }  
+            else if(stval=='eventname'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!eventname}";
+            } 
+            else if(stval=='eventadminname'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!eventadminname}";
+            }  
+
+            else if(stval=='eventadminemail'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!eventadminemail}";
+            }  
+            else if(stval=='eventdate'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!eventdate}";
+            }  
+
+            else if(stval=='eventlocation'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!eventlocation}";
+            }  
+
+            else if(stval=='company'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!company}";
+            }
+
+
+            else if(stval=='address1'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!add1}";
+            }
+
+            else if(stval=='address2'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!add2}";
+            }
+
+            else if(stval=='city'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!city}";
+            }
+
+            else if(stval=='state'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!state}";
+            }
+
+            else if(stval=='zip'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!zip}";
+            }
+
+            else if(stval=='Tickettype'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!ticket}";
+            }
+            else if(stval=='Qrcode'){
+                document.getElementById("copyfield_txt").value="";
+                document.getElementById("copyfield_txt").value="{!qrcode}";
+            }
+
+        } 
+        /************************************************/
+        /************Start of template Script*********************/
+
+        var orgtext;<!---storing the originaltext-->
+        var typeoftemp;<!---global variable for typeoftemplate for differentiating the templates--->
+        var orgcampname;<!----for storing the original campname--->
+        //function call on click of Edit template
+        function appendedittext(){
+            //hiding the teplate output & showing editor box
+
+            showpackage('emailtempeditor_box' ,'emailtempop_box');
+
+            //alert("clicktext");
+            //alert(document.getElementById("emailbody-temp").innerHTML);
+            orgtext=document.getElementById("emailbody-temp").innerHTML;
+            $('iframe').contents().find('body').empty()
+            $('iframe').contents().find('body').append(orgtext);
+            
+        }
+
+        ///////////save button of custom campaign////////
+        function edittempsave(){
+            if(document.getElementById("temp_emailsubtxt").value==''){
+                //alert("Please Provide Email Subject");
+                Alert.render('Please Provide Email Subject' ,'Alert !','ok');//calling alert popup
+            }
+
+            else{   
+                /////// 
+                var texteditordata=$('iframe').contents().find('body').html();
+                //alert(texteditordata);
+
+                if(orgtext==texteditordata){
+                    //alert("same text");
+                    // alert(emailsubj_optext.innerHTML);
+                    //alert(document.getElementById("temp_emailsubtxt").value);
+
+                    showpackage('emailtempop_box','emailtempeditor_box');
+                    $('iframe').contents().find('body').empty();
+                    //updating the emailsubjectoutput text with customize subject value
+                    document.getElementById("emailsubj_optext").innerHTML=document.getElementById("temp_emailsubtxt").value;
+                }
+                /////////
+                else{
+                    // alert("not sametext");
+                    document.getElementById("emailbody-temp").innerHTML=texteditordata;<!--updating emailcontent--->
+                    var radios = document.getElementsByName('stemp');                   
+                    var $radio = $('input[name=stemp]:checked');                    
+                    var radioselected = $radio.val();
+                    var templateid = radioselected;
+                    var tempbody = document.getElementById("emailbody-temp").innerHTML;
+                    var emailsubject = document.getElementById('temp_emailsubtxt').value;
+                    syscusttempoverwrite(templateid,tempbody,emailsubject);
+                    Alert.render('Template has been Successfully updated' ,'Alert !','ok');//calling alert popup
+                    var tempsubject= document.getElementById("temp_emailsubtxt").value;
+                    document.getElementById("emailsubj_optext").innerHTML=tempsubject;
+                    showpackage('emailtempop_box','emailtempeditor_box');
+                    $('iframe').contents().find('body').empty();
+                }
+                ////////
+            }
+            /////////   
+        }   
+        ////////////////
+        /******************cancel while editing campaign******************************/
+        
+        function sysedittempsave(){
+            if(document.getElementById("temp_emailsubtxt").value==''){
+                //alert("Please Provide Email Subject");
+                Alert.render('Please Provide Email Subject' ,'Alert !','ok');//calling alert popup
+            }
+
+            else{   
+                /////// 
+                var texteditordata=$('iframe').contents().find('body').html();
+                //alert(texteditordata);
+
+                if(orgtext==texteditordata){
+                  
+                    showpackage('emailtempop_box','emailtempeditor_box');
+                    $('iframe').contents().find('body').empty();
+                    //updating the emailsubjectoutput text with customize subject value
+                    document.getElementById("emailsubj_optext").innerHTML=document.getElementById("temp_emailsubtxt").value;
+                }
+                /////////
+                else{
+                    // alert("not sametext");
+                    document.getElementById("emailbody-temp").innerHTML=texteditordata;<!--updating emailcontent--->
+                    var radios = document.getElementsByName('stemporder');                   
+                    var $radio = $('input[name=stemporder]:checked');                    
+                    var radioselected = $radio.val();
+                    var campid = radioselected;
+                    var tempbody = document.getElementById("emailbody-temp").innerHTML;
+                    var emailsubject = document.getElementById('temp_emailsubtxt').value;
+                    syscustcamptemplateoverwrite(campid,tempbody,emailsubject);
+                    Alert.render('Template has been Successfully updated' ,'Alert !','ok');//calling alert popup
+                    var tempsubject= document.getElementById("temp_emailsubtxt").value;
+                    document.getElementById("emailsubj_optext").innerHTML=tempsubject;
+                    showpackage('emailtempop_box','emailtempeditor_box');
+                    $('iframe').contents().find('body').empty();
+                }
+                ////////
+            }
+            /////////   
+        }
+
+        function edittempcancel(){
+            //alert("cancel click test");
+            orgtext;
+            $('iframe').contents().find('body').empty();
+            showpackage('emailtempop_box','emailtempeditor_box');
+        }   
+        ///////////////////////     
+
+        //function calling on Standard Template Save As
+        var selectedVal;//global variable for storing selected template value(radio)
+        function stdtempsaveas(tempsaveasbtnid) {
+            if(document.getElementById("temp_emailsubtxt").value==''){
+                //alert("Please Provide Email Subject");
+                Alert.render('Please Provide Email Subject' ,'Alert !','ok');//calling alert popup
+            }
+
+            else{    
+
+                //alert(tempsaveasbtnid.id);
+                Alert_stdtempsaveas.render('dialogbox_stdtmpsaveas','stdtmpsaveas_dialogoverlay','Alert_stdtempsaveas',tempsaveasbtnid)
+                var selected = $("#tempcategory_box  input[type='radio']:checked");
+                //calling popup
+
+                <!----condition for copying the selected radio button name default in save as template name---->
+                if (selected.length > 0) {
+                    var radios = document.getElementsByName('stemporder');
+                    var $radio = $('input[name=stemporder]:checked');
+                    var updateDay = $radio.val();
+                    var id = $radio.attr('id');
+                    document.getElementById('savecustomtemp').value= id;
+                }
+                ////////////
+            }
+        }
+        /////////////////////////
+        /*****toggle tr click fn for radio btn checked********/ 
+        $("#custtemp_tbl tbody tr  ").click(function () {
+
+            // alert("ddd");
+            $(this).find('input:radio').attr('checked', true);
+            showdiv('stdtemp_save');//calling save button display method
+
+        }); 
+
+
+        ///////////////     
+
+        var $j2 = jQuery.noConflict();
+
+        $j2(window).load(function(){
+            $j2(function() {
+
+                $j2('#customsave_btn').click(function() {
+
+                    var name  = $('input[name="nw-customizetemp"]').val();
+                      var ck_name = /^[A-Za-z0-9 ]$/;         
+
+
+                    if(name=='Invitation'|| name=='Product Intro of Lead Retrieval' || name=='Product Intro of Match Leads' || name=='Match Leads Buyer Sign Up Reminder' || name=='Lead Retrieval Sign Up Reminder' || name=='Reminder before the event'){
+
+                        Alert.render('You cannot overwrite a Standard Template, please enter a unique name.','Alert !','ok');
+                        return false;
+                    } 
+
+                    else if(name==null || name==''){
+                        Alert.render('Template name cannot be empty, please enter a unique name.','Alert !','ok');
+                    }
+                    
+                     else if (ck_name.test(name))
+                        Alert.render('Template name cannot contain special characters like !@#$%^&*()+_-=()','Alert !','ok'); 
+                       
+                    else{    
+                        Visualforce.remoting.Manager.invokeAction(
+                                '{!$RemoteAction.BLN_Email_Dashboardscon.createemailtempoptions}',
+                                name,
+                                $j2('iframe').contents().find('body').html(),
+                                document.getElementById('temp_emailsubtxt').value,
+                                '{!selectedeventid}',
+                                function(result, event){
+                                    if (event.status) {
+                                        console.log(result);
+
+                                        $('#custtemp_tbl tbody').append('<tr>'
+                                                +'<td style="width:11%">'
+                                                +'<input type="radio" id="'+name+'" value="'+result+'" name="stemp" checked=" true" onclick=getselvalues("'+result+'");/>'
+                                                +'</td>'
+                                                +'<td>'+name+'</td>'
+                                                + '</tr>');
+
+                                        document.getElementById("savecustomtemp").value=selectedVal;
+
+                                        var texteditordata=$j2('iframe').contents().find('body').html();
+
+                                        /*alert(texteditordata);*/
+                                         document.getElementById("stdtemp_save").style.display="";
+
+                                        document.getElementById("emailbody-temp").innerHTML=texteditordata;
+                                        // alert('1');
+                                        //document.getElementById("browseremailbody-temp").innerHTML=texteditordata;
+                                        //document.getElementById("mobileemailbody-temp").innerHTML=texteditordata;
+                                        //alert('2');
+
+
+                                        // $j2('iframe').contents().find('body').empty(); 
+                                        // alert('3');  
+
+                                        // showpackage( 'emailbody-wrapper','email-edit');
+                                        //alert(document.getElementById("emailsubj_optext").innerHTML);
+                                        var tempsubject= document.getElementById("temp_emailsubtxt").value;
+                                        //alert(hjj);
+                                        document.getElementById("emailsubj_optext").innerHTML=tempsubject;
+                                        //document.getElementById('editorsavecancelbtn').style.display='none';
+                                        //document.getElementById("editor-edit").style.display="";
+
+                                        showpackage('emailtempop_box','emailtempeditor_box');
+                                        Alert_stdtempsaveas.Cancel();       
+                                        callback($j2(this));
+                                        function callback(clkbtn){
+                                            //alert(clkbtn.html);
+                                            //alert("ddd");
+                                            // edittempsave();<!---calling the save method if overwriting-->
+                                            Alert_stdtempsaveas.Cancel();<!--closing the save as popup--->
+
+                                        }       
+
+                                    } else if (event.type === 'exception') {
+                                        //alert('111111111111' +event.type);
+                                    } else {
+                                        //alert('dfdgdfgh');
+                                    }
+                                }, 
+                                {escape: false}
+                                );
+                    }
+
+                }) 
+
+            })
+
+        })
+
+        var $j3 = jQuery.noConflict();    
+        $j3(window).load(function(){
+            $j3(function() {
+
+
+                $j3('#customsaveforstand_btn').click(function() {
+
+                    document.getElementById("stdtemp-overwrite-error").style.display="none";
+                    var name  = $('input[name="nw-customizetemp"]').val();
+
+                    if(name == null || name =='' || name == 'BLN Order confirmation'){
+
+                        Alert.render('You cannot overwrite a standard template, Please enter a unique Template Name','Alert !','ok');
+                        return false;
+                    }
+                    else{
+                    Visualforce.remoting.Manager.invokeAction(
+                                '{!$RemoteAction.BLN_Email_Dashboardscon.createemailtempoptionsforstand}',
+                                name,
+                                $j3('iframe').contents().find('body').html(),
+                                document.getElementById('temp_emailsubtxt').value,
+                                '{!selectedeventid}',
+                                function(result, event){
+                                    if (event.status) {
+                                        console.log(result);
+
+
+                                        $j3('#custtemp_tblorder tbody').append('<tr>'
+                                                +'<td style="width:11%">'
+                                                +'<input type="radio" id="'+name+'" value="'+result+'" name="stemporder" checked=" true" onclick=getselvalues("'+result+'");/>'
+                                                +'</td>'
+                                                +'<td>'+name+'</td>'
+                                                + '</tr>');
+                                        document.getElementById("savecustomtemp").value=selectedVal;
+                                        var texteditordata=$j3('iframe').contents().find('body').html();
+                                        /*alert(texteditordata);*/
+                                        //document.getElementById("stdsave").style.display="";
+                                        document.getElementById("emailbody-temp").innerHTML=texteditordata;
+                                        // document.getElementById("browseremailbody-temp").innerHTML=texteditordata;
+                                        // document.getElementById("mobileemailbody-temp").innerHTML=texteditordata;
+                                        //$j3('iframe').contents().find('body').empty();            
+                                        // showpackage( 'emailbody-wrapper','email-edit');
+                                        // document.getElementById('editorsavecancelbtn').style.display='none';
+                                        // document.getElementById("editor-edit").style.display="";
+                                        var tempsubject= document.getElementById("temp_emailsubtxt").value;        
+                                        document.getElementById("emailsubj_optext").innerHTML=tempsubject;
+    
+                                        showpackage('emailtempop_box','emailtempeditor_box');
+                                        Alert.render('Template has been successfully created,please close template box to activate the template' ,'Alert !','ok');
+                                        Alert_stdtempsaveas.Cancel();       
+                                        callback($j3(this));
+                                        function callback(clkbtn){
+                                            //alert(clkbtn.html);
+                                            //alert("ddd");
+                                            // edittempsave();<!---calling the save method if overwriting-->
+                                            Alert_stdtempsaveas.Cancel();<!--closing the save as popup--->
+
+                                        }       
+
+                                    } else if (event.type === 'exception') {
+                                       // alert('111111111111' +event.type);
+                                    } else {
+                                       // alert('dfdgdfgh');
+                                    }
+                                }, 
+                                {escape: false}
+                                );
+                    }
+
+                }) 
+
+            })
+
+        })
+
+        ////////////////////////////start of step 4 sscript
+        //function for campign details at last step
+        function updatecamp_details(){
+
+            var camptypeselect = document.getElementById("camptypeslist").value;
+            //alert(camptypeselect);
+            //var  campcategoryval = camptypeselect.options[camptypeselect.selectedIndex].value;//campaigntype from setup 
+
+            var segmentselectdopt =document.getElementById("pageid:form1id:selSegVal");
+            var segmentselected =segmentselectdopt.options[segmentselectdopt.selectedIndex].innerHTML;//Segement name from Mailchimp
+            //var selectedtemp = $("#tempcategory_box  input[type='radio']:checked"); //selected template from templatestep
+            //var selectedtemp = $('input:radio[name=stemp]:checked').val();
+            //alert(selectedtemp);
+            var $radio = $('input[name=stemp]:checked');
+            var tempval = $radio.val();
+            var selectedtemp = $radio.attr('id');
+            //alert(selectedtemp);
+            document.getElementById("updatefinalcamptype").innerHTML=camptypeselect;
+            document.getElementById("updatefinalemail_subj").innerHTML=document.getElementById("emailsubj_optext").innerHTML;
+            document.getElementById("updatefinalfrmname").innerHTML=document.getElementById("campfrmname_ip").value;
+            document.getElementById("updatefinalfrmemailid").innerHTML=document.getElementById("campfrmemail_id").value;
+            document.getElementById("updatefinalrecipients").innerHTML=segmentselected;
+            document.getElementById("updatefinaltemplatename").innerHTML=selectedtemp;
+            //alert(selected.val())
+        }
+
+
+        ///////////////end of step 4 script
+        </script>
+        <!---//end of emailtemplate.js------------------>
+        <!------------start of popup component function------------------>
+        <c:ed_popupbox >
+        </c:ed_popupbox>
+        <!------------/close of popup component function------------------>
+        <script>
+        /*******creating instances for calling popups*******/
+        var Alert_campaign = new Custom_formPopup(); //Area popup
+        /***************/   
+        var Alert_stdtempsaveas = new Custom_formPopup(); //Standard temlpate Save As popup 
+
+        var Alert_stdautoschedule= new Custom_formPopup(); //Auto Schedule  popup   
+
+        var Alert_systemplate= new Custom_formPopup();
+
+        var Alert_mailchimphelp= new Custom_formPopup(); //Mailchimp Instructions popup
+        /***************/  
+        var Alert_finalcampsaveas = new Custom_formPopup(); //Final Save Popup
+        
+         var Alert_assignbl = new Custom_formPopup(); //assign badgelabel
+        </script>
+        <apex:form >
+        <!-- Start of action function and action remote--->
+
+        <apex:actionFunction name="saveapik" action="{!SaveMCAPIKey}" rerender="McImportedListsPanel" oncomplete="if('{!displayerror }'!='')Alert.render('{!displayerror}' ,'Alert !','ok');" >
+        <apex:param name="apikeyString" value="" />  
+        <apex:param name="campaignid" value="" />         
+        </apex:actionFunction> 
+
+        <apex:actionfunction name="getEmails" action="{!getEmails}" rerender="aaa" status="AjaxLoader" >
+        <apex:param name="itype" value="" assignTo="{!itype}"/>
+        </apex:actionfunction>        
+
+        <apex:actionFunction name="actionImpSeg" action="{!ImportMcListSegments}" reRender="Mcsegementlist">
+        <apex:param name="apikeyString" value="" />
+        <apex:param name="listid" value="" />
+        </apex:actionFunction> 
+
+        <apex:actionFunction name="actionNewSegInList" action="{!creatingSegment}" reRender="Mcsegementlist">
+        <apex:param name="apikeyString" value="" />
+        <apex:param name="listid" value="" />
+        <apex:param name="segName" value="" />
+        </apex:actionFunction>
+
+        <apex:actionFunction name="actionListandSegsync" action="{!listsubscribe}" reRender="aaa" >
+        <apex:param name="apikeyString" value="" />
+        <apex:param name="listid" value="" />
+        <apex:param name="segid" value=""/>                            
+        </apex:actionFunction>
+
+        <apex:actionFunction name="creatingcampaignformc" action="{!createCampaignInMC}" rerender="aaa" status="AjaxLoader" oncomplete="window.location.reload( true );">
+        <apex:param name="apikeyString" value="" />
+        <apex:param name="listid" value="" />
+        <apex:param name="segid" value=""/>  
+        <apex:param name="templatename" value="" />
+        <apex:param name="htmltemplate" value="" />
+        <apex:param name="frmname" value=""/>
+        <apex:param name="emailsub" value="" />
+        <apex:param name="fromemail" value="" /> 
+        <apex:param name="campname" value="" />  
+        <apex:param name="camptype" value="" />
+        <apex:param name="sftemplateid" value="" />                         
+        </apex:actionFunction> 
+
+        <apex:actionFunction name="syscusttempoverwrite" action="{!syscusttemplateoverwrite}" rerender="aaa" status="AjaxLoader" >
+        <apex:param name="templateid" value="" /> 
+        <apex:param name="tempbody" value="" /> 
+        <apex:param name="emailsubject" value="" />                   
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="syscustcamptemplateoverwrite" action="{!syscustcamptemplateoverwrite}" rerender="aaa" status="AjaxLoader" >
+        <apex:param name="campid" value="" /> 
+        <apex:param name="tempbody" value="" /> 
+        <apex:param name="emailsubject" value="" />                   
+        </apex:actionFunction>
+
+        <apex:actionFunction name="campaignreport1" action="{!CampaignReport}"  rerender="logpanel" >
+        <apex:param name="campaignid" value="" />
+        <apex:param name="logid" value="" />
+        </apex:actionFunction>
+
+        <apex:actionFunction name="sendingtestemail1" action="{!sendtestemail}" rerender="aaa"  >
+        <apex:param name="campaignid" value="" /> 
+        <apex:param name="toemail" value="" /> 
+        </apex:actionFunction>
+
+
+        <apex:actionFunction name="sendingcampaign1" action="{!campaignSend}" rerender="aaa" status="AjaxLoader" oncomplete="window.location.reload( true );">
+        <apex:param name="apikeyString1" value="" /> 
+        <apex:param name="campaignid" value="" /> 
+        </apex:actionFunction>
+
+        <apex:actionFunction name="actionschedulecampaign" action="{!autoschedule}" status="AjaxLoader" rerender="aaa" oncomplete="window.location.reload( true );">
+        <apex:param name="campaignid" value="" />
+        <apex:param name="scheduledate" value="" />
+        <apex:param name="daysbeforedd" value="" />
+        </apex:actionFunction>
+
+        <apex:actionFunction name="deleteremcamp" action="{!deleteremcamp}" rerender="aaa" status="AjaxLoader" oncomplete="window.location.reload( true );">
+        <apex:param name="campaignid" value="" />           
+        </apex:actionFunction>
+
+
+        <apex:actionFunction name="resendingcampaign1" action="{!resend}" rerender="logscreen" status="AjaxLoader" oncomplete="window.location.reload( true );Alert.render('Campaign has been Resend Successfully' ,'Alert !','ok');">
+        <apex:param name="apikeyString1" value="" /> 
+        <apex:param name="campaignid" value="" />                 
+        </apex:actionFunction>
+
+        <apex:actionFunction name="creatingcampaignformc1" action="{!createCampaignInMCstandard}" rerender="aaa" status="AjaxLoader" oncomplete="window.location.reload( true );">
+        <apex:param name="apikeyString" value="" />
+        <apex:param name="listid" value="" />
+        <apex:param name="segid" value=""/>  
+        <apex:param name="templatename" value="" />
+        <apex:param name="htmltemplate" value="" />
+        <apex:param name="frmname" value=""/>
+        <apex:param name="emailsub" value="" />
+        <apex:param name="fromemail" value="" /> 
+        <apex:param name="campname" value="" />  
+        <apex:param name="camptype" value="" />
+        <apex:param name="sftemplateid" value="" />                         
+        </apex:actionFunction>
+
+        <apex:actionFunction name="creatingcampaignformc2" action="{!createCampaignInMCstandardSched}" rerender="aaa" status="AjaxLoader" oncomplete="window.location.reload( true );">
+        <apex:param name="apikeyString" value="" />
+        <apex:param name="listid" value="" />
+        <apex:param name="segid" value=""/>  
+        <apex:param name="templatename" value="" />
+        <apex:param name="htmltemplate" value="" />
+        <apex:param name="frmname" value=""/>
+        <apex:param name="emailsub" value="" />
+        <apex:param name="fromemail" value="" /> 
+        <apex:param name="scheduledate" value="" />
+        <apex:param name="daysbeforedd" value="" /> 
+        <apex:param name="campname" value="" />  
+        <apex:param name="camptype" value="" />
+        <apex:param name="sftemplateid" value="" />
+
+        </apex:actionFunction> 
+
+        <apex:actionfunction name="templateactive" action="{!templateactivefun}" rerender="mailchimppanel" status="AjaxLoader" >
+        <apex:param name="templateid" value="" />
+        <apex:param name="selectedtemp" value="" />
+        </apex:actionfunction>
+
+        <apex:actionFunction name="rerenderTopPanel" action="{!displayPermissions}" rerender="SysTempPanel,CusTempPanel,campstdcustpanel" oncomplete="currTabIndexWithoutReload();"/>
+
+
+
+        <apex:actionfunction name="UpdateEmailAttn"  action="{!AttnEmailPreferences}" rerender="SysTempPanel,form1id" status="AjaxLoader" >
+        <apex:param name="AttnEmails" value="" />
+        </apex:actionfunction>
+
+        <apex:actionfunction name="UpdateEmailEvAdm"  action="{!EvntAdmEmailPreferences}" rerender="SysTempPanel,form1id" status="AjaxLoader">
+        <apex:param name="EvntAdmEmails" value="" />
+        </apex:actionfunction>
+        <!-- end of action function and action remote--->
+        </apex:form> 
+        <!-- Start of Validation and Customised JS--->
+        <script>
+
+        function showmailchimptab(){
+            
+            var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if( (document.getElementById('camptypeslist').value == '') || (document.getElementById('campfrmname_ip').value == '') ) 
+            {
+                Alert.render('Required fields are missing' ,'Alert !','ok');//calling alert popup
+               
+            } 
+            else {
+               showpackage('camp_recipients' ,'camp_setup');
+            }
+
+        }
+        //////////////////////////////////////////////////////////
+        function valeventcontacts(){
+            var itype='';
+            var lbl='';
+            $("input:checkbox[name='recipientslist']:checked").each(function() {
+                itype=itype+$(this).val()+',';
+                lbl=$('input:checked').next().text();
+            });
+
+            var tsize= lbl.replace( /\D+/g, '');                                  
+            if(itype==''){
+                Alert.render('Please select atleast one Contact' ,'Alert !','ok');//calling alert popup
+                return false;
+            }
+
+            var tcheck = parseInt(tsize);
+            if(tcheck==0){
+                Alert.render('Please select a contact that has atleast one email' ,'Alert !','ok');//calling alert popup
+                return false;
+            }
+
+            if(itype!=''){
+                itype= itype.substring(0, itype.length - 1);
+                // alert(itype);
+                getEmails(itype);
+                showpackage('camp_mcl','camp_ec');
+            }
+
+        }
+        //////////////////////////////////////////////////////////
+        function saveapi(){
+
+            if(document.getElementById('impmailchimptxt1').value!=''){   
+
+                var apikeyString = document.getElementById('impmailchimptxt1').value; 
+
+                saveapik(apikeyString);
+
+                showdiv('mcl_selectapi'), hidediv('mcapi_notemsg');
+                return false;
+            }else{
+                Alert.render('Please provide your Mailchimp API Key' ,'Alert !','ok');//calling alert popup                     
+            }
+        }
+        ///////////////////////////////////////////////////////                 
+        function impSegs(){
+
+            var listid = document.getElementById('pageid:form1id:SelListId').value;
+            var apikeyString = document.getElementById('impmailchimptxt1').value; 
+            actionImpSeg(apikeyString,listid);
+            showdiv('mcl_selectsgmt'),showdiv('mc_sgmtnotemsg');
+
+        }          
+        //////////////////////////////////////////////////////////                 
+        function createSegment(){
+
+            for(var i=0; i<document.getElementById('pageid:form1id:selSegVal').options.length; i++){
+                if(document.getElementById('pageid:form1id:selSegVal').options[i].text == document.getElementById('segmentvalue').value){ 
+                    var exists = 'found';
+                    break;
+                }
+            }
+
+            if(exists!='found'){     
+                var listid = document.getElementById('pageid:form1id:SelListId').value;  
+                //alert(listid);                        
+                var segName = document.getElementById('segmentvalue').value;   
+                //alert(segName);                                                           
+                var apikeyString = document.getElementById('impmailchimptxt1').value; 
+                if (segName!= null && segName!= ''){
+                    actionNewSegInList(apikeyString,listid,segName);
+                    showdiv('mcl_selectsgmt');hidediv('mcl_sgmtbox');hidediv('mc_sgmtnotemsg');
+                }
+
+            }else{
+
+                Alert.render('This segment name is aready exists, please provide unique segment name' ,'Alert !','ok');//calling alert popup   
+            }   
+        }  
+
+        ////////////////////////////////////////////////////////     
+        function showtempaltebox(){   
+         var emailval = document.getElementById('campfrmemail_id');
+         var apikeyString = document.getElementById('impmailchimptxt1').value; 
+         var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if((document.getElementById('impmailchimptxt1').value != '') && (document.getElementById('pageid:form1id:SelListId').value != '') && (document.getElementById('pageid:form1id:selSegVal').value != '')&& (document.getElementById('campfrmemail_id').value != '') )
+            {     
+                
+                ListandSegsync();
+                Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.BLN_Email_Dashboardscon.verifyemailwithMC}',
+                                apikeyString,
+                  function(result, event){    
+                              
+                if((result.verifyactivation == 'true') && (result.fromemailcheck == emailval.value)){
+                
+                 showpackage('camp_temp','camp_recipients');
+                }
+                else{
+               
+                 Alert.render('Please provide a valid email address associated with your Mailchimp account' ,'Alert !','ok');
+                 return false;
+                }
+             });   
+
+            } 
+            else if (!filter.test(emailval.value)) {
+                    Alert.render('Please provide a valid email address associated with your Mailchimp account' ,'Alert !','ok');//calling alert popup
+                    email.focus;
+                    return false;
+                }
+                
+             else if((document.getElementById('campfrmemail_id').value == '')) {
+                Alert.render('Please provide a valid email address associated with your Mailchimp account' ,'Alert !','ok');
+            } 
+            else if((document.getElementById('impmailchimptxt1').value == '')) {
+                Alert.render('Please enter mailchimp api key and click on "Get Mail Chimp List"' ,'Alert !','ok');
+            }
+            else if(document.getElementById('pageid:form1id:SelListId').value == '') {
+                Alert.render('Please Select a Mailchimp List' ,'Alert !','ok');
+            }
+            else if(document.getElementById('pageid:form1id:selSegVal').value == '')
+                Alert.render('Please Select a Segement associated with your Mailchimp List' ,'Alert !','ok');
+        }    
+        ///////////////////////////////////////////////////////////////
+        function showtempalteboxforstand(){ 
+             var emailval = document.getElementById('campfrmemail_id');
+             var apikeyString = document.getElementById('impmailchimptxt1').value;
+         var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if((document.getElementById('impmailchimptxt1').value != '') && (document.getElementById('pageid:form1id:SelListId').value != '') && (document.getElementById('pageid:form1id:selSegVal').value != '') && (document.getElementById('campfrmemail_id').value != '')) 
+            {
+               
+               ListandSegsync();
+                Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.BLN_Email_Dashboardscon.verifyemailwithMC}',
+                                apikeyString,
+                  function(result, event){  
+                        
+                if((result.verifyactivation == 'true') && (result.fromemailcheck == emailval.value)){
+                 showpackage('camp_confirmation','camp_recipients');
+                }
+                else{
+                 Alert.render('Please provide a valid email address associated with your Mailchimp account' ,'Alert !','ok');
+                 return false;
+                }
+            }); 
+            }
+             else if (!filter.test(emailval.value)) {
+                    Alert.render('Please provide a valid email address associated with your Mailchimp account' ,'Alert !','ok');//calling alert popup
+                    email.focus;
+                    return false;
+                }
+                
+             else if((document.getElementById('campfrmemail_id').value == '')) {
+                Alert.render('Please provide a valid email address associated with your Mailchimp account' ,'Alert !','ok');
+            }    
+            else if((document.getElementById('impmailchimptxt1').value == '')) {
+                Alert.render('Please enter mailchimp api key and click on "Get Mail Chimp List"' ,'Alert !','ok');
+            }
+            else if(document.getElementById('pageid:form1id:SelListId').value == '') {
+                Alert.render('Please Select a Mailchimp List' ,'Alert !','ok');
+            }
+            else if(document.getElementById('pageid:form1id:selSegVal').value == '') {
+                Alert.render('Please Select a Segment associated with your Mailchimp List' ,'Alert !','ok');
+            }
+               
+        }      
+        /////////////////////////////////////////////////////////////   
+        function ListandSegsync(){                                
+            var apikeyString = document.getElementById('impmailchimptxt1').value;
+            var listid = document.getElementById('pageid:form1id:SelListId').value;                               
+            var segid = document.getElementById('pageid:form1id:selSegVal').value;
+            actionListandSegsync(apikeyString,listid,segid);
+        }
+        /////////////////////////////////////////////////////////////////     
+        function getselvalues(val){
+
+            Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.BLN_Email_Dashboardscon.getemailtempoptions}',
+                    val,
+                    function(result, event){
+                        if (event.status) {
+document.getElementById('emailbody-temp').innerHTML=result.HtmlValue; 
+                            document.getElementById("temp_emailsubtxt").value = result.Subject;
+                            document.getElementById("emailsubj_optext").innerHTML=document.getElementById("temp_emailsubtxt").value;
+                            $('iframe').contents().find('body').empty();//clearing the editor iframe body
+                            var newtempbody = document.getElementById('emailbody-temp').innerHTML;
+                            $('iframe').contents().find('body').append(newtempbody);//updating editor body with selected template
+                            //var divtext = document.getElementById('emailbody-temp').innerHTML;
+                            //newtempold=divtext ;
+                            // alert('divtext '+divtext);
+                            //$('iframe').contents().find('body').empty();
+                            //$('iframe').contents().find('body').append(divtext);
+
+                            //document.getElementById('editor').innerHTML = divtext ;
+
+
+
+                        } else if (event.type === 'exception') {
+                            //alert('111111111111' +event.type);
+                        } else {
+                           // alert('dfdgdfgh');
+                        }
+                    }, 
+                    {escape: false}
+                    ); 
+         document.getElementById('sys_stdtemp_save').style.display='none';
+        }
+        ///////////////////////////////////////////////////////////////////////////    
+        function finalcampaignsave(){
+            //alert("final save");
+
+            var campaignname = document.getElementById("custcampsave_tb").value;
+            //alert(campaignname);
+            if(campaignname==null || campaignname==''){
+                Alert.render('Test box cannot be empty, please eneter a unique name for campaign' ,'Alert !','ok');
+                return false;
+            }
+            else if(campaignname=='Product Intro of Lead Retrieval' || campaignname=='Product Intro Of Match Leads' || campaignname=='Match Leads Buyer Sign Up Reminder' || campaignname=='Lead Retrieval Sign Up Reminder' || campaignname=='Invitation' || campaignname=='Reminder before the event'){
+                Alert.render('You cannot overwrite a standard campaign, please eneter a unique name for the campaign' ,'Alert !','ok');
+                return false;
+            }
+            else{
+                var apikeyString = document.getElementById('impmailchimptxt1').value;
+                //alert(''API KEY String' + apikeyString );
+                var listid = document.getElementById('pageid:form1id:SelListId').value; 
+                // alert(listid);                              
+                var segid = document.getElementById('pageid:form1id:selSegVal').value;
+                //alert(segid);
+                var templatename = document.getElementById('updatefinaltemplatename').innerHTML;
+                //alert(templatename);
+                var htmltemplate = document.getElementById('emailbody-temp').innerHTML;
+                //alert(htmltemplate);
+                var frmname = document.getElementById('updatefinalfrmname').innerHTML;
+                //alert(frmname);
+                var emailsub = document.getElementById('updatefinalemail_subj').innerHTML;
+                // alert(emailsub);
+                var fromemail = document.getElementById('updatefinalfrmemailid').innerHTML;
+                //alert(fromemail);
+                creatingcampaignformc(apikeyString,listid,segid,templatename,htmltemplate,frmname,emailsub,fromemail,document.getElementById("custcampsave_tb").value,document.getElementById("camptypeslist").value,$('input:radio[name=stemp]:checked').val()); 
+
+                Alert.render(campaignname+''+' Custom Campaign has been successfully created' ,'Alert !','ok');//calling alert popup 
+                //Alert7.Cancel();
+                //Alertedit.Cancel();
+                //window.location.reload();
+                return false;  
+
+            }
+
+        }
+        ///////////////////////////////////////////////////////////////////////////////   
+        function sendingtestemail(dialog){  
+            var campaignid=dialog;              
+            var toemail = '{!$User.Email}';
+            // alert(toemail);
+            sendingtestemail1(campaignid,toemail);
+            Alert.render('Test Mail has been successfully sent to this email ID :'+toemail ,'Alert !','ok');  
+        }
+        //////////////////////////////////////////////////////////////////////////////
+        var campaignid;
+        function campidsend(dialog){
+            if(dialog!=undefined){
+                campaignid=dialog;
+            }
+            $("input[name=recipientslistautoschedule]").each( function () {
+                $(this).attr('checked', false);
+
+            });
+            if(dialog!=undefined){
+
+                try{
+                    var allTypes = new Array();
+                    <apex:repeat value="{!listcontmap}" var="key">
+                    if('{!key}'==campaignid){
+                        var fulllist='{!listcontmap[key]}'; 
+                        var reslist = fulllist.split(",");
+
+                        $("input[name=recipientslistautoschedule]").each( function () {
+                            for(var r=0;r<reslist.length;r++){
+                                if( $(this).val()==reslist[r] )
+                                    $(this).attr('checked', true);
+
+                            }
+                        });
+                    }
+
+
+                    </apex:repeat>
+
+                }catch(e){alert(e);}
+            }
+
+        }
+        ///////////////////////////////////////////////////////////////////////////////     
+
+        function sendcampaign(){
+
+            var apikeyString1 = document.getElementById('impmailchimptxt1').value;
+
+            sendingcampaign1(apikeyString1,campaignid);
+            Alert.render('Campaign has been successfully sent','Alert !','ok');  
+            return false;
+        }   
+
+        ///////////////////////////////////////////////////////////////////////////////////////   
+        function schecampaign(){                                
+            var scheduledate =  document.getElementById('datetime').value;
+
+            var daysbeforedd =  document.getElementById('dayssbefore').value;
+            var eventstadate = '{!EventStartDate}';
+
+
+            if((scheduledate==null || scheduledate=='') && (daysbeforedd==null || daysbeforedd=='')){
+                Alert.render('Text box cannot be empty','Alert !','ok');
+                return false;
+            }
+            else if(scheduledate>=eventstadate){
+                Alert.render('Schedule date cannot be greater than Event Start Date','Alert !','ok');
+                return false;
+            }
+            else{
+                actionschedulecampaign(campaignid,scheduledate,daysbeforedd);
+                Alert.render('Campaign has been Scheduled Successfully','Alert !','ok');
+                return false;
+            } 
+        } 
+        ////////////////////////////////////////////////////////////////////////////////////////////   
+        function removecamp(dialog){
+
+            /*alert("remove");*/
+            campaignid = dialog;
+
+            deleteremcamp(campaignid);
+            return false;          
+
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////  
+        function resendcampaign(dialog1){ 
+            campaignid=dialog1;                               
+            var apikeyString1 = document.getElementById('impmailchimptxt1').value;
+
+            resendingcampaign1(apikeyString1,campaignid);
+
+        }  
+        var stdcampname; 
+        var indexradio;     
+        function getcampname(dialog2,dialog1){
+            stdcampname=dialog2;
+            indexradio = dialog1;
+            // alert(stdcampname);
+            try{
+                var stemp = stdcampname;
+                document.getElementById(stemp).checked = true;
+
+                $("input:radio[name=stemp]").each(function() {
+                    var value= $("input[name=stemp]:checked").val(); 
+                    //alert(value);
+                    getselvalues(value);
+                });
+            }catch(e){}
+
+        }  
+        //////////////////////////////////////////////////////////////////////////////////////// 
+        function stdcampsaveas1(){
+
+            //orgcampname=document.getElementById("campaignnametextbox").value;<!--storing original campaign name-->
+            //document.getElementById("savecustomcamptb").value=orgcampname;
+            var apikeyString = document.getElementById('impmailchimptxt1').value;
+            var listid = document.getElementById('pageid:form1id:SelListId').value; 
+            var segid = document.getElementById('pageid:form1id:selSegVal').value;
+            var templatename = document.getElementById('updatefinaltemplatename').innerHTML;
+            var htmltemplate = document.getElementById('emailbody-temp').innerHTML;
+            var frmname = document.getElementById('updatefinalfrmname').innerHTML;
+            var emailsub = document.getElementById('updatefinalemail_subj').innerHTML;
+            var fromemail = document.getElementById('updatefinalfrmemailid').innerHTML;
+            var campname = stdcampname;
+
+            creatingcampaignformc1(apikeyString,listid,segid,templatename,htmltemplate,frmname,emailsub,fromemail,campname,document.getElementById("updatefinalcamptype").innerHTML,$('input:radio[name=stemp]:checked').val());  
+
+            Alert.render(campname +''+'Campaign has been Successfully Sent','Alert !','ok');
+        } 
+        ////////////////////////////////////////////////////////////////////////////////////////  
+        function schedulestandard1(){ 
+
+            //orgcampname=document.getElementById("campaignnametextbox").value;<!--storing original campaign name-->
+            // document.getElementById("savecustomcamptb").value=orgcampname;
+
+            var apikeyString = document.getElementById('impmailchimptxt1').value;
+            var listid = document.getElementById('pageid:form1id:SelListId').value; 
+            var segid = document.getElementById('pageid:form1id:selSegVal').value;
+            var templatename = document.getElementById('updatefinaltemplatename').innerHTML;
+            var htmltemplate = document.getElementById('emailbody-temp').innerHTML;
+            var frmname = document.getElementById('updatefinalfrmname').innerHTML;
+            var emailsub = document.getElementById('updatefinalemail_subj').innerHTML;
+            var fromemail = document.getElementById('updatefinalfrmemailid').innerHTML;
+            var scheduledate =  document.getElementById('datetime').value;
+            var daysbeforedd =  document.getElementById('dayssbefore').value;
+            var campname = stdcampname;
+            if((scheduledate==null || scheduledate=='') && (daysbeforedd==null || daysbeforedd=='')){
+                //alert('Text box cannot be empty');
+                Alert.render('Text box cannot be empty','Alert !','ok');
+                return false;
+            }
+            else{
+                creatingcampaignformc2(apikeyString,listid,segid,templatename,htmltemplate,frmname,emailsub,fromemail,scheduledate,daysbeforedd,campname,document.getElementById("updatefinalcamptype").innerHTML,$('input:radio[name=stemp]:checked').val());  
+                Alert.render(campname +''+'Campaign has been Successfully Scheduled','Alert !','ok');     
+                return false;
+            } 
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        function valtempbox(){
+            var RadioGroupResult = $('input[name="stemp"]:checked').val();
+            if(RadioGroupResult==null || RadioGroupResult==''){
+                Alert.render('Please select a template','Alert !','ok');   
+                return false;
+            }
+            else{
+                showpackage('camp_confirmation' ,'camp_temp');
+                updatecamp_details();
+            }
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+        function getselvaluesforcust(val){
+            Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.BLN_Email_Dashboardscon.getemailtempoptionsforstand}',
+                    val,
+                    function(result, event){
+                        if (event.status) {
+                           document.getElementById('emailbody-temp').innerHTML= result.Template_Body__c;
+                            document.getElementById("temp_emailsubtxt").value = result.CampSubject__c;
+                            document.getElementById("emailsubj_optext").innerHTML=document.getElementById("temp_emailsubtxt").value;
+                            var divtext = document.getElementById('emailbody-temp').innerHTML;
+                            //newtempold=divtext ;
+                            // alert('divtext '+divtext);
+                            $('iframe').contents().find('body').empty();
+                            $('iframe').contents().find('body').append(divtext);
+
+                           // document.getElementById('editor').innerHTML = divtext ;
+
+                        } else if (event.type === 'exception') {
+                            //alert('111111111111' +event.type);
+                        } else {
+                            //alert('dfdgdfgh');
+                        }
+                    }, 
+                    {escape: false}
+                    ); 
+            //document.getElementById('tempasaveasbuton').style.display='none';
+            document.getElementById('sys_stdtemp_save').style.display='';
+
+        } 
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////
+        function systempstatus() {
+
+            var radios = document.getElementsByName('stemporder');
+            var $radio = $('input[name=stemporder]:checked');
+            var templateid = $radio.val();
+            var selectedtemp = $radio.attr('id');    
+            templateactive(templateid,selectedtemp);
+            Alert.render(selectedtemp+' '+'is Active Now','Alert !','ok');
+
+        }
+
+        function UpdateEmailPrefEvAdm(SendMails) {
+
+         var EvntAdmEmails= SendMails;
+         if(SendMails=='true'){
+            alert('This Action Will Stop Sending Emails To Event Admin!');
+         }
+        UpdateEmailEvAdm(EvntAdmEmails);
+
+        }
+
+        function UpdateEmailPrefAttn(SendMails) {
+
+        var AttnEmails= SendMails;
+        if(SendMails=='true'){
+            alert('This Action Will Stop Sending Emails To Attendee!');
+         }
+        UpdateEmailAttn(AttnEmails);
+        }
+
+        </script>
+
+        <script>
+        $(".systtemp_edit").click(function(e) {
+            var find_selcustomtd=$(this).parent().parent().parent();
+            var selcusttemp_radioval=find_selcustomtd .find("input[type='radio']:checked").val();
+            var popupselcusttemp_radioval=$("#tempcategory_box").find("input[type='radio'][value=" + selcusttemp_radioval + "]").attr("checked",true);
+            var selected_Id = $('input[type=radio][name=stemporder]:checked').attr('id');  
+            //alert(selected_Id);
+           if(selected_Id=="BLN Order confirmation"){
+                getselvalues(selcusttemp_radioval);
+                }
+                else{
+                getselvaluesforcust(selcusttemp_radioval);
+                }
+
+        });
+        
+          $(".custtemp_edit").click(function(e) {
+            var find_selcustomtd=$(this).parent().parent().parent();
+            var selcusttemp_radioval=find_selcustomtd .find("input[type='radio']:checked").val();
+            var popupselcusttemp_radioval=$("#tempcategory_box").find("input[type='radio'][value=" + selcusttemp_radioval + "]").attr("checked",true);  
+        });
+
+        </script>
+        <!--End of Validation and Customised JS--->
+        <script type="text/javascript">
+        function Custom_confirmAlertdel(){
+            this.render =function(dialog,dialoghead,clkbtn,sfid,okbtntxt,cnclbtntxt,instanceclass){
+                var winW = window.innerWidth;
+                var winH = window.innerHeight;
+                var dialogoverlay =document.getElementById('confirm_dialogoverlay');
+                var dialogbox = document.getElementById('confirm_dialogbox');
+                dialogoverlay.style.display="block";
+                dialogoverlay.style.height = winH +"px";
+                dialogbox.style.left=(winW/2) -(550*.5)+"px";
+                dialogbox.style.top="200px";
+                dialogbox.style.display="block";
+                /*document.getElementById('dialogboxhead') .innerHTML="Confirrmation";*/
+                document.getElementById('confirm_dialogboxhead') .innerHTML=dialoghead +'<button class="close-dialog" onclick="'+instanceclass+'.Cancel()">x</button>'; 
+                document.getElementById('confirm_dialogboxbody') .innerHTML=dialog;
+                document.getElementById('confirm_dialogboxfoot') .innerHTML ='<button class="button-a blue" onclick="'+instanceclass+'.ok()"> '+okbtntxt+' </button> <button class="button-a dark-blue" onclick="Alertconfirmdel.Cancel()">'+cnclbtntxt+'</button>'
+                        /******/
+                        this.ok = function(){
+                    document.getElementById('confirm_dialogbox').style.display ="none";
+                    document.getElementById('confirm_dialogoverlay').style.display ="none";
+                    //alert(clkbtn.id);
+                    removecamp(sfid);    
+                    clkbtn.parentNode.parentNode.parentNode.remove();
+
+                    return true;
+                }
+
+                /******/    
+                this.Cancel = function(){
+                    document.getElementById('confirm_dialogbox').style.display ="none";
+                    document.getElementById('confirm_dialogoverlay').style.display ="none";
+                    return false;
+
+
+                }
+                /******/
+
+            }
+        }
+        ////////////////////////////////////////////////////////////////////////////////////
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        var Alertconfirmdel = new Custom_confirmAlertdel(); 
+
+        </script>
+        <div id="confirm_dialogoverlay"></div>
+        <!--close of confirm_dialogoverlay-->
+        <div id="confirm_dialogbox">
+        <div id="confirm_dialogboxhead"></div>
+        <!--close of confirm_dialoghead-->
+        <div id="confirm_dialogboxbody"></div>
+        <!--close of confirm_dialogbody-->
+        <div id="confirm_dialogboxfoot" ></div>
+        <!--close of confirm_dialogboxfoot-->
+        </div>
+        <!--close of confirm_dialogbox-->
+        <!--------------**************end of Confirm box popup****************---------------------> 
+        </apex:page>

@@ -1,0 +1,590 @@
+<apex:page controller="SA_EventDashboardController" standardStylesheets="false" showHeader="false" action="{!checkUserId}">
+
+<head>
+    <title>Scan Attendee</title>
+</head>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References Start ------------------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/fullcalendar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fullcalendar.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions.js')}"/>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/slider js/jquery.min.js')}"/>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/slider js/jquery.touchslider.js')}"/>
+
+     <script>
+        MyChart.on('beforeconfig', function(config) {
+            config.axes[0].margin=-10;
+        });
+    </script>
+
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+<!-------------------------------------------- Styles, Javascript and Jquery References End ------------------------------------------------->
+<apex:form id="AS_EventsForm">
+<div id="header">
+        <div id="logo">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+        </apex:outputLink>
+        </div><!--close of logo-->
+    </div><!--close of header--->
+    
+    <div  id="ribbon"></div><!--close of ribbon-->
+    <header>
+        <div id="centered-head" class="res"> 
+        <nav>
+            <ul>
+                <li id="login">
+                    <span id="login-trigger">
+                        <span id="login-triggers">
+                            <span id="user-panel-check"></span>
+                            <span id="user-panel-title ">My Account</span>
+                        </span>
+                    </span>
+                    <div id="login-content">
+                        <ul>
+                            <li><apex:outputLink value="/apex/SA_ManageProfile"><apex:image value="{!$Resource.Manage_Profile}" width="15px" height="15px"/><span class="editprofile icon">Manage Profile</span></apex:outputLink></li>
+                            <li><apex:outputLink value="/apex/SA_ResetPassword"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon">Reset Password</span></apex:outputLink></li>  
+                            <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="account-name">
+            <p><span class="welcome">Welcome, </span><strong>{!$User.Firstname}&nbsp;{!$User.Lastname}</strong></p>
+                <div class="account-separator"></div>
+        </div>
+        <div class="account-name"></div>
+        <div class="account-name" style="float:left;valign:middle;align:left;">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image value="{!$Resource.HomeIcon}" height="40" width="40"/>
+        </apex:outputLink></div>
+        <!-- Navigation end--> 
+        </div>
+    </header>
+
+    <section id="middle" style=" border:0px #000000 solid" class="res">
+    <div id="container-main">
+        <div id="container" style="border:0px #000000 solid">
+            <div id="content">
+                <div class="speedbar" style=" border:0px #FF0000 solid">
+                    <div class="speedbar-nav">Scan Attendee ›› Dashboard</div>
+                    <div style="float:right;padding-right:10px;">Selected Event: <b>{!SelectedEvent.Ev_Title__c}</b></div>
+                    <!--close of speedbar-nav-->
+                </div>
+                <!------------------------------------------------------- Live Events Grid Start ---------------------------------------------------->
+                <div class="grid-1">
+                    <div class="title-grid">Event Statistics<span></span></div>
+                        <div class="content-gird" style=" border: 1px solid #e3e3e3;"> 
+                        <table width="100%" border="0"  cellspacing="5px"  style="font-size:12px;font-family: Helvetica, Arial, sans-serif; text-indent:5px; color:#000; border-collapse:collapse;">
+                                
+                                <tr>
+                                <td colspan="5">
+                                <div style="width:100%;">
+                                
+
+                                 <table width="100%">
+                                    <tr>      
+                                    <td width="100%">
+                                    <table width="100%">
+                                    <tr>             
+                                        <td width="33%" colspan="1"> 
+                                            <div class="title-grid"><span>Ticket Statistics</span>
+                                            <div style="float:right;">
+                                                <apex:outputText value="{!TicketsPecent} %" style="font-size:22px;color:#8B0000;padding-right:5px;"/>
+                                            </div>
+                                            </div>
+                                            <div class="content-gird" style=" border: 1px solid #e3e3e3;"> 
+                                            
+                                            <div style="float:right;">
+                                                <table>
+                                                    <tr>
+                                                        <td>Total Tickets :</td>
+                                                        <td> <apex:outputText value="{!TotalTickets}" style="font-size:22px;color:#800080;padding-right:5px;"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Sold Tickets :</td>
+                                                        <td> <apex:outputText value="{!NoOfTicketsSold}" style="font-size:22px;color:#800080;padding-right:5px;"/></td>
+                                                    </tr>
+                                                </table>
+                                             
+                                            </div>
+                                             <!--
+                                            <apex:chart height="300" width="100%" data="{!ticketStatisticsInnerList}" colorSet="#B8860B">
+                                        <apex:axis type="Numeric" position="left" fields="statisticsCount" grid="true" steps="4"/>
+                                        <apex:axis type="Category" position="bottom" fields="statisticsName"/>
+                                        <apex:barSeries title="Item Sales" orientation="vertical" axis="left" xField="statisticsName" yField="statisticsCount">
+                                            <apex:chartTips height="20" width="160"/>
+                                            <apex:chartLabel display="insideEnd" field="statisticsCount" color="#333"/>
+                                        </apex:barseries>
+
+                                   </apex:chart>
+                                              -->  
+                                           
+                                            <apex:chart width="98%" height="200" data="{!ticketStatisticsInnerList}" theme="Category2" colorSet="#CB3B21,#FFB805">
+                                            <apex:pieSeries dataField="statisticsCount" labelField="statisticsName" donut="50">
+                                            <apex:chartTips width="120" />
+                                            <apex:chartLabel display="rotate"/>
+                                            </apex:pieSeries>
+                                            <apex:legend position="right"    />
+                                            </apex:chart> 
+                                           
+                                            
+                                            </div>
+                                        </td>
+                                        <td width="33%" colspan="1">
+                                            <div class="title-grid"><span>Item Statistics</span>
+                                            <div style="float:right;">
+                                                <apex:outputText value="{!ItemsPercent} %" style="font-size:22px;color:#8B0000;padding-right:5px;"/>
+                                            </div>
+                                            </div>
+                                            <div class="content-gird" style=" border: 1px solid #e3e3e3;"> 
+                                            
+                                             <div style="float:right;">
+                                                <table>  
+                                                    <tr>
+                                                        <td>Total Items :</td>
+                                                        <td> <apex:outputText value="{!TotalItems}" style="font-size:22px;color:#800080;padding-right:5px;"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Sold Items :</td>
+                                                        <td> <apex:outputText value="{!NoOfItemsSold}" style="font-size:22px;color:#800080;padding-right:5px;"/></td>
+                                                    </tr>
+                                                </table>
+                                             
+                                            </div>
+                                            
+                                            <apex:chart width="98%" height="200" data="{!itemStatisticsInnerList}" theme="Category2" colorSet="#87CEEB, #9ACD32">
+                                            <apex:pieSeries dataField="statisticsCount" labelField="statisticsName" donut="50">
+                                            <apex:chartTips width="120"/>
+                                            <apex:chartLabel display="rotate"/>
+                                            </apex:pieSeries>
+                                            <apex:legend position="right"/>
+                                            </apex:chart> 
+                                            </div>
+                                        </td> <!--     TicketsPecent ItemsPercent CheckedInPercent TicketRevenuePercent ItemsRevenuePercent RevenuePercent  --> 
+                                        <td width="33%" colspan="1">       
+                                            <div class="title-grid"><span>Check In Statistics</span>
+                                             <div style="float:right;"> 
+                                                <apex:outputText value="{!CheckedInPercent} %" style="font-size:22px;color:#8B0000;padding-right:5px;"/>
+                                            </div>
+                                            </div>
+                                            <div class="content-gird" style=" border: 1px solid #e3e3e3;">  
+                                            
+                                             <div style="float:right;">
+                                                <table>
+                                                    <tr>
+                                                        <td>Total:</td>
+                                                        <td> <apex:outputText value="{!TotalCheckins}" style="font-size:22px;color:#800080;padding-right:5px;"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>CheckedIns :</td>
+                                                        <td> <apex:outputText value="{!NoOfcheckins}" style="font-size:22px;color:#800080;padding-right:5px;"/></td>
+                                                    </tr>
+                                                </table>
+                                             
+                                            </div>
+                                            
+                                            <apex:chart width="98%" height="200" data="{!checkinStatisticsInnerList}" theme="Category2">
+                                            <apex:pieSeries dataField="statisticsCount" labelField="statisticsName" donut="50">
+                                            <apex:chartTips width="120"/>
+                                            <apex:chartLabel display="rotate"/>
+                                            </apex:pieSeries>
+                                            <apex:legend position="top"/>
+                                            </apex:chart> 
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </table>
+                                    </td> 
+                                 </tr>
+                                 <tr>
+                                    <td width="100%">
+                                    <table width="100%">
+                                    <tr>  
+                                        <td width="50%">
+
+                                            <div class="title-grid"><b>Revenue Earned</b> till Date<span></span>
+
+                                            <div style="float:right;">
+                                                <apex:outputText value="{!RevenuePercent} %" style="font-size:22px;color:#8B0000;padding-right:5px;"/>
+                                            </div></div>
+                                            <div class="content-gird" style=" border: 1px solid #e3e3e3;"> 
+
+                                                 <div style="float:right;">
+                                                <table>                                                
+                                                     <tr>
+                                                        <td>Earned Revenue :</td>
+                                                        <td><apex:outputText value="{0,number,$ ###,##0.00}" style="font-size:22px;color:#800080;padding-right:5px;">
+                                                                <apex:param value="{!Revenue}"/>
+                                                            </apex:outputText>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Expected Revenue :</td>
+                                                        <td> <apex:outputText value="{0,number,$ ###,##0.00}" style="font-size:22px;color:#800080;padding-right:5px;">
+                                                                <apex:param value="{!ExpectedRevenue}"/>
+                                                            </apex:outputText> 
+                                                        </td>
+                                                    </tr>
+                                                   
+                                                </table>
+                                             
+                                            </div>
+                                                <apex:chart width="98%" height="200" data="{!revenueEarnedInnerList}" theme="Category2" colorSet="#0C6BF9,#CB3B21">
+                                            <apex:pieSeries dataField="ExpectedRevenue" labelField="RevenueType">
+                                            <apex:chartTips width="120"/>
+                                            <apex:chartLabel display="rotate"/>
+                                            </apex:pieSeries>
+                                            <apex:legend position="right"/>
+                                            </apex:chart>             
+                                                            </div>
+                                           <!-- <h1 style=" margin-top:5px;font:AdobeHeitiStd; color:#09C;"><label>Attendees:<span style="color:#fff; font-size:25px; margin-left:5px;">{!NoofAttendees}</span></label></h1>
+                                            <h1 style=" margin-top:10px;font:AdobeHeitiStd; color:#09C;"><label>Check Ins:<span style="color:#fff; font-size:25px; margin-left:5px;">{!NoOfcheckins}</span></label></h1>
+                                           -->
+                                        </td>
+                                    
+                                        <td width="50%">
+                                            <div class="title-grid">Revenue Statistics<span></span>
+                                                <div style="float:right;">
+                                                <table>
+                                                    <tr>
+                                                        <td><apex:outputText value="Tickets "/></td>
+                                                        <td><apex:outputText value="{!TicketRevenuePercent} %" style="font-size:22px;color:#8B0000;padding-right:5px;"/></td>
+                                                        
+                                                        <td><apex:outputText value="Items "/></td>
+                                                        <td><apex:outputText value="{!ItemsRevenuePercent} %" style="font-size:22px;color:#8B0000;padding-right:5px;"/></td>                                                    
+                                                    </tr>
+                                                    
+                                                </table>
+                                        </div>
+                                             
+                                            </div>
+                                            <div class="content-gird" style=" border: 1px solid #e3e3e3;padding-right:20px;"> 
+                                            
+                                                  
+                                                 <div style="float:right;">
+                                                <table>
+                                                    <tr>
+                                                        <td>Items Revenue :</td>
+                                                        <td> <apex:outputText value="{0,number,$ ###,##0.00}" style="font-size:22px;color:#800080;padding-right:5px;">
+                                                                <apex:param value="{!ItemsRevenue}"/>
+                                                            </apex:outputText> 
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Tickets Revenue :</td>
+                                                        <td>  <apex:outputText value="{0,number,$ ###,##0.00}" style="font-size:22px;color:#800080;padding-right:5px;">
+                                                                <apex:param value="{!TicketsRevenue}"/>
+                                                            </apex:outputText> 
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                </table>
+                                             
+                                            </div>
+                                            <apex:chart width="98%" height="200" data="{!revenueStatisticsInnerList}" theme="Category2" colorSet="#FFB805,#1A7E4C">
+                                            <apex:pieSeries dataField="revenueStatisticsAmount" labelField="revenueStatisticsName">
+                                            <apex:chartTips width="120"/>
+                                            <apex:chartLabel display="rotate"/>
+                                            </apex:pieSeries>
+                                            <apex:legend position="right"/>
+                                            </apex:chart> 
+                                            
+                                          
+                                            </div>
+                                        <!-- <h1 style=" margin-top:5px;font:AdobeHeitiStd; color:#09C;"><label>Tickets Sold:<span style="color:#fff; font-size:25px; margin-left:5px;">{!NoOfTicketsSold }</span></label></h1>
+                                        <h1 style=" margin-top:10px;font:AdobeHeitiStd; color:#09C;"><label>Items Sold:<span style="color:#fff; font-size:25px; margin-left:5px;">{!NoOfItemsSold}</span></label></h1>        
+                                        -->
+                                        </td>
+                                  <!--  <td>
+                                        <h1 style=" margin-top:5px;font:AdobeHeitiStd; color:#09C;"><label >Revenue:<span style="color:#fff; font-size:25px; margin-left:0px;"> {!Revenue}$</span></label></h1>
+                                    </td> -->
+                                    </tr>
+                                </table>
+                                    </td>
+                                   </tr>
+                                </table>
+                                </div>
+                                </td>
+                                
+                                </tr>
+                                </table>
+                                 
+                      </div>
+
+                </div>
+                
+                <div class="grid-1">  
+                    <div class="title-grid">Event Charts<span></span></div>
+                    <div class="content-gird" style=" border: 1px solid #e3e3e3;"> 
+                       <table width="100%" border="0">
+                           <tr width="100%">
+                               <td width="100%">
+                             <!--  ItemsRevenue TotalCheckins -->
+                                 <div class="title-grid"><span>Ticket Sales</span>
+                                     <div style="float: right;"> 
+                                     <span>
+                                             <table>
+                                                 <tr>
+                                                     <td>Tickets Revenue : </td>
+                                                     <td><apex:outputText value="{0,number,$ ###,##0.00}" style="font-size:22px;color:#800080;padding-right:5px;">
+                                                                <apex:param value="{!TicketsRevenue}"/>
+                                                            </apex:outputText> 
+                                                     </td>
+                                                 </tr>
+                                             </table>
+                                         </span>     
+
+                                     </div>
+                                 </div>
+                                    <div class="content-gird" style=" border: 1px solid #e3e3e3;width:98%;"> 
+                                    <apex:chart height="300" width="100%" data="{!ticketRevenueInnerList}" colorSet="#CD853F, #E9967A,#CD853F,#B8860B">
+                                        <apex:axis type="Numeric" position="left" fields="RevenueData" title="Revenue" grid="true" steps="4" minimum="0"/>
+                                        <apex:axis type="Category" position="bottom" fields="TicData" title="Tickets"/>
+                                        <apex:barSeries title="Item Sales" orientation="vertical" axis="left" xField="TicData" yField="RevenueData">
+                                            <apex:chartTips height="20" width="160"/>
+                                            <apex:chartLabel display="insideEnd" field="RevenueData" color="#333"/>
+                                        </apex:barseries>
+
+                                   </apex:chart>
+                                   </div>
+                               </td>
+                               </tr>
+                               <tr>
+                               <td width="100%">
+                               <!--  ItemsRevenue TotalCheckins -->
+                                 <div class="title-grid"><span>Item Sales</span>
+                                     <div style="float: right;">  
+                                     <span>
+                                             <table>
+                                                 <tr>
+                                                     <td>Items Revenue : </td>
+                                                     <td><apex:outputText value="{0,number,$ ###,##0.00}" style="font-size:22px;color:#800080;padding-right:5px;">
+                                                                <apex:param value="{!ItemsRevenue}"/>
+                                                         </apex:outputText> 
+                                                     </td>
+                                                 </tr>
+                                             </table>
+                                         </span>   
+
+                                     </div>
+                                 </div>
+                                    <div class="content-gird" style=" border: 1px solid #e3e3e3;width:98%;"> 
+                                   <apex:chart width="100%" height="300" data="{!ItemRevenueInnerList}" theme="Category2" colorSet="#FFA500, #DA70D6, #87CEEB, #9ACD32">
+                                        <apex:pieSeries dataField="itemRevData" labelField="itemData">
+                                        <apex:chartTips width="180"/>
+                                       <apex:chartLabel display="rotate"/>
+                                        </apex:pieSeries>
+                                        <apex:legend position="right"/>
+                                   </apex:chart> 
+                                   </div>
+                               </td>
+                              
+                           </tr>
+                            <tr width="100%">
+                               <td width="100%">
+                               
+                               <!--  ItemsRevenue TotalCheckins -->
+                                 <div class="title-grid"><span>CheckIn Status</span>
+                                     <div style="float: right;"> 
+                                     <span>
+                                             <table>
+                                                 <tr>
+                                                     <td>Total Checkins : </td>
+                                                     <td><apex:outputText value="{!NoOfcheckins}" style="font-size:22px;color:#8B0000;padding-right:5px;"/></td>
+                                                 </tr>
+                                             </table>
+                                         </span>    
+                                         
+                                     </div>
+                                </div>
+                                    <div class="content-gird" style=" border: 1px solid #e3e3e3;width:98%;"> 
+                                    
+                                        
+                                        <apex:chart data="{!CheckInInnerList}" height="400" width="98%" colorSet="#6BAE4A,#D2691E">
+                                            <apex:legend position="bottom"/>
+                                            <apex:axis type="Numeric" position="left" title="Check Ins Count" grid="true" fields="CheckInCount,NotCheckInCount" dashSize="2" steps="5">
+                                                <apex:chartLabel />
+                                            </apex:axis>
+                                            <apex:axis type="Category" position="bottom" fields="ticName">
+                                                <apex:chartLabel rotate="315"/>
+                                            </apex:axis>
+                                            <apex:barSeries orientation="vertical" axis="left" stacked="true" xField="ticName" yField="CheckInCount,NotCheckInCount" title="CheckedIn, Not ChechedIn">
+                                             <apex:chartTips height="20" width="160"/>
+                                            </apex:barseries>
+                                        </apex:chart>
+                                        
+                                 </div>
+                               </td>
+                               </tr>
+                               <tr>
+                               <td width="100%">
+                               
+                                   
+                                    <div class="title-grid">Payment Mode<span></span>
+                                    
+                                    <div style="float: right;">     
+                                         <span>
+                                             <table>
+                                                 <tr>
+                                                     <td>Total Revenue :  </td>
+                                                     <td>
+                                                         <apex:outputText value="{0,number,$ ###,##0.00}" style="font-size:22px;color:#800080;padding-right:5px;">
+                                                                <apex:param value="{!Revenue}"/>
+                                                         </apex:outputText> 
+                                                     </td>
+                                                 </tr>
+                                             </table>
+                                         </span>
+                                     </div></div>
+                                    <div class="content-gird" style=" border: 1px solid #e3e3e3;width:98%;"> 
+                                   <apex:chart width="100%" height="300" data="{!paymentTypeInnerList}" theme="Category1" colorSet="#0C6BF9,#FF7F50,#FFB805,#1A7E4C">
+                                        <apex:pieSeries dataField="typeCount" labelField="typeData" showInLegend="true">
+                                        <apex:chartTips width="150"/>
+                                       <apex:chartLabel display="rotate"/>
+                                        </apex:pieSeries>
+                                        <apex:legend position="right"/>
+                                   </apex:chart> 
+                                   </div>
+                                  
+                               </td>
+                              
+                           </tr>
+                       
+                       </table>
+                                   
+                                  
+                    </div>
+                </div>        
+                <!-------------------------------------------------------- Live Events Grid End ----------------------------------------------------->   
+      </div>
+      <!-- #content--> 
+    </div>
+    <!-- #container-->
+    
+        <aside class="sideLeft">
+        <span class="categories">Categories</span>
+        <ul class="menu">
+            <li class="expand"><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events" styleClass="active"><span class="four-prong icon">Event Information</span></apex:outputLink>
+                <ul class="acitem" style="display: block;">
+                    <li class="expand"><apex:outputLink value="/apex/SA_EventDashboard" style="background-color:#5B7585;" id="AS_Events1"><span class="home icon">Dashboard</span></apex:outputLink></li>
+                    <li><apex:commandLink action="/apex/SA_Attendees" ><span class="four-prong icon">Attendees</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                        <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">
+                            <ul class="acitem" style="display: none;">
+    
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_AddAttendee"><span class="attendee icon">Add Attendee</span></apex:outputLink></li>
+                                <li style="padding-left:15px"><apex:outputLink value="/apex/SA_ImportAttendees"><span class="importattendee icon">Import Attendee</span></apex:outputLink></li>
+    
+                            </ul>
+                    </apex:outputText>  
+                    </li> 
+                    <li><apex:commandLink action="/apex/SA_Reports"><span class="four-prong icon">Reports</span><span class="num">6</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Ticket Sales</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Item Sales</span></apex:outputLink></li>                            
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Orders</span></apex:outputLink></li>                                                                               
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Refunds</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in Status</span></apex:outputLink></li>                        
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in History</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+           <li><apex:outputLink value="/apex/SA_Tickets"><span class="four-prong icon">Event Settings</span></apex:outputLink>
+                <ul class="acitem" style="display: none;">
+
+                    <li><apex:commandLink action="/apex/SA_Tickets"><span class="four-prong icon">Tickets</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style="padding-left:15px"><apex:outputLink value="/apex/SA_Tickets"><span class="cal icon">Add Ticket</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportTickets"><span class="conversations icon">Import Tickets</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+
+                            <li><apex:commandLink action="/apex/SA_Items"><span class="four-prong icon">Items</span><apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"><span class="num">2</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Items"><span class="additem icon">Add Item</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportItems"><span class="importitem icon">Import Items</span></apex:outputLink></li>
+                        </ul>
+                    </apex:outputText>                        
+                    </li>
+                    <!--
+                    <li><apex:commandLink action="/apex/SA_PromoCodes"><span class="four-prong icon">Promo Codes</span><span class="num">1</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_PromoCodes"><span class="addpromocode icon">Add Promo Code</span></apex:outputLink></li>    
+                        </ul> 
+                    </li
+                    -->
+                    <apex:outputText rendered="{!NOT(isEventAdminStaffUser)}">                        
+                    <li><apex:commandLink action="/apex/SA_AddUsers"><span class="four-prong icon">Event Staff</span> <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}"> <span class="num">1</span></apex:outputText></apex:commandLink>
+                    <apex:outputText rendered="{!NOT(OR(isPastEvent, isEventAdminStaffUser))}">                        
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_AddUsers"><span class="addpromocode icon">Add Event Staff</span></apex:outputLink></li>    
+                        </ul> 
+                    </apex:outputText>    
+                    </li>
+                   </apex:outputText>    
+                </ul>
+            </li>
+        </ul>
+        </aside>
+        
+    </div>
+  <!-- #sideLeft --> 
+  <!-- #container main-->
+
+  <footer>
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Scan Attendee </p>
+      </div>
+    </div>
+  </footer>
+  
+</section>
+<!-- #middle-->
+</apex:form> 
+
+<div class="clear"></div>
+
+</apex:page>

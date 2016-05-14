@@ -1,0 +1,1408 @@
+<apex:page controller="BLN_SurveyQuestionscon" standardStylesheets="false" showHeader="false" id="pageid"   action="{!displayPermissions}">
+    <c:ed_commonstyles ></c:ed_commonstyles>
+         <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+         <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}"/>
+     <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>     
+       <!----------------------STYLES FOR DISCOUNTS MENU--------------------------------------->
+    
+   <!-- -------------------Event level checkbox selection-------------------------- -->
+   <script type="text/javascript">
+        // Check include automatically while we select required
+        function checkAll(cb) {  
+        
+     var inputElem = document.getElementsByTagName("input");  
+     var nai = cb.id;
+          for(var i=0; i<inputElem.length; i++){
+              if(inputElem[i].id==nai ) {                           
+                inputElem[i-1].checked = true;
+              }
+           }
+    }
+    
+    function check(cb){
+   
+       var inputElem = document.getElementsByTagName("input");  
+       
+       var nai = cb.id;
+       
+       
+          for(var i=0; i<inputElem.length; i++){  
+           if(inputElem[i].id==nai){                 
+              inputElem[i+1].checked = false;
+           }
+         }
+    }
+    </script>
+    
+    <!-- -----------------------Script for Showing/hiding Package line items ------------------- -->
+    
+    <script  type="text/javascript">
+        function viewItemLines(){
+            document.getElementById("itmBoxId").style.display="none";
+        }
+    </script>
+    
+    <!-- --------------------------Eventlevel checkbox selection process ----------------------------------- -->
+    <script type="text/javascript">
+        function check(cb){
+        
+       
+           var inputElem = document.getElementsByTagName("input");  
+          
+           var nai = cb.id;
+           
+              for(var i=0; i<inputElem.length; i++){  
+               if(inputElem[i].id==nai){                 
+                  inputElem[i+1].checked = false;
+               }
+             }
+        }
+    </script>
+          
+    
+    <script type="text/javascript">
+    
+    // To Check If Duplicate Answer Options Are Given ----------------------------------
+    
+    function dupoptinn(){
+    
+     var arryan = [];
+         var arryanid = [];
+         var valu = '';
+         
+        $('tr td input[type="text"]').each(function(){
+    
+         var aid = $(this).attr('id') ;
+    
+         var n = aid.search('queordclas');
+         arryan.push(document.getElementById(aid));
+    
+                    if(n != -1){
+                    //  valu = document.getElementById(aid).value;
+                   //  arryan.push(valu);
+                     arryan.push(document.getElementById(aid));
+                    }
+                                       
+                                
+            });
+      
+    
+          var dup = '';
+      
+            for (var i=0; i<arryan.length; i++) {    
+                     
+                     arryan[i].style.border = "1 px";
+                     arryan[i].style.borderColor = "#E3E3E3"; 
+                     
+              }       
+            for (var i=0; i<arryan.length; i++) {
+                for (var j=0; j<arryan.length; j++) {
+                 
+                    
+                  if(j!=i){
+                 
+                      if(arryan[i].value.toLowerCase() == arryan[j].value.toLowerCase()){                
+                      dup = true;
+                      arryan[i].style.border = "1 px";
+                      arryan[i].style.borderColor = "#FF0000";  
+                      arryan[j].style.border = "1 px";
+                      arryan[j].style.borderColor = "#FF0000"; 
+                    
+                    }
+                    
+                    
+                  }
+                }
+            }
+            
+           return  dup;
+    }
+    
+    
+    
+    
+    
+     function dupoptck(){
+    //alert('thiru123');
+        dup = dupoptinn();
+         if(dup != true){
+            dupanschk('');  
+          }
+          else{
+           
+           //alert('Duplicate Option Found:Please Change The Option.');
+            Alert.render('Duplicate Option Found:Please Change The Option.','Alert','ok');
+            return false;
+          }
+        }
+     
+     
+     // End Of Dup Options Check--------------------------------------------------
+     
+     function getselvalues(a,selvalue){
+        
+                       if(selvalue == 'a089000000Mg123456'){ 
+                      
+                       
+                           if(a.checked){
+                  <!-- -----------------------------------------------------------------------Logic to checkkkkkk------------------------------------------------------------------------------ -->
+                 
+                               $('tr td input[type="checkbox"]').each(function(){
+                                        if($(this).hasClass( "chkticket" ) || $(this).hasClass( "chkvisticket" )){
+                      
+                                        $(this).attr('checked', true);
+                                      } 
+                                       
+                                   
+                               });
+                          }    
+                         
+                          if(!a.checked){
+                                 $('tr td input[type="checkbox"]').each(function(){
+                                  if ($(this).attr('disabled')) {
+                                  }
+                                  else{
+                                   $(this).attr('checked', false);
+                                  }
+                                  
+                                }); 
+                                
+                 
+                                       
+                                
+                              }    
+                          }
+               if(selvalue!= 'a089000000Mg123456'){ 
+               
+               if(a.checked) {
+                $('tr td input[type="checkbox"]').each(function(){
+                  
+                  if($(this).hasClass( "chkvisticket" )){
+                     if($(this).val() == selvalue){               
+                      $(this).attr('checked', true);
+                      } 
+                  } 
+                });
+                } 
+               
+               if(!a.checked) {
+                  $('tr td input[type="checkbox"]').each(function(){
+                //  alert($(this).val());
+                  if($(this).hasClass( "chkreqticket" ) || $(this).hasClass( "chkvisticket" )){
+                      if($(this).val() == selvalue){               
+                      $(this).attr('checked', false);
+                      }    
+                  }                     
+                 });
+              }           
+             }   
+             
+         uncheckchildvalues(selvalue);             
+                       
+        } 
+            
+    function  uncheckchildvalues(se){
+       var chTc = document.getElementsByName(se);    
+       for(var r=0;r<chTc.length;r++){
+         chTc [r].checked = false;
+          
+        } 
+    }     
+          
+      function getreqvalues(a,reqvalue){
+           
+           if(reqvalue == 'a089000000Mg123456'){ 
+                      
+                       
+                           if(a.checked){
+                  
+                 
+                               $('tr td input[type="checkbox"]').each(function(){
+                               //modified by thirupathi 
+                                       if($(this).hasClass( "chkreqticket" ) || $(this).hasClass( "chkticket" ) || $(this).hasClass("chkvisticket")){
+                                        $(this).attr('checked', true);
+                                      }    
+                                   
+                               });
+                          }    
+                         
+                          if(!a.checked){
+                                $('tr td input[type="checkbox"]').each(function(){
+                                 if($(this).hasClass( "chkreqticket" )){
+                                    $(this).attr('checked', false);
+                                  }
+                                });
+                                
+                 
+                                       
+                                
+                         }    
+          }
+          
+           if(reqvalue != 'a089000000Mg123456'){ 
+          if(a.checked){
+              $('tr td input[type="checkbox"]').each(function(){
+            //  alert($(this).val());
+              if($(this).hasClass("chkticket") || $(this).hasClass("chkvisticket")){
+                  //alert('hi1111111111');
+                  if($(this).val() == reqvalue){               
+                  $(this).attr('checked', true);
+                  }    
+              }                     
+             });
+          }
+          
+         }
+         
+         
+          
+        }    
+       
+       
+       
+        function getvisvalues(a,visvalue){
+        
+        if(visvalue == 'a089000000Mg123456'){ 
+                      
+                       
+                           if(a.checked){
+                  
+                 
+                               $('tr td input[type="checkbox"]').each(function(){
+                                      //alert('chkreqticket');
+                                      if($(this).hasClass( "chkticket" ) || $(this).hasClass( "chkvisticket" )){
+                                        $(this).attr('checked', true);
+                                     }    
+                                   
+                               });
+                          }    
+                         
+                          if(!a.checked){
+                                $('tr td input[type="checkbox"]').each(function(){
+                                 if($(this).hasClass( "chkticket" ) || $(this).hasClass( "chkvisticket" )){
+                                    $(this).attr('checked', false);
+                                  }
+                                });   
+                                
+                         }
+                         
+                         if(!a.checked){
+                                $('tr td input[type="checkbox"]').each(function(){
+                                 if($(this).hasClass( "chkreqticket" )){
+                                    $(this).attr('checked', false);
+                                  }
+                                });   
+                                
+                         }       
+          }
+          
+           if(visvalue != 'a089000000Mg123456'){ 
+          
+              if(a.checked) {
+         
+                $('tr td input[type="checkbox"]').each(function(){
+                  
+                  if($(this).hasClass( "chkticket" )){
+                  
+                     if($(this).val() == visvalue){               
+                      $(this).attr('checked', true);
+                      } 
+                  } 
+                });
+                } 
+               
+               if(!a.checked) {
+               
+              $('tr td input[type="checkbox"]').each(function(){
+            //  alert($(this).val());
+                  if($(this).hasClass( "chkreqticket" ) || $(this).hasClass( "chkticket" )){
+                  if($(this).val() == visvalue ){               
+                  $(this).attr('checked', false);
+                  }    
+              }                     
+             });
+          }
+        
+        
+         }  }
+                  
+    </script >
+    
+    <!------------saving reorder rows in database----------->
+    <script type="text/javascript">
+    function reorder(optchoice2) {
+        var table3 = document.getElementById(optchoice2);
+        var rowCount = table3.rows.length;
+        for(var i=1; i<=rowCount; i++) {
+            var row = table3.rows[i];
+            row.cells[1].innerHTML= i;
+        }
+    }
+    </script >
+     
+    
+        <script type="text/javascript">
+        var optempty=false;
+            function validatefun() {  
+                optempty=false;
+                $("input[id$='answertexrID']").each( function () {
+                    if($(this).val()== ''){
+                        optempty=true;
+                    }
+                });
+        
+                if(optempty==true && ($("[id$='options']").val() == 'Single Selection' || $("[id$='options']").val() == 'Checkboxes' || $("[id$='options']").val() == 'Choose from a list')){
+                    alert('Empty Option Found:Please Enter/Delete the Option.');
+                    return false;
+                }
+              var selbol = '';
+                      var quelevel = '';             
+                   var els = $('.requiredInput');
+                   els.each(function(index, el) {
+    
+                       el = $(el);
+    
+                       el = el.find("input,textarea,select");
+                       var fildname = el.attr('id');
+               
+                   //   alert(fildname);
+                                      // alert(el.val());
+    
+                      if (fildname == 'pageid:compid:commoncomponent:queformid:querepid:0:quelevel') { 
+                       quelevel = el.val();
+                      }             
+                                      
+                       if ($.trim(el.val()) == '') {
+                       
+    
+                           selbol = true;
+                            
+                           el.css('border', '1px solid red');
+                       }
+                          else{
+                            el.css('border', '1px solid #E3E3E3');
+                       }
+              
+                      
+                 })
+                 
+                 
+                 if(selbol == true)
+                  {
+                      //alert('Required Fields Missing');
+                      Alert.render('Required Fields Missing','Alert','ok');
+                      return false;
+                          
+                  } 
+                 
+            // To Check If Duplicate Answer Options Are Given ----------------------------------
+                 dup = dupoptinn();
+                 
+                 if(dup == true){
+                    //alert('Duplicate Option Found:Please Change The Option.');
+                    Alert.render('Duplicate Option Found:Please Change The Option.','Alert','ok');
+                    return false;
+                  }
+    
+                 //checking max answer count on saving                  
+                 var temp=document.getElementById("pageid:compid:commoncomponent:queformid:querepid:0:options").value;
+                 //alert(temp);
+                 if(temp=='Checkboxes')
+                 {
+    
+                     var maxAnsCount=jQuery('[id$=maxanscount]').val();
+                     var numberOfInputFields = jQuery("#optchoice1 tbody tr").length;
+                     //alert('maxAnsCount'+maxAnsCount);
+                     //alert('numberOfInputFields '+numberOfInputFields );                                                    
+                         if(numberOfInputFields < maxAnsCount)
+                         {
+                          //alert('please create more than '+maxAnsCount+' options');
+                           Alert.render('please create more than '+maxAnsCount+' options','Alert','ok');
+                          return null;
+                         }
+                 }
+                 /*------*/
+    
+                  
+                 var chkArray = '';
+                 var chkreqArray = '';
+                 var chkvisArray = '';
+                   
+                 if(quelevel == 'Ticket Level'){ 
+                        $('.chkticket:checked').each(function() {
+                           if($(this).val()!='a089000000Mg123456'){
+                            chkArray += ($(this).val()) + '-';
+                           }
+                      });
+                   //alert('1111111111111111' + chkArray );
+                     $('.chkreqticket:checked').each(function() {
+                           if($(this).val()!='a089000000Mg123456'){
+                            chkreqArray += ($(this).val()) + '-';
+                           }
+                      });
+                
+                      $('.chkvisticket:checked').each(function() {
+                           if($(this).val()!='a089000000Mg123456'){
+                            chkvisArray += ($(this).val()) + '-';
+                           }
+                      });
+     
+                    // For item pools checking   
+                          $('.chkticketpool:checked').each(function() {
+                           if($(this).val()!='a089000000Mg123456'){
+                             chkArray += ($(this).val()) + '-';
+                   }
+                      });                
+    
+                       $('.chkreqticketpool:checked').each(function() {
+                           if($(this).val()!='a089000000Mg123456'){
+                            chkreqArray += ($(this).val()) + '-';
+                           }
+                      });
+    
+                      
+                      $('.chkvisticketpool:checked').each(function() {
+                           if($(this).val()!='a089000000Mg123456'){
+                            chkvisArray += ($(this).val()) + '-';
+                           }
+                      });
+                      
+                     // alert('Ticket '+chkArray+'Required '+chkvisArray  +' Visible '+chkvisArray ); 
+                      
+                        
+                      // Item pools end 
+                       
+                  if(chkArray==''){
+                      //alert('Please Select Atleast one Ticket');
+                       Alert.render('Please Select Atleast one Ticket' ,'Alert','ok');
+                      document.getElementById("$(this)").value = ""; 
+                      return false;
+                   }
+                 
+                      
+                      
+                   if(chkArray!=''){              
+                  
+                  //alert('3333333333333333' + chkArray);
+                   savequestion(chkArray,chkreqArray,chkvisArray); 
+                        return true;
+                   }
+                 
+                      // Item pools end 
+                      
+                 
+                }
+                  
+                else{
+                    savequestion(chkArray,chkreqArray,chkvisArray); 
+                }  
+                  
+                  
+                  
+        
+            }
+        </script > 
+    
+     <style>
+     
+    
+        .selectclass{
+        border: 1px solid #e3e3e3;
+        height: 28px;
+        font-family: Helvetica, Arial, sans-serif;
+        padding-left: 10px;
+        padding-right: 10px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        color: #575757;
+        background-color: #FFF;
+        background-image: url(../images/input.png);
+        }
+     </style>
+     
+            <style>
+                #ticketselect{width:60%; padding:3px; margin-left:17.5%; margin-top:10px; height:243px;background-color:#FDFDFD;border: 1px solid #e3e3e3;border-radius: 3px;}
+                #ticketlist{ width:100%; height:243px; background-color:;overflow: auto;}
+                #ticketlist table{  border-collapse:collapse; font-family: Helvetica, Arial, sans-serif;font-size: 14px;}
+                #ticketlist tr{border-bottom: 1px solid #E4E4E4;}
+                #ticketlist td{ padding:5px;}
+                #ticketstitle{ font-size:15px;text-shadow: 0 1px 1px rgba(0,0,0,.25);color:#247dba;text-align:center;}
+            </style>
+     
+     
+     
+     <script type="text/javascript">
+     
+     
+     function  editquestion(queid){
+       rendereditquestion(queid);
+     }
+     
+     </script>
+    
+    
+      <!---<c:myComponent BLN_UtillDisplayLinks="{!mysurveyque}" id="compid">-->
+      <c:ed_basictemplate BLN_UtillDisplayLinks="{!mysurveyque}" id="compid">
+       <body  onload="viewItemLines()">
+    
+    <!------------------------------------Start Of Survey Table For The Selected Event.-------------------------------------------->
+    
+    
+    
+    <div id="surveytablediv">
+     <apex:form id="displaytableid" >   
+     
+              
+     
+     
+      <apex:outputPanel rendered="{!displaytablebool}" >
+             <div class="grid-1"  >
+              <div class="title-grid-selectevent" style=""></div>
+    
+                <div class="content-gird-selectevents" style="">
+          
+          <apex:outputPanel rendered="{!errormessagebool}" id="errormbboolid">
+               <div style="margin: 10px 10px 2px 20px;">
+                   <apex:outputText value="{!failuremessageset}" id="errorMessage" style="color:red;" escape="false" ></apex:outputText>
+               </div> 
+         </apex:outputPanel>
+         <!--Add survey questions Button-->
+         <apex:commandButton action="{!AddQuestion}"  value="Add Survey Questions"   Styleclass="togglebtn right margin-5px"/>
+              <!-- reRender="displaytableid,queformid,errorbboolid,errormbboolid,itemdisplayboolid" -->
+                     </div><!--close of content-grid-->
+                     </div><!--title-grid-->
+            
+          <!--survey questions table-->
+          <!-- script for DRAG & DROP Functionality in Ascending Order -->
+        <c:ed_RowDragAndDropByAsc ></c:ed_RowDragAndDropByAsc><!-- component for drag and drop -->
+        <script>
+            window.onload=function() {      
+                var table = document.getElementById('optchoice2');    
+                var tableDnD = new TableDnD();
+                tableDnD.init(table);
+            }        
+        </script> 
+        <!-- DRAG and DROP Functionality End --> 
+    
+          <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}" rendered="{!answeroptorder2!=null}"/> 
+            <!--Statistic-->
+            <div class="grid-1"  >
+            
+                 <table id="optchoice2"  class="display" >
+                  <thead>
+                    <tr >
+                      <th width ="2%"></th>
+                      <th width="10%" >Survey ID</th>
+                      <th width="27%" >Questions</th>
+                      <th width="13%">Answer Type</th>
+                      <th width="15%">Answer Options</th>
+                      <th width="12%">Question Level</th>
+                      <th width="14%">Ticket Name</th>
+                      <th width="10%" >Action</th>
+                     
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <apex:variable var="listcou" value="{!0}" id="listcountid"/>
+                   <apex:repeat value="{!questionslist}" var="que">
+                     <apex:variable var="listcou" value="{!listcou+1}"/>
+                    
+                    <apex:variable value=" " var="answeroptions"/>
+                    <apex:variable value="{!0}" var="itmcount"/>
+                    <apex:variable value=" " var="itmquestion"/>
+                    <apex:variable value="{!0}" var="count"/>
+                    
+                      <apex:repeat value="{!que.BLN_Answers__r}" var="ans">
+                          <apex:variable value="{!ans.Answer_Text__c}" var="answeroptions" rendered="{!IF(count == 0,TRUE,FALSE)}"/>
+                              <apex:variable value="{!answeroptions}, {!ans.Answer_Text__c}" var="answeroptions" rendered="{!IF(count > 0 , TRUE,FALSE)}"/>
+                           <apex:variable value="{!count+1}" var="count"/>
+                      </apex:repeat>
+                       <apex:repeat value="{!que.Item_Question__r}" var="queitem">
+                       <apex:variable value="{!queitem.Item__r.item_name__c}" var="itmquestion" rendered="{!IF(itmcount== 0 , TRUE,FALSE)}"/>
+                              <apex:variable value="{!itmquestion},{!queitem.Item__r.item_name__c}" var="itmquestion" rendered="{!IF(itmcount> 0 , TRUE,FALSE)}"/>
+                          <apex:variable value="{!itmcount+1}" var="itmcount"/>
+                      </apex:repeat>
+                  <tr  class="item" id="{!que.ID}"> 
+                    
+               <td  width="2%" ><apex:image url="{!$Resource.DragButton}"  style="margin-left:-5px;" /> </td>
+              <td><apex:outputText value="{!que.Name}" id="queordclas" html-placeholder="{!listcou}"/>
+           
+               </td>
+                      <td class="name"><apex:outputText value="{!que.Question_Text__c}"/></td>
+                      <td class="name"><apex:outputText value="{!que.Answer_Type__c}"/></td>
+                      
+                      
+                      <td class="name"><apex:outputText value="{!answeroptions}"/></td>
+                         <td class="name">
+                              
+                                <apex:outputText value="{!IF(que.Item_Question__r.size>0,que.Item_Question__r[0].Question_Level__c,'')}"/>
+                         </td>
+                         
+                         <td>
+                         <apex:outputText rendered="{!IF(que.Item_Question__r[0].Question_Level__c == 'Ticket Level',true,false)}">
+                                <apex:variable value="{!1}" var="sno"/>
+                                 <apex:outputText rendered="{!IF(que.Item_Question__r[0].Item__r.item_type__r.name!='Package',true,false)}">
+                                     <apex:repeat value="{!que.Item_Question__r}" var="i">
+                                      <apex:outputText rendered="{!IF(i.Item__r.item_name__c!='' || i.Item__r.item_name__c!=null,true,false)}">
+                                      <font color="blue">{!sno}.&nbsp;</font>
+                                      <apex:variable value="{!sno+1}" var="sno"/>
+                                      </apex:outputText>
+                                      {!i.Item__r.item_name__c}<apex:outputText rendered="{!IF(i.Item__r.item_name__c!='' || i.Item__r.item_name__c!=null,true,false)}"><br/></apex:outputText>
+                                     </apex:repeat>
+                                 </apex:outputText>
+                                 <apex:outputText rendered="{!IF(que.Item_Question__r[0].Item__r.item_type__r.name=='Package',true,false)}">
+                                     <apex:repeat value="{!que.Item_Question__r}" var="i">
+                                     <apex:outputText rendered="{!IF(i.Item__r.Item_Pool__r.Item_Pool_Name__c!='' || i.Item__r.Item_Pool__r.Item_Pool_Name__c!=null,true,false)}">
+                                      <font color="blue">{!sno}.&nbsp;</font>
+                                      <apex:variable value="{!sno+1}" var="sno"/>
+                                      </apex:outputText>
+                                     {!i.Item__r.Item_Pool__r.Item_Pool_Name__c}<br/>
+                                     </apex:repeat>
+                                 </apex:outputText>
+                                 <apex:variable value="" var="pcklnname"/>
+                                 <apex:repeat value="{!que.Item_Question__r}" var="i">
+                                 <apex:outputText rendered="{!IF((i.Item_Pool__c!='' ||i.Item_Pool__c!=null),true,false)}">
+                                     <apex:outputText rendered="{!IF(i.Item_Pool__r.Item_Pool_Name__c!='' || i.Item_Pool__r.Item_Pool_Name__c!=null,true,false)}">
+                                      <font color="blue">{!sno}.&nbsp;</font>
+                                      <apex:variable value="{!sno+1}" var="sno"/>
+                                      </apex:outputText>
+                                     {!i.Item_Pool__r.Item_Pool_Name__c}
+                                     ({!I.Item_Pool__r.Addon_Parent__r.Item_Pool_Name__c})<br/>
+                                 </apex:outputText>
+                                 </apex:repeat>
+                             </apex:outputText> 
+                         </td>
+                         
+                         <td class="subject">
+                      
+                           <a href="" onclick="editquestion('{!que.Id}');"  id="edtancor" style="text-decoration:none;cursor: pointer;" title="Edit">
+                               <!-- <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/edit-1.png')}" /> -->
+                                 <i class=" fa fa-pencil fa-edit20px "></i>
+                           </a>  
+               
+               <apex:variable value="{!0}" var="useranscount" id="usercouid" />
+                 <apex:repeat value="{!itmqueansMap[que.Id]}" var="usid">
+                  <apex:variable value="{!useranscount+usid.User_Answers__r.size}" var="useranscount"/>
+                 </apex:repeat> 
+    
+                 
+                    <apex:commandLink onclick="Alert.render('This Survey Question is answered by some of the Registrants.Deleting the question will delete all the answers answered by registrants.Please Edit the record and uncheck visible for respective Ticket.','Alert','ok');"  title="Delete"  rendered="{!IF(useranscount != 0 ,TRUE,FALSE)}" reRender="displaytableid,queformid,createquestionid,errorbboolid">
+                           <apex:param value="{!que.Id}" name="delquid"/>
+                          <i class="fa fa-trash-o fa-delete20px " ></i>
+                      </apex:commandLink>     
+                      
+                       <Apex:outputPanel rendered="{!IF(useranscount = 0 ,TRUE,FALSE)}">
+                           <a><i class="fa fa-trash-o fa-delete20px " onclick="alertbox('SurveyQuestionDelete','{!que.Id}','{!0}')" id="del"></i></a>
+                       </Apex:outputPanel>
+                       </td>
+                      
+                    </tr>
+                  
+                  </apex:repeat> 
+                
+                  </tbody>
+                </table>
+                <script>
+                
+                
+                
+                function calldt(){
+        //var j = jQuery.noConflict();
+      
+            /*************for  table ***************/  
+            j('#optchoice2').dataTable( {
+            
+             /**default orderid in asc sorting**/
+                 "pagingType": "full_numbers",
+                 "aLengthMenu": [[10 ,25,50, 100,-1], [10 ,25,50, 100, "All"]],
+                "iDisplayLength": 10,
+            "bSort": false,
+         "bAutoWidth": true, // Disable the auto width calculation
+        
+        "sDom": 'W<"clear">lfrtip',
+        "oColumnFilterWidgets": {
+        "aiExclude": [ 0,1,2,4,6,7 ]
+        
+        },
+        
+           } ); 
+        /***************************/   
+       
+    }
+                
+                
+                
+                try{
+                calldt();}catch(e){
+                console.log('alllll');
+                }
+                </script>
+                  <apex:actionFunction action="{!delquestion}"  name="deletequestion" reRender="displaytableid,queformid,createquestionid,errorbboolid" status="AjaxLoader">
+                  <apex:param value="" name="delquid" />
+                  <apex:param value="" name="queanscount" />
+                  </apex:actionFunction> 
+                </div><!--close of grid1-->
+                
+                 
+                <!---------- Action function for updating reordered rows of survey questions table ---------------------->             
+                <apex:actionFunction action="{!updateanswerslist2}" name="rowOrderDisplay" reRender="optchoice2" >
+                    <apex:param value="" name="answeroptorder2"/>
+                </apex:actionFunction> 
+                 
+               <!-- <apex:commandButton value="Save Session" onClick="reorder(optchoice2);"  styleclass="button-a blue" reRender="displaytableid,queformid,createquestionid,errorbboolid" /> -->
+                 </apex:outputPanel>
+                 
+              <apex:actionFunction action="{!editquestion}" name="rendereditquestion" reRender="displaytableid,queformid,createquestionid,errorbboolid " oncomplete="maxque()"> 
+                      <apex:param value="" name="editquid"/>
+            </apex:actionFunction>   
+                 
+                 
+            <!---  <apex:actionFunction action="{!updatequestion}" name="questionorder" reRender="displaytableid,queformid,createquestionid,errorbboolid">
+                      <apex:param value="" name="questionorder"/>
+            </apex:actionFunction>   --->
+               
+               
+      
+          </apex:form>
+                 </div>
+            <!--close of survey table-->
+    
+    
+     <!----------------------------------Add SurveyQuestions----------------------------->
+       
+       
+       <apex:pageMessages id="msgs"/>
+       <apex:form id="queformid">
+    
+        
+     
+     
+        <apex:outputPanel id="createquestionid" rendered="{!createquestionbool}">  
+       
+       <div id="addsurvey"  >
+              <div style=" width:100%; height:48px;">
+                
+              </div><!--close of content-grid-->
+              
+                  <div class="form" style="width:70%; margin:0px auto;   border:0px solid #000;  ">
+              
+       
+        <apex:outputPanel rendered="{!errormessagebool}" id="errorbboolid">
+               <div style="margin: 10px 10px 2px 20px;">
+                   <apex:outputText value="{!failuremessageset}" id="errorMessage" style="color:red;" escape="false" ></apex:outputText>
+               </div> 
+         </apex:outputPanel>
+         
+        <i><apex:outputText value="Note: Please make sure the Survey Question Settings are in sync with Attendee Settings.  Attendee Settings takes the priority over Survey Question Settings." style="font-size:15px;text-shadow: 0 1px 1px rgba(0,0,0,.25);color:#247dba;text-align:center;"/></i>
+        
+               <apex:repeat value="{!questionslist}" var="q" id="querepid">
+                 <div class="requiredInput">
+                            <div class="requiredBlock"></div>   
+                    <div class="elem">
+                       <label>Question Level: </label>  
+                      <div class="indent" style="margin-left:120px;">
+                          <apex:selectList id="quelevel" value="{!selectedquelevl}"    multiselect="false" size="1" style="outline:none;width:74%;" Styleclass="selectlist  levelclass">
+                             <apex:selectOptions value="{!questionlevel}" id="levelid"/>
+                                <apex:actionSupport id="parentOpt" action="{!itemdisplay}" event="onchange" reRender="queformid,createquestionid,itemdisplayboolid" oncomplete="dfchec(this)">
+                             </apex:actionSupport>
+                              
+                            </apex:selectList>
+                       
+                     </div>
+                     </div> 
+                     </div>
+    <!-- -------------------------------------------------------------Action Region Area--------------------------------------------------------------------------------------------------------- -->
+                       <apex:actionRegion > 
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                        <div class="elem">
+                      <label>Question Title: </label><label id="mandatory">*</label>   
+                      <div class="indent" style="margin-left:120px;">
+                         <apex:inputField value="{!q.Question_Text__c}" styleClass="medium"  />
+                      </div>
+                     </div>
+                    </div>
+                      
+                     <div class="elem">
+                       <label>Answer Type: </label>  
+                      <div class="indent" style="margin-left:120px;">
+                          <apex:selectList id="options" value="{!selectedtype}" multiselect="false" size="1" style="outline:none;width:74%;" Styleclass="selectlist" required="false">
+                               <apex:selectOptions value="{!quetyps}" />
+                               <apex:actionSupport action="{!addOptionsOnchange}" event="onchange"  reRender="queformid,createquestionid,opt" oncomplete="dfchec(this)"/>
+                          </apex:selectList>
+                     </div>
+                     </div>
+                     <div class="elem" id="maxcntdiv" style="display:none;">
+                      <label>Max Answer Count: </label>  
+                      <div class="indent" style="margin-left:120px;">
+                          <apex:inputText id="maxanscount" value="{!q.Max_Answer_count__c}" onkeyup="maxCntKeyup()"/>
+                      </div>
+                     </div>
+                     
+                    </apex:actionRegion> 
+          <!----------------Adding Of Options ------------------------------------------------------------------------>           
+                   <apex:outputPanel rendered="{!multiplechoiceoptions}" id="opt">
+                        <div class="elem">
+                            <apex:outputText rendered="{!IF(selectedtype== 'Scale',TRUE,FALSE)}"  value="Scale"/>
+                         </div>
+                      <apex:outputText rendered="{!IF(selectedtype == 'Scale',TRUE,FALSE)}"> 
+                     
+                         <div class="indent" style="margin-top:-15px;">
+                          <table border="0"><tr>
+                         <td>
+                           <apex:selectList value="{!selctdminscale}" rendered="{!IF(selectedtype == 'Scale',TRUE,FALSE)}" multiselect="false" size="1" style="outline:none;width:40%;" Styleclass="selectlist ">
+                             <apex:selectOptions value="{!minscale}"></apex:selectOptions>
+                           </apex:selectList>  
+                            <apex:outputText value="   To   " rendered="{!IF(selectedtype == 'Scale',TRUE,FALSE)}"/>
+                           <apex:selectList value="{!selctdmaxscale}"  rendered="{!IF(selectedtype == 'Scale',TRUE,FALSE)}" multiselect="false" size="1" style="outline:none;width:40%;" Styleclass="selectlist">
+                              <apex:selectOptions value="{!maxscale}"></apex:selectOptions>
+                           </apex:selectList>
+                     
+                        </td></tr> </table> </div>
+                      </apex:outputText>
+                  
+                  <style>
+                    .indent{white-space:nowrap; }
+                    .indent tr td {border:0px solid #000;margin:0px;padding:0.5px;}
+                   </style>   
+    
+     <!---------------------------------------------------------------------------------------->
+    <!--------------------Input Field drag and drop start--------------------------------------->
+    <c:ed_FieldDragAndDrop ></c:ed_FieldDragAndDrop>
+     <script>
+        var table2 = document.getElementById('optchoice1');
+        var tableDnD1 = new TableDnD();
+        tableDnD1.init(table2);
+    </script> 
+    <!--------------------Input Field drag and drop End--------------------------------------->
+    
+    <!------------------------------------------------------------------------------------->
+                <apex:variable var="increment" value="{!0}" id="itemincid"/>
+                      <div class="indent" Style="margin-left:18%;">
+                     <!--  <table class="dynamic" border="0" width="100%" id="optchoice" >-->
+                      <table class="dynamic" border="0" width="70%" id="optchoice1" >
+                     <apex:repeat value="{!answerslist}" var="as" id="ansrepid">
+                     
+                         <apex:variable var="increment" value="{!increment+ 1}" id="incid"/>
+                         
+                         
+                         <tr style="padding:0px;" id="{!as.Answer_Text__c}">
+                             <td  width="2%"> <apex:image url="{!$Resource.DragButton}"  style="margin-left:-5px;"/> </td> 
+                         <td  width="2%">
+                             <apex:image url="{!$Resource.CheckboxImage}" rendered="{!IF(selectedtype == 'Checkboxes',TRUE,FALSE)}" /> 
+                             <apex:image url="{!$Resource.RadioButtonImage}" rendered="{!IF(selectedtype== 'Single Selection',TRUE,FALSE)}" /> 
+                              <apex:outputText value="{!increment}" rendered="{!IF(selectedtype == 'Choose from a list',TRUE,FALSE)}"/>
+                          </td>
+                           
+                      
+                       <td   width="75%">
+                            <apex:inputField value="{!as.Answer_Text__c}"   styleClass="medium" id="answertexrID" style="width:90%;" html-placeholder="Option {!increment}"/>
+                       </td>
+                             <td width="3%">  
+                               <apex:commandButton value="+" title="AddOption"  onclick="return dupoptck();"  rendered="{!answerslist.size = (increment) }" rerender="aa"   styleclass="button-a blue" /> 
+                            </td>  
+                             <td  > <!--<apex:commandButton value="-" title="DeleteOption"  onclick="return delOption('SurveyQuestionOptionDelete')"  action="{!deleteoptionline}"  rerender="opt" styleclass="button-a blue" rendered="{!answerslist.size > 1 }" >   
+                                 <apex:param value="{!increment-1}" name="deletedid"/>   </apex:commandButton>-->  <!-- <apex:outputText value="  Default Answer." rendered="{!IF(AND(selectedtype == 'Choose from a list',(increment) = 1),TRUE,FALSE)}" styleClass="medium" style="font-size:15px;text-shadow: 0 1px 1px rgba(0,0,0,.25);color:#247dba;text-align:center;"/> -->
+                          <apex:outputlabel rendered="{!answerslist.size > 1 }">
+                          <input type="button" onclick="delOption('SurveyQuestionOptionDelete','{!increment-1}')" value="-" title="DeleteOption" class="button-a blue"/>
+                          </apex:outputlabel>
+                          
+                          
+                            </td> 
+                         </tr>
+                      </apex:repeat></table> </div>
+                  </apex:outputPanel>
+                  
+               <!---------------- End of Adding Of Options ------------------------------------------------------------------------>     
+         <div class="elem">
+                       <label>Parent: </label>  
+                      <div class="indent" style="margin-left:120px;">
+                          <apex:selectList size="1" value="{!parentansid}" style="outline:none;width:74%;" Styleclass="selectlist" >
+                               <apex:selectOptions value="{!ansList}" />
+                              <apex:actionSupport action="{!showticketbasedonanswer}" event="onchange" reRender="queformid,createquestionid,itemdisplayboolid"/> 
+                          </apex:selectList>
+                     </div>
+                     </div>    
+            <!-- -------------------------Incase of having NO tickest ------------------------------------------ -->      
+                <apex:outputPanel rendered="{!Itemslist.size == 0}" id="itemdisplayboolid1" >                    
+                            <table width="0" border="0">
+                            <br/>
+                                <tr style="border:0px" valign="middle"> 
+                                    <b><i><font size="2" color="#AAACAA"><center>
+                                    No Tickets/Packages to Display !!
+                                    </center></font></i></b>
+                                </tr>  
+                            </table>                                        
+                </apex:outputPanel> 
+                
+         <!-- -------------------------Incase of having tickest ------------------------------------------ -->       
+                  
+        <apex:outputPanel rendered="{!(itemdisplaybool && Itemslist.size>0)}" id="itemdisplayboolid">
+               
+               <div id="ticketselect" class="indent" style="margin-left:120px;">
+               
+               <div id="ticketlist" style="">
+               
+               
+               
+               <table width="100%" border="0">
+      <tr style="border:0px">
+      
+      <!------------td for select ticket table------------>
+      
+      
+         <td style="padding:0px" width="100%">
+     
+         <!-- -------------------------------------Old code pasting---------------------------- -->
+         <!-- --------------------------------------new Code writing ------------------------- -->
+     
+          <table width="100%" border="0">
+           <apex:repeat value="{!itemnames}" var="inm" >
+               
+       <apex:variable value="{!inm.label}" var="labl"/>
+        <tr>
+       <td width="2%"> 
+     
+       <apex:outputText rendered="{!CONTAINS(CheckTicketsforedit,inm.value)}">
+      
+      <apex:variable var="useranswerscount" value="{!0}"/>
+      <apex:repeat value="{!useranswersMAP[inm.value]}" var="el">
+       <apex:variable var="useranswerscount" value="{!useranswerscount+ 1}"/>
+       </apex:repeat>
+       
+        <apex:outputText rendered="{!If(useranswerscount == 0,TRUE,FALSE)}">
+           <input type="checkbox" value="{!inm.value}" class="chkticket {!inm.value}chk" checked='True'  onclick="getselvalues(this,'{!inm.value}');"  ></input> 
+       </apex:outputText> 
+       
+        <apex:outputText rendered="{!If(useranswerscount > 0,TRUE,FALSE)}">
+          <input type="checkbox" value="{!inm.value}" class="chkticket {!inm.value}chk" checked='True' onclick="getselvalues(this,'{!inm.value}');"  ></input>
+       </apex:outputText> <!-- disabled= 'disabled' --> 
+       
+       </apex:outputText> 
+        
+        <!-- ---------------------------------------------Select ticket checkboxessss------------------------------------------------------ -->
+                          
+       <apex:outputText rendered="{!NOT(CONTAINS(CheckTicketsforedit,inm.value))}">
+          <input type="checkbox" value="{!inm.value}" class="chkticket {!inm.value}chk"  onclick="getselvalues(this,'{!inm.value}');"  ></input>
+       </apex:outputText> 
+      
+       </td>
+       
+        <!-- *******-------------------------------------------------------------------Start showing tickets for package------------------------------------------------------------------------------------------------- -->
+         <td width="70%">
+            <apex:outputText rendered="{!If(labl == 'Select All', True,False)}" value="Select Tickets" style="font-size:15px;text-shadow: 0 1px 1px rgba(0,0,0,.25);color:#247dba;text-align:center;"/>
+            <apex:outputText rendered="{!If(labl != 'Select All', True,False)}" value="{!inm.label}" />
+            
+              </td> 
+    
+            <!--<td width="50%">-->
+            
+            
+                
+            <!--</td>-->
+            
+           <!-- *******-------------------------------------------------------------------End showing tickets for package------------------------------------------------------------------------------------------------- -->  
+          
+       <!-- ----------------------------------------------------Visible------------------------------------------- -->
+         <apex:outputText rendered="{!If(labl == 'Select All', True,False)}"> 
+        
+        
+        
+        <td> 
+        <apex:outputText rendered="{!CONTAINS(CheckvisTicketsforedit,inm.value)}">
+              <input type="checkbox" value="{!inm.value}" class="chkvisticket {!inm.value}vs" checked='True'  onclick="getvisvalues(this,'{!inm.value}');"   ></input>
+          </apex:outputText> 
+                          
+           <apex:outputText rendered="{!NOT(CONTAINS(CheckvisTicketsforedit,inm.value))}">
+                 <input type="checkbox" value="{!inm.value}" class="chkvisticket {!inm.value}vs"  onclick="getvisvalues(this,'{!inm.value}');"   > </input>
+           </apex:outputText> 
+        </td>
+                           
+                   
+        <td >
+           <apex:outputText rendered="{!If(labl == 'Select All', True,False)}" value="Visible" style="font-size:15px;text-shadow: 0 1px 1px rgba(0,0,0,.25);color:#247dba;text-align:center;"/>
+        </td>
+        
+        </apex:outputtext>
+        
+        <apex:outputText rendered="{!If(labl != 'Select All', True,False)}"> 
+       
+       <!-- --------------------------------------------------Ticket Visibility checkboxessssssss----------------------------------- -->
+        <td colspan="2" >
+            <apex:outputText rendered="{!CONTAINS(CheckvisTicketsforedit,inm.value)}">
+                           <input type="checkbox" value="{!inm.value}" class="chkvisticket {!inm.value}vs" checked='True'  onclick="getvisvalues(this,'{!inm.value}');"   ></input>
+                          </apex:outputText> 
+                          
+                            <apex:outputText rendered="{!NOT(CONTAINS(CheckvisTicketsforedit,inm.value))}">
+                               <input type="checkbox" value="{!inm.value}" class="chkvisticket {!inm.value}vs"  onclick="getvisvalues(this,'{!inm.value}');"   > </input>
+                           </apex:outputText> 
+         </td>
+         
+         
+        </apex:outputtext>
+       
+       
+       
+        
+        <!-- ---------------------------------Required------------------------------------------------------------------------- --> 
+        <apex:outputText rendered="{!If(labl == 'Select All', True,False)}"> 
+        <td> 
+          <apex:outputText rendered="{!CONTAINS(CheckreqTicketsforedit,inm.value)}">
+              <input type="checkbox" value="{!inm.value}" class="chkreqticket  {!inm.value}req" checked='True'  onclick="getreqvalues(this,'{!inm.value}');"   ></input>
+          </apex:outputText> 
+                          
+           <apex:outputText rendered="{!NOT(CONTAINS(CheckreqTicketsforedit,inm.value))}">
+                <input type="checkbox" value="{!inm.value}" class="chkreqticket  {!inm.value}req" onclick="getreqvalues(this,'{!inm.value}');"   > </input>
+           </apex:outputText> 
+        </td>
+                           
+                   
+        <td >
+           <apex:outputText rendered="{!If(labl == 'Select All', True,False)}" value="Required" style="font-size:15px;text-shadow: 0 1px 1px rgba(0,0,0,.25);color:#247dba;text-align:center;"/>
+        </td>
+        
+        </apex:outputtext>
+        
+        <apex:outputText rendered="{!If(labl != 'Select All', True,False)}"> 
+       
+       
+        <td colspan="2" >
+        
+        <!-- ----------------------------------------------------Ticket Required Checkboxesssss------------------------------------------- -->
+        
+         <apex:outputText rendered="{!CONTAINS(CheckreqTicketsforedit,inm.value)}">
+                           <input type="checkbox" value="{!inm.value}" class="chkreqticket  {!inm.value}req" checked='True'  onclick="getreqvalues(this,'{!inm.value}');"   ></input>
+                          </apex:outputText> 
+                          
+                             <apex:outputText rendered="{!NOT(CONTAINS(CheckreqTicketsforedit,inm.value))}">
+                               <input type="checkbox" value="{!inm.value}" class="chkreqticket  {!inm.value}req"  onclick="getreqvalues(this,'{!inm.value}');"   > </input>
+                           </apex:outputText> 
+         </td>
+         
+         
+        </apex:outputtext>
+      </tr>
+        
+    <!-- ********************************************Code For Package Line Items************************************************************************ -->     
+     <!-- Edited by Thirupathi -->  
+     <tr class="">
+    <td colspan="6" style="padding:0px;">
+    <style>
+    .pkg-lineitem tr td{ padding:0px;}
+         
+    </style>
+        
+        
+  <script>
+    function getvisvalues1(th,vs,chid,pid){
+      uncheckParent(pid);   
+    if(th.checked){ 
+      if(vs =='vs'){
+         document.getElementsByClassName(chid+'chk')[0].checked= true;    
+       }else if(vs =='req'){
+        document.getElementsByClassName(chid+'chk')[0].checked= true;
+        document.getElementsByClassName(chid+'vs')[0].checked= true;
+      }else if(vs=='chk'){
+       document.getElementsByClassName(chid+'vs')[0].checked= true;
+      }     
+    }else{
+       if(vs =='chk'){
+        document.getElementsByClassName(chid+'vs')[0].checked= false;
+        document.getElementsByClassName(chid+'req')[0].checked= false; 
+       }else if(vs == 'vs'){
+        document.getElementsByClassName(chid+'req')[0].checked= false; 
+       }
+    }
+  }  
+
+   
+  
+        
+    function uncheckParent(pid){
+     //alert(document.getElementsByClassName(pid+'chk').length);
+      document.getElementsByClassName(pid+'chk')[0].checked= false;
+      document.getElementsByClassName(pid+'req')[0].checked= false;
+      document.getElementsByClassName(pid+'vs')[0].checked= false;
+        
+    //  document.getElementsByClassName(pid+'chk')[0].disabled= true;
+    //  document.getElementsByClassName(pid+'req')[0].disabled= true;
+     // document.getElementsByClassName(pid+'vs')[0].disabled= true;
+        
+    } 
+        
+         
+  </script>
+    
+    <table width="100%" border="0" class="pkg-lineitem" style="color:#247dba;" id="itmBoxId">
+        <apex:repeat value="{!ItemListMAP[inm.value]}" var="firstKey" rendered="{!IF(CONTAINS(mapchecker,inm.value) ,true,false)}">
+            <tr style="border:none; border-bottom:0px;">
+                
+                <td width="10%" style="text-indent:5%;">
+                    <apex:outputText rendered="{!IF(CONTAINS(mapchecker,inm.value) ,true,false)}">
+                      <apex:outputPanel rendered="{!IF(CONTAINS(Editpoolvalues,firstKey.id) ,true,false)}"> 
+                         <input type="checkbox" value="{!firstKey.id}" name="{!inm.value}" class="chkticketpool {!firstKey.id}chk" checked='true' onclick="getvisvalues1(this,'chk','{!firstKey.id}','{!inm.value}');"/>
+                      </apex:outputPanel>
+                   
+                      <apex:outputPanel rendered="{!IF(CONTAINS(Editpoolvalues,firstKey.id) ,false,true)}"> 
+                         <input type="checkbox" value="{!firstKey.id}" name="{!inm.value}" class="chkticketpool {!firstKey.id}chk"  onclick="getvisvalues1(this,'chk','{!firstKey.id}','{!inm.value}');"/>
+                      </apex:outputPanel>
+                   
+                   
+                    </apex:outputText>
+                </td>
+            
+                <td width="50.7%">
+                    <apex:outputText > 
+                        {!firstKey.Item_Pool_Name__c}
+                    </apex:outputText>
+                </td>
+                
+                <td>
+                   <apex:outputText rendered="{!IF(CONTAINS(Editpoolvisiblevalues,firstKey.id),true,false)}">
+                       <input type="checkbox" value="{!firstKey.id}" name="{!inm.value}" class="chkvisticketpool   {!firstKey.id}vs" checked='True' onclick="getvisvalues1(this,'vs','{!firstKey.id}','{!inm.value}');"> </input>
+                   
+                    </apex:outputText> 
+                    
+                    <apex:outputText rendered="{!IF(CONTAINS(Editpoolvisiblevalues,firstKey.id),false,true)}">
+                       <input type="checkbox" value="{!firstKey.id}" name="{!inm.value}" class="chkvisticketpool   {!firstKey.id}vs"  onclick="getvisvalues1(this,'vs','{!firstKey.id}','{!inm.value}');"> </input>
+                    </apex:outputText> 
+                </td>
+                
+                <td width="21.8%">
+                  <!--  <apex:outputText rendered="{!CONTAINS(CheckreqTicketsforedit,inm.value)}">
+                        <input type="checkbox" value="{!inm.value}" class="chkreqticket" checked='True'  onclick="getreqvalues(this,'{!inm.value}');" />
+                    </apex:outputText> -->
+                      <apex:outputText rendered="{!IF(CONTAINS(Editpoolreqvalues,firstKey.id),true,false)}">
+                        <input type="checkbox" value="{!firstKey.id}" name="{!inm.value}" class="chkreqticketpool   {!firstKey.id}req" checked='True'  onclick="getvisvalues1(this,'req','{!firstKey.id}','{!inm.value}');"/>
+                    </apex:outputText> 
+                      
+                      
+                    <apex:outputText rendered="{!IF(CONTAINS(Editpoolreqvalues,firstKey.id),false,true)}">
+                        <input type="checkbox" value="{!firstKey.id}" name="{!inm.value}" class="chkreqticketpool   {!firstKey.id}req"   onclick="getvisvalues1(this,'req','{!firstKey.id}','{!inm.value}');"/>
+                    </apex:outputText>
+                </td> 
+                
+            </tr>
+        </apex:repeat> 
+    </table>
+    </td>
+</tr> 
+         <!----------------------------------------->
+         <apex:variable value="" var="labl"/>
+            </apex:repeat>     </table> 
+            
+            <!-- ----------------------------------old code removing------------------- -->
+         
+        </td> 
+              
+       
+      </tr> 
+    </table>  
+              
+            </div><!--close of ticketlist-->
+                 </div><!--ticketselect-->   
+       </apex:outputPanel>    
+             
+           
+        </apex:repeat> 
+        
+         <apex:outputPanel rendered="{!(NOT(itemdisplaybool))}" id="itemdisplayboolid">
+        <div class="elem">
+        <div class="indent" style="margin-left:120px;">
+          
+           <table cellspacing="5" style="outline:none;width:74%;border:1px solid #E6E6E6;" Styleclass="selectlist"> 
+            <!-- checkboxes for event level ----------------------- -->
+            <tr>
+                <td style="font-size:15px;text-shadow: 0 1px 1px rgba(0,0,0,.25);color:#247dba;text-align:center;">
+                    <!--<apex:inputCheckbox id="reqEventlevel" selected="{!itemQuestionForEventlevel.isRequired__c}"  onChange="selectAllCheckboxes(this,'inputId')"/> -->
+                    <apex:inputField value="{!itemQuestionForEventlevel.Visibility__c}"  id="rec" onclick="check(this)" />
+                    Visible
+                    
+                </td> 
+                <td style="font-size:15px;text-shadow: 0 1px 1px rgba(0,0,0,.25);color:#247dba;text-align:center;">
+                    <!-- <apex:inputCheckbox selected="{!itemQuestionForEventlevel.Visibility__c}" id="inputId"/>   --> 
+                    <apex:inputField value="{!itemQuestionForEventlevel.isRequired__c}" id="hii" onclick="checkAll(this)"/>
+                    Required 
+                </td> 
+            </tr>
+               
+          </table> 
+         </div>
+         </div>
+         </apex:outputPanel> 
+        <!--Start Action Function for reordering input answers fields-----------------------------> 
+        <apex:actionFunction action="{!updateanswerslist}" name="fieldOrderDisplay" reRender="opt">
+               <apex:param value="" name="answeroptorder"/>
+        </apex:actionFunction>
+        <!--End Action Function for reordering input answers fields-----------------------------> 
+        
+         <apex:actionFunction action="{!optionslabel}"   name="dupanschk" reRender="opt">
+               <apex:param value="" name="dupanschk"/>
+        </apex:actionFunction> 
+        <apex:actionFunction action="{!deleteoptionline}"  name="deleteoption" reRender="opt" >
+                  <apex:param value="" name="deletedid" />
+        </apex:actionFunction>    
+        <div class="clear"> </div>
+                 
+             <div class="indent" style="margin-top:20px;text-align:right;"> 
+       
+                  <!--<apex:commandButton value="Save" action="{!saveRefreshAction}"  onclick="if(!validatefun()) return false;"  styleclass="button-a blue" reRender="aa,optchoice2" oncomplete="window.reload()" status="AjaxLoader"/>&nbsp;&nbsp;--><!-- oncomplete="window.location.reload()" -->
+                  <input type="button" value="Save" class="button-a blue"  onclick="if(!validatefun()) return false;" oncomplete="window.reload();"/>&nbsp;&nbsp;
+                      <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" reRender="queformid,displaytableid,errorbboolid,usercouid" styleclass="button-a dark-blue" status="AjaxLoader" oncomplete="window.reload();"/>
+                        
+                       <apex:actionFunction name="savequestion" action="{!savequestion}" reRender="queformid,displaytableid,errorbboolid,usercouid" status="AjaxLoader" oncomplete="reloadwin();">
+                    <apex:param name="chkArray"  value=""/>
+                    <apex:param name="chkreqArray"  value=""/>
+                    <apex:param name="chkvisArray"  value=""/>
+                    <!-- ---------------------------Newly Added ------------------ -->
+                     <apex:param name="chPackItm"  value=""/>
+                    
+                    
+                   </apex:actionFunction> 
+               </div>
+               
+           <div class="clear"></div>
+           
+     </div></div>  </apex:outputpanel>  </apex:form>
+    <!----------------------------------End of Add SurveyQuestions----------------------------->
+     
+    </body>
+    
+         </c:ed_basictemplate>
+
+      <!-- multi search on data table -->       
+<c:ed_datatablejs ></c:ed_datatablejs>
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script>
+ <script type="text/javascript" language="javascript" class="init">
+
+   
+        var j = jQuery.noConflict();
+        j(document).ready(function() { 
+        
+            /*************for  table ***************/  
+            j('#optchoice2').dataTable( {
+            
+             /**default orderid in asc sorting**/
+                 "pagingType": "full_numbers",
+                 "aLengthMenu": [[10 ,25,50, 100,-1], [10 ,25,50, 100, "All"]],
+                "iDisplayLength": 10,
+            "bSort": false,
+         "bAutoWidth": true, // Disable the auto width calculation
+        
+        "sDom": 'W<"clear">lfrtip',
+        "oColumnFilterWidgets": {
+        "aiExclude": [ 0,1,2,4,6,7 ]
+        
+        },
+        
+           } ); 
+        /***************************/   
+        } );
+    
+    </script> 
+    <script>
+    function dfchec(va){
+  var Qaide= document.getElementById('pageid:compid:commoncomponent:queformid:querepid:0:quelevel').value;
+  
+   maxque();
+   //alert(va.value);
+    
+   if(va.value=='Event Level'){
+ 
+   var inputElemchk=document.getElementsByTagName("input");
+                   for(var i=0; i<inputElemchk.length; i++){  
+               if(inputElemchk[i].id=='pageid:compid:commoncomponent:queformid:rec'){                 
+                  inputElemchk[i].checked = true;
+               }
+            
+               }
+               }
+               
+               else if(va.id=='pageid:compid:commoncomponent:queformid:querepid:0:options' &&  Qaide=='Event Level'){
+               
+                 var inputElemchk=document.getElementsByTagName("input");
+                   for(var i=0; i<inputElemchk.length; i++){  
+               if(inputElemchk[i].id=='pageid:compid:commoncomponent:queformid:rec'){                 
+                  inputElemchk[i].checked = true;
+               }
+            
+               }
+               
+               }
+   
+    
+    }
+    //display max answer count field when we click on edit    
+    function maxque()
+    {
+        //alert('method');
+        var temp1=document.getElementById("pageid:compid:commoncomponent:queformid:querepid:0:options").value;
+        if(temp1=='Checkboxes')
+        {
+           //alert('chk');
+           var x=jQuery('[id$=maxanscount]').val();
+           if(x==0)
+           jQuery('[id$=maxanscount]').val('');
+           document.getElementById("maxcntdiv").style.display = "block";
+        }
+        else
+        {
+             document.getElementById("maxcntdiv").style.display = "none";
+        }
+    }
+    //onkeyup number validation for max answer count 
+    function maxCntKeyup()
+    {
+           var val=jQuery('[id$=maxanscount]').val();
+           val = val .replace(/[^0-9]/g, '');
+           jQuery('[id$=maxanscount]').val(val);
+    }
+    </script> 
+     
+  <c:ed_commonjs ></c:ed_commonjs>  
+    <c:ed_popupbox >
+     </c:ed_popupbox>
+      <script>
+         var delquid = '';
+         var queanscount='';
+         var did ='';
+         function alertbox(clkbtn,delquid1,queanscount1){
+             delquid = delquid1;
+             queanscount = queanscount1;
+             Alertconfirm.render('Are you sure you want to Delete Survey Question?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+    
+         }
+         function delOption(clkbtn,dqid)
+         {
+             did=dqid;
+             Alertconfirm.render('Are you sure?','Confirmation',clkbtn,'Yes','No','Alertconfirm');
+         }
+         
+         function callback(clkbtn , okbtnn){
+             if(clkbtn =='SurveyQuestionDelete')
+             {
+           		 deletequestion(delquid,queanscount);
+        	 }
+             if(clkbtn =='SurveyQuestionOptionDelete')
+             {
+                 deleteoption(did);
+             }
+        }
+        function callbackcancel(clkbtn,cnclbtnn)
+        {
+            if(clkbtn =='SurveyQuestionDelete')
+             {
+             }
+             if(clkbtn =='SurveyQuestionOptionDelete')
+             {
+             }
+        }
+     </script>
+     <script>
+        function reloadwin() {
+       // alert('am alert');
+            window.location.href = window.location.href;
+        }
+    </script>
+    </apex:page>

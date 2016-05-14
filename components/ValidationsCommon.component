@@ -1,0 +1,345 @@
+<!-----------------------------------------------
+Dev:              Vineel
+Purpose:          This component is having JS validations and can be used in different pages as per the requirement.  
+Started Date:     08 July 2015
+
+-------------------------------------------------> 
+
+
+<apex:component >
+<c:ed_popupbox ></c:ed_popupbox>
+ <script type = "text/javascript">
+  
+<!--------------------------------------Phone Validation / Accepts Numerics at max length of 9 ---------------------------------------------------------------------------> 
+
+     var age=0;
+        function validatephone(phonenum)
+            {
+            
+                phonenum.maxLength=10;
+
+                var phone =phonenum.value;
+                phone = phone.replace(/[^0-9]/g, '');
+                phone = phone.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3"); 
+                phonenum.value = phone ;
+              
+            } 
+            function validatephone2(phonenum)
+            {
+                var s=phonenum.value;
+                s=s.toString();
+                var len=s.length;
+                if(len<10 && len>0)
+                {
+                    alert('Please Provide valid phone number');
+                    phonenum.value='';
+                }
+            } 
+   
+<!---------------------------------------begin Amount Validation ------------------------------------>
+    function formatAmountNoDecimals( number ) {
+        var rgx = /(\d+)(\d{3})/;
+        while( rgx.test( number ) ) {
+            number = number.replace( rgx, '$1' + ',' + '$2' );      
+        }
+        return number;
+    }
+    function formatAmount( number ) {
+        // remove all the characters except the numeric values
+        number = number.replace( /[^0-9]/g, '' );
+        // set the default value
+        if( number.length == 0 ) number = "0.00";
+        else if( number.length == 1 ) number = "0.0" + number;
+        else if( number.length == 2 ) number = "0." + number;
+        else number = number.substring( 0, number.length - 2 ) + '.' + number.substring( number.length - 2, number.length );
+        // set the precision
+        number = new Number( number );
+        number = number.toFixed( 2 );   
+        // format the amount
+        x = number.split( ',' );
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+
+        return formatAmountNoDecimals( x1 ) + x2;
+    }
+    
+      /*  jQuery( '.amount' ).keyup( function() {
+            jQuery( this ).val( formatAmount( jQuery( this ).val() ) );
+        });  */
+        function amountvalidation(amt)
+        {
+            amt.value=formatAmount(amt.value);
+        }
+        
+<!---------------------------------------End Amount Validation ------------------------------------>
+
+<!-------------------------------------Name Validation / Validation works for alphabet characters (Upper and Lower Case ) and 'Hyphen' -------------------------->
+
+
+        function ValidateName(inputname)
+            {
+            
+                var Outputname=inputname.value;
+                Outputname = Outputname.replace(/[^a-z A-Z - 0-9]/g,'');            
+                inputname.value = Outputname;
+                 if(Outputname.length>=200){
+                 alert('please enter less than 200 characters');
+                inputname.value=Outputname.substring(0, 200);             
+             //   inputname.style.borderColor = "red";        
+             //   inputname.style.boxShadow = "#A63737 1px 2px 4px 1px";   
+                }else{
+                
+                 inputname.style.border = "1px solid #CCCCCC";
+                }
+                
+                
+            }   
+        
+
+<!-------------------------------------Zip Validation / Accepts only Numerics --------------------------------------------------------------------------------------------->
+
+      <!--- Zip Code validation with difference countries----> 
+       function isValidPostalCode(postalCode, countryCode) {
+                     
+           var p=postalCode.value;
+               if(countryCode == "US"){
+               
+               postalCode.maxLength=5;                     
+               }
+               if(countryCode == "IN"){
+               
+               postalCode.maxLength=6;                     
+               }
+               p= p.replace(/[^0-9]/g, ''); 
+               postalCode.value = p;
+   
+           }
+           
+           <!--- Zip Code validation with only numerics----> 
+           
+           function zipcodes(zipcodec)
+           {
+           
+           zipcodec.maxLength=6;
+           var zipnum =zipcodec.value;
+           zipnum = zipnum.replace(/[^0-9]/g, '');            
+           zipcodec.value = zipnum;
+           }   
+
+<!-------------------------------------Website Validation -------------------------------------------------------------------------------------------------------------->
+
+    
+        function url_validate(userUrl)
+            {
+            
+                //var regUrl = /^(((ht|f){1}(tp:[/][/]){1})|((www.){1}))[-a-zA-Z0-9@:%_\+.~#?&//=]+$/;
+    
+                var message;
+                var userUrl=/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+                var urlToValidate = userUrl;
+                if (!userUrl.test(urlToValidate )){
+                message = "Not a valid URL.";
+                }else{
+                message =  "Its a valid URL."
+                }
+                alert(message);
+               
+            
+            }                 
+
+
+<!------------------------------------------Image Size Validation (Validates when Image Size is greater than 100kB)-------------------------------------------------> 
+
+
+        function Imagecheck(imagesize)
+            { 
+                var path = imagesize.value;
+                var filesize= imagesize.files[0].size;
+                if(filesize > 102400){
+                imagesize.value = null;
+                window.alert("Image size cannot be greater than 100 kB");
+                return false;
+            }
+            }
+
+   
+<!------------------------------------------Validation for only Numeric's------------------------------------------------------------------------------------------------> 
+  
+  
+  function validatnumeric(numericval)
+           {
+           
+          
+           var numvalid=numericval.value;
+           numvalid= numvalid.replace(/[^0-9]/g, '');            
+           numericval.value = numvalid;
+           }  
+  
+  
+<!------------------------------------------Validation for age--------------------------------------------------------------------------------------------------------->   
+            function agevalid(agevld)
+           {
+           
+           agevld.maxLength=2;
+           var agenum=agevld.value;
+           agenum= agenum.replace(/[^0-9]/g,'');            
+           agevld.value = agenum;
+           age = agenum;
+           console.log('age is  '+age);
+           }    
+  <!----DOB Validation----->
+  
+  function bateofb(dob){
+  //alert(age);
+  //alert(dob.value);
+  var d = new Date();
+ // alert(dob.value);
+  
+  
+   
+  if(age==0){
+  
+   var a =new Date(dob.value);
+   
+        var  date1 = a.getDate() <= 9 ? "0" + a.getDate() : a.getDate() ;
+        var mon1 = a.getMonth()+1;
+        mon1 = mon1  <= 9 ? "0" +mon1  : mon1  ; 
+        var year1 = a.getFullYear();
+        var entereddate = mon1+"/"+date1+"/"+year1;
+        
+     var d = new Date();
+     
+        var  date = d.getDate() <= 9 ? "0" + d.getDate() : d.getDate() ;
+        var mon = d.getMonth()+1;
+        mon = mon  <= 9 ? "0" +mon  : mon  ; 
+        var year = d.getFullYear();
+        var todaydate = mon+"/"+date+"/"+year;
+          if(!isNaN(year1)){
+        if(todaydate<=entereddate){
+        //alert('enter a valid date of birth');
+        Alert.render('enter a valid date of birth' , 'Alert !','ok','Alertconfirm');
+        dob.value='';
+        }}
+  }
+  else{
+  var a =new Date(dob.value);
+   
+       
+        var enteredyear = a.getFullYear();
+        
+        
+        var d = new Date();
+        var currentyear = d.getFullYear();
+      
+       var actualyear = currentyear-age;
+       if(!isNaN(enteredyear )){
+       if(actualyear != enteredyear){
+            //alert('Date Of Birth Is Not valid');
+            Alert.render('Date Of Birth Is Not valid' , 'Alert !','ok','Alertconfirm');
+                    dob.value='';
+       }
+  }
+  
+  
+  
+  }
+  }
+  <!------Raj-------->
+  
+  
+  function isdecimal(decmalval)
+{
+ var decvalid=decmalval.value;
+           decvalid= decvalid.replace(/[^0-9\.]/g,'');            
+           decmalval.value = decvalid;
+           
+    
+}
+ <!-----spacerec------------------->
+  function isspacee(spaceval){
+  
+   var spceid =spaceval.value;
+    spceid = spceid.replace(/\s/g,'');
+   spaceval.value= spceid;
+}
+ 
+<!------------------------------------------Validation for Check--------------------------------------------------------------------------------------------------------->   
+           
+           /*function Checknum(chknums)
+         {
+           alert('In check num');
+           chknums.maxLength=10;
+           var chknum =chknums.value;
+           chknum = chknum.replace(/[^0-9 a-z A-Z]/g, '');            
+           chknums.value = chknum;
+           } 
+           */
+            function Checknum(chknums)
+           {          
+         
+           var varcond = chknums.value;          
+           var chknum;
+           if(!varcond) {
+           
+                   chknum = chknums.replace(/[^0-9 a-z A-Z]/g, ''); 
+                   return chknum; 
+                   
+           }else{
+                   chknums.maxLength=10;
+                   var chknum =chknums.value;
+                   chknum = chknum.replace(/[^0-9 a-z A-Z]/g, '');            
+                   chknums.value = chknum;
+           }   
+          
+           }  
+<!---------------------------------------------------business dns number validation --------------->
+
+
+function validatedns(dbsnumber)
+            {
+            
+                dbsnumber.maxLength=10;
+
+                var dnsnum =dbsnumber.value;
+                dnsnum = dnsnum.replace(/[^0-9]/g, '');
+                dnsnum = dnsnum.replace(/(\d{2})(\d{3})(\d{4})/, "$1-$2-$3"); 
+                dbsnumber.value = dnsnum ;
+              
+            } 
+            
+<!---------------------------------------Validations for ZIPCODE , Dependency ------------------------>
+ function zipcodeValidation(cnty,zip){
+     //alert('cnty'+cnty+'   zip'+zip);
+     if(zip!= null && zip!=''){
+
+           if(cnty=='United States Of America')
+           var zipme=/^\d{5}$/;
+           else if(cnty=='India')
+           var zipme=/^\d{6}$/;
+
+           if(zip.match(zipme)){
+               return true;  
+           }
+           else{
+              // alert("Enter valid zip code1");
+               return false;
+                   }
+   }else{
+       return true;
+   }
+ }
+ 
+ <!----------------------------------Validations for CVV number restriction------------------------>
+ 
+
+                function cvv_numchk(cvvnumeric)
+           {
+           
+           cvvnumeric.maxLength=4;
+           var cvvnum =cvvnumeric.value;
+           cvvnum = cvvnum .replace(/[^0-9]/g, '');            
+           cvvnumeric.value = cvvnum ;
+           }       
+                      
+  </script>  
+</apex:component>

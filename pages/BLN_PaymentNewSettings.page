@@ -1,0 +1,255 @@
+<apex:page controller="BLN_ReUse_EventsEditCon" showHeader="false" standardStylesheets="false" id="thePage">
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<c:ed_commonstyles ></c:ed_commonstyles>
+ <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-paymentsettings.css')}" />
+<script>
+    var eventmand={};
+          
+       eventmand.EventID="{!selectedEvent}";
+     
+               function eventload() {
+
+        //load the pay options
+        
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getnewEvents}',
+            eventmand.EventID,
+           function(result, event){
+          
+         document.getElementById('refundcontent').checked=result.ble.Accept_Refund_Policy__c;
+            document.getElementById('message').value=result.ble.Refund_Policy__c==undefined?'':result.ble.Refund_Policy__c;
+            document.getElementById('refundpolicycontent').style.display= ( document.getElementById('refundcontent').checked ) ? 'block' : 'none';
+         
+            
+            document.getElementById('termcontent').checked=result.ble.Accept_Terms_Conditions__c;
+            document.getElementById('message1').value=result.ble.Terms_Conditions__c==undefined?'':result.ble.Terms_Conditions__c;
+             document.getElementById('termscondcontent').style.display = ( document.getElementById('termcontent').checked ) ? 'block' : 'none'; 
+           
+            document.getElementById('acceptTax').checked=result.ble.Accept_Tax_Rate__c;
+            document.getElementById('taxrateval').value=result.ble.Tax_Rate__c==undefined?'':result.ble.Tax_Rate__c;
+            document.getElementById('termscondcontent1').style.display= ( document.getElementById('acceptTax').checked ) ? 'block' : 'none';  
+           
+          
+         
+           
+            }, 
+            {escape: true}
+        );
+        
+        
+        
+        //end
+    
+        
+}     
+                  
+  $( document ).ready(function() {
+  eventload();
+  });  
+            
+      </script>  
+     
+ 
+    <!------------//common styles component---------->
+<c:ed_basictemplate BLN_UtillDisplayLinks="{!Ticket}" id="comp">
+ <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/jquery.min.js')}"></script>
+     <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/jquery-ui-1.8.16.custom.min.js')}"></script>  
+ 
+ 
+<style>
+ #tabs-container{
+ overflow: hidden;
+margin: 0px;
+
+padding: 0px;
+clear: none;
+
+
+
+ background: #f9f9f9;
+
+ }
+ 
+ .tabs-menu {
+ list-style: none;
+    margin: 0px;
+padding: 0px;
+font-size: 13px;
+outline: none;
+}
+
+.tabs-menu li {
+color: #555;
+ position: relative;
+/* top: 1px; */
+float: left;
+
+/* background-color: #DDD; */
+list-style: none;
+border-right: 1px solid #ddd;
+border-bottom: 1px solid #ddd;
+-moz-user-select: none;
+-khtml-user-select: none;
+cursor: pointer;
+  padding: 8px 21px;
+  margin: 0px 2px 0px -3px;
+}
+
+
+.tabs-menu li.current {
+   color: #555;
+    background-color: #ffffff;
+border-bottom: 1px solid #fff;
+/* height: 14.4px; */
+-moz-box-shadow: inset 0 2px #2a90d3;
+-webkit-box-shadow: inset 0 2px #2a90d3;
+box-shadow: inset 0 2px #2a90d3;
+
+}
+
+
+.tabs-menu li:hover {   background: #fefefe;
+  background: -moz-linear-gradient(top,#fefefe 0,#f3f3f3 100%);
+  background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#fefefe),color-stop(100%,#f3f3f3));
+  background: -webkit-linear-gradient(top,#fefefe 0,#f3f3f3 100%);
+  background: -o-linear-gradient(top,#fefefe 0,#f3f3f3 100%);
+  background: -ms-linear-gradient(top,#fefefe 0,#f3f3f3 100%);
+  background: linear-gradient(top,#fefefe 0,#f3f3f3 100%);}
+
+
+.tabs-menu li a {
+    outline: none;
+focus: none;
+color: #555;
+font-weight: 300;
+text-decoration:none;
+}
+
+
+.tabs-menu .current a {
+    outline: none;
+focus: none;
+color: #555;
+font-weight: 300;
+}
+
+.tab {
+    border: 1px solid #d4d4d1;
+    background-color: #fff;
+    float: left;
+    margin-bottom: 20px;
+    width: auto;
+}
+
+
+.tab-content {
+    width: 660px;
+    padding: 20px;
+    display: none;
+}
+
+#tab-1 {
+ display: block;   
+}
+ </style>
+ 
+ <div class="grid-1">
+                <!--------------------------->
+                <div class="form-embed-div" style="width: 95%;">
+                    <div class="form-content-div" style="padding: 0px;">
+
+                            <!-------------------------Refund policy--------------------------------->
+                        
+                   
+                            <div  id="refundpolicy" class="commonbox">
+                            <div>
+                                <label class="strong_700 margin-ryt-5px">Refund Policy :</label>
+                                <input type="checkbox" onClick="showchk_content(this ,'refundpolicycontent')"  id="refundcontent" /></div>
+                             
+                                <div id="refundpolicycontent" class="margin-top-10px" style="display: none;">
+                                <textarea  id="message" class="medium" style="text-indent:3px;" rows="3"/>
+                            </div>
+                                
+                            </div><!--clode of refund policy-->
+                           
+                           
+                    
+                            <!-------------------------Terms and Conditions--------------------------------->
+                                           
+                            <div  class="commonbox">
+                         <div>   <label class="strong_700 margin-ryt-5px">Terms And Conditions:</label>
+                                
+                                <input type="checkbox" onClick="showchk_content(this ,'termscondcontent')" id="termcontent"  /></div>
+                                <div id="termscondcontent" class="margin-top-10px" style="display: none;">
+                                <textarea   id="message1" class="medium" style="text-indent:3px;" rows="3"/>
+                            </div>
+                                
+                            </div><!--clode of refund policy-->
+                    
+                            
+                            <!--ticketopt-content--->
+                    
+                            <!----------------Tax Rate: ------------------------------->
+                            <div  id="taxrate" class="commonbox">
+                             <div>   <label class="strong_700 margin-ryt-5px">Tax Rate :</label>
+                                <input type="checkbox" onClick="showchk_content(this ,'termscondcontent1')"   id="acceptTax"   /></div>
+                                 <span id="termscondcontent1" style="display:none">
+                                <input type="text" id="taxrateval"  style="width:10%; outline:none;"/>%
+                            </span>
+                            </div><!--clode of taxrate-->
+                    
+                           
+                    
+                            <!----------------------------------------------->
+                            
+                            
+                            </div></div></div> 
+               <div id="loaderhide" style="display:none;padding-left:430px"><apex:image url="{!$Resource.Redirect_gif}" />   </div>
+                           <div class="textcenter margin-top-10px">
+                   <button class="button-a blue" id="savebuttons" onclick="ShowLoader();savestaxrate()">Save</button>
+                    &nbsp;&nbsp;
+                    <button id="cancelbuttons" class="button-a dark-blue" onclick="window.location.reload();">Cancel</button> 
+                </div>
+        <script>
+        function savestaxrate()
+        {
+         var taxrateval=document.getElementById('taxrateval').value==''?'0':document.getElementById('taxrateval').value;
+            //for saving the refund policy,terms&condition and taxrate in Event table
+             Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.savesEventsTaxRateRefundPolicy}',
+            eventmand.EventID,
+            document.getElementById('refundcontent').checked,
+            document.getElementById('message').value,
+            document.getElementById('termcontent').checked,
+            document.getElementById('message1').value,
+            document.getElementById('acceptTax').checked,
+            taxrateval,
+            function(result, event){
+            if (event.status){
+            
+             AlertNew.render('Saved Successfully','Alert!','ok');
+             HideLoader();
+            //end
+            } 
+             else if (event.type === 'exception') {
+                     //alert(event.message + " " + event.where + " ");
+                    AlertNew.render(event.message + " " + event.where + " " ,'Alert!','ok');
+                    try{HideLoader(); }catch(e){}
+                } else {
+                    //alert(event.message);
+                    AlertNew.render(event.message ,'Alert!','ok');
+                    try{HideLoader(); }catch(e){}
+                }          
+            }, 
+            {escape: true}
+        );
+            
+        }
+        </script>                   
+      
+  </c:ed_basictemplate> 
+      <c:ed_commonjs ></c:ed_commonjs>   
+     
+     <apex:include pageName="BLN_TicketCommonPageBUTTON"/>
+</apex:page>

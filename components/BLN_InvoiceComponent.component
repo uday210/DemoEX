@@ -1,0 +1,249 @@
+﻿<apex:component controller="BLN_InvoiceComponentController" access="global">
+<apex:attribute name="OrderIdparam" description="order id" assignTo="{!orderId}" type="Id" required="true" access="global" />
+
+
+<!--<apex:stylesheet value="{!URLFOR($Resource.eventdex_invoicecss, 'eventdex_invoicecss.css')}" />-->
+<apex:stylesheet value="{!URLFOR($Resource.pagebottom, '/pagebottommargin.css')}" />
+
+
+<html>
+  
+<head>
+    <style>
+div.footer {
+
+display: block;
+
+padding: 5px;
+
+position: running(footer);
+
+}
+
+    </style>    
+    </head>
+    
+    
+  <body> 
+  
+   
+   
+  
+    
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+  <tr>
+    <td align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" style="margin:0px auto;">
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td align="center"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="25%" style="text-align:center;">
+            
+            <div style="width:100%; margin:0px auto; text-align:center;">
+           <!-- <apex:outputPanel rendered="{!IF((senderevent.Logo_URL__c != '' && senderevent.Logo_URL__c != null),true,false)}">
+            <img src="{!if(senderevent.name=='Default Event(Boothleads)',$Resource.InvoiceEventdexLogo,if(senderevent.Logo_URL__c=='','',$label.siteurl+'/servlet/servlet.ImageServer?id='+senderevent.Logo_URL__c+'&oid='+orgid))}" style="width:90px; height:auto;" />
+            </apex:outputpanel>-->
+            
+           <apex:outputPanel rendered="{!IF((senderevent.Organizer_Email__c== $User.Username||senderevent.OwnerId== $User.Id),true,false)}">
+           <img src="{!URLFOR($Resource.edsr_master,'edsr_root/images/eventdexportal.png')}" alt="Eventdex" style="width:200px;height:auto;" />
+           <br /><strong>Global Nest LLC</strong><br />
+                         281 State Route 79, Suite #208,<br />
+                         Morganville, NJ 07751 <br />
+                         Phone : (866) 850-5872 <br />
+                         Fax : (732) 479-1321 <br />
+                         Email : support@eventdex.com<br />
+           </apex:outputpanel>
+           
+           <apex:outputPanel rendered="{!IF((senderevent.Organizer_Email__c != $User.Username||senderevent.OwnerId!= $User.Id) && (senderevent.Logo_URL__c != '' && senderevent.Logo_URL__c != null) ,true,false)}">
+           <img src="{!if(senderevent.name=='Default Event(Boothleads)',$Resource.InvoiceEventdexLogo,if(senderevent.Logo_URL__c=='','',$label.siteurl+'/servlet/servlet.ImageServer?id='+senderevent.Logo_URL__c+'&oid='+orgid))}" style="width:200px;height:auto;" />
+           <br/>
+               {!senderevent.Street1__c} {!if(senderevent.Street2__c=='','',',')} {!senderevent.Street2__c}<br />
+               {!senderevent.City__c}{!if(senderevent.City__c=='','',',')}  {!senderevent.BLN_State__r.short_name__c} {!senderevent.ZipCode__c}
+           <br />
+            </apex:outputpanel>
+            </div> 
+            
+            
+            
+            
+</td>
+            <td width="75%" align="right" valign="bottom"><table width="100%" border="0" cellspacing="5" cellpadding="0">
+              <tr>
+                <td colspan="2" align="right" style="padding-right:45px;"><h2 style="font-size:23px;">Invoice</h2></td>
+                </tr>
+              <tr>
+                <td width="80%" align="right">Date: </td>
+                <td width="20%" align="left">
+                <apex:outputText value="{0,date,MM/dd/yyyy}">
+    <apex:param value="{!order.createddate}" />
+   </apex:outputText>
+                </td>
+              </tr>
+              <tr>
+                <td align="right">Order No: </td>
+                <td align="left">{!order.name}</td>
+              </tr>
+               
+            </table></td>
+          </tr>
+          <tr>
+            <td colspan="2" align="center"><hr /></td>
+            </tr>
+          
+          <tr>
+            <td style="line-height:10px;">&nbsp;</td>
+            <td style="line-height:10px;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top"><table width="100%" border="0" cellspacing="5" cellpadding="0">
+              <tr>
+                <td width="30%" align="right"><strong>Bill To: </strong></td>
+                <td width="70%"> {!order.BLN_TKT_profile__r.First_Name__c} {!order.BLN_TKT_profile__r.Last_Name__c}</td>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+                <td>{!order.BLN_TKT_profile__r.Billing_Address__r.Address1__c} {!if(order.BLN_TKT_profile__r.Billing_Address__r.Address2__c=='','',',')} {!order.BLN_TKT_profile__r.Billing_Address__r.Address2__c}</td>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+                <td>{!order.BLN_TKT_profile__r.Billing_Address__r.City__c}, {!order.BLN_TKT_profile__r.Billing_Address__r.State__r.short_name__c} {!order.BLN_TKT_profile__r.Billing_Address__r.ZipCode__c}
+</td>
+              </tr>
+              </table></td>
+            <td align="left" valign="top">
+            
+            <table width="100%" border="0" cellpadding="0" cellspacing="5">
+              <tr>
+                <td width="70%" align="right">Event Name:</td>
+                <td width="30%">&nbsp;{!event.name}</td>
+              </tr>
+              <tr>
+                <td align="right">Event date :</td>
+                <td>&nbsp;
+                <apex:outputText value="{0,date,MM/dd/yyyy}">
+    <apex:param value="{!event.Start_Date__c}" />
+   </apex:outputText>
+                </td>
+              </tr>
+              <tr>
+                <td align="right">Event Location:</td>
+                <td>&nbsp;{!event.venue_name__c }</td>
+              </tr>
+            </table>
+            
+            </td>
+          </tr>
+          
+      
+        </table>
+        </td>
+      </tr>
+        <tr>
+            <td style="line-height:10px;">&nbsp;</td>
+            <td style="line-height:10px;">&nbsp;</td>
+          </tr>  
+      <tr>
+        <td>
+         <table width="100%" border="0" cellspacing="0" cellpadding="5">
+              <tr>
+                <th bgcolor="black" style="width:25%; background-color:#c0d5dc; text-align:left;"><strong>Invoice #</strong></th>
+                <th style="width:25%; background-color:#c0d5dc; text-align:left;"><strong>Payment Method</strong></th>
+                <th style="width:25%; background-color:#c0d5dc; text-align:left;"><strong>Paid on</strong></th>
+                <th style="width:25%; background-color:#c0d5dc; text-align:right; padding-right:15px;"><strong>Charged Amount</strong></th>
+              </tr>
+              <tr>
+                <td height="22" align="left" style="width:25%;">{!order.name}</td>
+                <td height="22" align="left" style="width:25%;">{!if(order.Payments__r.size>0,if(order.Payments__r[0].Payment_Mode__c!='Credit Card',order.Payments__r[0].Payment_Mode__c,order.Payments__r[0].Payment_Mode__c ),'')}
+</td>
+                <td height="22" align="left" style="width:25%;">
+                <apex:outputText value="{0,date,MM/dd/yyyy}">
+    <apex:param value="{!order.createddate}" />
+   </apex:outputText>
+               
+</td>
+                <td height="22" align="right" valign="middle" style="width:25%; padding-right:15px;">{!event.BLN_Country__r.Currency__r.Currency_Symbol__c}{!order.Amount_Paid__c}
+</td>
+              </tr>
+            </table>
+        
+        </td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="5">
+          <tr>
+            <td width="25%" style="width:25%; background-color:#c0d5dc;"><strong>Description</strong></td>
+            <td width="25%" style="width:25%; background-color:#c0d5dc;"><strong>Quantity</strong></td>
+            <td width="25%" style="width:25%; background-color:#c0d5dc;"><strong>Unit Price</strong></td>
+            <td width="25%" style="width:25%; background-color:#c0d5dc; text-align:right; padding-right:15px;"><strong>Line Total</strong></td>
+          </tr>
+          
+          <apex:repeat value="{!orditem}" var="key">
+          <tr>
+            <td style="width:25%;">{!key.Item__r.item_name__c}</td>
+            <td style="width:25%;">{!key.Item_Quantity__c}</td>
+            <td style="width:25%;">{!order.Currency_Code__r.Currency_Symbol__c} {!key.Each_Ticket_Price__c}</td>
+            <td style="width:25%; text-align:right; padding-right:15px;">{!event.BLN_Country__r.Currency__r.Currency_Symbol__c}{!key.Item_Total__c }</td>
+          </tr>
+         </apex:repeat> 
+        </table></td>
+      </tr>
+       
+       
+      <tr>
+        <td style="border-top:1px solid #666;"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="line-height:9px;">
+          <tr>
+            <td width="65%" align="right" style="line-height:15px;">&nbsp;</td>
+             
+            <td width="25%" colspan="3" align="right" style="line-height:15px;"> <strong>Subtotal: </strong></td>
+            <td width="10%" valign="middle" style="width:10%; padding-right:15px; text-align:right; line-height:15px;">{!event.BLN_Country__r.Currency__r.Currency_Symbol__c}  {!order.Order_Sub_Total__c} </td>
+          </tr>
+          <tr>
+            <td style="text-align:right; line-height:15px;">&nbsp;</td>
+             
+            <td colspan="3" style="text-align:right; line-height:15px; width:10%;"><strong>Tax: </strong></td>
+            <td style="width:10%; padding-right:15px; text-align:right; line-height:15px;">{!event.BLN_Country__r.Currency__r.Currency_Symbol__c} {!order.Order_Taxes__c} </td>
+          </tr>
+          <tr>
+            <td style="text-align:right; line-height:15px;">&nbsp;</td>
+             
+            <td colspan="3" style="text-align:right; line-height:15px; width:10%;"><strong>Fee: </strong></td>
+            <td style="width:10%; padding-right:15px; text-align:right; line-height:15px;">{!event.BLN_Country__r.Currency__r.Currency_Symbol__c} {!order.Fee_Amount__c} </td>
+          </tr>
+          <tr>
+            <td style="text-align:right; line-height:15px;">&nbsp;</td>
+             
+            <td colspan="3" style="text-align:right; line-height:15px; width:10%;"><strong>TOTAL: </strong></td>
+            <td style="width:10%; padding-right:15px; text-align:right; line-height:15px;">{!event.BLN_Country__r.Currency__r.Currency_Symbol__c} {!order.Order_Total__c}</td>
+          </tr>
+          <tr>
+            <td style="text-align:right; line-height:15px;">&nbsp;</td>
+             
+            <td colspan="3" style="text-align:right;border-top:1px solid #999999; line-height:15px; width:10%;"><strong>Amount Paid: </strong></td>
+            <td style="width:10%; padding-right:15px; text-align:right;border-top:1px solid #999999; line-height:15px;">{!event.BLN_Country__r.Currency__r.Currency_Symbol__c} {!order.Amount_Paid__c}</td>
+          </tr>
+          <tr>
+            <td style="text-align:right; line-height:15px;">&nbsp;</td>
+             
+            <td colspan="3" style="text-align:right;border-top:1px solid #999999;border-bottom:1px solid #999999; line-height:15px; width:10%;"><strong>Amount Due: </strong></td>
+            <td style="width:10%; padding-right:15px; text-align:right;border-top:1px solid #999999;border-bottom:1px solid #999999; line-height:15px;">{!event.BLN_Country__r.Currency__r.Currency_Symbol__c} {!order.Order_Total__c-order.Amount_Paid__c}</td>
+          </tr>
+        </table></td>
+      </tr>
+     
+    </table></td>
+  </tr>
+</table>
+<div style="width:150%; margin-bottom:-15px; text-align:right: padding-right:15px; border-top:1px solid #999999;position:fixed; bottom:0px; left:0px;">
+   <!--  <a href="http://eventdex.com/" target="_blank" style="text-decoration:none;"><apex:image url="{!$Resource.InvoiceEventdexFooterLogo}" /></a> -->
+    <a href="http://eventdex.com/" style="text-decoration:none;">
+    <img src="{!URLFOR($Resource.InvoiceEventdexFooterLogo)}" style="max-width:80px; height:30px;padding-bottom:10px;"/> </a>
+    </div>
+</body>
+
+</html>
+</apex:component>

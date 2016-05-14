@@ -1,0 +1,144 @@
+<apex:page controller="BLN_ticketfeesettingsCon">
+
+<script>
+var arrayadd = [];
+var arrayinclude = [];
+
+
+
+function addprice(e){
+      
+      if(e.checked){
+        arrayadd.push(e.id);
+     }
+      for(var i = arrayinclude.length; i--;) {
+          if(arrayinclude[i] === e.id) {         
+              // delete arrayinclude[i];
+              arrayinclude.splice(i, 1);
+          }         
+      }
+  alert('array Exclude '+arrayadd);     
+  alert('arrayinclude '+arrayinclude);
+}
+
+function includeprice(e){
+
+    if(e.checked){
+       arrayinclude.push(e.id);
+    } 
+      for(var i = arrayadd.length; i--;) {
+          if(arrayadd[i] === e.id) {
+            //  delete arrayadd[i];
+              arrayadd.splice(i, 1);
+          }
+      }
+      
+     alert('array Exclude '+arrayadd);     
+  alert('arrayinclude '+arrayinclude);
+  }
+
+
+
+ function SaveTobackend(){
+  //alert('1111111111 '+ arrayadd);
+  //alert('222222222222 '+arrayinclude);
+  
+  var addvar1='';
+  var includevar='';
+  
+  
+  if(arrayadd.length>0){
+     for(var i = 0; i< arrayadd.length; i++){
+             addvar1 +=arrayadd[i]+',';
+        } 
+  }
+  alert('QQQQQQQQ '+addvar1);
+  alert(arrayinclude.length);
+  if(arrayinclude.length>0){
+     for(var z = 0; z< arrayinclude.length; z++){
+        includevar+=arrayinclude[z]+',';
+     } 
+  }
+ 
+  
+  alert('RRRRRRRRRRRRRRRRRRRRRR '+includevar);
+ sendvals(addvar1,includevar);
+ return false;
+}
+</script>
+
+
+
+<script>
+var myString;
+function conformchange(){
+
+myString =confirm("Do you want to applay the change to every Ticket");
+ if(myString == true){
+ changeval();
+ }
+    }
+ function changeval(){
+ alert('hhhhhhhhhh');
+ changevaluetics();
+ }
+
+</script>
+<apex:form id="myfrm">
+<apex:actionFunction name="changevaluetics" action="{!savetickchange}"/>
+    <apex:actionFunction name="sendvals" action="{!saveItemfeesettings}" reRender="myfrm">
+        <apex:param value="" assignTo="{!addstring}" name="addstring"/>
+        <apex:param value="" assignTo="{!includestring}" name="includestring"/>
+
+
+    </apex:actionFunction>
+<table><tr><td width="30%">
+Set Default Setting Mode
+</td>
+<td>
+<apex:selectRadio value="{!selectedoption}">
+<apex:selectOptions value="{!options}"></apex:selectoptions>
+</apex:selectRadio>
+</td>
+<td>
+<apex:commandButton value="Save" oncomplete=" conformchange();"  action="{!saveinventsetting}" />
+</td>
+</tr></table>
+<table width="100%">
+  <tr><td width="30%"></td>
+  <td>Add Booth Leads fee in ticket price</td>
+  <td>Include Booth Leads fee in ticket price</td></tr>
+ <apex:variable var="call" value="{!0}" />
+  
+  <apex:repeat value="{!innerlist}" var="x">
+  
+  <apex:variable var="call" value="{!call+1}"/>
+  
+  <tr width="30%"><td width="30%"><apex:outputText value="{!x.Itemvals.item_name__c}"/></td>
+
+ <apex:outputPanel rendered="{!IF(x.adds == 'checked',TRUE,FALSE)}">
+ <td> 
+
+  <input type="Radio" id="{!x.Itemvals.id}" onchange="addprice(this);" value="{!x.Itemvals.id}" name="{!call}" checked="{!x.adds}"/> &nbsp;&nbsp;
+    </td><td> 
+    <input type="Radio" id="{!x.Itemvals.id}" onchange="includeprice(this);" value="{!x.Itemvals.id}" name="{!call}" />
+  </td>
+</apex:outputPanel>
+
+
+
+
+<apex:outputPanel rendered="{!IF(x.inserts == 'checked',TRUE,FALSE)}">
+<td> 
+  <input type="Radio" id="{!x.Itemvals.id}" onchange="addprice(this);" value="{!x.Itemvals.id}" name="{!call}"/> &nbsp;&nbsp;
+    </td><td> 
+    <input type="Radio" id="{!x.Itemvals.id}" onchange="includeprice(this);" value="{!x.Itemvals.id}" name="{!call}" checked="{!x.inserts}"/>
+  </td>
+</apex:outputPanel>
+</tr>
+  </apex:repeat>
+ 
+  </table>
+   <apex:commandButton value="Save" action="{!saveItemfeesettings}" onclick="return SaveTobackend();"/>
+  </apex:form>
+</apex:page>

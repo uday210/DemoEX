@@ -1,0 +1,622 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="BLN_RegistrationnewCon3" action="{!AddedWidgets}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+ <apex:stylesheet value="{!URLFOR($Resource.reg1, 'reg1/css/font-awesome.min.css')}"/>
+   <!-- Bootstrap -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-reg.css')}"/>
+  <!----ed-speaker-----css------>
+ <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-speaker.css')}"/>
+ <!-- Responsive -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/reg_responsive.css')}"/>
+  
+  <!--Chosen -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/chosen.css')}"/>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js"></script>
+
+  
+  <style>
+.tohide{ display:none;}
+.welcome_msg{ display:none;}
+.tohide1{ display:none;}
+.form-group .control-label {
+    text-align:right !important;
+}
+.ytwrapper{ display:none;}
+.ytbox { 
+position:relative;
+    border:1px solid  #ddd;
+    width:30%; 
+    height:180px;
+    margin-top:10px;
+    /*display:inline-block;*/
+
+    margin-right:1%;
+    margin-left:1%;
+    border-radius:3px;
+    padding:4px;
+
+}
+
+.ytbox .crossicon { position:absolute; right:-17px; top:-17px; width:30px;   cursor:pointer;}
+
+.iframebox iframe{ width:100%  !important; height:100% !important;}
+
+.iframebox{background-color:#FAFAFA; width:100%; height:100%}
+
+   
+
+</style>
+
+<!--speaker section css----->
+<!---end of speaker section css---->
+
+
+  <apex:form >
+ 
+ <apex:outputText value="{!template.Data__c}" escape="false"></apex:outputText>
+ </apex:form>
+  
+  
+  <!---separate pages----->
+ <body style="" >
+  <!----ajax  loader component--->
+    <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!----end ajax  loader component---> 
+  
+  
+           <div id="eventheaderpage" style="display:none">
+                  <apex:include pageName="BLN_EventheaderPage" rendered="{!CONTAINS(addwidgets,'Event_Header')}"/>
+         </div>
+         <div id="eventorganiserdetailsPage" style="display:none">
+                  <apex:include pageName="BLN_organiserdetailsPage"  rendered="{!CONTAINS(addwidgets,'Organiser_Details')}"/>
+         </div>
+         <div id="eventtimerPage" style="display:none">
+           <apex:include pageName="BLN_EventTimer" rendered="{!CONTAINS(addwidgets,'TimerWidget')}"/>
+            
+         </div>
+         <div id="eventspeakerpage" style="display:none">
+                  <apex:include pageName="BLN_Speaker_Include" rendered="{!CONTAINS(addwidgets,'SpeakerWidget')}"/>
+         </div>
+          <div id="eventsponcerpage" style="display:none">
+                  <apex:include pageName="BLN_Sponsor_Include" rendered="{!CONTAINS(addwidgets,'SponcerWidget')}"/>
+         </div>
+       
+         <div id="eventexibitorpage" style="display:none">
+                  <apex:include pageName="BLN_Exibitor_Include" rendered="{!CONTAINS(addwidgets,'ExibitorWidget')}"/>
+         </div>
+         
+         
+         
+       
+          <div id="tktsectionpagee" style="display:none">
+         <apex:include pageName="BLN_TicketSectionpage" rendered="{!CONTAINS(addwidgets,'TicketSection')}"/>
+         </div>
+         <div id="sociallinkspage" style="display:none">
+         <apex:include pageName="BLN_SocaillinksPage" rendered="{!CONTAINS(addwidgets,'Sociallinks')}"/>
+         </div>
+         <div id="agendapage" style="display:none">
+         <apex:include pageName="BLN_EventAgendapageInclude" rendered="{!CONTAINS(addwidgets,'Event_Agenda')}"/>
+         </div>
+         
+          <div id='eventstartdate' style='display:none'>
+             <c:EV_FormatDt date_Timevalue="{!registrationEvent.Start_Date__c}" t_Zone="{!registrationEvent.Time_Zone__c}" t_format="MMM dd',' yyyy" ></c:EV_FormatDt>
+           </div>
+           <div id='eventenddate' style='display:none'>
+             <c:EV_FormatDt date_Timevalue="{!registrationEvent.End_Date__c}" t_Zone="{!registrationEvent.Time_Zone__c}" t_format="MMM dd',' yyyy"></c:EV_FormatDt>
+           </div>
+         
+          <div id='eventaddress' style='display:none'>
+                <apex:outputText value="{!registrationEvent.Street1__c}"></apex:outputText>
+                <apex:outputText rendered="{!IF(registrationEvent.Street2__c!=null && registrationEvent.Street2__c!='',true,false)}">
+                  <apex:outputPanel rendered="{!If(registrationEvent.Street1__c!=null && registrationEvent.Street1__c!='',true,false)}"> </apex:outputPanel>
+                  {!registrationEvent.Street2__c}
+                   </apex:outputText>
+          </div>
+        
+        <div id='BuyerTemplate'>
+        
+        </div>    
+         <apex:outputPanel id="testpanel">
+            <apex:outputPanel rendered="{!ShowSecondPage}">
+                   
+           </apex:outputPanel>
+       </apex:outputPanel>
+      
+           
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+                
+   <div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.5";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>                             
+                                 
+    
+           <!-------end of dummy structure-------->
+   </body>        
+           
+         
+         
+         <!----ticket section related  script------->
+          <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery-1.9.1.js')}"> </script>
+  <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/bootstrap.min.js')}"> </script>
+
+
+  <script>
+         $(document).ready(function(){
+           var a = "{!JSENCODE(template.Data__c)}";
+              var tempavailable= true;
+    
+            if(a=='' || a==undefined || a== null)
+            {
+                document.write('<h1>Page Not Published</h1>');
+                tempavailable = false;
+
+            }
+      
+          
+ if(tempavailable) {      
+        
+          $("[id$='Event_Header']").html( $("[id$='eventheaderpage']").html());
+          $("[id$='eventheaderpage']").remove();
+         
+         
+          $("[id$='Organiser_Details']").html( $("[id$='eventorganiserdetailsPage']").html());
+          $("[id$='eventorganiserdetailsPage']").remove();
+          
+          $("[id$='TimerWidget']").html( $("[id$='eventtimerPage']").html());
+          $("[id$='eventtimerPage']").remove();
+           
+          $("[id$='SpeakerWidget']").html( $("[id$='eventspeakerpage']").html());
+          $("[id$='eventspeakerpage']").remove();
+        
+          $("[id$='SponcerWidget']").html( $("[id$='eventsponcerpage']").html());
+          $("[id$='eventsponcerpage']").remove();
+        
+        
+          $("[id$='TicketSection']").html( $("[id$='tktsectionpagee']").html());
+          $("[id$='tktsectionpagee']").remove();
+          
+         
+          
+          $("[id$='Sociallinks']").html( $("[id$='sociallinkspage']").html());
+          $("[id$='sociallinkspage']").remove();
+          
+          
+          $("[id$='Event_Agenda']").html( $("[id$='agendapage']").html());
+          $("[id$='agendapage']").remove();
+          
+          
+          
+          $("[id$='ExibitorWidget']").html( $("[id$='eventexibitorpage']").html());
+          $("[id$='eventexibitorpage']").remove();
+          
+           
+          
+      }
+         });
+         </script>
+
+  <script>
+  var j$ = jQuery.noConflict();
+    j$(document).ready(function(){
+    
+   /***********Default first tab as expanded************/
+    //alert( $(".nav-tabs li a").length);
+    //alert( $(".nav-tabs li:eq(0) a").text());
+    if(j$(".nav-tabs li a").length==1 && j$(".nav-tabs li a").text() == "All" ){
+     j$(".nav-tabs li:eq(0) a").tab('show');
+   j$(".nav-tabs").hide();
+    
+        }
+    else{
+     j$(".nav-tabs li:eq(0) a").tab('show');
+  
+    }
+   /******/ 
+   /******/  
+    })
+   
+      /*************Youtube Component***************/
+       var jq = jQuery.noConflict();
+ $(document).ready(function(){
+         var iframelink=[];//storing the embed links value   
+           
+            jq(document.body).on('click', '.crossicon' ,function(){
+           jq(this).each(function() {
+            var current_index=jq(this).parent().index();
+         //   alert("Currentbox Index" + jq(this).parent().index());
+            
+            iframelink.splice(current_index-1,1);//removing the deleted link from the array..
+         //   alert("Updated Array Size ---" + iframelink.length);
+         //   alert("Updated Array Link ---" + iframelink);
+           jq(this).parent().remove();//deleting the box
+         //  alert(iframelink+"dddddddddddddddddddd");
+            if(iframelink.length==0){
+                jq(".ytwraper").css("display","none");//youtube wrapper with youtube heading will vanish
+                }          
+          })
+            })
+        /*********/ 
+            
+            jq(".ytsave_btn").click(function(){
+         //   alert("ddd");
+            var iframeval=jq(".framelinkval").val();//capturing user embed link
+         //   alert(iframeval);
+            
+            var box=jq("<div class='col-sm-12 col-lg-4 ytbox'></div>")//creating parent div
+        var delimg=jq("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+        var iframebox=jq("<div class='iframebox'></div>");
+        var ytregex=iframeval.match(/(<iframe.+?<\/iframe>)/g);
+        //condition for shouldnot equal to null and match the regex of iframe
+        if(iframeval!="" && ytregex){
+            //alert("has");
+                jq(".ytwraper").css("display","block");
+                jq(box).append(delimg);
+                alert(iframeval);
+                jq(iframebox).append(iframeval);
+                iframelink.push(iframeval);
+                jq(box).append(iframebox);
+                jq(".ytwraper").append(box);
+                jq(".framelinkval").val("");//clearing the embedlink textbox
+                    
+        
+            } 
+            
+        else{
+            alert("Shouldnot Null And Provide Embed Format");
+            jq(".framelinkval").val("");
+            }   
+      //  alert("Array Size ---" + iframelink.length);
+       //  alert("Array List---" + iframelink.join("-------------============-------------"));
+         /*document.getElementById("hidtext").value=iframelink;*/
+         /*alert("dddd" +document.getElementById("hidtext").value );*/
+                
+        })
+    
+    //alert(iframeval)
+    
+ })
+   
+   
+   
+    </script>
+    
+       <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.min.js')}"> </script>
+  <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script>
+   <script type="text/javascript">
+   
+     /*************All Click Functions***************/
+     
+ /*************close of Youtube Component***************/
+
+        /*************signup and signin toggle***************/
+    
+            $(".sign_anchor").click(function(e) {
+                $(".tohide1").hide();
+            $("#reg_"+$(this).attr('id') ).show();  
+             
+             });
+             
+             $(".reg_loginbtn").click(function(e) {
+             $(".welcome_msg").show();
+
+            });
+             
+             $(".reg_logout").click(function(e) {
+              $(".welcome_msg").hide();
+            });
+             
+      
+        /****************************************************/
+     
+     
+     
+        /****************for payment type(Check and Credit)*************************/
+        $("[name=payment_type]").click(function(e) {
+            $(".tohide").hide();
+            $("#pmtsect-"+$(this).val()).show();
+        });
+    /*****************************************/  
+            
+     
+       
+        $(".moreinfo-toggle").click(function(){
+        $(this).parent().parent().siblings(".moreinfo_content").slideToggle();
+    
+    })
+    
+        $(".promocode_toggle").click(function(){
+        
+         //alert( $(this).parent().children(".promocode_exp").html());
+          $(this).parent().children(".promocode_exp").toggle();
+         
+     })
+   
+            
+    
+  </script> 
+         
+         <!---end of ticke section related script-------->
+          <script>
+
+  var evsdate = $("[id$='eventstartdate']").html();
+  var evedate = $("[id$='eventenddate']").html();
+  var eveaddr = $("[id$='eventaddress']").html();
+ 
+
+ 
+  //remote action to append individual widgets html into main grid
+      Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_RegistrationnewCon3.getIndividualwidgets}','{!selectedevent}','{!template.id}', function(result, event){
+            for(var i=0;i<result.length;i++){
+              //event timer replace with  data
+              if(result[i].Template_Name__c=="TimerWidget")
+              {
+            // alert(result[i].HTML__c);
+              $('#eventtimerdiv').html(result[i].HTML__c);
+              $('#daysleft').html(' <span class="">{!TEXT(FLOOR(EventDaysRemainingDT- now()))} <span>Days</span></span><span class="">{!TEXT(ROUND(MOD((EventDaysRemainingDT- NOW())*24,24),0))}<span>Hrs</span></span><span class="">{!TEXT(ROUND(MOD((EventDaysRemainingDT- NOW())*1440,60),0))}<span>Mins</span></span>');
+         // alert(evsdate);
+              $('.startdate').html(evsdate+' - ');
+               $('.enddate').html(evedate);
+                $('#sdate').html(evsdate);
+               $('#edate').html(evedate);
+               $('#eveloc').html('<li>'+eveaddr+'</li>');
+             <!---->
+             
+            }
+              else if(result[i].Template_Name__c=='Contact_Organiser'){
+              $('#'+result[i].Template_Name__c).html(result[i].HTML__c);
+              
+              }
+            }
+            },{escape: false});
+  
+ </script>
+       
+         
+         <!----order timer page script-------->
+         
+         
+           <!-- count down timer end --> 
+    <!----script for countdown widget ----> 
+          <script type="text/javascript">
+    // set minutes
+    try{
+    var mins = '{!SessionTime}';
+    
+    // calculate the seconds (dont change this! unless time progresses at a different speed for you...)
+    var secs = mins * 60;
+    function countdown() {
+        setTimeout('Decrement()',1000);
+    }
+    
+    function Decrement(){
+        if (document.getElementById){
+            minutes = document.getElementById("minutes");
+            seconds = document.getElementById("seconds");
+            // if less than a minute remaining
+            if (seconds < 59) {
+                seconds.value = secs;
+                document.getElementById('seconds').innerHTML=secs;
+            } else {
+                minutes.value = getminutes();
+                seconds.value = getseconds();
+                document.getElementById('minutes').innerHTML=getminutes();
+                document.getElementById('seconds').innerHTML=getseconds();
+            }
+            if(minutes.value==0 && seconds.value==0){
+                window.location.href=window.location.href;
+            }else{
+                secs--;
+                setTimeout('Decrement()',1000);
+            }
+        }
+    }
+
+    function getminutes() {
+        // minutes is seconds divided by 60, rounded down
+        mins = Math.floor(secs / 60);
+        return mins;
+    }
+    function getseconds() {
+        // take mins remaining (as seconds) away from total seconds remaining
+        return secs-Math.round(mins *60);
+    }
+    
+    function detailsdisp(em,counter,e){      
+        var ln = em.value; 
+        if(ln!=""){
+            dis(ln, counter);
+        }
+    }
+ 
+    function autofil(em,counter,e){
+        var keynum;
+        if(window.event) {
+            keynum = e.keyCode;
+        }
+        else{
+            keynum = e.which;
+        }
+        if(keynum == 0 ||keynum == 9 ){
+            alert(ln);
+            if(ln!=""){
+                dis(ln, counter);
+            }
+        }
+    }
+    }
+    catch(err){
+    
+    }
+</script> 
+          <!----//end of countdown widget -----> 
+           
+           <script>
+           function showsecondpage(){
+    
+
+ Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_RegistrationnewCon3.getsecondpagehtml}','{!selectedevent}','{!template.Theme_Name__c}',
+ function(result, event){
+ alert(result.Data__c);
+  $("[id$='TicketSection']").html(result.Data__c);    
+
+  Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_RegistrationnewCon3.getIndividualwidgets}','{!selectedevent}',result.Id, function(rresult, event){
+            for(var i=0;i<rresult.length;i++){
+         
+            //alert(rresult[i].Template_Name__c);
+            if(rresult[i].Template_Name__c=='BuyerTemplate'){
+           alert('Buyer section');
+            
+            $("#"+rresult[i].Template_Name__c).html(rresult[i].HTML__c);
+            }
+            else{
+             // alert($("#"+rresult[i].Template_Name__c+"Page").html());
+               $("#"+rresult[i].Template_Name__c).html($("#"+rresult[i].Template_Name__c+"Page").html());
+               $("#"+rresult[i].Template_Name__c+"Page").remove();
+       }
+            
+            }
+            },{escape: false});
+            },{escape: false});
+           }
+           
+           </script>
+<script>
+function conatctorganiser()
+{
+//alert('hello');
+var fn = $("[id$='fname']").val();
+var ln = $("[id$='lname']").val();
+var em = $("[id$='email']").val();
+var comm = $("[id$='comment']").val();
+//alert(fn);
+//alert(ln);
+//alert(em);
+
+   Visualforce.remoting.Manager.invokeAction('BLN_RegistrationnewCon3.contactOrganiser','{!ee.Organizer_Email__c}',fn,ln,em,comm, 
+   function(result, event){
+  if(result=='success')
+  {
+  //$('#myorgModal').modal('hide');
+  $("#myorgModal").hide();
+   $(".modal-backdrop").removeClass(' modal-backdrop fade in');
+  }        
+  //        alert(result)
+            });
+}
+
+</script>
+
+<!--google map code----->
+<script>
+$(document).ready(function() {
+ 
+ eventMap();
+ });
+function eventMap() {
+    
+  var myOptions = {
+    zoom: 15,    
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    mapTypeControl: false
+  }
+
+  var map;
+  var marker;
+
+  var geocoder = new google.maps.Geocoder();
+ var address = '{!registrationEvent.Street1__c}'+", " + '{!registrationEvent.Street2__c}';
+  // var address = "hitech city, " +"Madhapur , " + "Hyderabad , " + "India";
+
+  geocoder.geocode( { address: address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK && results.length) {
+      if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+
+        //create map
+        map = new google.maps.Map(document.getElementById("map1"), myOptions);
+
+        //center map
+        map.setCenter(results[0].geometry.location);
+
+        //create marker
+        marker = new google.maps.Marker({
+            position: results[0].geometry.location,
+            map: map,
+           
+        });
+
+        //add listeners
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(map,marker);
+        });
+   
+      }
+
+    } else {
+      $('#map1').css({'height' : '15px'});
+      $('#map1').html("");
+     
+    }
+  });
+
+  }
+</script>
+<!--end of google map code--->
+
+<script>
+var j = jQuery.noConflict();
+    j(document).ready(function(){
+    
+   /***********Default first tab as expanded************/
+    if(j(".nav-tabs li a").length==1 && j(".nav-tabs li a").text() == "All" ){
+     j(".nav-tabs li:eq(0) a").tab('show');
+   j(".nav-tabs").hide();
+    
+        }
+    else{
+    j(".nav-tabs li:eq(0) a").tab('show');
+  
+    }
+    })
+    
+</script>
+ <apex:outputText escape="false" value="{!templatescript}"/>
+<style>
+@media (max-width: 433px)
+.slider-text h1 {
+    margin-top: 30px;
+    font-size: 16px;
+}
+
+#Contact_Organiser
+{
+  /*  padding-top: 30px;*/
+}
+#OrganiserDetailsdiv
+
+{
+      /*  padding-top: 30px;*/
+   /* width: 287px;*/
+    /*height: 259px;*/
+}
+</style>
+<!---dynamic styles---->
+<style>
+{!regcss.Styles__c}
+
+
+</style>
+
+
+
+
+
+         
+</apex:page>

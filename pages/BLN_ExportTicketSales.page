@@ -1,0 +1,77 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_TicketSalesReportCon" contentType="application/vnd.ms-excel#TicketSales.xls" readOnly="true" action="{!exportTicketSalesBatch}"><apex:pageBlock >
+
+<table border="1">
+  <tr>
+    <th>Ticket Name</th>
+    <th>Ticket Type</th>
+    <th>Payment Type</th>
+    <th>Quantity</th>
+    <th>Price({!currencySymbol})</th>
+    <th>Tax({!currencySymbol})</th>
+    <th>Fee({!currencySymbol})</th>
+    <th>Discount({!currencySymbol})</th>
+    <th>Amount({!currencySymbol})</th>
+  </tr>
+ 
+  <apex:repeat value="{!TicketsInnerList}" var="ticket">
+
+          <tr>
+            <td style="">{!ticket.ItemName}<apex:outputText rendered="{!IF(ticket.ItemName == NULL, TRUE, FALSE)}" value="Total Sales" style="font-weight:bold;"/></td>
+            <td> 
+            <apex:repeat value="{!RegList}" var="r">        
+            <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Attendee' && ticket.ItemType=='Admissions')}"/>
+            <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Exhibitor' && ticket.ItemType=='Exhibitor')}"/>
+            <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Sponsor' && ticket.ItemType=='Sponsor')}"/>
+            <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Speaker' && ticket.ItemType=='Speaker')}"/>      
+            </apex:repeat>
+            
+             <apex:outputText value="{!ticket.ItemType}" rendered="{!(ticket.ItemType!='Admissions' && ticket.ItemType!='Exhibitor' && ticket.ItemType!='Sponsor' && ticket.ItemType!='Speaker')}"/>
+            </td>
+            <td></td> 
+            <td>{!ticket.SoldQuantity}</td>
+            <td>
+                <apex:outputText rendered="{!IF(ticket.Price != NULL, TRUE, FALSE)}" value="{0, number, ###,##0.00}">
+                <apex:param value="{!ticket.Price}"/>
+                </apex:outputText>
+            </td>
+            <td> {!ticket.Tax}</td>
+            <td> {!ticket.Fee}</td>
+            <td>
+                <apex:outputText value="{0, number, ###,##0.00}">
+                <apex:param value="{!ticket.Discount}"/>
+                </apex:outputText>
+            </td>
+            <td>
+                <apex:outputText value=" {0, number, ###,##0.00}">
+                <apex:param value="{!ticket.Amount}"/>
+                </apex:outputText>
+            </td>
+           
+          </tr>
+
+    <apex:repeat value="{!ticket.Payment}" var="payment">
+      <tr >
+        <td></td>
+        <td></td>
+        <td><font size="1">{!payment.PaymentType}</font></td>
+        <td><font size="1">{!payment.Quantity}</font></td>
+        <td></td>
+        <td><font size="1"> {!payment.Tax}</font></td>
+        <td><font size="1"> {!payment.Fee}</font></td>
+        <td><font size="1"> {!payment.Discount}</font></td>
+        <td><font size="1"><apex:outputText value=" {0, number, ###,##0.00}">
+  <apex:param value="{!payment.Amount}"/>
+</apex:outputText></font></td>
+       
+      </tr>
+</apex:repeat>
+     
+      </apex:repeat>
+     
+     
+ 
+</table>
+
+ 
+  </apex:pageBlock>
+</apex:page>

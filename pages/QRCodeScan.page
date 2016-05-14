@@ -1,0 +1,162 @@
+<apex:page standardStylesheets="false" >
+<style>
+body {
+  background: #F7F7F7;
+  margin: 0;
+  padding: 0;
+}
+
+#video-container {
+  margin: 2em auto 0;
+  width: 500px;
+  padding: 2em;
+  background: white;
+  -webkit-box-shadow: 0 1px 10px #D9D9D9;
+  -moz-box-shadow: 0 1px 10px #D9D9D9;
+  -ms-box-shadow: 0 1px 10px #D9D9D9;
+  -o-box-shadow: 0 1px 10px #D9D9D9;
+  box-shadow: 0 1px 10px #D9D9D9;
+}
+</style>
+    <script type="text/javascript"
+      src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.2.min.js"></script>
+  
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/grid.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/version.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/detector.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/formatinf.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/errorlevel.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/bitmat.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/datablock.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/bmparser.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/datamask.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/rsdecoder.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/gf256poly.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/gf256.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/decoder.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/qrcode.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/findpat.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/alignpat.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.QRCode, 'jsqrcode-master/src/databr.js')}"></script>
+
+  <form>
+    <input type="file" onchange="previewFile()" /><br/>
+  <h1>Preview</h1>
+   <div style="height:200px">
+    <img src="" id="preview" height="200" alt="Image preview..." />
+   </div>  
+ <div id="video-container">
+    <video id="camera-stream" width="500"  autoplay="autoplay"></video>
+  </div>
+  <canvas id="photo" width="500" height="400" style="display:none;"></canvas>
+  <input type="button" value="&#x1F4F7;" onclick="snapshot()"/>
+  </form>
+
+    <p>If the image above looks clear, click the decode button.  If not, try again!</p>
+    <button id="decode" onclick="decode()">Decode</button> 
+    <button onclick="takePic();" >Take Pic</button>
+  <script>
+  var video = document.getElementById('camera-stream');
+  var canvas = document.getElementById('photo');
+  var imt=document.getElementById('preview');
+  function snapshot() {
+   
+     canvas.getContext('2d').drawImage(video, 0, 0);
+     imt.src=canvas.toDataURL();
+ }
+  
+  window.onload = function() {
+
+  // Normalize the various vendor prefixed versions of getUserMedia.
+  navigator.getUserMedia = (navigator.getUserMedia ||
+                            navigator.webkitGetUserMedia ||
+                            navigator.mozGetUserMedia || 
+                            navigator.msGetUserMedia);
+
+}
+ function takePic() {
+ 
+
+
+// Check that the browser supports getUserMedia.
+// If it doesn't show an alert, otherwise continue.
+if (navigator.getUserMedia) {
+  // Request the camera.
+  navigator.getUserMedia(
+    // Constraints
+    {
+      video: true
+    },
+
+    // Success Callback
+    function(localMediaStream) {
+          // Get a reference to the video element on the page.
+var vid = document.getElementById('camera-stream');
+
+// Create an object URL for the video stream and use this 
+// to set the video source.
+vid.src = window.URL.createObjectURL(localMediaStream);
+
+
+    
+
+    },
+
+    // Error Callback
+    function(err) {
+      // Log the error to the console.
+      console.log('The following error occurred when trying to use getUserMedia: ' + err);
+    }
+  );
+
+} else {
+  alert('Sorry, your browser does not support getUserMedia');
+}
+
+}
+  function read(a)
+  {
+        alert(a);
+        if( (typeof sforce != 'undefined') && (sforce != null) ) {
+            sforce.one.navigateToSObject(a);
+        }
+        else {
+            window.location="/" + a;
+        }        
+  }         
+        
+  $(document).ready(function() {
+        qrcode.callback = read;
+  });
+  
+  
+function previewFile() {
+  var preview = document.querySelector('#preview');
+  var file    = document.querySelector('input[type=file]').files[0];
+  var reader  = new FileReader();
+
+  reader.onloadend = function () {
+    preview.src = reader.result;
+  }
+
+  if (file) {
+    reader.readAsDataURL(file);
+  } else {
+    preview.src = "";
+  }
+}
+
+function decode() {
+    try
+    {
+    var preview=document.querySelector('#preview');
+    qrcode.decode(preview.src);
+    }
+    catch (e)
+    {
+       alert('Error - ' + e);
+    }
+}
+
+</script>
+</apex:page>

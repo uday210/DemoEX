@@ -1,0 +1,303 @@
+<apex:page controller="SA_ManageProfileController" standardStylesheets="false" showHeader="false" id="theForm" action="{!checkUserId}">
+
+<head>
+    <title>Scan Attendee</title>
+</head>
+ 
+<script>
+function validatePhoneNumber(elementValue)
+    {  
+        var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
+        return phoneNumberPattern.test(elementValue);  
+    }
+function validatePhone(){
+    
+}
+
+
+function ValidateForm(){
+
+
+    var fn=document.getElementById('{!$Component.theForm:AS_EventsForm:firstname}');
+    var ln=document.getElementById('{!$Component.theForm:AS_EventsForm:Lastname}');
+    var org=document.getElementById('{!$Component.theForm:AS_EventsForm:Orgname}');
+    var phn=document.getElementById('{!$Component.theForm:AS_EventsForm:Phone}');
+    var zip=document.getElementById('{!$Component.theForm:AS_EventsForm:Zip}');
+            
+    if(fn.value == "" ) {
+        alert('Please Enter First Name');
+        return false;
+    }
+    
+    if(ln.value == "" ) {
+        alert('Please Enter Last Name');
+        return false;
+    }
+    
+    if(org.value == ""){
+        alert('Please Enter Company Name');
+        return false;
+    } 
+    
+   if(phn.value != ""){
+       if( validatePhoneNumber(phn.value)== false){
+           alert('Please provide valid 10 digit phone number');
+           phn.focus();
+           return false;
+       }
+    
+    } 
+             
+    if(zip.value != ""){
+
+        if(zip.value.length != 5){
+            alert('Please Enter 5 digit number');
+            return false;
+        }else if(isNaN(zip.value)){
+            alert('ZIP VALUE333 '+zip.value);
+            alert('Please Enter Numeric values');
+            return false;
+        }
+    } 
+    
+  
+    
+    
+}
+</script>
+ 
+
+<!-------------------------------------------- Styles, Javascript and Jquery References Start ------------------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/fullcalendar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fullcalendar.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions.js')}"/>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/slider js/jquery.min.js')}"/>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/slider js/jquery.touchslider.js')}"/>
+
+<script>
+jQuery(function($) {
+    $(".touchslider").touchSlider({/*options*/});
+    $(".touchslider").data("touchslider").stop(); // stop the slider
+$(".touchslider").data("touchslider").start(); // start the slider
+});
+</script>
+
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+<!-------------------------------------------- Styles, Javascript and Jquery References End ------------------------------------------------->
+<apex:form id="AS_EventsForm">
+<div id="header">
+        <div id="logo">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+        </apex:outputLink>
+        </div><!--close of logo-->
+    </div><!--close of header--->
+    
+    <div  id="ribbon"></div><!--close of ribbon-->
+    <header>
+        <div id="centered-head" class="res"> 
+        <nav>
+            <ul>
+                <li id="login">
+                    <span id="login-trigger">
+                        <span id="login-triggers">
+                            <span id="user-panel-check"></span>
+                            <span id="user-panel-title ">My Account</span>
+                        </span>
+                    </span>
+                    <div id="login-content">
+                        <ul>
+                            <li><apex:outputLink value="/apex/SA_ManageProfile"><apex:image value="{!$Resource.Manage_Profile}" width="15px" height="15px"/><span class="editprofile icon">Manage Profile</span></apex:outputLink></li>
+                            <li><apex:outputLink value="/apex/SA_ResetPassword"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon">Reset Password</span></apex:outputLink></li>  
+                            <li style="width:100px:height:10px;margin-left:0px;padding-left:5px;"><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" style="padding-left:0px;"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="account-name">
+            <p><span class="welcome">Welcome, </span><strong>{!$User.Firstname}&nbsp;{!$User.Lastname}</strong></p>
+                <div class="account-separator"></div>
+        </div>
+        <div class="account-name"></div>
+        <div class="account-name" style="float:left;valign:middle;align:left;">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image value="{!$Resource.HomeIcon}" height="40" width="40"/>
+        </apex:outputLink></div>
+        <!-- Navigation end--> 
+        </div>
+    </header>
+
+     <section id="middle" style=" border:0px #000000 solid" class="res">
+      <div id="container" style="border:0px #000000 solid; background-color:#FFF; margin-top:0px;">
+        <div id="content" style="padding:0px;">
+                <div class="speedbar" style=" border:0px #FF0000 solid; margin-right:0px; ">
+                    <div class="speedbar-nav">Scan Attendee ›› Manage Profile</div>
+                    <!--close of speedbar-nav--> 
+                </div>
+                <!------------------------------------------------------- Profile Grid Start ---------------------------------------------------->
+                <div class="grid-1">
+                    <div class="title-grid">Edit Profile<span></span></div>
+                    <div class="content-gird" style=" border: 1px solid #e3e3e3;"> 
+                    
+                    <div class="form">
+                        <div id="left-form" style="width:49%;padding-bottom:20px;margin-top:15px;border:0px #000000 solid;  float:left;">
+                             <div class="elem">
+                                <label>First Name: </label><label id="mandatory">*</label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.FirstName}" id="firstname" styleClass="medium" required="true"/>
+                                </div>
+                            </div>
+                            
+                             <div class="elem">
+                                <label>Last Name: </label><label id="mandatory">*</label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.LastName}" id="Lastname" styleClass="medium" required="true"/>
+                                </div>
+                            </div>
+                            
+                            <div class="elem">
+                                <label>Email: </label><label id="mandatory">*</label>
+                                <div class="indent">
+                                    <apex:outputText value="{!EventUser.Email}" id="Email" styleClass="medium"/>
+                                </div>
+                            </div>
+                            
+                            <div class="elem">
+                                <label>Company: </label><label id="mandatory">*</label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.companyName }" id="Orgname" styleClass="medium" required="true"/>
+                                </div>
+                            </div>
+                            <div class="elem">
+                                <label>Title: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.Title}" id="Title"  onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"  styleClass="medium"/>
+                                </div>
+                            </div>
+                            <div class="elem">
+                                <label>Phone: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.Companyphone__c}" id="Phone"  onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"  styleClass="medium"/>
+                                </div>
+                            </div>
+                            
+                            <div class="elem">
+                                <label>Website: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.Company_website__c}" id="Website" styleClass="medium"/>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="right-form"  style=" width:49%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:right;">
+                            <div class="elem">
+                                <label>Address 1: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.CompanyAddr1__c}" id="Address1" styleClass="medium"/>
+                                </div>
+                            </div>
+                            
+                             <div class="elem">
+                                <label>Address 2: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.CompanyAddr2__c}" id="Address2" styleClass="medium"/>
+                                </div>
+                            </div>
+                            
+                            <div class="elem">
+                                <label>City: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.CompanyCity__c }" id="City" styleClass="medium"/>
+                                </div>
+                            </div>
+                            
+                            <div class="elem">
+                                <label>Country: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.Country__c}" id="Country" styleclass="chzn-select medium-select select" style="width:75%"/>
+                                </div>
+                            </div>
+                            
+                            <div class="elem">
+                                <label>State: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.States__c}" id="State" styleclass="chzn-select medium-select select" style="width:75%"/>
+                                </div>
+                            </div>
+                            
+                            <div class="elem">
+                                <label>Zip Code: </label>
+                                <div class="indent">
+                                    <apex:inputField value="{!EventUser.Zipcode__c}" id="Zip" styleClass="medium"/>
+                                </div>
+                            </div>
+                        </div>
+                        <br/><br/>
+                        
+                    </div>
+                    <div  style="text-align:center; margin-top:30px;width:100%;">
+                            <apex:commandButton value="Save" id="Save" styleclass="button-a blue" action="{!SaveProfile}" onclick="return ValidateForm();"/>&nbsp;
+                        </div> 
+                    <div class="clear"></div>        
+                    </div>
+                     
+                </div>
+               
+                <!-------------------------------------------------------- Profile Grid End ----------------------------------------------------->   
+      </div>
+      <!-- #content--> 
+    </div>
+    <!-- #container-->
+    
+    <footer style="width:100%; padding:0px;">
+        <div class="info-footer" style="margin:0px;" >
+            <div id="left">
+                <p>Copyright © 2014  Global Nest.</p>
+            </div>
+            <div id="right">
+                <p>Scan Attendee</p>
+            </div>
+        </div>
+    </footer>
+    
+    </section>
+<!-- #middle-->
+</apex:form> 
+
+<div class="clear"></div>
+
+</apex:page>

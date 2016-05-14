@@ -1,0 +1,368 @@
+<apex:page showHeader="false" controller="BL_Special_Needs_Expos_Con">
+ 
+ <style>
+body{
+ background-color:#0393E0;
+}
+
+</style>
+ 
+ <style>
+  .val {
+font-size: 20px;
+background: url(https://ebmedia.eventbrite.com/s3-s3/static/images/background/glass_light-trans.png) 0 50% repeat-x #90C833;
+padding: 9px 26px;
+border: 1px solid #8BAE42;
+-moz-box-shadow: 0 1px 0 #B7DB81 inset, 0 -1px 0 #B7DB81 inset;
+-webkit-box-shadow: 0 1px 0 #B7DB81 inset, 0 -1px 0 #B7DB81 inset;
+box-shadow: 0 1px 0 #B7DB81 inset, 0 -1px 0 #B7DB81 inset;
+text-shadow: 0 1px #63852B;
+color: #fff;
+color: #555;
+}
+
+ 
+ </style>
+ 
+ 
+ <apex:form >
+
+   <apex:outputPanel rendered="{!NOT(paymentsPage)}" >
+  
+  
+   <table width="100%" style="background-color:#B0E3FF;line-height:40px;" cellspacing="0" cellpadding="0">
+  <tr style="  font-weight:normal;font-size:15px;  ">
+  <th  style="text-align:left;font-weight:normal;padding-left:30px;border-bottom:1px solid white;color:#0077B3" valign="top;padding:0px;">Ticket Information</th>
+ </tr>
+  </table>
+  
+   <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center"  style="line-height:25px;font-family:Tahoma;text-align:left; font-size:12px; padding:10px; border:1px solid #CCCCCC; background-color:#C0DEED;line-height:50px;">
+
+<tr style="height:30px;  font-weight:normal;">
+<th width="35%" style="text-align:left;border-bottom:1px solid white;">TICKET TYPE</th>
+<th width="15%" style="text-align:left;border-bottom:1px solid white;">SALES END</th>
+<th width="20%" style="text-align:left;border-bottom:1px solid white;">Price</th>
+<th width="20%" style="border-bottom:1px solid white;">Fee</th>
+<th width="10%" align="center" style="text-align:left;border-bottom:1px solid white;">Quantity</th>
+</tr>
+
+<tr>
+<td colspan="5" valign="top" style="text-align:left;"  >
+   <apex:repeat value="{!totalTickets}" var="r" >
+   <table width="100%" border="0" cellspacing="0" cellpadding="0" style="color:#414141; text-align:left;" >
+    <tr style="color:#414141;">
+
+<td width="35%" style="color:#414141; text-align:left;border-bottom:1px solid white;font-weight:bold;" >
+  <apex:outputText escape="false" value="{!r.tt.TT_Name__c}"></apex:outputText> 
+  {!r.DiscountValue}
+  <span id="{!r.tt.id}SpanCol" class="spanCls" style="color:#414141;">
+  <a id="{!r.tt.id}downarrow"  href="" style="text-decoration:none;color:#0077B3;cursor:pointer;font-size:10px;">More info </a>
+  </span> </td>
+  
+         <th width="15%" style="text-align:left;border-bottom:1px solid white;font-weight:normal;"> 
+           
+           <apex:outputtext value="{0,date,MMM dd,yyyy}">
+             <apex:param value="{!r.tt.Sales_End_Date__c}" /> 
+           </apex:outputText>
+            </th>
+           
+   <td width="20%" style="text-align:left;border-bottom:1px solid white;"> $ <apex:outputPanel rendered="{!NOT(if((r.tt.TT_TicketType__c=='Donation'),true,false))}">
+             {!r.tt.TT_Amount__c}
+             </apex:outputPanel>  
+             
+             
+               <apex:inputText value="{!r.donationValue}" style="width:60px;"   rendered="{!if((r.tt.TT_TicketType__c=='Donation'),true,false)}">
+                <apex:actionSupport event="onkeyup" action="{!onchangeAct}" reRender="outpanel" status="AjaxLoader"/>           
+             </apex:inputText>
+ </td>
+         
+    <td width="20%" style="border-bottom:1px solid white;"> <!--${!r.fee}-->$ 0.00 </td>     
+           
+           
+           
+<td width="10%" align="left" style="text-align:left;border-bottom:1px solid white;">
+
+<apex:selectList value="{!r.quantity}" multiselect="false" size="1" rendered="{!if((r.tt.TT_Sold__c)==(r.tt.TT_Available__c)||(r.tt.TT_TicketType__c=='Donation'),false,true)}">
+              <apex:selectOptions value="{!r.opt}" />
+            <apex:actionSupport action="{!onchangeAct}" event="onchange" reRender="outpanel" status="AjaxLoader"/>
+         </apex:selectList>
+         
+      
+          </td>
+</tr>
+
+
+
+ <tr  style="border-bottom:0px;">
+ <td colspan="7" style="border-bottom:0px;padding:0px;position:relative; z-index:1000;">
+        <div  id="{!r.tt.id}tr1" style="border-bottom:1px solid #CCCCCC;display:none;width:100%;background-color:#d4ecf5;line-height:18px;" > 
+         <span style="margin-left:5px;"><apex:outputText escape="false" value=" {!r.tt.Description__c}"></apex:outputText></span>
+       </div>
+             
+             
+       </td></tr>
+  </table></apex:repeat>
+ </td>
+</tr>
+</table>
+       
+   </apex:outputPanel>
+  
+  
+  
+  
+  <apex:outputPanel rendered="{!NOT(paymentsPage)}" > 
+  
+<table style="width:100%; margin:0px auto;" cellspacing="0" cellpadding="0" border="0" align="center">
+
+  <tr style="height:45px;font-size:12px;" >
+    <td width="35%" height="35" align="left" bgcolor="#F3F3F3">&nbsp;</td>
+    <td width="15%" height="35" align="left" bgcolor="#F3F3F3">&nbsp;</td>
+    <td width="50%" height="35" align="left" style="text-align:right;border:none;background-color:#f3f3f3;font-weight:bold;padding-right:160px;"> Grand Total:
+    <apex:outputPanel id="outpanel" >&nbsp;  &#36; {!TotalAmount} </apex:outputPanel></td>
+  </tr>
+  <tr style="height:45px;">
+    <td width="35%" height="35" align="left">&nbsp;</td>
+    <td width="15%" height="35" align="left">&nbsp;</td>
+    <td width="50%" height="35" colspan="2" align="right" style="padding-right:200px;">
+     <img src="http://ebmedia.eventbrite.com/s3-s3/static/images/logo/credit_cards_2013-trans.png" align="middle" vspace="3" hspace="5" style="margin-right: 10px;" title="PayPal accepts Visa, MasterCard, American Express, Discover, eCheck, and PayPal." alt="PayPal"/>
+      <apex:commandLink value="Order Now"  target="_blank" action="{!enabletab1}"  style="padding:8px;text-decoration:none;" styleClass="val"/></td>
+  </tr>
+  
+</table>
+ </apex:outputPanel>
+ 
+
+
+ <apex:outputPanel id="thepageblock" rendered="{!paymentsPage}">
+ 
+<table style="width:100%;background-color:#0393E0; margin:0px auto;" cellspacing="0" cellpadding="0" border="0" align="center">
+
+<tr><td style="min-height:700px;"> 
+<table style="width:80%; margin:0px auto;" cellspacing="0" cellpadding="0" border="0" align="center"> 
+
+<tr>
+<td style="width:70%;color:#ffffff;" >
+<h1 style="font-size: 26px;">Special Needs Expos NYC Exhibitor <br />
+ Registration</h1><br />
+ 
+<h2 style="font-size: 17px;">Special Needs Expos, Inc.<br />
+Sunday, December 8, 2013 from 10:00 AM to 5:00 PM (EST)<br />
+New York, NY </h2></td>  
+
+<td style="width:30%;"> 
+<apex:image value="{!$Resource.Special_logo}"/></td></tr>
+
+<tr ><td colspan="2" style="border-bottom:1px solid white;">&nbsp;</td></tr>
+
+<!-- ----------------------------------------------------------------------------- -->
+
+ <tr> <td colspan="2">
+  <table style="width:100%;margin-top:30px;" cellspacing="0" cellpadding="0" border="0" ><tr>
+    <td style="width:75%;" valign="top">
+        <table style="width:98%;" cellspacing="0" cellpadding="0" border="0" >
+         
+          <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:20px;line-height:35px;">
+          <td colspan="4" style="border-bottom:1px solid white;padding-left:10px;-webkit-border-radius: 5px;border-radius: 5px;"> Order Summary</td>     </tr>
+                       
+         
+         <tr style="color: #666666;background-color: #c0deed;line-height:30px;">
+         <th style="width:40%;padding-left:10px;border-bottom:1px solid white;" > TYPE  </th>    
+          <th style="width:20%;border-bottom:1px solid white;" > PRICE</th>
+           <th style="width:20%;border-bottom:1px solid white;" > QUANTITY  </th>
+           <th style="width:20%;border-bottom:1px solid white;" > TOTAL</th>
+           </tr>
+        
+        <apex:repeat value="{!seccls}" var="rt">
+          <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+          <td style="width:40%;padding-left:10px;border-bottom:1px solid white;" > {!rt.name.TT_Name__c}  </td> 
+           <td style="width:20%;border-bottom:1px solid white;" > {!rt.Name.TT_Amount__c} </td> 
+            <td style="width:20%;border-bottom:1px solid white;" >  {!rt.Quan} </td> 
+             <td style="width:20%;border-bottom:1px solid white;" >  {!rt.totalPrice} </td> 
+             
+            </tr>
+       </apex:repeat><tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+        <td colspan="4" style="border-bottom:1px solid white;padding-right:15px;font-weight:bold;text-align:right;">TOTAL AMOUNT DUE &nbsp; {!TotalAmount}</td>     </tr>
+         
+       </table> 
+  
+  </td>
+  <td style="width:25%">
+     <table style="width:100%;" cellspacing="0" cellpadding="0" border="0" >
+         
+          <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:20px;line-height:35px;">
+          <td  style="border-bottom:1px solid white;padding-left:10px;-webkit-border-radius: 5px;border-radius: 5px;">When AND Where</td>     </tr>
+             
+           
+         
+         <tr style="color: #666666;background-color: #c0deed;line-height:30px;">
+         <td style="width:50%;padding-left:10px;border-bottom:1px solid white;" > 
+         
+          Metropolitan Pavilion <br />
+         125 W 18th St <br />
+         New York, NY 10011<br />
+        Sunday, December 8, 2013 from 10:00 AM to 5:00 PM (EST)<br />
+         
+         </td>  </tr>  
+             
+          </table> 
+  
+  </td>
+    
+   </tr></table> 
+   
+   
+   </td>  </tr>
+   
+   <p>&nbsp;</p>   
+  <tr> <td colspan="2">
+  <table style="width:100%;margin-top:30px;" cellspacing="0" cellpadding="0" border="0" ><tr>
+    <td style="width:75%;" >
+        <table style="width:98%;margin:0px auto;" cellspacing="0" cellpadding="0" border="0" >
+         
+          <tr style="background-color: #B0E3FF;border-color: #DBF5FC;color: #188BC9;font-size:20px;line-height:35px;">
+          <td colspan="3" style="border-bottom:1px solid white;-webkit-border-radius: 5px;border-radius: 5px;padding-left:10px;">
+           Registration Information</td>     </tr>
+             
+           
+         <apex:repeat value="{!seccls}" var="rt">
+           <apex:repeat value="{!rt.innsinn}" var="de"> 
+               <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+                 <th style="width:50%;padding-left:10px;border-bottom:1px solid white;font-size:18px;font-weight:bold;" colspan="3">
+                 Ticket #{!de.atsumdom.Ticket_Number__c}-{!rt.name.TT_Name__c}  </th>    
+               </tr>
+        
+         <tr style="color: #666666;background-color: #c0deed;line-height:30px;height:40px;">
+      <td height="30" align="right">First Name:</td>
+      <td height="30"><span class="error">*</span></td>
+      <td height="30" style="text-align:left;">
+      
+       <apex:inputField value="{!de.atsumdom.AS_FirstName__c}"   style="width:186px; font-size:14px; padding:5px;"/>
+    </td>
+    </tr>
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Last Name:</td>
+      <td height="30"><span class="error">*</span></td>
+      <td height="30"><apex:inputField value="{!de.atsumdom.AS_LastName__c}" style="width:186px; font-size:14px; padding:5px;"  /></td>
+    </tr>
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Email Address:</td>
+      <td height="30"><span class="error">*</span></td>
+      <td height="30"><apex:inputField value="{!de.atsumdom.AS_Email__c}" style="width:186px; font-size:14px; padding:5px;"  /></td>
+    </tr>
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Company:</td>
+      <td height="30"><span class="error">*</span></td>
+      <td height="30"><apex:inputField value="{!de.atsumdom.AS_Company__c}" style="width:186px; font-size:14px; padding:5px;"  /></td>
+    </tr>
+    <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;">
+      <td height="30" align="right">Phone:</td>
+      <td height="30"><span class="error">*</span></td>
+      <td height="30"><apex:inputField value="{!de.atsumdom.AS_WorkPhone__c}" style="width:186px; font-size:14px; padding:5px;"  /></td>
+    </tr>
+    
+    
+       <!-- --------------------------------------------Survey Questions ------------------------------------------------------- -->
+         <tr style="color: #666666;background-color: #c0deed;border-color: #DBF5FC;font-size:20px;line-height:35px;">
+          <td colspan="3" style="padding-left:10px;-webkit-border-radius: 5px;border-radius: 5px;">Other Information </td>     </tr>
+           
+         <apex:repeat value="{!de.Innvaluessecond}" var="inne">
+         <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+           <td colspan="2" style="width:50%;padding-left:10px;" valign="top"> {!inne.survey.Survey_Questions__r.Question__c}  </td> 
+          <td style="width:50%" >
+           
+           <apex:selectCheckboxes layout="pageDirection"  value="{!inne.selectedSurveyValueCheck}"  rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='CheckBox',true,false)}">
+            <apex:selectOptions value="{!inne.options}">
+            </apex:selectOptions>
+          </apex:selectCheckboxes>
+         
+         <apex:selectRadio value="{!inne.selectedSurveyValue}" layout="pageDirection" rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='Radio button',true,false)}">
+            <apex:selectOptions value="{!inne.options}">
+            </apex:selectOptions>
+         </apex:selectRadio>
+         
+         <apex:inputText value="{!inne.selectedSurveyValue}" rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='Text',true,false)}"/>
+          <apex:inputTextarea value="{!inne.selectedSurveyValue}" rendered="{!IF(inne.survey.Survey_Questions__r.Type__c=='Text Area',true,false)}"/>
+         
+         <br />
+          
+            </td>  </tr>
+           </apex:repeat> 
+           
+            <!-- --------------------------------------------Survey Questions End------------------------------------------------------- -->
+    
+    
+    
+     </apex:repeat>  
+      </apex:repeat>   -->
+           
+         <!-- --------------------------------------------Survey Questions ------------------------------------------------------- -->
+        <!-- <tr style="color: #666666;background-color: #c0deed;border-color: #DBF5FC;font-size:20px;line-height:35px;">
+          <td colspan="3" style="border-bottom:1px solid white;padding-left:10px;-webkit-border-radius: 5px;border-radius: 5px;">Other Information </td>     </tr>
+           
+         <apex:repeat value="{!inns}" var="inne">
+         <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;">
+           <td colspan="2" style="width:50%;padding-left:10px;" valign="top"> {!inne.survey.Question__c}  </td> 
+          <td style="width:50%" >
+           <apex:selectCheckboxes layout="pageDirection"  value="{!inne.selectedSurveyValueCheck}"  rendered="{!IF(inne.survey.Type__c=='CheckBox',true,false)}">
+            <apex:selectOptions value="{!inne.options}">
+            </apex:selectOptions>
+         </apex:selectCheckboxes>
+         
+         <apex:selectRadio value="{!inne.selectedSurveyValue}" layout="pageDirection" rendered="{!IF(inne.survey.Type__c=='Radio button',true,false)}">
+            <apex:selectOptions value="{!inne.options}">
+            </apex:selectOptions>
+         </apex:selectRadio>
+         
+         <apex:inputText value="{!inne.selectedSurveyValue}" rendered="{!IF(inne.survey.Type__c=='Text',true,false)}"/>
+          <apex:inputTextarea value="{!inne.selectedSurveyValue}" rendered="{!IF(inne.survey.Type__c=='Text Area',true,false)}"/>
+         
+         <br />
+          
+            </td>  </tr>
+           </apex:repeat>  -->
+           
+            <!-- --------------------------------------------Survey Questions End------------------------------------------------------- -->
+           
+           
+         <tr style="color: #666666;background-color: #c0deed;line-height:30px;border-bottom:1px solid white;height:40px;"> 
+         <td colspan="3" style="text-align:right;padding-right:15px;">
+       <apex:commandButton Value="Complete Registration" action="{!Pay}"  styleClass="val"  style="height:32px;" /> 
+     </td>  </tr>      
+           
+           
+           
+       </table> 
+  
+  
+  
+  
+  </td>
+  <td style="width:25%">&nbsp;</td>
+    
+   </tr>
+   
+
+   
+   
+   
+   </table> 
+   
+   
+   </td>  </tr> 
+
+<!-- ----------------------------------------------------------------------------- -->
+
+
+</table>
+
+ 
+
+     </td></tr></table>
+  </apex:outputPanel>
+</apex:form>
+
+
+
+
+</apex:page>

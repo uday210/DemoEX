@@ -1,0 +1,467 @@
+<!-- ************************************************************************************************************************* -->
+<!-- Modified By Thirupathi Pattipaka -->
+
+
+<!-- ************************************************************************************************************************* -->
+<apex:page controller="paymentsettingsCon" showHeader="flase" standardStylesheets="false" id="thePage">
+<c:myComponent BLN_UtillDisplayLinks="{!mytickets}" id="comp">
+<script type="text/javascript" src="{!URLFOR($Resource.SpryTabs, 'sprytabs/tabssss.js')}"></script>
+<apex:stylesheet value="{!URLFOR($Resource.SpryTabs, 'sprytabs/tabsss.css')}"/>
+    <apex:form id="frm">
+        <!-- ----------------------------------------------------- Start ---------------------------------------------- -->
+        <div class="grid-1"  > <!-- Not Closed1 -->
+            <div id="TabbedPanels" class="TabbedPanels" style=" margin-top:10px; margin-bottom:20px; width:98%; margin-left:1%;" > <!-- Not Closed2 -->
+                <ul class="TabbedPanelsTabGroup">
+                    <li class="TabbedPanelsTab" tabindex="0" style="outline:none; focus:none;color: #555; font-weight:300;">Online Registration</li>
+                    <li class="TabbedPanelsTab" tabindex="0" style="outline:none; focus:none;color: #555;font-weight:300;">Onsite Registration</li>
+                </ul>
+        
+        <!--------------------start of ist tab(Online Registration)------------------>
+                <div class="TabbedPanelsContentGroup"><!-- Not Closed3 -->
+                    <!--Start of content of online registration-->
+                    <div class="TabbedPanelsContent">
+                        <div class="form" style="width:100%; border:0px solid #000; margin:0px auto;  height:auto; padding-bottom:50px; "> <!-- Not Closed4 -->
+                            <style type="text/css">
+                                .distance p{ float:none; line-height:none;}
+                            </style>
+                    
+                            <!------------hide display script for payment gateway------->
+                            <script>
+                                function showhidediv( rad )
+                                {
+                                    var rads = document.getElementsByName( rad.name );
+                                    document.getElementById( 'paypal' ).style.display = ( rads[0].checked ) ? 'block' : 'none';
+                                    document.getElementById( 'stripe' ).style.display = ( rads[1].checked ) ? 'block' : 'none';
+                                    document.getElementById( 'authorize' ).style.display = ( rads[2].checked ) ? 'block' : 'none';
+                                    document.getElementById( 'trustcommerce' ).style.display = ( rads[3].checked ) ? 'block' : 'none';
+                                }
+                            </script>
+                    
+                            <script>
+                                function hidethischeck(va3) {
+                                    if(document.getElementById(va3.id).checked){
+                                        document.getElementById('paycheck').style.display = 'block';
+                                    }else{
+                                        document.getElementById('paycheck').style.display = 'none';
+                                    }
+                                };
+                            </script>
+                    
+                            <!------------------------- Logic for Gateways ------------------------------->
+                            <span style=" margin-left:5px;font-size:18px; font-family:cuprum; color:#4f91cd;"><span style="color:#000;">1. </span>Payment Gateway Option for online registration:</span>
+                            <div class="forminside" style="width:100%; border:0px solid #000; margin:0px auto; margin-left:24%; margin-top:10px; height:auto; "><!-- Not Closed5 -->
+                                <div id="ticketopt-content" style="width:70%;   margin-left:12.3%;; margin-top:15px;  "  > <!-- Not Closed6 -->
+                                    <ul style="font-size:15px; display:inline-block; list-style:none;">
+                    
+                                        <!-- ------------------------------------ Paypal Div -------------------------------------------------------- -->
+                                        <li style="display:inline-block; margin-top:-25px; vertical-align:middle;">
+                                            <apex:outputPanel rendered="{!paypal}">
+                                                <input type="radio" id="pp"   checked="checked"  onclick="showhidediv(this);"  name="5" value="paypal" style="outline:none;display:{!IF(onlinepaygatewaytype['PayPal']==false,'none','')}"/>
+                                            </apex:outputPanel>
+                    
+                                            <apex:outputPanel rendered="{!NOT(paypal)}">
+                                                <input type="radio" id="pp"    onclick="showhidediv(this);"  name="5" value="paypal" style="outline:none;display:{!IF(onlinepaygatewaytype['PayPal']==false,'none','')}"/>
+                                            </apex:outputPanel>
+                                        </li>
+                    
+                                        <label for="pp">  <li style="display:inline-block; font-size:13px;  margin-right:20px;">
+                                            <apex:image url="{!URLFOR($Resource.paymentImages,'paymentImages/paypal-logo-transparent1.png')}" width="60" height="30" style="margin-left:-3px;display:{!IF(onlinepaygatewaytype['PayPal']==false,'none','')}"/>
+                                        </li></label>
+                                        <!-- ------------------------------------ Paypal Div End-------------------------------------------------------- -->
+                    
+                                        <!-- ------------------------------------ stripe Div -------------------------------------------------------- -->
+                                        <li style="display:inline-block;  margin-top:-25px; vertical-align:middle;">
+                                            <apex:outputPanel rendered="{!stripe}">
+                                                <input type="radio" id="str"   checked="checked"  onclick="showhidediv(this);"  name="5" value="stripe" style="outline:none;display:{!IF(onlinepaygatewaytype['Stripe']==false,'none','')}"/>
+                                            </apex:outputPanel>
+                    
+                                            <apex:outputPanel rendered="{!NOT(stripe)}">
+                                                <input type="radio" id="str"    onclick="showhidediv(this);"  name="5" value="stripe" style="outline:none;display:{!IF(onlinepaygatewaytype['Stripe']==false,'none','')}"/>
+                                            </apex:outputPanel>
+                                        </li>
+                    
+                                        <label for="str">
+                                        <li style="display:inline-block; font-size:13px;margin-right:20px;">
+                                            <apex:image url="{!URLFOR($Resource.paymentImages,'paymentImages/stripe.png')}" width="60" height="30" style="display:{!IF(onlinepaygatewaytype['Stripe']==false,'none','')}"/></li></label>
+                                        <!-- ------------------------------------ stripe Div -------------------------------------------------------- -->
+                    
+                                        <!-- ------------------------------------ Authorization.new Div -------------------------------------------------------- -->
+                                        <li style="display:inline-block;  margin-top:-25px; vertical-align:middle;">
+                                            <apex:outputPanel rendered="{!auth}">
+                                                <input type="radio" id="aut"  checked="true" onclick="showhidediv(this);"   name="5" value="authorization.nat" style="outline:none;display:{!IF(onlinepaygatewaytype['Authorize.Net']==false,'none','')}"/>
+                                            </apex:outputPanel>
+                    
+                                            <apex:outputPanel rendered="{!NOT(auth)}">
+                                                <input type="radio" id="aut"  checked="" onclick="showhidediv(this);"   name="5" value="authorization.nat" style="outline:none;display:{!IF(onlinepaygatewaytype['Authorize.Net']==false,'none','')}"/>
+                                            </apex:outputPanel>
+                                        </li>
+                    
+                                        <label for="aut"> <li style="display:inline-block; font-size:13px;margin-right:20px;">
+                                            <apex:image url="{!URLFOR($Resource.paymentImages,'paymentImages/auth-logo13.png')}" width="60" height="30" style="margin-left:-3px;display:{!IF(onlinepaygatewaytype['Authorize.Net']==false,'none','')}"/>
+                                        </li></label>
+                                        <!-- ------------------------------------ Authorization.new end-------------------------------------------------------- -->
+                                        
+                                        
+                                        <!-- ------------------------------------ TrustCommerce.new Div -------------------------------------------------------- -->
+                                        <li style="display:inline-block;  margin-top:-25px; vertical-align:middle;">
+                                            <apex:outputPanel rendered="{!trust}">
+                                                <input type="radio" id="trustc"  checked="true" onclick="showhidediv(this);"   name="5" value="TrustCommerce" style="outline:none;display:{!IF(onlinepaygatewaytype['TrustCommerce']==false,'none','')}"/>
+                                            </apex:outputPanel>
+                    
+                                            <apex:outputPanel rendered="{!NOT(trust)}">
+                                                <input type="radio" id="trustc"  checked="" onclick="showhidediv(this);"   name="5" value="TrustCommerce" style="outline:none;display:{!IF(onlinepaygatewaytype['TrustCommerce']==false,'none','')}"/>
+                                            </apex:outputPanel>
+                                        </li>
+                    
+                                        <label for="trustc"> <li style="display:inline-block; font-size:13px;margin-right:20px;">
+                                            <apex:image url="{!URLFOR($Resource.createevents,'createevents/images/trustimage.jpg')}" width="60" height="30" style="margin-left:-3px;display:{!IF(onlinepaygatewaytype['TrustCommerce']==false,'none','')}"/>
+                                        </li></label>
+                                        <!-- ------------------------------------ TrustCommerce.new end-------------------------------------------------------- -->
+                    
+                                        <li style="display:inline-block;  margin-top:-25px; vertical-align:middle;">
+                                            <apex:outputPanel rendered="{!none}">
+                                                <input type="radio" id="none" style="outline:none;" checked="checked" onclick="showhidediv(this);"  name="5" value="none" />
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!NOT(none)}">
+                                                <input type="radio" id="none" style="outline:none;" onclick="showhidediv(this);"  name="5" value="none" />
+                                            </apex:outputPanel>
+                                        </li>
+                    
+                                        <label for="none"> <li style="display:inline-block; font-size:13px;margin-right:20px;">
+                                            <apex:image url="{!URLFOR($Resource.paymentImages,'paymentImages/none.png')}"  style="margin-left:0px; margin-bottom:10px;"/>
+                                        </li></label>
+                                    </ul>
+                                </div> <!-- Closed6 -->
+                    
+                                <!--ticketopt-content--->
+                                <!-------------------------------------------------------->
+                                <div id="paypal" style=" margin-top:10px;display:{!IF(paypal=true,'block','none')}" >
+                                    <h3 style="  margin-left:10px;font-size:18px; font-family:cuprum; color:#4f91cd;">For PayPal:</h3>
+                                    <div id="ticketopt-content" style="width:50%; margin-left:1%;">
+                                        <ul style="font-size:15px; display:inline-block; list-style:none;">
+                                            <li style="display:inline-block; margin-right:5px; ">Email Address:</li>
+                                            <li style="display:inline-block; margin-bottom:-3px">
+                                                <apex:inputField value="{!forpaypal.PG_Email_Id__c}" styleClass="medium" id="email" style="width:100%;outline:none;"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                <!--ticketopt-content--->
+                                </div>
+                                <!--close of paypal-->
+                    
+                                <!---------------------------------------------------->
+                                <div id="stripe" style="display:{!IF(stripe=true,'block','none')}">
+                                    <h3 style=" margin-top:14px; margin-left:10px;font-size:18px; font-family:cuprum; color:#4f91cd;">For Stripe:</h3>
+                                    <div id="ticketopt-content" style="width:50%;margin-left:4.1%;">
+                                        <ul style="font-size:15px; display:inline-block; list-style:none;">
+                                            <li style="display:inline-block; margin-right:7px; margin-left:10px; ">Secret Key:</li>
+                                            <li style="display:inline-block; margin-bottom:-3px">
+                                                <apex:inputField value="{!forstripe.PG_Pass_Secret__c}" styleClass="medium" id="strSkey" style="width:100%;outline:none;"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!--ticketopt-content--->
+                    
+                                    <div id="ticketopt-content" style="width:50%;margin-left:1%; margin-top:10px;">
+                                        <ul style="font-size:15px; display:inline-block; list-style:none;">
+                                          <li style="display:inline-block; margin-right:5px; ">Publishable Key:</li>
+                                          <li style="display:inline-block; margin-bottom:-3px">
+                                            <apex:inputField value="{!forstripe.PG_User_Key__c}" styleClass="medium" id="strKey" style="width:100%;outline:none;"/>
+                                          </li>
+                                        </ul>
+                                    </div>
+                                      <!--ticketopt-content--->
+                                </div>
+                                <!--close of stripe-->
+                    
+                                <!---------------------------------------------------->
+                                <div id="authorize" style="display:{!IF(auth=true,'block','none')}">
+                                    <h3 style=" margin-top:14px; margin-left:10px;font-size:18px; font-family:cuprum; color:#4f91cd;">For Authorize.Net:</h3>
+                                    <div id="ticketopt-content" style="width:50%; margin-left:2.3%;">
+                                        <ul style="font-size:15px; display:inline-block; list-style:none;">
+                                            <li style="display:inline-block; margin-right:6px; margin-left:4px; ">Authorize.net Id:</li>
+                                            <li style="display:inline-block; margin-bottom:-3px">
+                                                <apex:inputField value="{!forAuth.PG_Signature__c}" styleClass="medium" id="authSig" style="width:100%;outline:none;"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!--ticketopt-content--->
+                                    
+                    
+                                    <div id="ticketopt-content" style="width:50%; margin-left:1%; margin-top:10px;">
+                                        <ul style="font-size:15px; display:inline-block; list-style:none;">
+                                            <li style="display:inline-block; margin-right:5px; ">Authorize.net Key:</li>
+                                            <li style="display:inline-block; margin-bottom:-3px">
+                                                <apex:inputField value="{!forAuth.PG_User_Key__c}" styleClass="medium" id="authkey" style="width:100%;outline:none;"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!--ticketopt-content--->
+                                </div>
+                                <!--close of authorize-->
+                                
+                                
+                                <!---------------------------------------------------->
+                                <div id="trustcommerce" style="display:{!IF(trust=true,'block','none')}">
+                                    <h3 style=" margin-top:14px; margin-left:10px;font-size:18px; font-family:cuprum; color:#4f91cd;">For TrustCommerce:</h3>
+                                    <div id="ticketopt-content" style="width:50%; margin-left:2.3%;">
+                                        <ul style="font-size:15px; display:inline-block; list-style:none;">
+                                            <li style="display:inline-block; margin-right:6px; margin-left:4px; ">User Name:</li>
+                                            <li style="display:inline-block; margin-bottom:-3px">
+                                                <apex:inputField value="{!forTrust.PG_Signature__c}" styleClass="medium" id="trustSig" style="width:100%;outline:none;"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!--ticketopt-content--->
+                                    
+                    
+                                    <div id="ticketopt-content" style="width:50%; margin-left:1%; margin-top:10px;">
+                                        <ul style="font-size:15px; display:inline-block; list-style:none;">
+                                            <li style="display:inline-block; margin-right:5px; ">API Password:</li>
+                                            <li style="display:inline-block; margin-bottom:-3px">
+                                                <apex:inputField value="{!forTrust.PG_User_Key__c}" styleClass="medium" id="trustkey" style="width:100%;outline:none;"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!--ticketopt-content--->
+                                </div>
+                                <!--close of trustcommerce-->
+                                
+                                
+                                
+                                
+                    
+                                <!-------------------------------------------------------->
+                                <!--ticketopt-content--->
+                                <div  style=" margin-top:30px; margin-left:1%;">
+                                    <label for="check1" style="font-size:16px; color:#4f91cd; font-family:Cuprum; margin-right:1%;display:{!IF(onlinepaygatewaytype['Check']==false,'none','')}">Pay By Check</Label>
+                                        <apex:inputCheckbox value="{!check}" id="check1"  onClick="hidethischeck(this)" style="display:{!IF(onlinepaygatewaytype['Check']==false,'none','')}"/>
+                                </div>
+                                <!-------------------------------------------------------->
+                    
+                                <div id="paycheck" style="display :{!if(check==true,'block','none')}" >
+                                    <div id="ticketopt-content" style="width:80%; margin-left:1%;; margin-top:5px; border:0px solid #F00;">
+                    
+                                        <style>
+                                            #paybycheckfields td{ padding:5px;}
+                                        </style>
+                    
+                                        <apex:repeat value="{!comext}" var="com">
+                                            <table id="paybycheckfields" width="100%" border="0">
+                                                <tr>
+                                                    <td width="20%">Address 1:</td>
+                                                    <td><apex:inputField value="{!com.Business_Address1__c}" style="width:80%"/> </td>
+                                                </tr>
+                    
+                                                <tr>
+                                                    <td>Address 2:</td>
+                                                    <td>
+                                                    <apex:inputField value="{!com.Business_Address2__c}" style="width:80%"/></td>
+                                                </tr>
+                    
+                                                <tr>
+                                                    <td>City</td>
+                                                    <td><apex:inputField value="{!com.Business_City__c}" style="width:80%"/> </td>
+                                                </tr>
+                    
+                                                <tr>
+                                                    <td>State</td>
+                                                    <td>
+                                                        <apex:outputPanel id="out">
+                                                            <apex:selectList multiselect="false" value="{!selectedState}" size="1" styleClass="selectlist" style="width:76%;">
+                                                                <apex:selectOptions value="{!optionsStates}">
+                                                                </apex:selectOptions>
+                                                            </apex:selectList>
+                                                        </apex:outputPanel>
+                                                    </td>
+                                                </tr>
+                    
+                                                <tr>
+                                                    <td>Country</td>
+                                                    <td>
+                                                        <apex:actionRegion >
+                                                            <apex:selectList multiselect="false" value="{!selectedCounrty}" size="1" styleClass="selectlist" style="width:76%;">
+                                                                <apex:selectOptions value="{!options}">
+                                                                </apex:selectOptions>
+                                                                <apex:actionSupport action="{!getoptionsStates}" event="onchange" reRender="out"/>
+                                                            </apex:selectList>
+                                                        </apex:actionRegion>
+                                                    </td>
+                                                </tr>
+                    
+                                                <tr>
+                                                    <td>Zip Code</td>
+                                                    <td><apex:inputField value="{!com.Business_Zipcode__c}" style="width:80%"/> </td>
+                                                </tr>
+                                            </table>
+                                        </apex:repeat>
+                                    </div>
+                                <!--ticketopt-content--->
+                                </div>
+                                <!--close of paycheck-->
+                    
+                                <div class="clear"> </div>
+                            </div><!--close of forminside / Closed6-->
+                    
+                            <!-------------------------Refund policy--------------------------------->
+                            <script>
+                                function hiderefund(va) {
+                                    //thePage:comp.frm:commoncomponent:frm:refundcontent
+                                    //alert(va.id);
+                                    if(document.getElementById(va.id).checked){
+                                        document.getElementById('refundpolicycontent').style.display = 'block';
+                                    }else{
+                                        document.getElementById('refundpolicycontent').style.display = 'none';
+                                    }
+                                };
+                            </script>
+                    
+                            <div  id="refundpolicy" style="border:0px solid #F00; margin-top:15px;">
+                                <span style=" margin-left:5px;font-size:18px; margin-top:15px; font-family:cuprum;  color:#4f91cd;"><span style="color:#000;">2. </span>Refund Policy:</span>
+                                <apex:inputField value="{!event.Accept_Refund_Policy__c}" onClick="hiderefund(this)"  id="refundcontent" style="outline:none; margin-left:.5%;"  />
+                            </div><!--clode of refund policy-->
+                            <div id="refundpolicycontent" style="width:50%; display:{!if(event.Accept_Refund_Policy__c==true,'block','None')}; margin-left:12%;">
+                                <!-- <textarea class="medium" id="message" name="message" rows="3" style="text-indent:3px;"></textarea>-->
+                                <apex:inputTextarea richText="true" value="{!event.Refund_Policy__c}" id="message" styleClass="medium" style="text-indent:3px;" rows="13"/>
+                            </div>
+                            <!--ticketopt-content--->
+                    
+                            <!-------------------------Terms and Conditions--------------------------------->
+                            <script>
+                                function hideterms(va1) {
+                                    if(document.getElementById(va1.id).checked){
+                                    document.getElementById('termscondcontent').style.display = 'block';
+                                    }else{
+                                    document.getElementById('termscondcontent').style.display = 'none';
+                                    }
+                                };
+                    
+                                function hideterms1(va2) {
+                                    if(document.getElementById(va2.id).checked){
+                                    document.getElementById('termscondcontent1').style.display = 'block';
+                                    }else{
+                                    document.getElementById('termscondcontent1').style.display = 'none';
+                                    }
+                                };
+                            </script>
+                    
+                            <div  style="border:0px solid #F00; margin-top:15px;">
+                                <span style=" margin-left:5px;font-size:18px; margin-top:15px; font-family:cuprum;  color:#4f91cd;"><span style="color:#000;">3.</span> Terms And Conditions:</span>
+                                <apex:inputField value="{!event.Accept_Terms_Conditions__c}" onClick="hideterms(this)" id="termcontent" style="outline:none; margin-left:.5%;" />
+                            </div><!--clode of refund policy-->
+                    
+                            <div id="termscondcontent" style="width:50%; display:{!if(event.Accept_Terms_Conditions__c==true,'block','None')}; margin-left:12%;">
+                                <apex:inputTextarea richText="true" value="{!event.Terms_Conditions__c}" id="message1" styleClass="medium" style="text-indent:3px;" rows="13"/>
+                            </div>
+                            <!--ticketopt-content--->
+                    
+                            <!----------------Tax Rate: ------------------------------->
+                            <div  id="taxrate" style="border:0px solid #F00; margin-top:15px;">
+                                <span style=" margin-left:5px;font-size:18px; margin-top:15px; font-family:cuprum;  color:#4f91cd;"><span style="color:#000;">4. </span>Tax Rate:</span>
+                                <apex:inputField value="{!event.Accept_Tax_Rate__c}" onClick="hideterms1(this)"  id="acceptTax" style="outline:none; margin-left:.5%;"  />
+                            </div><!--clode of taxrate-->
+                    
+                            <div id="termscondcontent1" style="width:50%; display:{!If(event.Accept_Tax_Rate__c==true,'block','none')}; margin-left:10%;">
+                                <apex:inputField value="{!event.Tax_Rate__c}" style="width:20%; outline:none;"/>
+                            </div>
+                    
+                            <!----------------------------------------------->
+                        </div><!--close of form/ Closed5-->
+                    
+                        <script>
+                            function saveValues(){
+                                var val ;
+                                if(document.getElementById('pp').checked){
+                                    val ='paypal';
+                                }else if(document.getElementById('str').checked){
+                                    val ='stripe';
+                                }else if(document.getElementById('aut').checked){
+                                    val ='Authorize.Net';
+                                }
+                                else if(document.getElementById('trustc').checked){
+                                    val ='TrustCommerce';
+                                }
+                                else if(document.getElementById('none').checked){
+                                    val ='none';
+                                }
+                                
+                                 alert("Payment settings saved successfully");
+                                
+                                
+                                document.getElementById('thePage:comp:commoncomponent:frm:hidden').value= val;
+                               
+                               return true;
+                              
+                               
+                                
+                            }
+                        </script>
+                        
+                        <apex:inputHidden value="{!selectedPaymentType}" id="hidden"/>
+                        <!--------------------------------------------------------------------------------->
+                        <div class="clear"></div>
+                        <div style=" width:25%; margin-left:30%; height:100px; border:0px #000000 solid; margin-top:-20px;">
+                           <apex:commandButton value="Save" action="{!save}" styleClass="button-a blue" onclick=" return saveValues();" style="width:45%;height:32px;" />
+                            <!-- <button class="button-a blue" style="width:45%; height:32px; " onclick="saveValues();">Save</button> -->
+                            &nbsp;&nbsp;
+                            <button class="button-a dark-blue" style="width:45%; height:32px; "  >Cancel</button>
+                        </div>
+                    </div><!--close of first tab -->
+        
+                    <!--Start of content of onsite registration-->
+                    <div class="TabbedPanelsContent">
+                        <!-- ----------------------------------------------- On site Registration settings  ------------------------------------------------------------- -->
+                        <script>
+                            function showhidedivs(thv,sel){
+                                document.getElementById(sel).style.display = thv.checked ==true ? 'block' : 'none';
+                            }
+                        </script>
+                        
+                        <span style=" margin-left:5px;font-size:18px; font-family:cuprum; color:#4f91cd;"><span style="color:#000;">1. </span>Payment Gateway Option for onsite registration:</span>
+                        
+                            <apex:repeat value="{!onsiteList}" var="onsite">
+                                <div class="forminside" style="width:100%; border:0px solid #000; margin:0px auto; margin-left:24%; margin-top:10px; height:auto;display:{!IF(onsitepaygatewaytype[onsite.pgtypeonsite.Name]==false,'none','')} ">
+                                <div id="ticketopt-content" style="width:70%;   margin-left:12.3%;; margin-top:15px;  "  >
+                                    <apex:inputCheckbox value="{!onsite.selectedpgonsite}" id="chkval" onclick="showhidedivs(this,'{!onsite.pgtypeonsite.Name}')"/>&nbsp;
+                                    <apex:outputText value="{!onsite.pgtypeonsite.Name}"></apex:outputText>
+                                    <!--<apex:outputPanel rendered="{!IF(onsite.pgtypeonsite.Name!='Check' && onsite.pgtypeonsite.Name!='Cash' ,true ,false)}">
+                                        <div style="width:100%;display:{!if(onsite.selectedpgonsite==true,'block','none')};" id="{!onsite.pgtypeonsite.Name}" >
+                                            <table style="width:100%">
+                                                <tr >
+                                                    <td> Id: </td> <td> <apex:inputField value="{!onsite.pgetOnsite.PG_User_Key__c}" style="width:80%"/> </td>
+                                                </tr>
+                                                <tr >
+                                                    <td> Secret Key: </td> <td><apex:inputField value="{!onsite.pgetOnsite.PG_Pass_Secret__c}" style="width:80%"/>  </td>
+                                                </tr>
+                                                <tr style="display:{!if(onsite.pgtypeonsite.Name=='PayPal','','none')}">
+                                                    <td> Signature </td> <td><apex:inputField value="{!onsite.pgetOnsite.PG_Signature__c}" style="width:80%"/> </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </apex:outputPanel>-->
+                                </div>
+                                </div>
+                            </apex:repeat>
+                            <br /> <br />
+                        
+                            <div class="clear"></div>
+                            <div style=" width:25%; margin-left:30%; height:100px; border:0px #000000 solid; margin-top:-20px;">
+                                <apex:commandButton value="Save" action="{!saveOnsite}" styleClass="button-a blue"  onclick=" return saveValues();" style="width:45%;height:32px;" />
+                                &nbsp;&nbsp;
+                                <button class="button-a dark-blue" style="width:45%; height:32px; "  >Cancel</button>
+                            </div>
+                        <!--- ------------------------ End ---------------------------- -->
+                    </div><!--close of second tab-->
+        
+                </div><!--close of tabbedpannelscontentgroup/ Closed3-->
+            </div> <!-- Closed2 -->
+        <!-- ********************************************************************1 -->
+        </div> <!-- Closed4 -->
+        <!-- ********************************************************************2 -->
+            
+    </apex:form>
+</c:myComponent>
+<script type="text/javascript">
+    var TabbedPanels = new Spry.Widget.TabbedPanels("TabbedPanels");
+</script>
+</apex:page>

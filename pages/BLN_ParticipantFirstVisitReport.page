@@ -1,0 +1,102 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" cache="true"  controller="BLN_ParticipantFirstVisitReportCon" action="{!displayPermissions}" id="pgid" readOnly="true">
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+    <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ordersummary-report.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ticketreport.css')}" />
+    <!-----------//datatable stylescss------------->
+    <!-------------basic template html component------------------------------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="copid">
+        <apex:form id="myForm">
+        <div style="display:inline-block; float: right;">
+            <apex:commandLink styleClass="datatables_btn" onclick="exporder();return false;" >
+                <span>Export</span>
+            </apex:commandLink>
+        </div>
+        <div class="datatable-wrapper">
+        <table id="example" class="display" >
+        <thead>
+            <tr>
+            <th>Ticket Name</th>
+            <th width="18%">Name</th>
+            <th width="18%">Email</th>
+            <th width="18%">Company</th>
+            <th width="18%">Checked In Time</th>
+            </tr>
+        </thead>  
+        <tbody >  
+            <apex:repeat value="{!ticketsList}" var="tic">
+            <tr>
+                <td>{!tic.item_pool__r.item_pool_name__c}</td>
+                <td>{!tic.tkt_profile__r.First_Name__c}&nbsp;{!tic.tkt_Profile__r.Last_Name__c}</td>
+                <td>{!tic.tkt_profile__r.Email__c}</td>
+                <td>{!tic.tkt_profile__r.TKT_Company__c}</td>
+                <td>
+                <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                    <apex:param value="{!tic.tstatus__r[0].scan_time__c}" />
+                </apex:outputText>
+                </td>
+            </tr>
+            </apex:repeat>
+        </tbody >    
+        </table>
+        </div>
+        
+        <apex:actionFunction action="{!userSelectPerticularToExport}" name="individualexport" ReRender="aaa" >
+            <apex:param name="seldates" value=""/>
+         </apex:actionFunction>
+        </apex:form>
+        
+    </c:ed_basictemplate>
+    
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+    <c:ed_datatablejs ></c:ed_datatablejs>
+    <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script>
+    <script type="text/javascript" class="init">
+            var table;
+            var j = jQuery.noConflict();
+            j(document).ready(
+                function() {
+                    table = j('#example').DataTable( 
+                        {
+                          "pagingType" : "full_numbers",
+                          "aLengthMenu": [[ 10, 15,20,25, -1], [10,15,20, 25, "All"]],
+                          "iDisplayLength": 10,
+                          "sDom": 'W<"clear">lfrtip', 
+    
+                          /**default orderid in asc sorting**/
+                          "order" : [ [ 0, "asc" ] ],
+                          "bSort": false,
+                          "bAutoWidth": false, // Disable the auto width calculation
+                          "bFilter": true,
+                          "oColumnFilterWidgets": { 
+                            "aiExclude": [ 1,2,3,4] 
+                            },
+                        });
+                }
+            )
+            
+    </script> 
+     <script>
+    var seldates='';
+            function exporder(){
+    seldates='';
+    $('.filter-term').each(function(){
+    
+    if(seldates=='')
+    seldates +='\'';
+    
+    seldates +=$(this).html()+'\','; 
+    });
+    individualexport(seldates);
+            } 
+            
+           
+    </script>        
+</apex:page>

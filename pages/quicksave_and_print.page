@@ -1,0 +1,609 @@
+<apex:page controller="saveattendee_print" showHeader="false" sidebar="false" standardStylesheets="false" id="Thepage">
+
+
+<html ><head>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
+<apex:includeScript value="{!$Resource.PhoneSetup}"/>
+
+
+<style>
+.left {
+    width:60%;
+    float:left;
+    font-size:17px;
+    color:#333;
+    margin-right:10px;
+}
+.right {
+
+    width:35%;
+    float:right;
+    margin-right:0px;
+
+
+}
+
+#preview {
+    min-height:247px;
+    background-color:#FFC;
+    padding:10px;
+    font-size:12px;
+    color:#999;
+    border:1px solid #FF9;
+}
+#title {
+    margin-top:10px;
+    padding:5px;
+    font-size:13px;
+    color:#000;
+    border:1px solid #CCC;
+    font-family:Verdana, Geneva, sans-serif;
+}
+#photo {
+    margin-bottom:10px;
+}
+#image {
+    margin-top:5px;
+}
+#Displaytitle {
+    font-size:14px;
+    color:#333;
+    margin-top:5px;
+}
+.loaderBackground {
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#66EBEAE4, endColorstr=#66EBEAE4);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#66EBEAE4,endColorstr=#66EBEAE4)";
+    background: -webkit-linear-gradient(left top, rgba(204, 204, 204, 0), gray); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, rgba(204, 204, 204, 0), gray); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, rgba(204, 204, 204, 0), gray); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, rgba(204, 204, 204, 0), gray);
+    width:100%;
+    height:100%;  
+    z-index:2499;
+    position:absolute;       
+    left:0px;
+    right:0px;
+}  
+#loaderImg{
+   
+    width:200px;  
+    height:200px;
+     margin-top:100px;
+}   
+</style>
+<script>
+var saveclick=0;
+function move() {
+if(saveclick==1)
+return false;
+    var selvalue='';      
+    var myradios = document.getElementsByName('{!$Component.Thepage:attendee:typeselect}');
+for(i = 0; i < myradios.length; i++) 
+    if(myradios[i].checked) {
+        // now we now the selected index
+        selvalue=myradios[i].value;
+    }
+     
+     
+     
+
+     
+      
+          
+          
+          
+
+
+var x = document.getElementById('{!$Component.Thepage:Attendee:firstname}').value;
+var y = document.getElementById('{!$Component.Thepage:Attendee:lastname}').value;
+var z = document.getElementById('{!$Component.Thepage:Attendee:phone}').value;
+
+var c = document.getElementById('{!$Component.Thepage:attendee:searchValue}').value;
+
+x =x.trim();
+y =y.trim();
+z=z.trim();
+c =c.trim();
+     
+
+if(x == "" || x == null)
+{
+alert('Please enter First name');
+return false;
+}
+
+if(y == "" || y == null)
+{
+alert('Please enter Last name');
+return false;
+}
+
+ if(selvalue=='')
+ {
+   alert('Please select an Attendee Type');
+   return false;
+ }   
+
+if((selvalue.toUpperCase()=='SPONSOR'||selvalue.toUpperCase()=='EXHIBITOR')&&(c==''))
+{
+  
+alert('Please enter Company');
+return false;
+}
+else
+{
+  $(".loaderBackground").css("display","block");
+  saveclick=1;
+ return true;
+}
+
+}
+</script>
+<style>
+.readonly{
+border: 1px solid #666666;
+-moz-border-radius: 8px;
+-webkit-border-radius: 8px;
+background-color:#FFFFFF;
+border-radius: 8px;
+font-size: 20px;
+padding: 4px 7px;
+outline: 0;
+-webkit-appearance: none;
+width:80%;
+
+
+}
+body{font-family:"Helvetica Neue"; margin:0px auto;padding:0px;background-color:#99ccff; height:100%; }
+#header{
+    background-image: -moz-linear-gradient(top, #81a8cb, #4477a1); 
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #4477a1),color-stop(1, #81a8cb)); 
+    filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#81a8cb', endColorstr='#4477a1');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#81a8cb', endColorstr='#4477a1')";
+    
+    background-color:#6699cc;font-size:26px; text-align:center; color:#FFFFFF; width:100%;height:40px; padding-top:5px;
+}
+#footer{
+    background-image: -moz-linear-gradient(top, #81a8cb, #4477a1); 
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #4477a1),color-stop(1, #81a8cb)); 
+    filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#81a8cb', endColorstr='#4477a1');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#81a8cb', endColorstr='#4477a1')";
+    
+    background-color:#6699cc;font-size:26px; text-align:center;color:#FFFFFF;
+     position:absolute; bottom:0px; width:100%; height:45px;
+}
+
+.button{
+    background: #414141; 
+    padding: 10px; 
+    color: #fff; 
+    text-decoration:none;
+     border-radius:5px;
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px;
+   text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+  cursor: pointer;
+    
+    border:0px;
+    font-size:18px;
+     font-weight:600;
+     font-family:"Helvetica Neue";
+       background-image: -moz-linear-gradient(top, #81a8cb, #4477a1); 
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #4477a1),color-stop(1, #81a8cb)); 
+    filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#81a8cb', endColorstr='#4477a1');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#81a8cb', endColorstr='#4477a1')";
+ 
+}
+.button:hover                           { background-color: #111; color: #fff;text-decoration:none; }
+   
+    
+                                                  
+   
+    
+
+input.rounded {
+border: 1px solid #666666;
+-moz-border-radius: 8px;
+-webkit-border-radius: 8px;
+border-radius: 8px;
+font-size: 20px;
+padding: 4px 7px;
+outline: 0;
+-webkit-appearance: none;
+width:80%;
+}
+
+input.rounded:focus {
+border-color: #339933;
+-moz-box-shadow: 2px 2px 3px #666;
+-webkit-box-shadow: 2px 2px 3px #666;
+ box-shadow: 2px 2px 3px #666;
+}
+
+</style>
+<apex:outputpanel id="renderpage">
+
+
+<div class="left">
+  <apex:form id="attendee">
+  
+  
+  
+<!-- Start of first page -->
+  <br />
+<!-- /page -->
+<table width="98%" border="0" cellspacing="3" cellpadding="0" style="margin:0px auto;">
+  <tr>
+  
+    <td height="85" align="left" valign="top"><font color="#ff0000">*</font>
+        First Name:<br />
+                
+                <!--    <input type="text" name="textinput-hide" id="textinput-hide" placeholder="Text input" value=""/>-->
+               <apex:inputText value="{!attendee.AS_FirstName__c}"  style="font-weight:bold;font-size: 15px;width:210px;"  id="firstname"/>
+    </td>
+    
+    <td height="85" align="left" valign="top"><font color="#ff0000">*</font>
+        Last Name: <br />
+               
+                 <apex:inputText value="{!attendee.AS_LastName__c}" style="font-weight:bold;font-size: 15px;width:210px;" id="lastname"/>
+    </td>
+    <td height="85" align="left" valign="top">
+        Phone Number:<br />
+                   
+                 <apex:inputField value="{!attendee.AS_WorkPhone__c}" style="font-size: 15px;width:190px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"   id="phone"/>
+    </td>
+
+    </tr> 
+
+    <tr>
+  <td height="85" align="left" valign="top">
+  <font color="#ff0000"></font> Company:<br />
+  <!--my autocomplete-->
+  <apex:outputPanel layout="block" style="float: left">
+ 
+            <!-- This is our input text that we will use in a wildcard search against the names of the defined object. We refresh the results every time this field
+            is clicked or a letter is entered (keyup) -->
+            <apex:inputText value="{!searchValue}"  id="searchValue" style="font-weight:bold;font-size: 15px;width:210px;">
+                <apex:actionSupport event="onkeyup" action="{!search}" rerender="resultsPanel"/>
+                <apex:actionSupport event="onclick" action="{!search}" rerender="resultsPanel"/>
+            </apex:InputText>
+ 
+            <!-- Once we perform the query on the object we will populate this list with the returned values. When a user selects a value we will hide this list
+            and auto complete the selected value -->
+            <apex:outputPanel id="resultsPanel" layout="block" style="position: absolute;">
+                <apex:selectList id="srchlist" value="{!attendee.AS_Company__c}" size="{!height}" style="width:150px" rendered="{!showList}">
+                    <apex:selectOptions value="{!results}"/>
+                    <apex:actionSupport event="onchange" action="{!selectvalue}" rerender="resultsPanel,searchValue"/>
+                </apex:selectList>
+            </apex:outputPanel>
+ 
+    </apex:outputPanel>
+ 
+    <!-- This component has one little piece of javascript. If a user clicks on the screen before selecting a value we want to hide the list of options similar to
+    how a normal picklist behaves -->
+    <apex:actionFunction name="hideResults" action="{!hideResults}" reRender="resultsPanel"/>
+    <script type="text/javascript">
+        document.onclick = function(){
+            hideResults();
+        }
+    </script>
+
+  
+  <!--<c:advancedLookup object="Event_Attendee_Mapping__c " value="{!attendee.AS_Company__c}" maxHeight="20" width="250px" style="float: left" id="compo"/> -->
+
+  <!--end of my autocomplete-->
+  
+  </td>
+               
+                 
+                 
+                 
+                 
+    <td height="85" align="left" valign="top">
+        Title:<br />
+                    
+                     <apex:inputfield value="{!attendee.AS_Title__c}" style="font-weight:bold;font-size: 15px;width:210px;"/></td>
+    <td height="85" align="left" valign="top">
+        Email :<br />
+                    
+                  <!-- <div class="readonly">-->
+                  <b>  <apex:outputText value="{!email}" style="font-size: 15px;width:190px;"/></b>
+                    <!--/div-->
+    </td>
+    <td height="85" align="left" valign="top">&nbsp;</td>
+  </tr>
+  <tr  style="height:1cm;">
+  <td>
+  <apex:outputLabel value="Badge Ticket Type : " style="color:Black; padding-left:5px; height:50px"/>
+     <apex:inputtext value="{!badgettype}"  id="badgettype" onkeyup="update()"/>
+  </td>
+  <td>
+  <apex:outputLabel value="Visibility" style="color:Black; padding-left:5px; height:50px"/>
+      <apex:inputCheckbox value="{!displaybadgettype}" id="displaybadgettype" onchange="update()"/>
+  </td>
+  </tr>
+  <tr style="height:2cm;"><td colspan="3">
+  
+   <apex:outputText > 
+   
+    
+    <apex:outputLabel value="Badge Ticket Category : " style="color:Black; padding-left:5px; height:50px"/>
+    
+   <table>
+    <tr style="height:2cm;"><td width="70%">
+  
+   
+    <apex:selectRadio value="{!selectedattendeetypes}" id="typeselect">
+    <apex:actionSupport event="onchange" 
+                            action="{!changeother}" rerender="gotolabel"  oncomplete="update()"/>
+    <apex:selectOptions value="{!Attoptions}"/>
+    </apex:selectRadio>
+    <apex:outputpanel id="gotolabel">
+     <apex:outputLabel value="Label" style="color:Black; padding-left:5px; height:50px"/>
+     <apex:inputtext value="{!othervalue}"  id="othervalue" onkeyup="update()"/>
+     </apex:outputpanel>
+
+     <apex:outputLabel value="Color" style="color:Black; padding-left:5px; height:50px"/>
+         <input type='color' name='color' value="{!colorvalue}" onchange="update()" id="color"/> 
+      <apex:outputLabel value="Visibility" style="color:Black; padding-left:5px; height:50px"/>
+      <apex:inputCheckbox value="{!displaybadgelabel}" id="visibility" onchange="update()"/>
+<apex:inputHidden value="{!colorvalue}" id="myHiddenField"/>
+
+    <!--
+      <apex:selectcheckboxes value="{!selectedcheck}">
+    <apex:selectOptions value="{!specialTics}"></apex:selectoptions>
+    
+    </apex:selectcheckboxes>
+    -->
+    
+    </td></tr>
+    
+    
+    </table>
+   
+    </apex:outputText> 
+  
+  </td></tr>
+</table>
+
+
+
+<p align="center" style="width:98%; text-align:center; margin:0px auto;height:0.5cm;">
+     <div style="width:98%; margin:0px auto; text-align:center;">
+     
+   <!--<apex:commandLink target="_blank"  Onclick="return Validate();"><apex:commandButton value="Print Preview" action="{!SaveAndPrint}" Onclick="return Validate();"/></apex:commandLink>
+   <a rel="external" href="https://boothleads.secure.force.com/Attendee_Details_Print?id=a00F0000008DW4N" style="color:#008AB8;text-decoration:underline;" onclick="return move();" target="_blank"><apex:commandButton value="Save & Print" styleClass="button" ></a>
+
+    <a href="#" onclick="cls1();return move();window.open('https://boothleads.secure.force.com/Attendee_Details_Print?id=a00Z000000GCUAMIA5');"><apex:commandButton value="Save & Print" styleClass="button" onclick="return move();"/></a>
+
+
+    <apex:actionFunction action="{!SaveAndPrint}" name="cls1"/>-->
+     
+    <!--<apex:commandLink action="{!SaveAndPrint}"  style="text-decoration:none;" Onclick="return move();"> <apex:commandButton value="Save & Print" styleClass="button" /></apex:commandLink>-->
+    <!--<apex:actionFunction action="{!getnewdata}" name="getnewdata"/>-->
+     <apex:commandLink action="{!SaveAndPrint}"  style="text-decoration:none;" Onclick="if(!move()) return false;" oncomplete="getnewdata();"> 
+    <apex:commandButton value="Save & Print" styleClass="button"/>
+    </apex:commandLink>
+    &nbsp;
+    <apex:commandLink style="text-decoration:none;" Onclick="cancelbadge();"   > 
+    <apex:commandButton value="Cancel" styleClass="button" />
+    </apex:commandLink>
+    
+    
+    
+    <!--<apex:commandButton value="Back" styleClass="button" action="{!refresh}" immediate="true"/>-->
+  
+     </div>  
+</p>  
+  <br/>
+<!--<div id="footer">
+  
+</div>-->
+<!--<apex:outputpanel id="prntfrm">
+<apex:outputpanel rendered="{!flag}">
+<iframe height="600px" id="Page" name="PrintPDF" src="/apex/badgefromquickregistration?id={!$CurrentPage.parameters.id}" width="100%"></iframe>   
+</apex:outputpanel>
+</apex:outputpanel>    
+-->
+ 
+
+</apex:form>
+</div>
+
+<div class="right">
+<div id="ifrmeSummarydiv" style="height:350px;width:470px;background-color:white;display:none">
+             </div>
+   <iframe name="pdf" id="ifrmeSummary" frameborder="0" width="470" height="350" >
+   
+  
+   </iframe>
+  
+
+    
+  
+    
+   
+
+
+
+<script>
+function cancelbadge()
+{
+    window.parent.location.href=window.parent.location.href;window.parent.load();
+}
+  
+  $(document).ready(function(){
+  //Adding Logo
+$("#Thepage\\:attendee\\:firstname").focus();
+$("#Thepage\\:attendee\\:firstname").keyup(update);
+$("#Thepage\\:attendee\\:lastname").keyup(update);
+$("#Thepage\\:attendee\\:othervalue").keyup(update);
+$("#Thepage\\:attendee\\:searchValue").keyup(update);
+
+}); 
+</script>
+
+    
+  </div>
+    
+</apex:outputpanel>
+<div class="loaderBackground" style="display:none;text-align:center;">
+    <img src="http://www.boothleads.com/badge_images/icons/ajax_loader.gif" id="loaderImg"  alt="Loading...."    />
+  </div>
+<script>
+var abarcode='';
+function getnewdata()
+{
+   saveattendee_print.getnewdata('{!email}','{!event}', function(result, event){
+               abarcode=result;
+               
+               update();
+               
+                $(".loaderBackground").css("display","none");
+                saveclick=0;
+               
+            });
+}
+ 
+  function update(){ 
+var atypes="{!eventdetails .Attendee_Types__c}";
+
+
+//show name
+var fname= $("#Thepage\\:attendee\\:firstname").val();
+var lname= $("#Thepage\\:attendee\\:lastname").val();
+var company= $("#Thepage\\:attendee\\:searchValue").val();
+var badgelabel= $("#Thepage\\:attendee\\:othervalue").val();
+
+if(badgelabel.toUpperCase()=='EXECUTIVE DURECTOR')
+   $("#color").val('#792e2e');
+   else if(badgelabel.toUpperCase()=='PRESIDENT')
+   $("#color").val('#2e79ce');
+   else if(badgelabel.toUpperCase()=='EXHIBITOR')
+   $("#color").val('#008000');
+   else if(badgelabel.toUpperCase()=='SECURITY')
+   $("#color").val('#2e5c77');
+   else if(badgelabel.toUpperCase()=='STAFF')
+   $("#color").val('#a63032');
+   else if(badgelabel.toUpperCase()=='SPONSOR')
+   $("#color").val('#ff0000');
+   else if(badgelabel.toUpperCase()=='SPEAKER')
+   $("#color").val('#df3434');
+   else if(badgelabel.toUpperCase()=='VIP')
+   $("#color").val('#501f76');
+   else if(badgelabel.toUpperCase()=='HOST')
+   $("#color").val('#8a26d4');
+   else if(badgelabel.toUpperCase()=='ATTENDEE')
+   $("#color").val('#1b75bb');
+   else if(badgelabel.toUpperCase()=='BOARD MEMBER')
+   $("#color").val('#6e325c');
+   else if(badgelabel.toUpperCase()=='MODERATOR')
+   $("#color").val('#314542');
+
+if(atypes.indexOf(badgelabel)>=0){
+$("#color").attr('disabled','disabled');
+}
+else
+$("#color").removeAttr('disabled');
+var color= $("#color").val();
+document.getElementById('Thepage:attendee:myHiddenField').value=color;
+var visible=document.getElementById('Thepage:attendee:visibility').checked;
+var badgettypevisible=document.getElementById('Thepage:attendee:displaybadgettype').checked;
+
+var name=fname+' '+lname;
+
+var atttype='';
+
+//code for attendee type
+try{
+if(visible==true)
+atttype='<font style="valign:bottom;text-align:center;background-color:'+color+';display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;">'+badgelabel+'</font>';
+
+}catch(e){}
+
+var badgettype='';
+//code for ticket type
+try{
+if(badgettypevisible==true)
+badgettype=$("#Thepage\\:attendee\\:badgettype").val();
+}catch(e){}
+
+//
+
+
+var abarcodeimage='';
+
+if(abarcode!='')
+{
+abarcodeimage='<img src="https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl='+abarcode+'"/>';
+}
+
+
+
+
+
+ var evlogo='';
+//var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+//if (isChrome)
+//evlogo='<img src="/servlet/servlet.FileDownload?file={!eventdetails.EV_EventLogo__c}" style="width:100%;height:auto;padding-left:3px;padding-top:3px">';
+//else
+evlogo='<object type="image/jpeg" data="/servlet/servlet.FileDownload?file={!eventdetails.EV_EventLogo__c}" style="width:200px;height:100px;padding-left:3px;padding-top:30px">';
+
+
+//var y='<html><head><scr'+'ipt type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></scr'+'ipt><scr'+'ipt></scr'+'ipt><style>@page{size:4.15in 3.5in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}.tablelabel {background:#25BEF5;padding:5px;}</style></head><body bgcolor="white"><table align="center" border="0" cellpadding="0" cellspacing="0" style="margin:0px;" width="100%"><tbody><tr><td><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:100%; margin-top:10px;"><tbody><tr style="height:2.5cm;"><td height="100px" style="padding-Left:5px;" valign="top" width="100%"><span id="j_id0:j_id4">'+evlogo+'</span></td><td style="text-align:center; width:80%;padding-right:8px;font-size:15px" width="70%"><div style="z-index:-17; text-align:center;width:125px; margin:0px auto; margin-top:-20px;position:relative; height:2.3cm;">'+abarcodeimage+'</div></td></tr></tbody></table></td></tr><tr style="height:1.0cm;"><td align="center" colspan="2" valign="top"><span id="myname"><font style="font-size:24pt;">'+name+'</font></span></td> </tr><tr><td align="center" colspan="2" style="padding:0;font-size:22pt;font-face:Calibri (Body);" valign="top"><span id="j_id0:j_id16">'+company+'</span></td></tr><tr height="2cm"><td colspan="2" height="19" style="width:80%;font-size:18pt;font-face:Calibri (Body);Padding-Left:10px;Padding-Right:10px;text-align:right;" width="100%"><div style="width:100%;"><span id="j_id0:j_id31">'+atttype+'</span></div></td></tr><tr><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></body></html>';
+
+var y='<html><head><scr'+'ipt type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></scr'+'ipt><scr'+'ipt></scr'+'ipt><style>@page{size:4.15in 3.75in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}.tablelabel {background:#25BEF5;padding:5px;}</style></head><body bgcolor="white"><table align="center" border="0" cellpadding="0" cellspacing="0" style="margin-top:-15px;" width="100%"><tbody><tr><td><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:100%; margin-top:0px;"><tbody><tr style="height:2cm;"><td height="100px" style="padding-Left:5px;" valign="top" width="100%"><span id="j_id0:j_id4">'+evlogo+'</span></td><td style="text-align:center; width:80%;padding-right:8px;font-size:15px" width="70%"><div style="z-index:-17; text-align:center;width:175px; margin:0px auto; margin-top:-20px;position:relative; height:2.3cm;">'+abarcodeimage+'</div></td></tr></tbody></table></td></tr><tr style="height:1.0cm;"><td align="center" colspan="2" valign="top"><span><font style="font-size:22pt;" id="myname">'+name+'</font></span></td> </tr><tr><td align="center" colspan="2" style="padding:0;font-size:20pt;font-face:Calibri (Body);" valign="top" id="mycompany"><span id="mycompanyspan">'+company+'</span></td></tr><tr><td align="center" style="font-weight:bold;Padding-Left:10px;Padding-Right:10px;height:0.7cm;font-size:18px;text-align:center;">'+badgettype+'</td></tr><tr height="2cm"><td colspan="2" height="19" style="width:80%;font-size:18pt;font-face:Calibri (Body);Padding-Left:10px;Padding-Right:10px;text-align:right;" width="100%"><div style="width:100%;"><span id="j_id0:j_id31">'+atttype+'</span></div></td></tr><tr><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></body></html>';
+
+
+
+$('iframe').attr('srcdoc',y );
+
+
+var g='<html><head><script type="text/javascript"><\/script><style>@page{size:4.15in 3.5in;margin-top:-5px;margin-left:-5px;margin-bottom:-5px;margin-right:-5px;}.tablelabel {background:#25BEF5;padding:5px;}</style></head><body bgcolor="white"><table bgcolor="white" align="center" border="0" cellpadding="0" cellspacing="0" style="margin:0px;" width="100%" height="100%" ><tbody><tr><td><table bgcolor="white" align="center" border="0" cellpadding="0" cellspacing="0" style="width:100%; margin-top:-15px;"><tbody><tr style="height:2.5cm;"><td height="100px" style="padding-Left:5px;" valign="top" width="100%"><span id="j_id0:j_id4">'+evlogo+'</span></td><td style="text-align:center; width:80%;padding-right:8px;font-size:15px" width="70%"><div style="text-align:center;width:125px; margin:0px auto; margin-top:-20px;position:relative; height:2.3cm;">'+abarcodeimage+'</div></td></tr></tbody></table></td></tr><tr style="height:1.0cm;"><td align="center" colspan="2" valign="top"><span><font style="font-size:24pt;" id="myname">'+name+'</font></span></td> </tr><tr><td align="center" colspan="2" style="padding:0;font-size:22pt;font-face:Calibri (Body);" valign="top" id="mycompany"><span id="mycompanyspan">'+company+'</span></td></tr><tr><td align="center" style="font-weight:bold;Padding-Left:10px;Padding-Right:10px;text-align:center;">'+badgettype+'</td></tr><tr height="2cm"><td colspan="2" height="19" style="width:80%;font-size:18pt;font-face:Calibri (Body);Padding-Left:10px;Padding-Right:10px;text-align:right;" width="100%"><div style="width:100%;"><span id="j_id0:j_id31">'+atttype+'</span></div></td></tr><tr><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></body></html>';
+
+
+
+
+
+
+if(abarcode!='')
+{
+setTimeout(function(){ printPdf()},600);
+
+
+}
+
+}
+
+
+
+function printPdf() {
+
+ //window.open("http://boothleads-boothleads.cs11.force.com/Attendee_Details_Print?id={!event}",'_blank');
+ //window.parent.close();
+ //window.parent.location = "http://boothleads-boothleads.cs11.force.com/Attendee_Details_Print?id={!event}";
+ 
+  var getMyFrame = document.getElementById('ifrmeSummary');
+    getMyFrame.focus();
+    getMyFrame.contentWindow.print();
+ //window.parent.location.href=window.parent.location.href;
+ //window.parent.load();
+
+ setTimeout(function(){window.parent.location.href=window.parent.location.href;window.parent.load();}, 1000);
+ 
+    
+    //getMyFrame.contentWindow.parent.location = "http://boothleads-boothleads.cs11.force.com/Attendee_Details_Print?id={!event}"; 
+    
+
+ 
+ 
+    
+
+}
+
+  </script>
+
+
+</head></html>
+</apex:page>

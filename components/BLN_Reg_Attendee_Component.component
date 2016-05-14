@@ -1,0 +1,728 @@
+<apex:component controller="BLN_RegComponentController">
+<apex:attribute name="ThePageControler" type="BLN_RegistrationnewCon3" description="The main page controller" assignTo="{!ThePageController}"/>  
+
+
+<apex:outputtext escape="false" id="hiddendiv" />
+ 
+ <script>
+ var s="{!JSENCODE(ThePageControler.att.HTML__c)}";
+var htmlallfieldnames=[];
+   
+document.getElementById('{!$Component.hiddendiv}').innerHTML = s;
+
+$("[id$='hiddendiv']").find('input, textarea, select').each(function(i, field) {
+
+if(field.name!=''&&field.name!=undefined&&field.type!='button'){
+    htmlallfieldnames.push(field.name);
+  //  alert(field.name);
+    }
+    
+});
+$("[id$='hiddendiv']").remove();
+</script>
+
+
+<style>
+<!--<apex:outputtext escape="false" value="{!ThePageControler.css}"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/customtools/css/bootstrap.min.css')}"/> 
+</style>
+<script>
+//attendee array
+var attendeeinfo=[];
+
+<apex:repeat value="{!ThePageControler.TicketList}" var="t">
+ if(('{!t.Ticket.Item_Pool__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!t.Ticket.Item_Type__r.name}' == 'Package' && '{!t.Ticket.Parent_ID__c}'!='') || ('{!t.Ticket.Item__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!t.Ticket.Item_Type__r.name}' != 'Package') || ('{!t.Ticket.Item__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!t.Ticket.Item_Type__r.name}' == 'Package' && '{!t.Ticket.Parent_ID__c}'==''))
+ attendeeinfo.push({});
+</apex:repeat>
+     
+</script>
+<script>
+function copyticket(copyfrom,copyto)
+{
+//alert(copyfrom);
+//alert(copyto);
+for(t=0;t<htmlallfieldnames.length;t++)
+     {
+       try{
+      $("[id$='"+copyto+"']").find("[name='"+htmlallfieldnames[t]+"']").val($("[id$='"+copyfrom+"']").find("[name='"+htmlallfieldnames[t]+"']").val());
+      }catch(e){}
+     }
+}
+</script>
+
+  
+<apex:variable value="{!1}" var="Order"/>
+<apex:repeat value="{!ThePageControler.TicketList}" var="t">
+<apex:outputPanel rendered="{!IF((t.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && t.Ticket.Item_Type__r.name == 'Package' && t.Ticket.Parent_ID__c!=null) || (t.Ticket.Item__r.Ticket_Settings__c == 'Collect info from All Attendees' && t.Ticket.Item_Type__r.name != 'Package') || (t.Ticket.Item__r.Ticket_Settings__c == 'Collect info from All Attendees' && t.Ticket.Item_Type__r.name == 'Package' && t.Ticket.Parent_ID__c==null), TRUE, FALSE)}"> 
+
+<div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"> 
+            <apex:outputtext escape="false"  value="Ticket #{!Order} - {!t.Ticket.Item_Pool__r.Item_Pool_Name__c}&nbsp;&nbsp;&nbsp;&nbsp;" rendered="{!t.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && t.Ticket.Item_Type__r.name == 'Package'}"></apex:outputtext>
+<apex:outputtext escape="false"  value="Ticket #{!Order} - {!t.Ticket.Item__r.item_name__c}&nbsp;&nbsp;&nbsp;&nbsp;" rendered="{!!(t.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && t.Ticket.Item_Type__r.name == 'Package')}"></apex:outputtext>
+
+            
+            </h3>
+  
+
+<div class="pull-right" style="margin-top:-20px; text-align:right;">Copy Info From:<apex:selectList style="align:right" size="1" onchange="copyticket(this.value,$(this).parent().parent().parent().parent().children(':first-child').next().attr('id'));" >
+<apex:selectOptions value="{!ThePageControler.tktcopyoptions}" />
+</apex:selectList>
+
+</div>
+</div>
+</div>
+<div id="{!Order-1}:holdticket">
+<apex:variable value="{!Order+1}" var="Order"/>
+<apex:outputtext escape="false"  value="{!ThePageControler.tickettemplatemap[t.Ticket.Item_Pool__r.Id]}" rendered="{!t.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && t.Ticket.Item_Type__r.name == 'Package'}"></apex:outputtext>
+<apex:outputtext escape="false"  value="{!ThePageControler.tickettemplatemap[t.Ticket.Item__c]}" rendered="{!!(t.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && t.Ticket.Item_Type__r.name == 'Package')}"></apex:outputtext>
+</div>
+ <!------start of item level survey questions------------->
+ <apex:outputPanel rendered="{!IF(t.UserAnswer.size > 0 && (t.Ticket.Item__r.Ticket_Settings__c == 'Collect info from All Attendees' ||t.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees'), TRUE , FALSE)}">
+                                     
+   <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">  Survey for &nbsp; <apex:outputText value="{!IF(t.Ticket.Item__r.item_type__r.Name!='Package' ,t.Ticket.Item__r.item_name__c , t.Ticket.Item_Pool__r.Item_Pool_Name__c)}"> </apex:outputText></h3>            
+          </div>
+          
+        <div class="panel-body"><!----panel body--->
+                <apex:variable var="i" value="{!1}"/>
+            <apex:repeat value="{!t.UserAnswer}" var="sq">
+                <div id="{!IF(sq.question.BLN_Parent_Answer__c==null,'_',sq.question.BLN_Parent_Answer__c)}{!t.Ticket.id}" style="display:{!IF(sq.question.BLN_Parent_Answer__c==null,'','none')}">
+                <div class="formelem_boxfull">
+                    <ul class="stdul">
+                    <li>
+                        <div class="form_quest">
+                            <div class="qno">Q{!i}.</div>
+                            <apex:variable var="i" value="{!i+1}"/>
+                            <div class="q_txt">{!sq.Question.Question_Text__c} ?
+                                <apex:outputText rendered="{!IF(sq.isRequired == TRUE, TRUE , FALSE)}"><span id="mandatory" style="color:#F00; font-size:15px;">*</span></apex:outputText>
+                                               
+                            </div>
+              
+                            <div class="clear"></div>
+
+                        </div><!---end of form quest---->
+            
+                        <div class="form_answer">
+                            <!------->   
+                            <div class="ans_lbl">Ans.</div>
+                                <div class="qans">
+                                    <div class="{!IF(sq.Question.Answer_Type__c=='Paragraph text' || sq.Question.Answer_Type__c=='Text' || sq.Question.Answer_Type__c=='Selectlist','','radio_chk_box')}">
+                                        <apex:inputText value="{!sq.SelectedAnswer}"  rendered="{!IF(sq.Question.Answer_Type__c=='Text',TRUE,FALSE)}" id="SQText" styleClass="SQTextTicket #{!t.OrderNo} form-control {!IF(sq.Question.Answer_Type__c=='Paragraph text' || sq.Question.Answer_Type__c=='Text' ,'valid_txt','valid_txt')} {!IF(sq.isRequired == TRUE, ' required', '')}" />
+                                        <apex:inputTextarea value="{!sq.SelectedAnswer}"  rendered="{!IF(sq.Question.Answer_Type__c=='Paragraph text',TRUE,FALSE)}" rows="2" id="SQParagraph" styleClass="SQParagraphTicket #{!t.OrderNo} form-control     {!IF(sq.Question.Answer_Type__c=='Paragraph text' || sq.Question.Answer_Type__c=='Text' ,'valid_txt','valid_txt')} {!IF(sq.isRequired == TRUE, ' required', '')}" />   
+                                                
+                                        <apex:selectList value="{!sq.SelectedAnswer}" onfocus="this.oldvalue = this.value;" onchange="showsubquestionpicklist(this,'{!t.Ticket.id}');this.oldvalue = this.value;" multiselect="false" size="1"  rendered="{!IF(sq.Question.Answer_Type__c=='Choose from a list',TRUE,FALSE)}" id="SQPicklist" styleClass="SQPicklistTicket #{!t.OrderNo} form-control valid_select {!IF(sq.isRequired == TRUE, ' required', '')}" >
+                                            <apex:selectOption itemlabel="--None--" itemValue=""/>
+                                            <apex:selectOptions value="{!sq.Answers}"/>
+                                        </apex:selectList>
+                
+                                        <div style="display:{!IF(sq.Question.Answer_Type__c=='Single Selection','','none')}">
+                                        <apex:selectRadio value="{!sq.SelectedAnswer}" onchange="showsubquestionradio($(this).attr('name'),'{!t.Ticket.id}');" layout="pageDirection"  rendered="{!IF(sq.Question.Answer_Type__c=='Single Selection',TRUE,FALSE)}" id="SQRadio" styleClass="SQRadioTicket #{!t.OrderNo}">
+                                                <apex:selectOptions value="{!sq.Answers}"/>
+                                        </apex:selectRadio> 
+                                                  
+                                        </div>
+            
+                                        <div style="display:{!IF(sq.Question.Answer_Type__c=='Checkboxes','','none')}">
+                                            <div class="maxanswercount" a="{!sq.Question.Max_Answer_count__c}">
+                                            <br/><apex:outputText value="You can choose maximum {!sq.Question.Max_Answer_count__c} answers" rendered="{!If(sq.Question.Max_Answer_count__c==0 || sq.Question.Max_Answer_count__c==null,false,true)}"/>
+                                            <apex:selectCheckboxes layout="pageDirection" value="{!sq.SelectedAnswerCheck}"  rendered="{!IF(sq.Question.Answer_Type__c=='Checkboxes',TRUE,FALSE)}" id="SQCheckbox" styleClass="SQCheckboxTicket #{!t.OrderNo}">
+                                                <apex:selectOptions value="{!sq.Answers}"/>
+                                            </apex:selectCheckboxes>
+                                            </div>  
+                                        </div>
+                
+                                        <div style="display:{!IF(sq.Question.Answer_Type__c=='Scale','','none')}">
+                                            <apex:selectRadio value="{!sq.SelectedAnswer}" layout="lineDirection"  rendered="{!IF(sq.Question.Answer_Type__c=='Scale',TRUE,FALSE)}" id="SQScale" styleClass="SQScaleTicket #{!t.OrderNo}" style="width:100%;height:35px;">
+                                                <apex:selectOptions value="{!sq.Answers}"/>
+                                            </apex:selectRadio>
+
+                                        </div>
+              
+              
+                                    </div>
+              <!---------->
+                                    <div class="clear"></div>
+                                </div><!---close of form_ans---->
+                        </div><!--form ans--->
+                    </li>
+                    </ul>
+                </div>
+            
+                </div>
+                                        
+             </apex:repeat>
+                                     
+        </div><!---end of panel body---->
+    </div>
+                                    
+</apex:outputpanel> 
+</apex:outputpanel> 
+
+<!------end of item level survey questions------------->   
+ </apex:repeat>
+ 
+  <script>
+  
+  //excluding fields from form
+ function excludefieldsforAttendee(tindex)
+ {
+ var atblockindex=0;
+   <apex:repeat value="{!ThePageControler.TicketList}" var="tcklist">
+if(('{!tcklist.Ticket.Item_Pool__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!tcklist.Ticket.Item_Type__r.name}' == 'Package' && '{!tcklist.Ticket.Parent_ID__c}'!='') || ('{!tcklist.Ticket.Item__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!tcklist.Ticket.Item_Type__r.name}' != 'Package') || ('{!tcklist.Ticket.Item__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!tcklist.Ticket.Item_Type__r.name}' == 'Package' && '{!tcklist.Ticket.Parent_ID__c}'==''))
+{
+   var includedhtmlfieldname='';
+   var fieldMap = {};
+    <apex:repeat value="{!ThePageControler.itemfieldmap}" var="itemkeys">
+   <apex:repeat value="{!ThePageControler.itemfieldmap[tcklist.BLNItem.id]}" var="itemlist" rendered="{!itemkeys==tcklist.BLNItem.id}">
+   var mergedata='{!itemlist}';
+   var arrsplit=mergedata.split("^^");
+   fieldMap[arrsplit[0]] = arrsplit[1];
+   
+   </apex:repeat>
+   </apex:repeat>
+  console.log('fieldmap =====>');
+   console.log(fieldMap);
+   if(fieldMap['First Name']!='null'&&fieldMap['First Name']!=undefined){
+   
+   }
+   else
+   {
+   for(t=0;t<htmlallfieldnames.length;t++)
+     {
+       fieldMap[htmlallfieldnames[t]] = htmlallfieldnames[t]; 
+     }
+     //alert('No Mapping field found for {!tcklist.BLNItem.item_name__c}');
+   }
+   var individualpanels= [];//store ids for individual sections like speaker,workinfo,NAICS codes etc
+         var fieldrequired ={}; //store field name and required boolean as key vale pain ex: {Image:false}
+         var fieldnames={};  //store default field name and custom field name as key value pai ex:{firstname: firstnamenew}
+         var sectionnames={};//store default section name and custom section name as key value pai ex:{Basic Information:Basic Details}
+         <apex:variable var="attendeemap" value="{!ThePageControler.RegSettingsMap[tcklist.BLNItem.id]}" rendered="{!!(tcklist.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && tcklist.Ticket.Item_Type__r.name == 'Package')}"/>
+       <apex:variable var="attendeemap" value="{!ThePageControler.RegSettingsMap[tcklist.Ticket.Item_pool__r.id]}" rendered="{!tcklist.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && tcklist.Ticket.Item_Type__r.name == 'Package'}"/> 
+           
+  
+   <apex:repeat value="{!attendeemap}" var="rs">
+    try{
+               if('{!rs.Group_Label__c}' != '')
+               sectionnames['{!rs.Group_Name__c}']='{!rs.Group_Label__c}';
+               fieldrequired['{!rs.Defaullt_Label__c}']='{!rs.Required__c}';
+               console.log('{!rs.Defaullt_Label__c}');
+               console.log('{!rs.Required__c}');
+               fieldnames['{!rs.Defaullt_Label__c}'] = '{!rs.Label_Name__c}';
+               individualpanels.push('{!rs.Group_Name__c}');
+               }catch(e){}
+   //loading the picklist
+   if("{!rs.Defaullt_Label__c}"=='Prefix')
+   {
+      getPrefixes(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+   
+   if("{!rs.Defaullt_Label__c}"=='Suffix')
+   {
+     getSuffixes(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+     }
+     
+     if("{!rs.Defaullt_Label__c}"=='NAICS Codes')
+   {
+   getNaicsCodes(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rs.Defaullt_Label__c}"=='Gender')
+   {
+   getGender(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+    if("{!rs.Defaullt_Label__c}"=='Primary Business Category')
+   {
+      getPrimaryBusinessCategory(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rs.Defaullt_Label__c}"=='Secondary Business Category')
+   {
+      getSecondaryBusinessCategory(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   } 
+    if("{!rs.Defaullt_Label__c}"=='Diversity Type')
+   {
+      getDiversityType(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+   
+   if("{!rs.Defaullt_Label__c}"=='Commodities')
+   {
+   getCommodities(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rs.Defaullt_Label__c}"=='Image')
+   {
+   imageload(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rs.Defaullt_Label__c}"=='Attachment')
+   {
+   attachmentload(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rs.Defaullt_Label__c}"=='Company Logo')
+   {
+   companylogoload(fieldMap["{!rs.Defaullt_Label__c}"],tindex);
+   }
+   if("{!rs.Defaullt_Label__c}"=='Biography')
+   {
+      var textbox = $(document.createElement('textarea'));
+      textbox.attr("name",$('[name="'+fieldMap ["{!rs.Defaullt_Label__c}"]+'"]').eq(tindex).attr("name"));
+    textbox.attr("id",$('[name="'+fieldMap ["{!rs.Defaullt_Label__c}"]+'"]').eq(tindex).attr("id"));
+    textbox.attr("style",$('[name="'+fieldMap ["{!rs.Defaullt_Label__c}"]+'"]').eq(tindex).attr("style"));
+    $('[name="'+fieldMap ["{!rs.Defaullt_Label__c}"]+'"]').eq(tindex).replaceWith(textbox);
+      $('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(tindex).addClass("mceEditor");
+   }
+   //
+     if("{!rs.Defaullt_Label__c}"=='Work Address')
+     {
+       sectionnames['Work Address']='{!rs.Label_Name__c}';
+       individualpanels.push('Work Address');   
+       includedhtmlfieldname+=fieldMap['WorkAddress1']+fieldMap['WorkAddress2']+fieldMap['WorkCity']+fieldMap['WorkState']+fieldMap['WorkCountry']+fieldMap['WorkZipCode'];
+       getCountry(fieldMap["WorkCountry"],tindex,fieldMap["WorkState"]); 
+       getStates(fieldMap["WorkState"],tindex); 
+       
+     }
+     else if("{!rs.Defaullt_Label__c}"=='Home Address')
+     {
+       sectionnames['Home Address']='{!rs.Label_Name__c}';
+       individualpanels.push('Home Address');
+       includedhtmlfieldname+=fieldMap['HomeAddress1']+fieldMap['HomeAddress2']+fieldMap['HomeCity']+fieldMap['HomeState']+fieldMap['HomeCountry']+fieldMap['HomeZipCode']; 
+       getCountry(fieldMap["HomeCountry"],tindex,fieldMap["HomeState"]); 
+       getStates(fieldMap["HomeState"],tindex); 
+     }
+     else if("{!rs.Defaullt_Label__c}"=='Billing Address')
+     {
+       sectionnames['Billing Address']='{!rs.Label_Name__c}';
+       individualpanels.push('Billing Address');
+       includedhtmlfieldname+=fieldMap['BillingAddress1']+fieldMap['BillingAddress2']+fieldMap['BillingCity']+fieldMap['BillingState']+fieldMap['BillingCountry']+fieldMap['BillingZipCode']; 
+       getCountry(fieldMap["BillingCountry"],tindex,fieldMap["BillingState"]);
+       getStates(fieldMap["BillingState"],tindex);  
+     }
+     else
+     includedhtmlfieldname+=fieldMap["{!rs.Defaullt_Label__c}"]; 
+   
+   //set it required when its true
+   /*if('{!rs.Required__c}'=='true'){
+   if("{!rs.Defaullt_Label__c}"=='Work Address')
+     {
+     $('[name="'+fieldMap["WorkAddress1"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["WorkAddress2"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["WorkCity"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["WorkState"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["WorkCountry"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["WorkZipCode"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+         }
+     else if("{!rs.Defaullt_Label__c}"=='Home Address')
+     {
+       $('[name="'+fieldMap["HomeAddress1"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["HomeAddress2"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["HomeCity"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["HomeState"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["HomeCountry"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["HomeZipCode"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     }
+     else if("{!rs.Defaullt_Label__c}"=='Billing Address')
+     {
+        $('[name="'+fieldMap["BillingAddress1"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["BillingAddress2"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["BillingCity"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["BillingState"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["BillingCountry"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     $('[name="'+fieldMap["BillingZipCode"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+     }
+     else
+   $('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(tindex).after('<span class="mandatory">*required field</span>');
+      
+   }*/
+   //push individual address fieds
+            if(fieldrequired['Work Address']=='true')
+            {
+            fieldrequired['WorkAddress1']='true';
+        //    fieldrequired['WorkAddress2']='true';
+            fieldrequired['WorkCity']='true';
+            fieldrequired['WorkState']='true';
+            fieldrequired['WorkCountry']='true';
+            fieldrequired['WorkZipCode']='true';
+            
+            }
+             if(fieldrequired['Home Address']=='true')
+            {
+            fieldrequired['HomeAddress1']='true';
+         //   fieldrequired['HomeAddress2']='true';
+            fieldrequired['HomeCity']='true';
+            fieldrequired['HomeState']='true';
+            fieldrequired['HomeCountry']='true';
+            fieldrequired['HomeZipCode']='true';
+            
+            }
+             if(fieldrequired['Billing Address']=='true')
+            {
+            fieldrequired['BillingAddress1']='true';
+         //   fieldrequired['BillingAddress2']='true';
+            fieldrequired['BillingCity']='true';
+            fieldrequired['BillingState']='true';
+            fieldrequired['BillingCountry']='true';
+            fieldrequired['BillingZipCode']='true';
+            
+            
+            }
+   
+   </apex:repeat>
+   //alert(includedhtmlfieldname);
+  // console.log(includedhtmlfieldname);
+  // console.log('fieldrequired');
+  // console.log(fieldrequired);
+   
+   for(l=0;l<htmlallfieldnames.length;l++)
+   {
+    if(includedhtmlfieldname.indexOf(htmlallfieldnames[l])==-1)
+    {
+      $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).hide();
+        if(htmlallfieldnames[l] == 'Image' ||  htmlallfieldnames[l] == 'Company Logo'){
+                            $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().parent().parent().find("label").hide();
+                             $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().parent().parent().find("label").parent().hide();
+                            }
+   if($('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("label").length==1)
+   {
+   $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("label").hide();
+    $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("label").parent().hide();
+   }
+   $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().hide();
+   try{
+   $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("span").eq(1).removeClass('mandatory');
+   $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).removeClass('required');
+  
+   }catch(e){}
+    }
+    else
+    {
+    
+         $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("span").eq(0).html(fieldnames[htmlallfieldnames[l]]);
+   
+                if(fieldrequired[htmlallfieldnames[l]]=="false"||fieldrequired[htmlallfieldnames[l]]==undefined||fieldrequired[htmlallfieldnames[l]]=="")  
+                { 
+                    if(htmlallfieldnames[l] != 'Image' && htmlallfieldnames[l] != 'Company Logo'){
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("span").eq(1).hide();
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("span").eq(1).removeClass('mandatory');
+                                $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).removeClass('required').parent().parent().addClass('inSection');
+            
+                    }else{
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().parent().parent().find("span").eq(1).hide();
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().parent().parent().find("span").eq(1).removeClass('mandatory');
+                 $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).removeClass('required').parent().parent().addClass('inSection');
+                
+                    }
+                } 
+                else{
+                   if(htmlallfieldnames[l] != 'Image' && htmlallfieldnames[l] != 'Company Logo'){
+            
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("span").eq(1).show();
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("span").eq(1).addClass('mandatory');
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).addClass('required').parent().parent().addClass('inSection');;
+                
+                    }else{
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().parent().parent().find("span").eq(1).show();
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().parent().parent().find("span").eq(1).addClass('mandatory');
+                        $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).addClass('required').parent().parent().addClass('inSection');
+                       
+                    }
+                }
+                
+     
+    $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).show();
+   if($('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("label").length==1)
+   {
+   $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("label").show();
+   $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().parent().find("label").parent().show();
+   }
+   $('[name="'+htmlallfieldnames[l]+'"]').eq(tindex).parent().show();          
+    
+   }
+   }
+   
+  $("[id$='"+atblockindex+"\\:holdticket']").find('.panel-default').each(function(i) {
+   
+//alert(individualpanels);
+console.log(individualpanels);
+               if( individualpanels.indexOf($(this)[0].id) == -1 && !$(this).hasClass('newsection'))
+               {
+                   $("[id$='"+atblockindex+"\\:holdticket']").find('[id="'+$(this)[0].id+'"]').hide();
+               }
+               else
+               {
+                  var sectionelementslength = $("[id$='"+atblockindex+"\\:holdticket']").find('[id="'+$(this)[0].id+'"]').find('.inSection');
+           
+               
+               
+                if(sectionelementslength.length !=  0)
+                   $("[id$='"+atblockindex+"\\:holdticket']").find('[id="'+$(this)[0].id+'"]').show();
+   
+               else
+                  $("[id$='"+atblockindex+"\\:holdticket']").find('[id="'+$(this)[0].id+'"]').hide();
+   
+               
+               
+   
+                   if(sectionnames[$(this)[0].id] != undefined)
+                   {
+                   $("[id$='"+atblockindex+"\\:holdticket']").find('[id="'+$(this)[0].id+'"]').find('.panel-title').html(sectionnames[$(this)[0].id]);
+                   }
+               }
+                }); 
+  
+   tindex++;
+   atblockindex++;
+   }
+  </apex:repeat>
+  
+ }
+</script>
+ 
+ 
+ 
+ <script>
+ function getAttendee()
+ {
+  // alert('get attendeee');
+ var fieldMap = {};
+ <apex:repeat value="{!ThePageControler.fieldMap}" var="fm">
+fieldMap["{!fm}"] = "{!ThePageControler.fieldMap[fm]}";
+</apex:repeat>
+
+var tindex=0;
+var atindex=attindex;
+   <apex:repeat value="{!ThePageControler.TicketList}" var="tcklist">
+   if(('{!tcklist.Ticket.Item_Pool__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!tcklist.Ticket.Item_Type__r.name}' == 'Package' && '{!tcklist.Ticket.Parent_ID__c}'!='') || ('{!tcklist.Ticket.Item__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!tcklist.Ticket.Item_Type__r.name}' != 'Package') || ('{!tcklist.Ticket.Item__r.Ticket_Settings__c}' == 'Collect info from All Attendees' && '{!tcklist.Ticket.Item_Type__r.name}' == 'Package' && '{!tcklist.Ticket.Parent_ID__c}'==''))
+    {
+   var fieldMap = {};
+   <apex:repeat value="{!ThePageControler.itemfieldmap}" var="itemkeys">
+   <apex:repeat value="{!ThePageControler.itemfieldmap[tcklist.BLNItem.id]}" var="itemlist" rendered="{!itemkeys==tcklist.BLNItem.id}">
+   var mergedata='{!itemlist}';
+   var arrsplit=mergedata.split("^^");
+   fieldMap[arrsplit[0]] = arrsplit[1];
+   
+   </apex:repeat>
+   </apex:repeat>
+   if(fieldMap['First Name']!='null'&&fieldMap['First Name']!=undefined){
+  
+   }
+   else
+   {
+   for(t=0;t<htmlallfieldnames.length;t++)
+     {
+       fieldMap[htmlallfieldnames[t]] = htmlallfieldnames[t]; 
+     }
+     
+   }
+   
+  <apex:variable var="attendeemap" value="{!ThePageControler.RegSettingsMap[tcklist.BLNItem.id]}" rendered="{!!(tcklist.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && tcklist.Ticket.Item_Type__r.name == 'Package')}"/>
+       <apex:variable var="attendeemap" value="{!ThePageControler.RegSettingsMap[tcklist.Ticket.Item_pool__r.id]}" rendered="{!tcklist.Ticket.Item_Pool__r.Ticket_Settings__c == 'Collect info from All Attendees' && tcklist.Ticket.Item_Type__r.name == 'Package'}"/> 
+          
+        <apex:repeat value="{!attendeemap}" var="rs">
+         
+   if("{!rs.Defaullt_Label__c}"=='Work Address')
+     {
+       attendeeinfo[tindex]["WorkAddress1"]=$('[name="'+fieldMap["WorkAddress1"]+'"]').eq(atindex).val(); 
+       attendeeinfo[tindex]["WorkAddress2"]=$('[name="'+fieldMap["WorkAddress2"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["WorkCity"]=$('[name="'+fieldMap["WorkCity"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["WorkState"]=$('[name="'+fieldMap["WorkState"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["WorkCountry"]=$('[name="'+fieldMap["WorkCountry"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["WorkZipCode"]=$('[name="'+fieldMap["WorkZipCode"]+'"]').eq(atindex).val();
+     }
+     else if("{!rs.Defaullt_Label__c}"=='Home Address')
+     {
+      attendeeinfo[tindex]["HomeAddress1"]=$('[name="'+fieldMap["HomeAddress1"]+'"]').eq(atindex).val(); 
+       attendeeinfo[tindex]["HomeAddress2"]=$('[name="'+fieldMap["HomeAddress2"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["HomeCity"]=$('[name="'+fieldMap["HomeCity"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["HomeState"]=$('[name="'+fieldMap["HomeState"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["HomeCountry"]=$('[name="'+fieldMap["HomeCountry"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["HomeZipCode"]=$('[name="'+fieldMap["HomeZipCode"]+'"]').eq(atindex).val();
+      }
+     else if("{!rs.Defaullt_Label__c}"=='Billing Address')
+     {
+      attendeeinfo[tindex]["BillingAddress1"]=$('[name="'+fieldMap["BillingAddress1"]+'"]').eq(atindex).val(); 
+       attendeeinfo[tindex]["BillingAddress2"]=$('[name="'+fieldMap["BillingAddress2"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["BillingCity"]=$('[name="'+fieldMap["BillingCity"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["BillingState"]=$('[name="'+fieldMap["BillingState"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["BillingCountry"]=$('[name="'+fieldMap["BillingCountry"]+'"]').eq(atindex).val();
+       attendeeinfo[tindex]["BillingZipCode"]=$('[name="'+fieldMap["BillingZipCode"]+'"]').eq(atindex).val();
+      }
+      else if("{!rs.Defaullt_Label__c}"=='Image')
+     {
+      attendeeinfo[tindex]["{!rs.Defaullt_Label__c}"]=$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).siblings('input').val(); 
+      attendeeinfo[tindex]["ImageName"]=$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).siblings('span').html();
+      }
+      else if("{!rs.Defaullt_Label__c}"=='Attachment')
+     {
+      attendeeinfo[tindex]["{!rs.Defaullt_Label__c}"]=$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).siblings('input').val(); 
+      attendeeinfo[tindex]["AttachmentName"]=$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).siblings('div').html();
+      }
+      else if("{!rs.Defaullt_Label__c}"=='Company Logo')
+     {
+      attendeeinfo[tindex]["{!rs.Defaullt_Label__c}".replace(/\s+/g, "")]=$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).siblings('input').val(); 
+      attendeeinfo[tindex]["CompanyLogoName"]=$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).siblings('span').html();
+      }
+      else if("{!rs.Defaullt_Label__c}"=='Biography')
+     {
+     attendeeinfo[tindex]["{!rs.Defaullt_Label__c}".replace(/\s+/g, "")]=$('[id="'+fieldMap["{!rs.Defaullt_Label__c}"]+'_ifr"]').eq(atindex).contents().find("body").html();
+     }
+      else if("{!rs.Defaullt_Label__c}"=='Video')
+     {
+      var vs='';
+      $('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).parent().parent().next('.ytwraper').find('.iframebox').each(function(i) {
+   
+        vs=vs+$(this).html()+",";
+                }); 
+                if(vs!='')
+                vs= vs.slice(0, -1);
+       attendeeinfo[tindex]["Video"]=vs; 
+               
+      }
+      else if("{!rs.Defaullt_Label__c}"=='NAICS Codes'||"{!rs.Defaullt_Label__c}"=='Commodities'||"{!rs.Defaullt_Label__c}"=='Diversity Type')
+     {
+     
+     try{
+     var temparray=$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).val();
+     var temps='';
+     for(ai=0;ai<temparray.length;ai++)
+     {
+       temps+=temparray[ai]+"-";
+     }
+     if(temps!='')
+     temps=temps.slice(0, -1);
+     attendeeinfo[tindex]["{!rs.Defaullt_Label__c}".replace(/\s+/g, "").replace(/\./g, "")]=temps;
+     }catch(e){}
+}
+     else{
+    // alert('{!rs.Defaullt_Label__c}');
+    // alert(atindex);
+    console.log('Attendeee');
+     console.log(fieldMap["{!rs.Defaullt_Label__c}"]);
+   attendeeinfo[tindex]["{!rs.Defaullt_Label__c}".replace(/\s+/g, "").replace(/\./g, "")]=$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).val()!=undefined?$('[name="'+fieldMap["{!rs.Defaullt_Label__c}"]+'"]').eq(atindex).val():"";
+     }
+     </apex:repeat>
+     
+     tindex++;
+     atindex++;
+     }
+     </apex:repeat>
+  
+  
+ }
+ 
+ function getBuyer()
+ {
+  var tindex=0;
+   var bindex=buyerindex;
+   var includedhtmlfieldname='';
+   var fieldMapBuyer = {};
+   
+   <apex:repeat value="{!ThePageControler.buyerfieldmapstring}" var="itemlistbuyer">
+   var mergedata='{!itemlistbuyer}';
+   var arrsplit=mergedata.split("^^");
+   fieldMapBuyer[arrsplit[0]] = arrsplit[1];
+   
+   </apex:repeat>
+   if(fieldMapBuyer['First Name']!='null'&&fieldMapBuyer['First Name']!=undefined){
+   }
+   else
+   {
+   for(t=0;t<htmlallfieldnamesbuyer.length;t++)
+     {
+       fieldMapBuyer[htmlallfieldnamesbuyer[t]] = htmlallfieldnamesbuyer[t]; 
+     }
+   }  
+   <apex:repeat value="{!ThePageControler.buyerTicketInn.settingsForbuyer}" var="rsbuyer">
+   if("{!rsbuyer.Defaullt_Label__c}"=='Work Address')
+     {
+       buyerinfo[tindex]["WorkAddress1"]=$('[name="'+fieldMapBuyer["WorkAddress1"]+'"]').eq(bindex).val(); 
+       buyerinfo[tindex]["WorkAddress2"]=$('[name="'+fieldMapBuyer["WorkAddress2"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["WorkCity"]=$('[name="'+fieldMapBuyer["WorkCity"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["WorkState"]=$('[name="'+fieldMapBuyer["WorkState"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["WorkCountry"]=$('[name="'+fieldMapBuyer["WorkCountry"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["WorkZipCode"]=$('[name="'+fieldMapBuyer["WorkZipCode"]+'"]').eq(bindex).val();
+     }
+     else if("{!rsbuyer.Defaullt_Label__c}"=='Home Address')
+     {
+      buyerinfo[tindex]["HomeAddress1"]=$('[name="'+fieldMapBuyer["HomeAddress1"]+'"]').eq(bindex).val(); 
+       buyerinfo[tindex]["HomeAddress2"]=$('[name="'+fieldMapBuyer["HomeAddress2"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["HomeCity"]=$('[name="'+fieldMapBuyer["HomeCity"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["HomeState"]=$('[name="'+fieldMapBuyer["HomeState"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["HomeCountry"]=$('[name="'+fieldMapBuyer["HomeCountry"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["HomeZipCode"]=$('[name="'+fieldMapBuyer["HomeZipCode"]+'"]').eq(bindex).val();
+      }
+     else if("{!rsbuyer.Defaullt_Label__c}"=='Billing Address')
+     {
+      buyerinfo[tindex]["BillingAddress1"]=$('[name="'+fieldMapBuyer["BillingAddress1"]+'"]').eq(bindex).val(); 
+       buyerinfo[tindex]["BillingAddress2"]=$('[name="'+fieldMapBuyer["BillingAddress2"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["BillingCity"]=$('[name="'+fieldMapBuyer["BillingCity"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["BillingState"]=$('[name="'+fieldMapBuyer["BillingState"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["BillingCountry"]=$('[name="'+fieldMapBuyer["BillingCountry"]+'"]').eq(bindex).val();
+       buyerinfo[tindex]["BillingZipCode"]=$('[name="'+fieldMapBuyer["BillingZipCode"]+'"]').eq(bindex).val();
+      }
+      else if("{!rsbuyer.Defaullt_Label__c}"=='Image')
+     {
+      buyerinfo[tindex]["{!rsbuyer.Defaullt_Label__c}"]=$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).siblings('input').val(); 
+      buyerinfo[tindex]["ImageName"]=$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).siblings('span').html(); 
+       }
+       else if("{!rsbuyer.Defaullt_Label__c}"=='Attachment')
+     {
+      buyerinfo[tindex]["{!rsbuyer.Defaullt_Label__c}"]=$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).siblings('input').val(); 
+      buyerinfo[tindex]["AttachmentName"]=$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).siblings('div').html(); 
+      
+       }
+        else if("{!rsbuyer.Defaullt_Label__c}"=='Company Logo')
+     {
+      buyerinfo[tindex]["{!rsbuyer.Defaullt_Label__c}".replace(/\s+/g, "")]=$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).siblings('input').val(); 
+      buyerinfo[tindex]["CompanyLogoName"]=$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).siblings('span').html(); 
+      
+      }
+      else if("{!rsbuyer.Defaullt_Label__c}"=='Biography')
+     {
+     buyerinfo[tindex]["{!rsbuyer.Defaullt_Label__c}".replace(/\s+/g, "")]=$('[id="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'_ifr"]').eq(bindex).contents().find("body").html();
+     }
+      else if("{!rsbuyer.Defaullt_Label__c}"=='Video')
+     {
+      var vs='';
+      $('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).parent().parent().next('.ytwraper').find('.iframebox').each(function(i) {
+   
+        vs=vs+$(this).html()+",";
+                }); 
+                if(vs!='')
+                vs= vs.slice(0, -1);
+       buyerinfo[tindex]["Video"]=vs; 
+               
+      }
+      else if("{!rsbuyer.Defaullt_Label__c}"=='NAICS Codes'||"{!rsbuyer.Defaullt_Label__c}"=='Commodities'||"{!rsbuyer.Defaullt_Label__c}"=='Diversity Type')
+     {
+     try{
+     var temparray=$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).val();
+     var temps='';
+     for(ai=0;ai<temparray.length;ai++)
+     {
+       temps+=temparray[ai]+"-";
+     }
+     if(temps!='')
+     temps=temps.slice(0, -1);
+     buyerinfo[tindex]["{!rsbuyer.Defaullt_Label__c}".replace(/\s+/g, "").replace(/\./g, "")]=temps;
+     }catch(e){}
+} 
+     else
+     {console.log('bbbbb');
+       console.log($('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex));
+   
+   buyerinfo[tindex]["{!rsbuyer.Defaullt_Label__c}".replace(/\s+/g, "").replace(/\./g, "")]=$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).val()!=undefined?$('[name="'+fieldMapBuyer["{!rsbuyer.Defaullt_Label__c}"]+'"]').eq(bindex).val():"";
+     }
+     </apex:repeat>
+     
+   
+   
+   
+  // console.log(buyerinfo);
+ }
+ </script>
+ 
+ 
+  
+
+
+
+</apex:component>

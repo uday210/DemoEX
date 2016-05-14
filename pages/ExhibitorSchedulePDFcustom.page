@@ -1,0 +1,564 @@
+<apex:page controller="MM_BA_ScheduleCon" renderAs="pdf">
+<apex:form >
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <apex:repeat value="{!MatchLeadsschedules}" var="a">
+ 
+   <tr>
+   <td width="19%" height="150" align="center" valign="middle" bgcolor="#f3f3f3"> 
+
+   <apex:image url="/servlet/servlet.ImageServer?id={!eventDetails.EV_EventLogo__c}&oid={!$Organization.Id}" style="max-height:100;width:150px;" rendered="{!if(eventDetails.EV_EventLogo__c != null,'TRUE','FALSE')}" height="100px" width="100px"/>
+   
+  </td>
+ <!---   <td width="19%" height="150" align="center" valign="middle" bgcolor="#f3f3f3">
+        <apex:image id="theImage" value="{!$Resource.GNEMSDCEventLogo}" width="100" height="100"/>
+    </td> --------->
+    <td width="100%" align="left" valign="middle" bgcolor="#f3f3f3">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="50%">&nbsp;</td>
+        </tr>
+      <tr>
+        <td align="center" valign="middle"><h1 style="color:#0f71b5;font-family:Verdana, Geneva, sans-serif; font-size:16px;">{!Eventdetails.EV_Title__c}</h1></td>
+        </tr>
+      <tr>
+        <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">
+        <apex:outputText value="{0,date, MMM' 'dd', 'yyyy}" rendered="{!IF(MONTH(EventDetails.EV_StartDate__c)!=6,true,false)}">
+        <apex:param value="{!EventDetails.EV_StartDate__c}" /> 
+        </apex:outputText>
+        
+        <apex:outputText value="{0,date, MMMM' 'dd', 'yyyy}" rendered="{!IF(MONTH(EventDetails.EV_StartDate__c)==6,true,false)}">
+        <apex:param value="{!EventDetails.EV_StartDate__c}" /> 
+        </apex:outputText>
+        
+        </td>
+        </tr>
+      <tr>
+        <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!Eventdetails.EV_HostingLocation__c}</td>
+      </tr>
+      <tr>
+        <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!eventDetails.EV_HistingAddr1__c} </td>
+      </tr>
+      <tr>
+        <td align="center" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding:5px;">{!eventDetails.AS_HostingCity__c}, {!eventDetails.EV_HostingStateNew__c} {!eventDetails.EV_HostingZipcode__c}</td>
+        </tr>
+    </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+        <div style="padding:5px; color:#0f71b5;text-align:center;">
+            <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:16px;">{!exhibitoralias } Schedules</h3>
+        </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#0f71b5; padding:5px; color:#FFF;">
+            <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:14px;">{!exhibitoralias } Details</h3>
+        </div>
+    </td>
+  </tr>
+
+  <tr>
+    <td height="90"  width="19%" align="center" valign="middle" style="padding:15px;">
+        <apex:image url="/servlet/servlet.ImageServer?id={!a.corporate.Attendee_Summary__r.Exhibitor_company_imageUrl__c}&oid={!$Organization.Id}" width="100%" rendered="{!IF(a.corporate.Attendee_Summary__r.Exhibitor_company_imageUrl__c != NULL,TRUE,FALSE)}"/>
+        <apex:image url="{!$Resource.NoImage}" width="100%" rendered="{!IF(a.corporate.Attendee_Summary__r.Exhibitor_company_imageUrl__c == NULL,TRUE,FALSE)}"/>
+    </td>
+    <td align="left" valign="top">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="35%" height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!exhibitoralias }</td>
+            <td width="1%" align="center" valign="middle">:</td>
+            <td width="64%" height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.corporate.Attendee_Summary__r.AS_Company__c}"></apex:outputText></td>
+          </tr>
+          <tr>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">{!exhibitoralias } Contact Name</td>
+            <td align="center" valign="middle">:</td>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.corporate.Attendee_Summary__r.FullName__c}"></apex:outputText></td>
+          </tr>
+          <tr>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;font-weight:bold;">Table/Room No.</td>
+            <td align="center" valign="middle">:</td>
+            <td height="30" style="font-family:Verdana, Geneva, sans-serif; font-size:12px;padding-left:5px;"><apex:outputText value="{!a.corporate.BT_id__r.MM_TableNo__c}"></apex:outputText></td>
+          </tr>
+        </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#0f71b5; padding:5px; color:#FFF;">
+            <h3 style="font-family:Verdana, Geneva, sans-serif; padding:0px; margin:0px;font-size:14px;">Scheduled Appointments </h3>
+        </div>
+    </td>
+  </tr>  
+  <tr>
+    <td colspan="2">
+        <div style=" background-color:#FFF; padding:1.5px; color:#FFF;">
+        </div>
+    </td>
+  </tr> 
+  <tr>
+    <td colspan="2" align="right" valign="top">
+    <table width="100%" border="1" cellspacing="0" cellpadding="0" style="margin-top:5px;border:1px solid #FF0000; border-collapse:collapse;" class="boothleadstable">
+      <tr>
+        <th height="23px" width="16%" align="left" valign="middle">Slots</th>
+        <th height="23px" width="20%" align="left" valign="middle" bgcolor="#2eace5">Company Name</th>
+        <th height="23px" width="19%" align="left" valign="middle" bgcolor="#2eace5">{!attendeealias} Name</th>
+        <th height="23px" width="31%" align="left" valign="middle" bgcolor="#2eace5">Email</th>
+        <th height="23px" width="14%" align="left" valign="middle" bgcolor="#2eace5">Contact No.</th>
+      </tr>
+      <apex:variable var="i" value="{!0}"/> 
+     <apex:repeat value="{!a.displaySchedules}" var="c">
+      <apex:variable var="i" value="{!i+1}"/>
+      <tr style="{!IF(MOD(i,2)==0, 'background-color:#ceecfa;','background-color:#FFFFFF;')}">
+        <td height="21px" width="16%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;"><apex:outputText value="{!c.slotTime}"></apex:outputText></td>
+        <td height="21px" width="20%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;">
+        <!--<apex:outputText value="{!c.schedule.MM_To_EAM__r.AS_id__r.AS_Company__c}"/>-->
+         <apex:outputText value="{!c.schedule.MM_To_EAM__r.AS_id__r.AS_Company__c}" rendered="{!IF((c.schedule.EV_id__r.Is_Webank_event__c == false),true,false)}"></apex:outputText>
+         <apex:outputText value="{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Company__c}" rendered="{!IF((c.schedule.EV_id__r.Is_Webank_event__c == True),true,false)}"></apex:outputText>
+        </td>
+        <td height="21px" width="19%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;">
+        <!--<apex:outputText value="{!c.schedule.MM_To_EAM__r.AS_id__r.FullName__c} "/>-->
+        <apex:outputText value="{!c.schedule.MM_To_EAM__r.AS_id__r.FullName__c}" rendered="{!IF((c.schedule.EV_id__r.Is_Webank_event__c == false),true,false)}"></apex:outputText>
+         <apex:outputText value="{!c.schedule.MM_To_EAM__r.MBE_Profile__r.FullName__c}" rendered="{!IF((c.schedule.EV_id__r.Is_Webank_event__c == True),true,false)}"></apex:outputText>
+        </td>
+        <td height="21px" width="31%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;">
+        <!--<apex:outputText value="{!c.schedule.MM_To_EAM__r.AS_id__r.AS_Email__c}"/>-->
+        <apex:outputText value="{!c.schedule.MM_To_EAM__r.AS_id__r.AS_Email__c}" rendered="{!IF((c.schedule.EV_id__r.Is_Webank_event__c == false),true,false)}"></apex:outputText>
+         <apex:outputText value="{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Email__c}" rendered="{!IF((c.schedule.EV_id__r.Is_Webank_event__c == True),true,false)}"></apex:outputText>
+        </td>
+        <td height="21px" width="14%" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; text-align:left;padding-left:4px;">
+        <!--<apex:outputText value="{!c.schedule.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}"/>-->
+        <apex:outputText value="{!c.schedule.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}" rendered="{!IF((c.schedule.EV_id__r.Is_Webank_event__c == false),true,false)}"></apex:outputText>
+         <apex:outputText value="{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_CellPhone__c}" rendered="{!IF((c.schedule.EV_id__r.Is_Webank_event__c == True),true,false)}"></apex:outputText>
+        </td>
+      </tr>
+      </apex:repeat>
+                        
+    </table>
+    </td>
+  </tr>
+
+<apex:outputPanel rendered="{!scheduleswithprof}">
+     <div style="page-break-after:always;">  </div>                       
+   <apex:variable var="count" value="{!0}"/>
+ <apex:repeat value="{!a.displaySchedules}" var="c">
+       <apex:variable var="count" value="{!count + 1}"/> 
+ <apex:outputPanel style="color:#000000;" rendered="{!if(c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Company__c== null || c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Company__c== '',false,true)}">
+                 <!-- table start-->
+                 
+                 <div id="areaToPrint">
+                
+              <table width="100%" border="0" align="center" cellpadding="0" cellspacing="5">
+  <tr>
+    <td height="50" colspan="2" align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr >
+        <apex:outputText rendered="{!pfsett.MBE_Company_Visible__c}">
+        <td width="50%" height="50" align="left" valign="middle"  style="padding-left:5px;font-size:20px;"> <b> <h2 style="font-family:Verdana, Geneva, sans-serif; "></h2>  {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Company__c} </b> </td>
+       </apex:outputText>
+        
+<td width="50%" height="50" align="left">
+ <apex:outputText rendered="{!pfsett.MBE_Company_Logo_Visible__c}">
+<apex:image url="/servlet/servlet.ImageServer?id={!c.schedule.MM_To_EAM__r.MBE_Profile__r.Exhibitor_company_imageUrl__c}&oid={!$Organization.Id}"  width="100px" height="100px"    rendered="{!IF(c.schedule.MM_To_EAM__r.MBE_Profile__r.Exhibitor_company_imageUrl__c != NULL,TRUE,FALSE)}"/>
+ </apex:outputText>
+         </td>
+         
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+    
+     <apex:outputText rendered="{!pfsett.MBE_Company_Visible__c || pfsett.MBE_Year_in_Business_Visible__c || pfsett.Business_Structure_Visible__c || pfsett.MBE_DBA_Visible__c || pfsett.MBE_Business_Type_Visible__c || pfsett.MBE_Business_Established_Date_Visible__c || pfsett.MBE_Primary_Business_Category_Visible__c || pfsett.MBE_Secondary_Business_Category_Visible__c || pfsett.MBE_Number_Of_Employees_Visible__c || pfsett.MBE_Business_Duns_Number_Visible__c || pfsett.MBE_Business_Revenue_Visible__c || pfsett.MBE_Revenue_Range_Visible__c || pfsett.MBE_Business_Tax_ID_Visible__c || pfsett.MBE_BBB_Number_Visible__c || pfsett.MBE_Distributors_Country_Visible__c || pfsett.MBE_Manufatures_Country_Visible__c || pfsett.MBE_Ethnicity_Visible__c || pfsett.MBE_Geographical_Region_Visible__c || pfsett.MBE_References_Visible__c || pfsett.MBE_Certificate_Processed_by_RPO_Visible__c ||pfsett.MBE_References2_Visible__c||pfsett.MBEScope_of_Work__c ||pfsett.MBEScope_of_Work2_Visible__c||pfsett.MBEAny_non_WBENC_awards_received_visible__c||pfsett.MBECompanyhavefacility_partneroutsideUSA__c||pfsett.MBE_Geographical_Region_Visible__c ||pfsett.MBE_Certifications_Visible__c || pfsett.MBE_Cage_Code_Visible__c || pfsett.MBE_GSA_Schedule_Contract_Number_Visible__c}"> 
+
+
+
+    <div style="border:2px solid #93a07d; border-radius:5px;color:#000; width:98%; margin:5px;">
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" style="line-height:22px;">
+   
+      <tr>
+        <td width="40%" height="20" align="left" valign="middle" style="border-bottom:2px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">COMPANY INFORMATION</h3></td>
+      </tr>
+      <apex:outputText rendered="{!pfsett.MBE_Company_Visible__c}">   
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Company Name : </strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Company__c}  </td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_DBA_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>DBA : </strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.DBA__c}  </td>
+        </tr>
+      </apex:outputText>
+<!----------------------------------------------------VC(Added CageCode and GSA fields)----------------------------->    
+      <apex:outputText rendered="{!pfsett.MBE_Cage_Code_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Cage Code :</strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_CageCode__c}  </td>
+        </tr>
+      </apex:outputText>
+          
+            <apex:outputText rendered="{!pfsett.MBE_GSA_Schedule_Contract_Number_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>GSA Schedule Contract Number :</strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.GSA_Schedule__c}  </td>
+        </tr>
+      </apex:outputText>
+<!--------------------------------------------------EVC-----------------------------------------------------------------------> 
+      
+      <apex:outputText rendered="{!pfsett.Business_Structure_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Business Structure : </strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Business_Structure__c}  </td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Business_Established_Date_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> <strong>Established Date : </strong> 
+            <apex:outputText value="{0,date,MM/dd/yyyy}">
+              <apex:param value="{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_BusinessEstablishedDate__c}"/>
+            </apex:outputText>
+                </td>
+        </tr>
+       </apex:outputText>
+       <apex:outputText rendered="{!pfsett.MBE_Year_in_Business_Visible__c}"> 
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Years in Business : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Year_in_Business__c}</td>
+        </tr>
+      </apex:outputText>
+       <apex:outputText rendered="{!pfsett.MBE_Primary_Business_Category_Visible__c}"> 
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Primary Business Category : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_PrimaryBusinessCategory1__c}</td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Secondary_Business_Category_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Secondary Business Category : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.As_SecondaryBusinessCategory1__c} </td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Number_Of_Employees_Visible__c}">   
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>No.of Employees :  </strong>    
+            <apex:outputText value="{0,number,0}">
+              <apex:param value="{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_NumberOfEmployees__c}"/>
+            </apex:outputtext>
+             </td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Business_Duns_Number_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"> <strong>Business DUNS Number : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_BusinessDunsNumber__c}</td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Business_Revenue_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Business Revenue : </strong>  
+       {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_BusinessRevenue__c}
+       </td>
+        </tr>
+       </apex:outputText>
+       <apex:outputText rendered="{!pfsett.MBE_Revenue_Range_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Revenue Range : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Revenue_Range__c}</td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Business_Tax_ID_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Tax ID : </strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_BusinessTaxId__c} </td>
+        </tr>
+      </apex:outputText>
+ <!--------------------------------------- VC (Added Diversity & Certifications)-------------------------------------->     
+        <apex:outputText rendered="{!pfsett.MBE_Business_Type_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Certificates : </strong> {!c.schedule.MM_To_EAM__r.DiversityType__c}</td>
+        </tr>
+        </apex:outputText>
+        
+        <apex:outputText rendered="{!pfsett.MBE_Certifications_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Certifications :</strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Company_Certifications__c}</td>
+        </tr>
+        </apex:outputText>
+        
+<!--------------------------------------- EVC------------------------------------------------------------------------------------>           
+      
+    
+      
+      <apex:outputText rendered="{!pfsett.MBE_BBB_Number_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>BBB Number : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.BBB_Number__c}</td>
+        </tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBE_Distributors_Country_Visible__c}">
+        <tr>
+        <td height="40" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>In which country is your company's distribution center located (if applicable) : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.distribution_Country__c}</td>
+        </tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBE_Manufatures_Country_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>If your company sells a product, what country or countries manufactures it : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Manufactures_Country__c}</td>
+        </tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBE_Geographical_Region_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Geographical Region : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Geographical_Region__c}</td>
+        </tr>
+        </apex:outputText>
+         <apex:outputText rendered="{!pfsett.MBE_Ethnicity_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Ethnicity : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Ethnicity__c}</td>
+        </tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Reference 1 : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.References__c}</td>
+        </tr>
+         </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Scope of Work 1 :</strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Scope_of_Work__c}</td>
+        </tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Reference 2 :</strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.References2__c}</td>
+        </tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Scope of Work 2 :</strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Scope_of_Work2__c}</td>
+        </tr>
+        
+        
+        </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBE_Certificate_Processed_by_RPO_Visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Certificate Processed by RPO : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Certificate_Processed_by_RPO__c}</td>
+        </tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!pfsett.MBEAny_non_WBENC_awards_received_visible__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Non-WBENC awards received in the last 2 years :</strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Any_non_WBENC_awards_received__c}</td>
+        </tr>
+        </apex:outputText> 
+        <apex:outputText rendered="{!pfsett.MBECompanyhavefacility_partneroutsideUSA__c}">
+        <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Does your company have either a facility or partner outside of the US :</strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Companyhaveafacility_partneroutsideUSA__c}</td>
+        </tr>
+        </apex:outputText>
+        
+      </table>
+      </div>
+       </apex:outputText>
+      
+     
+    </td>
+    <td width="50%" align="center" valign="top">
+    
+    <apex:outputText rendered="{!pfsett.MBE_First_Name_Visible__c || pfsett.MBE_Small_Business_Image_Visible__c || pfsett.MBE_Secondary_Email_Visible__c || pfsett.MBE_Email_Visible__c || pfsett.MBE_Mobile_Phone_Visible__c || pfsett.MBE_Title_Visible__c}">
+     <div style="border:2px solid #93a07d; border-radius:5px;width:98%; color:#000; margin:5px;">
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" style="line-height:22px;">
+      <tr>
+        <td height="25" colspan="2" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">CONTACT DETAILS</h3></td>
+      </tr>
+      <tr>
+        <apex:outputText rendered="{!pfsett.MBE_First_Name_Visible__c}">
+        <td width="68%" height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>First Name :</strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_FirstName__c} </td>
+        </apex:outputText>
+        <td width="32%" height="25" rowspan="5" align="center" valign="middle">
+               <apex:outputText rendered="{!pfsett.MBE_Small_Business_Image_Visible__c}">
+               <apex:image url="/servlet/servlet.ImageServer?id={!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_ImageUrl__c}&oid={!$Organization.Id}"  width="100px" height="100px"  rendered="{!IF(c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_ImageUrl__c != NULL,TRUE,FALSE)}"/>
+               </apex:outputText>
+       <!-- <apex:image url="/servlet/servlet.ImageServer?id={!Ticketfordetail.MBE_Profile__r.AS_ImageUrl__c}&oid={!$Organization.Id}"  width="100px" height="100px"/>-->
+        </td>
+      </tr>
+      <apex:outputText rendered="{!pfsett.MBE_First_Name_Visible__c}">
+      <tr align="left" valign="middle">
+        <td height="20" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Last Name : </strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_LastName__c} </td>
+      </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Email_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Primary Email : </strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Email__c} </td>
+      </tr>
+      </apex:outputText>
+       <apex:outputText rendered="{!pfsett.MBE_Secondary_Email_Visible__c}">
+      <tr>
+       <!-- <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Secondary Email : </strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Secondary_Email__c} </td>-->
+      </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Mobile_Phone_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Mobile : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_CellPhone__c}</td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Title_Visible__c}">
+      <tr>
+        <td height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Title : </strong>{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Title__c} </td>
+        </tr>
+      </apex:outputText>  
+      </table>
+     </div> 
+     </apex:outputText>
+      
+    <apex:outputText rendered="{!pfsett.MBE_Work_Address_Visibility__c || pfsett.FaxNumber_Visible__c}">
+    <div style="border:2px solid #93a07d; border-radius:5px;width:98%; margin:5px; color:#000;">
+      
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="51%" height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">COMPANY ADDRESS</h3></td>
+        </tr>
+      <apex:outputText rendered="{!pfsett.MBE_Work_Address_Visibility__c}">
+      <tr>
+        <td width="49%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;">
+        {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_WorkAddress1__c} {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_WorkAddress2__c}<br/>
+        {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_WorkCity__c},{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_Work_States__c} {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_WorkZip__c}
+        
+        
+        
+        </td>
+        </tr>
+       </apex:outputText> 
+      <apex:outputText rendered="{!pfsett.FaxNumber_Visible__c }">  
+      <tr>
+        <td width="40%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>FaxNumber : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_FaxNumber__c}</td>
+        </tr>
+      </apex:outputText>   
+    </table>
+    </div>
+    </apex:outputText>
+    
+     <apex:outputText rendered="{!pfsett.MBE_Website_Visible__c || pfsett.MBE_Work_Phone_Visible__c}"> 
+     <div style="border:2px solid #93a07d; border-radius:5px;width:98%; margin:5px; color:#000;"> 
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">CONTACT US</h3></td>
+        </tr>
+      <apex:outputText rendered="{!pfsett.MBE_Website_Visible__c}">
+      <tr>
+        <td width="40%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Website URL : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_WebsiteUrl__c}</td>
+        </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Work_Phone_Visible__c }">  
+      <tr>
+        <td width="40%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><strong>Phone Number : </strong> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_WorkPhone__c}</td>
+        </tr>
+      </apex:outputText>  
+      </table>
+     </div> 
+     </apex:outputText>
+      
+      <apex:outputText rendered="{!pfsett.MBE_Business_Description_Visible__c}">
+      <div style="border:2px solid #93a07d; border-radius:5px;  width:98%; margin:5px; color:#000;"> 
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="32%" height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">BUSINESS DESCRIPTION</h3></td>
+        </tr>
+      <tr>
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;"> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_BusinessDescription__c}  </td>
+        </tr>
+        </table>
+        
+      </div>  
+      </apex:outputText>
+     
+     <apex:outputText rendered="{!pfsett.MBE_Procurement_Needs_Visible__c}">
+     <div style="border:2px solid #93a07d; border-radius:5px; ; width:98%; margin:5px; color:#000;">
+        <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="27%" height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; font-family:Verdana, Geneva, sans-serif; font-size:11px;">PRODUCTS / SERVICES </h3></td>
+        </tr>
+      <tr>
+        <td height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; line-height:20px;"> {!c.schedule.MM_To_EAM__r.MBE_Profile__r.Key_words__c}  </td>
+      </tr>
+      </table>
+    </div>
+       </apex:outputText>
+     <!-- NAICS code start -->
+     
+     
+       <apex:outputText rendered="{!pfsett.MBE_NAICS_CODES_Visible__c}"> 
+     <div style="border:2px solid #93a07d; border-radius:5px;width:98%; margin:5px; color:#FFF;">  
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="25" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; color:#000; font-family:Verdana, Geneva, sans-serif; font-size:11px;">NAICS INFORMATION</h3></td>
+        </tr>
+      <tr>
+        <td width="49%" height="25" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; line-height:20px;">
+       <ul style="list-style:none; margin-left:0px;">
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_1__c}</li>
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_2__c}</li>
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_3__c}</li>
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_4__c}</li>
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.As_NAICSCode_5__c}</li>
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_NAICSCode6__c}</li>
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_NAICSCode7__c}</li>
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_NAICSCode8__c}</li>
+       <li style="list-style:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.AS_NAICSCode9__c}</li> 
+       </ul>
+        
+        </td>
+        </tr>
+      </table>
+      
+     </div> 
+     </apex:outputText> 
+     
+     
+     <!-- NAICS code end -->   
+     
+         <!-- commodities start -->
+     
+     <apex:outputText rendered="{!pfsett.MBE_Commodities_Visible__c}">
+      <div style="border:2px solid #93a07d; border-radius:5px;width:98%; margin:5px; color:#FFFFFF;">  
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="20" align="left" valign="middle" style="border-bottom:1px solid #93a07d;"><h3 style="padding:0px; margin:0px; color:#000; font-family:Verdana, Geneva, sans-serif; font-size:11px;">COMMODITIES</h3></td>
+        </tr>
+      <tr>
+        <td width="49%" height="20" align="left" valign="middle" style="font-family:Verdana, Geneva, sans-serif; font-size:11px; color:#000000; line-height:20px;">
+        <ul style="margin:0px; padding:0 list-style-type:none;">
+       <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_1__c}</li>
+       <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_2__c}</li>
+       <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_3__c}</li>
+       <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_4__c}</li>
+       <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_5__c}</li>
+        <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_6__c}</li>
+       <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_7__c}</li>
+       <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_8__c}</li>
+       <li style=" list-style-type:none;">{!c.schedule.MM_To_EAM__r.MBE_Profile__r.Commodity_9__c}</li>
+       </ul>
+        </td>
+        </tr>
+      </table>
+     </div> 
+     </apex:outputText>
+     
+     <!-- commodities end --> 
+
+    </td>
+  </tr>
+  <tr>
+    <td height="19" align="center" valign="top">&nbsp;</td>
+    <td align="center" valign="top">&nbsp;</td>
+  </tr>
+</table>
+
+                 
+  </div>     
+<apex:outputText rendered="{!IF(count<a.displaySchedules.Size,True,False)}">
+   <div style="page-break-after:always;">
+
+  
+  </div> 
+  </apex:outputText>
+</apex:outputPanel>
+
+
+</apex:repeat>
+  </apex:outputPanel>
+
+  
+
+  </apex:repeat> 
+
+  </table>
+  
+</apex:form>
+ </apex:page>

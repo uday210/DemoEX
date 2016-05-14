@@ -1,0 +1,158 @@
+<!-----------------------------------------------------------------------------------------------
+*   Controller Name : BLN_AbandonedOrdersReportCon
+*   Date            : 02/22/2016
+*   Author          : Vineel Ragula
+*   Purpose         : This Page will display the Abandoned Orders Report
+----------------------------------------------------------------------------------------------->
+<apex:page showHeader="false" standardStylesheets="false"
+   sidebar="false" cache="true"  controller="BLN_AbandonedOrdersReportCon"
+   action="{!hideEventsTab}"  id="pgid">
+   <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+   <c:DateFormatChange />
+   <c:currencyFormatting ></c:currencyFormatting>
+   <!------------common styles component------------>
+   <c:ed_commonstyles ></c:ed_commonstyles>
+   <!------------//common styles component---------->
+   <!-----------datatable stylescss------------->
+   
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ordersummary-report.css')}" />
+   <!-----------//datatable stylescss------------->
+   <!-------------basic template html component------------------------------------->
+   <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" >
+      <apex:form id="myForm">
+         <!-------------------------print and export button-------------------------------------------->
+         <div class="print_export_cont" style="width: 100%;">
+            <apex:commandLink styleClass="datatables_btn" action="{!printabandonedordersummary}" target="_blank">
+               <span>Print</span>
+            </apex:commandLink>
+            <apex:commandLink styleClass="datatables_btn"
+               action="{!exportabandonedordersummary}" target="_blank">
+               <span>Export</span>
+            </apex:commandLink>
+         </div>
+         <!--------------------------//end of print and export button---------------------------------->
+         <br/>
+       <div>  
+            <!-----start of from date and to date----->
+                    <p class="right" style="text-align: right; width: 35%;display:none;">
+                        <span class="labeltitles">From Date:</span> <span> <apex:inputText value="{!startdte}" styleClass="ED" id="fdate"
+                                style="width:18%; height:20px;" onchange="table.draw();"/>
+                        </span> <span class="labeltitles">To Date:</span> <span> <apex:inputText value="{!enddte}" styleClass="ED"
+                                style="width:18%; height:20px;" id="tdate" onchange="table.draw();" />
+                        </span> 
+                    </p>
+
+        </div> 
+         <!--------- #start of from date and to date -------------->
+         
+         
+         <div class="datatable-wrapper">
+            <!-------->
+            <div class="top-stats" >
+               <!--------->
+               <apex:outputpanel id="statrender" styleclass="top-stats" style="box-shadow:0 .0px .0px 0;" >
+                  <ul class="left" style="width: 60%; height: 10px; " >
+                     <!---->
+                     <li class="labeltitles">Total Abandoned Orders :</li>
+                     <li class="labeloutput">{!abandonedOrd.size}</li>
+                  </ul>
+               </apex:outputpanel>
+            </div>
+            <div class="clear"></div>
+            <apex:variable var="OrderNumber" value="{!0}" />
+            <!-----datatable start----->
+            <table id="example" class="display">
+               <thead>
+                  <tr>
+                     <th >S.no</th>
+                     <th >Order No</th>
+                     <th >Ordered By</th>
+                     <th >Email</th>
+                     <th> Phone </th>
+                     <th> Company </th>
+                     <th >Order Date</th>
+                     <th >Pay Type</th>
+                     <th >Order Status</th>
+                     <th >Amount ({!currencySymbol}) </th>
+                  </tr>
+               </thead>
+             <tbody>  
+               <apex:repeat value="{!abandonedOrd}" var="order">
+                  <tr>
+                     <td>
+                        <apex:variable var="OrderNumber" value="{!OrderNumber+1}"/>
+                        {!OrderNumber}. 
+                     </td>
+                     <td>{!order.Name} </td>
+                     <td>{!order.BLN_TKT_profile__r.First_Name__c} {!order.BLN_TKT_profile__r.Last_Name__c}</td>
+                     <td>{!order.BLN_TKT_profile__r.Email__c}</td>
+                     <td>{!order.BLN_TKT_profile__r.Mobile__c}</td>
+                     <td>{!order.BLN_TKT_profile__r.TKT_Company__c}</td>
+                     <td>
+                        <c:EV_FormatDt date_Timevalue="{!order.CreatedDate}" t_Zone="{!se.Time_Zone__c}"></c:EV_FormatDt>
+                     </td>
+                     <td>
+                        <apex:repeat value="{!order.Payments__r}" var="payment">
+                           {!payment.Payment_Mode__c}
+                        </apex:repeat>
+                     </td>
+                     <td> {!order.Order_Status__c}</td>
+                     <td align="right"> {!order.Amount_Paid__c} </td>
+                  </tr>
+               </apex:repeat>
+             </tbody>  
+            </table>
+            <!-----------end of datatable report-->
+         </div>
+         <!--close of datatable-wrapper-->
+      </apex:form>
+   </c:ed_basictemplate>
+   <!--------//start of datatable js component------------->
+   <c:ed_datatablejs ></c:ed_datatablejs>
+   
+   
+    <script type="text/javascript" language="javascript" class="init">
+    var j = jQuery.noConflict();
+j(document).ready(function() {
+   j('#example').dataTable( {
+                  "scrollX": true,
+          "sScrollX": "100%",
+        "sScrollXInner": "120%",
+        
+         
+        "bAutoWidth": false, // Disable the auto width calculation
+
+  order: [] ,
+
+ "bSort" : false,
+
+   
+   
+   } );
+ 
+ }); 
+ </script>
+ <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+ <script>
+ var dt = jQuery.noConflict();        
+dt('.ED').datetimepicker({
+timepicker:false,
+format:'m/d/Y',
+formatDate: 'm/d/Y'
+
+}); 
+    </script>   
+   <c:ed_commonjs ></c:ed_commonjs>
+   <!------------//common js libraries component------------>
+   
+   <script>
+      function currencyformat()
+      {
+          rightJustificationOrders('{!currencySymbol}');
+      }
+      rightJustificationOrders('{!currencySymbol}');
+   </script>
+   <!-----/*********************//Java Script Section*******************/-->
+</apex:page>

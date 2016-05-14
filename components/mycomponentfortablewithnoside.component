@@ -1,0 +1,192 @@
+<apex:component id="commoncomponent" >
+
+ <apex:attribute name="BLN_UtillDisplayLinks" description="This is the value for the component."
+                    type="BLN_UtillDisplayLinks" required="true"/>
+
+ <head><title>Eventdex</title></head>
+
+   <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+   
+    <!-- --------------------------- Basic Style sheets ---------------------------------- -->
+  <!-- <apex:stylesheet value="{!URLFOR($Resource.MyTickets, 'css/style.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.MyTickets, 'style-button.css')}"/>
+      <script type="text/javascript" src="{!URLFOR($Resource.nwdatatable, 'nwdatatable/js/jquery.js')}"></script>  
+       <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/jquery-ui-1.8.16.custom.min.js')}"></script>-->
+       
+ <style>
+    
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+     <style>
+
+
+.button-a.blue {
+background-image: url({!URLFOR($Resource.MyTickets, 'images/button.png')});
+background-position: 0px -60px;
+border: 1px solid #438ac2;
+}
+     
+.selected { background-color: #E0EFF7; } 
+        
+        </style>
+
+
+
+<script>  
+    var x ="{!CASE($User.UserType,'guest','true','false')}";
+    if(x=='true'){
+       window.location.href="{!$Site.baseURL}";  
+    }  
+</script>
+<script>
+
+function getCookie(w){
+    cName = "";
+    pCOOKIES = new Array();
+    pCOOKIES = document.cookie.split('; ');
+    for(bb = 0; bb < pCOOKIES.length; bb++){
+        NmeVal  = new Array();
+        NmeVal  = pCOOKIES[bb].split('=');
+        if(NmeVal[0] == w){
+            cName = unescape(NmeVal[1]);
+        }
+    }
+    return cName;
+}
+
+function destroy()
+{
+  try{
+           sessionStorage.removeItem("event");
+           sessionStorage.removeItem("ticket");
+           sessionStorage.removeItem("blproduct");}catch(e){}
+           
+                    
+var x = getCookie("sid");
+if(x == ''){
+ window.location.replace("{!$Site.BaseUrl}/");
+ return false;
+}
+else{
+    return true;
+}
+}
+</script>
+
+<!-- -------------------------------------------------------- apex end------------------------------------------ -->
+   
+<!------------------top layer----------------->
+<!------------------Component for User First & Last Name----------------->
+<c:UserNameComponent ></c:UserNameComponent>
+<!----------------------//top layer------------------------------> 
+<!---------------------second layer(black)--------------------->
+
+<header>
+<div id="centered-head"> 
+  <!-- Navigation -->
+  <nav>
+    <ul>
+      <li id="login"> <span id="login-trigger"> <span id="login-triggers"> <i class="fa fa-angle-down fa-1x">&nbsp;&nbsp;</i> <span id="user-panel-title ">My Account</span> </span> </span>
+        <div id="login-content">
+          <ul>
+            <li><apex:form ><apex:outputLink value="/apex/BLN_profile"><i class="fa fa-cog fa-1x">&nbsp;&nbsp;</i><span>Settings</span></apex:outputLink></apex:form></li>
+            <li><apex:form ><apex:outputLink value="/apex/bln_Changepassword"><i class="fa fa-cog fa-1x">&nbsp;&nbsp;</i><span>Change Password</span></apex:outputLink></apex:form></li>
+            <!-- <li><a href="#"><i class="fa fa-cog fa-1x">&nbsp;&nbsp;</i><span>Change Password</span></a></li> --> 
+            <li> <apex:form ><apex:commandLink onclick="return destroy();" action="{!$Site.Prefix}/secur/logout.jsp"><i class="fa fa-reply fa-1x">&nbsp;&nbsp;</i><span>{!$Label.site.logout}</span></apex:commandLink></apex:form></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+  <!-- Navigation end-->
+  <!---<div class="account-name">
+    <p><span class="welcome">Welcome,</span> <strong>{!$user.FirstName} {!$user.LastName}</strong></p> 
+    <div class="account-separator"></div>
+  </div>--->
+  <!----->
+  <div class="account-name"></div>
+  <div class="quickbuttons">
+    <div> <a href="{!$Site.BaseUrl}/apex/BLN_userEvents"><i class="fa fa-calendar fa-1x">&nbsp;&nbsp;</i>My Events</a> <a href="{!$Site.BaseUrl}/apex/BLN_Mytickets"><i class="fa fa-ticket fa-1x">&nbsp;&nbsp;</i>My Tickets</a> </div>
+  </div>
+  <!--close of quickbuttons--> 
+  
+</div>
+<!-----#centered-head--> 
+
+</header>
+     <div class="clear"></div>
+
+<!-- -------------------------------------- Header End  ------------------------------------------------------ -->
+
+<section id="middle" class="res">
+    <!--<div id="container-main" >-->
+     
+  <div id="container" class="full_container">
+     <div id="content" class="padding-0px">     
+     <div class="speedbar_full">
+               <div class="speedbar-nav">Eventdex ›› {!BLN_UtillDisplayLinks.tablabel}</div>
+               <div style="float:right;padding-right:10px;" class="eventTitleHide">Selected Event:{!BLN_UtillDisplayLinks.eventName} <b></b></div>
+
+               <!--close of speedbar-nav--> 
+             </div>
+                <!--Statistic-->
+                <div class="grid-1" > 
+                  
+             <!-- ----------------------------------------Your Table------------------------------------------------ --> 
+       
+             <apex:componentBody id="compobody">
+             
+             
+             
+             
+             
+             
+  
+             
+             
+             </apex:componentBody>
+             
+               <!-- ---------------------------------------- Your Table End------------------------------------------------ -->
+      
+                   <div class="clear"></div>
+                 </div>
+                 <!-- ----------------- Statistic --------------------------- -->
+              </div>
+           <!-- #content--> 
+         </div>
+              
+    
+  <!--</div>-->
+    
+  <!-- -------------------------------------------- Footer Start ---------------------------------------------------- -->  
+    
+  <footer id="full_footer">
+    <div class="info-footer">
+           <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+           <div id="right">
+        <p>Eventdex</p>
+      </div>
+         </div>
+  </footer>
+     </section>
+<!-- #middle-->
+   <!--  <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/functions.js')}"></script> -->
+
+</apex:component>

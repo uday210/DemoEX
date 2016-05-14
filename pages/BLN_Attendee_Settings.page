@@ -1,0 +1,871 @@
+<apex:page showHeader="false" controller="BLN_attendee_settingsNewCon" id="thePage" standardStylesheets="false">
+
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-attendeesettings.css')}" />
+     <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!-- ------------------------------------ for Items  ------------------------------------------------------------ -->
+        <style>
+         .tickettoggle{cursor:pointer;}
+          .normalticket{ padding:0px 5px; color:#424242;border-bottom: 1px solid #DDD;font-family:Arial, Helvetica, sans-serif;background-color:whiteSmoke;cursor:pointer;}
+           .packageticket{}
+           .ticketsbox{background-color:whiteSmoke;}
+           .tickchkbox{ padding:10px 0px; display:inline-block; vertical-align:top; width:6%;}
+           .ticknamediv{ display:inline-block; vertical-align:top; width:90%; padding:10px 0px;  word-wrap: break-word;}
+           .ln_tickchkbox{ padding:5px 0px;padding-left:5px; display:inline-block; vertical-align:top; width:6%;}
+           .ln_ticknamediv{ display:inline-block; vertical-align:top; width:86%; padding:5px 0px;  word-wrap: break-word;}
+           .trigger{ display:inline-block; vertical-align:top;float:right; margin-top:-25px;}
+           
+            .packageticket .trigger .expcolp {
+                   right: 0;
+                   top: 30%;
+                   cursor: pointer;
+                   width:25px ;
+                   height: 13px;
+                   margin-bottom:-2px;
+                   background: url('{!URLFOR($Resource.edsr_master, 'edsr_root/images/trigger.png')}') no-repeat right top;
+                   display: block;
+                   color:#ffffff;
+                   font-size: 14px;
+                   display:inline-block;
+               
+           }
+           .expcollap{border-bottom:1px solid #ddd; text-indent:5px;color:#337ab7;font-size:12px;font-weight:700;}
+           .inactive   .trigger  .expcolp {
+                   background-position: right bottom;
+               }
+               
+           .main{ background-color:#858d93}
+           .mainn{ background-color:#858d93}
+           
+           .foractive{background-color:#ffffcc;font-weight:700;}
+           .forinactive{background-color:whiteSmoke;}
+           
+          </style>
+    
+   <!-- ------------------------------------ End  ------------------------------------------------------------ -->
+    <!-------------basic template html component------------------------------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="cmp">
+  <script>  
+   function myFunction(tid,gpName,gplabel) {
+   
+     var person ;
+    if(gplabel!=""){ 
+       person = prompt("Please enter group name", gplabel);
+     }else{
+       person = prompt("Please enter group name", gpName);
+     }
+     
+     if (person != null) {
+        updategpname(tid,gpName,person );
+        //alert('ppp '+tid+gpName+person );
+     }
+   }
+  </script>    
+  
+        <!---------------------template code------------------>
+            <!--Statistic-->
+            <div class="grid-1">
+
+                <!--------------------------->
+                <div class="form-embed-div" style="width: 95%;">
+                    <div class="form-content-div" style="padding: 0px;">
+                        <!----------------topstats--------->
+                        <div class="top-stats" id="tab1" style="width: 98%; margin-left: .5%;">
+                            <!----------->
+                             <ul>
+                                <!----->
+                                <li><input id="buyerinfo" type="radio" name="infocatg" />
+                                <label class=" labeltitles" for="buyerinfo">Collect info from Buyers only</label></li>
+                                <li style="margin-left: 10px;"><input id="attendeeinfo" type="radio" name="infocatg" /> <label class="labeltitles"
+                                 for="attendeeinfo">Collect info from All Attendees</label></li>
+                                <li style="margin-left: 10px;display:none;"><input id="noinfo" type="radio" name="infocatg" /> <label class="labeltitles"
+                                for="noinfo">Do not collect Attendee info</label></li>
+                           </ul>
+                            <!--------->
+                        </div>
+                     <!------------------->
+                         <div id="TabbedPanels1" class="TabbedPanels">
+                             <ul class="TabbedPanelsTabGroup">
+                                <li class="TabbedPanelsTab" onclick="infoSet('tab1')">Current Ticket Settings</li>
+                                 <li class="TabbedPanelsTab" onclick="infoSet('tab2')">Default Ticket Settings</li>
+                             </ul>
+                            <div class="TabbedPanelsContentGroup">
+                            
+                                <!--------------------start of 1 st tab------------------>
+                          <div class="TabbedPanelsContent" style="padding: 5px;">
+                            <apex:form id="frm">
+                               <apex:inputHidden value="{!setApplyItems}"  id="applyIt"/>
+                               <apex:inputHidden value="{!selectedInfoType}" id="infoType"/>
+                               <apex:inputHidden value="{!selectedGroups}" id="selgps"/>
+                        
+                               <script>  
+                                 function saveAct(){
+                                     var vr = document.getElementById('buyerinfo');
+                                     var ar = document.getElementById('attendeeinfo');
+                                     var slval = '';
+                                           if(vr.checked==true){
+                                              slval = 'Collect info from Buyers only';
+                                           }else if(ar.checked==true){
+                                              slval = 'Collect info from All Attendees';
+                                           }else{
+                                              slval = 'Collect info from All Attendees';
+                                           }
+                                      // alert('Id'+document.getElementById('thePage:cmp:commoncomponent:f1:applyIt'));
+                                      var elementsChk = document.getElementsByClassName('chklist');  
+                                      var selIt ;
+                                      var isFirstRec = true;
+                                        for(var t=0;t < elementsChk.length; t++){
+                                           if(elementsChk[t].checked){
+                                             if(isFirstRec){
+                                                 var df = elementsChk[t].id;
+                                                 selIt  = df.substring(0, df.length-3); 
+                                                 isFirstRec =false;
+                                              }else{
+                                                 var df = elementsChk[t].id;
+                                                 selIt  += ','+df.substring(0, df.length-3);
+                                             }
+                                          }
+                                      }
+                                      
+                                      var gps ='';
+                                      var isFirstRecgp = true;
+                                      var bck= document.getElementsByClassName('login-content1');
+                                          for(var r=0;r < bck.length;r++){
+                                             var cx = bck[r].getElementsByClassName('gpNames');
+                                                for(var e=0;e < cx.length;e++){
+                                                   if(cx[e].checked ==true){
+                                                       if(isFirstRecgp){
+                                                          gps = cx[e].name; 
+                                                          isFirstRecgp =false;
+                                                       }else{
+                                                          gps += ''+cx[e].name; 
+                                                       }
+                                                    }  
+                                                }
+                                            }  
+                                      
+                                      
+                                       document.getElementById('thePage:cmp:commoncomponent:frm:selgps').value =gps ;
+                                       document.getElementById('thePage:cmp:commoncomponent:frm:applyIt').value =selIt ;
+                                       document.getElementById('thePage:cmp:commoncomponent:frm:infoType').value =slval;
+                                       // alert(' 111111111111  '+document.getElementById('thePage:cmp:commoncomponent:frm:infoType').value +' 22222222222222222222 '+slval);
+                                     
+                                       var reqvalues = document.getElementsByClassName('reqChking');
+                                       var isRequiredMiss = true;
+                                       
+                                       for(var t=0;t<reqvalues.length;t++){
+                                          if(reqvalues[t].value==""){
+                                               reqvalues[t].style.border = "solid #FF0000";
+                                               isRequiredMiss =false;
+                                          }else{
+                                            reqvalues[t].style.border = "#000000"
+                                          }
+                                       } 
+                                      if(isRequiredMiss==true){ 
+                                       saveAction();
+                                      } 
+                                  }
+                              </script>  
+                              
+                              <apex:actionFunction action="{!Save}" name="saveAction" status="AjaxLoader" reRender="innPanel,SetsPanel,Sets12,frm3">
+                                  <apex:param name="clinfo" value=""/>
+                              </apex:actionFunction>
+                               <apex:actionFunction action="{!fetchSettings}" name="methodOneInJavascript" reRender="innPanel,SetsPanel,Sets12,toRender">
+                                  <apex:param name="pmValue" value=""/><!--  reRender="innPanel,SetsPanel" -->
+                              </apex:actionFunction>
+                              
+                              <apex:actionFunction action="{!SaveGpName}" name="updategpname" reRender="innPanel,SetsPanel,Sets12,toRender">
+                                <apex:param value="" name="gpItemid"/>
+                                <apex:param value="" name="gpname"/>
+                                <apex:param value="" name="gpnamenew"/>
+                         
+                         
+                              </apex:actionFunction>
+     
+                              
+                               <!-- Additional setting strart -->
+                                
+                                 
+                                  <apex:outputPanel id="addSet">
+                                     <nav class="togglebtnnav right">
+                                          <ul style="float: left; margin-top: 0px; margin-left: 4px;">
+                                             <li id="login1"><span class="togglebtn"> 
+                                               <i class="fa fa-gear">&nbsp;&nbsp;</i><strong>Additional
+                                                        Settings </strong>
+                                            </span>
+                                               <ul class="login-content1">
+                                                   <apex:outputPanel id="toRender">
+                                                    <apex:repeat value="{!innSetList}" var="itv1" >  
+                                                      <li><a>
+                                                         <apex:outputPanel rendered="{!itv1.isSelected}"> 
+                                                      <!--       <input type="checkbox" class="gpNames" name="{!itv1.headerValue}"  checked ="true" onClick="chkboxtoggle_div(this)"/> -->
+                                                           <apex:outputPanel rendered="{!IF(itv1.headerValue=='Basic Information',false,true)}"> 
+                                                             <input type="checkbox" class="gpNames" name="{!itv1.headerValue}"  checked ="true" onClick="chkboxtoggle_div(this)"/>
+                                                            </apex:outputPanel>
+                                                            
+                                                           <apex:outputPanel rendered="{!IF(itv1.headerValue=='Basic Information',true,false)}"> 
+                                                             <input type="checkbox" class="gpNames" name="{!itv1.headerValue}" disabled="disabled" checked ="true" onClick="chkboxtoggle_div(this)"/>
+                                                            </apex:outputPanel>
+                                                           
+                                                      
+                                                        </apex:outputPanel>
+                                                        
+                                                        <apex:outputPanel rendered="{!NOT(itv1.isSelected)}">
+                                                            <input type="checkbox" class="gpNames"  name="{!itv1.headerValue}"  onClick="chkboxtoggle_div(this)"/>
+                                                        </apex:outputPanel>
+                                                        
+                                                       <label>
+                                                         {!itv1.headerValue}</label></a></li>
+                                                     </apex:repeat> </apex:outputPanel>           
+                                                </ul></li>
+                                        </ul>
+                                    </nav>
+                                   <!-- Additional settings end -->
+                                   </apex:outputPanel> 
+                                   
+                                   
+                                    <div class="clear"></div>
+                                    <!-----end of actions nav---->
+                                    <div class="ct_wrapper margin-top-5px">
+                                        <!--start of ct_wrapper------>
+                                        <!---left div container-->
+                                        <div class="left"  style="width: 25%;">
+                                         
+                                             <apex:outputPanel rendered="{!IF(ItemsList.size>0,true,false)}"> <div class="leftheader">Tickets</div></apex:outputPanel>
+                                           
+                                               <script>
+                                                    function settings(tcid,tType,sett){
+                                                    var thva = document.getElementById(tcid);  
+                                                       
+                                                    if(tType!='Parent'){
+                                                          methodOneInJavascript(tcid);
+                                                          itempoolAct(thva);
+                                                     }else{
+                                                      if(sett=='Do not collect Attendee info'){
+                                                        var r = confirm("Your current settings are at pool level would you like to change it to parent level!");
+                                                          if (r == true) {
+                                                             methodOneInJavascript(tcid);
+                                                             $(thva).parent().addClass('foractive');
+                                                             itemAct(thva); 
+                                                          }else{
+                                                           // alert('HI '+  $(thva).parent().parent().find('.ln_tickchkbox :checkbox').length);
+                                                            $(thva).parent().parent().find('.expcollap').css('display','block');
+                                                              var y =0;
+                                                              var plId ="";
+                                                              $(thva).parent().parent().find('.ln_tickchkbox :checkbox').each (function (){
+                                                                if(y==0){
+                                                                   var df = $(this).attr('id');
+                                                                    plId = df.substring(0, df.length-3);
+                                                                    y=1;
+                                                                 }
+                                                               });
+                                                               
+                                                             if(plId !=""){
+                                                                  methodOneInJavascript(plId);
+                                                                  var thva1 = document.getElementById(plId); 
+                                                                  $(thva1).parent().addClass('foractive');
+                                                                  itempoolAct(thva1 ); 
+                                                             }
+                                                          }
+                                                      }else{
+                                                           $(thva).parent().addClass('foractive');
+                                                          methodOneInJavascript(tcid);
+                                                          itemAct(thva);
+                                                      }
+                                                         
+                                                      }
+                                                   }
+                                                 </script>
+                                             <!-- ------------------------------------------------------------ Items and its pools started -------------------------- -->
+                                        
+                                            <div  class="ticketsbox">
+                                                <apex:repeat value="{!ItemsList}" var="its"> 
+                                                  <div class="commonItem">
+                                                   <!---normal ticket------>
+                                                    <div class="ticketcurrenttoggle normalticket">
+                                                        <div class="tickchkbox"><input type="checkbox" id="{!its.itemInn.id}chk" class="itmChk chklist"/></div>
+                                                        <div class="ticknamediv" id="{!its.itemInn.id}" style="width:90%" onclick="settings('{!its.itemInn.id}','Parent','{!its.itemInn.Ticket_Settings__c}');">{!its.itemInn.item_name__c}</div>
+                                                        <div style="clear:both"></div>
+                                                    </div>
+                                                    <!----//normal ticket----->
+                                                 <apex:variable value="{!1}" var="curenr"/>  
+                                                <!----package ticket------>
+                                                 <div class="packageticket">
+                                                    <div class="{!if(ITS.packageLineItems.size >0 ,'trigger','')}"></div>
+                                                    <div class="expcollap" style="display:none;">
+                                                   <apex:repeat value="{!ITS.packageLineItems}" var="pool">     
+                                                    <!--------->
+                                                        <div class="tickettoggle" >
+                                                            <div class="ln_tickchkbox" >
+                                                              <input type="checkbox" class="poolChk chklist" id="{!pool.id}chk"/></div>
+                                                              <div class="ln_ticknamediv" id="{!pool.id}"  onclick="settings('{!pool.id}','child','{!pool.Ticket_Settings__c}');">{!pool.Item_Pool_Name__c}</div>
+                                                            <div style="clear:both;"></div>
+                                                        </div>
+                                                        <!---------->
+                                                   <apex:variable value="{!curenr+1}" var="curenr"/>
+                                                <!----//package ticket------>  
+                                               </apex:repeat> </div> </div>
+                                              </div>   <!--close of packageticket---> 
+                                           </apex:repeat> </div>
+                                            
+                                <!-- ----------------------------- Items and its pools End ------------------------------- -->
+                                             </div>
+                                         <!--end of left div container-->
+                                      <!--------------collapsible code------------------>
+                                   
+                                       <div id="outerDiv" style="width: 74.5%; float: right;">
+                                            <apex:outputPanel rendered="{!IF(ItemsList.size>0,false,true)}" style="width:100%;" > 
+                                            <span style="font-size:20px;color:#ccc;">No Tickets Found </span></apex:outputPanel>
+                                         
+                                         <apex:outputPanel id="Sets12">
+                                           <div id="custom-show-hide-example">
+                                            <!-- ----------------------------- Settings Repeat Start ---------------------------------- -->
+                                          <apex:variable value="{!1}" var="fir"/>
+                                            <apex:repeat value="{!innSetList}" var="itv" id="rpid">  
+                                             <h3 id="{!itv.headerValue}"  name="{!itv.headerValue}1" class="{!if(fir==1,'open','')} acc-title" style="color: #3C3C3C;">
+                                              <!-- {!itv.headerValue} -->
+                                              
+                                               <apex:outputText value="{!itv.regSet[0].Group_Label__c}"  rendered="{!IF(itv.regSet[0].Group_Label__c!=null && itv.regSet[0].Group_Label__c!='',true,false)}"></apex:outputText>
+                                               <apex:outputText value="{!itv.regSet[0].Group_Name__c}" rendered="{!IF(itv.regSet[0].Group_Label__c!=null && itv.regSet[0].Group_Label__c!='',false,true)}"></apex:outputText>
+                                                
+                                               
+                                                &nbsp;  <span class="imghold" onclick="myFunction('{!selectedTicket}','{!itv.regSet[0].Group_Name__c}','{!itv.regSet[0].Group_Label__c}');">
+                                                          <i  class="fa fa-pencil fa-edit20px edit_pspop"></i>
+                                                        </span>            
+                                               <apex:outputPanel rendered="{!if(fir==1,true,false)}"><span style="color:#333; font-size:15px;" id="{!itv.headerValue}ItemName">
+                                                                                  
+                                                &nbsp; ({!seletedItemName})</span></apex:outputPanel> </h3>
+                                                 
+                                                 
+                                               <apex:variable value="{!fir+1}" var="fir"/>
+                                               <div id="{!itv.headerValue}div">
+                                               <table id="businessinformation" class="display" width="100%"  style=" border:3px solid #F7F7F7;  border-collapse:collapse;">
+                                                 <thead>
+                                                    <tr  class="theader_labels">
+                                                        <td width="25%" >Default Labels</td>
+                                                        <td width="30%" >Customize Labels</td>
+                                                        <td>Include Fields</td>
+                                                        <td>Require Fields</td>
+                                                         <td>Edit Fields <br /><font style="font-size:11px;">My Tickets</font></td>
+                                                    </tr>
+                                                  </thead>
+                                                 <!---------->  
+                                                  <tbody> 
+                                                  <apex:repeat value="{!itv.regSet}" var="sets">    
+                                                   <tr>
+                                                        <td>{!sets.Defaullt_Label__c}</td>
+                                                        <td class="textcenter"><apex:inputField value="{!sets.Label_Name__c}" styleClass="reqChking" style="222px;"/> </td>
+                                                       
+                                                        <td class="textcenter">
+                                                           <apex:outputText rendered="{!IF((sets.Defaullt_Label__c=='Last Name')||(sets.Defaullt_Label__c=='First Name')||(sets.Defaullt_Label__c=='Email'),true,false)}"><apex:outputField value="{!sets.Included__c}"/> </apex:outputText>
+                                                              <apex:inputField styleClass="includechk" value="{!sets.Included__c}" rendered="{!IF((sets.Defaullt_Label__c=='Last Name')||(sets.Defaullt_Label__c=='First Name')||(sets.Defaullt_Label__c=='Email'),false,true)}"/> </td>
+                                                              
+                                                         <td class="textcenter">
+                                                             <apex:outputText rendered="{!IF((sets.Defaullt_Label__c=='Last Name')||(sets.Defaullt_Label__c=='First Name')||(sets.Defaullt_Label__c=='Email'),true,false)}"> <apex:outputField value="{!sets.Required__c}"/> </apex:outputText>
+                                                             <apex:inputField rendered="{!IF((sets.Defaullt_Label__c=='Last Name')||(sets.Defaullt_Label__c=='First Name')||(sets.Defaullt_Label__c=='Email'),false,true)}" styleClass="requiredchk" value="{!sets.Required__c}" />
+                                                          <br /></td>
+                                                          <td class="textcenter"> <apex:inputField value="{!sets.Update_Access__c}"/></td>
+                                                  </tr>
+                                                 </apex:repeat>   
+                                                  </tbody>  
+                                                 </table>  
+                                                  
+                                                 </div>
+                                               </apex:repeat>  
+                                                  <!-- ----------------------------- Settings Repeat Start ---------------------------------- -->
+                                            </div>
+                                            
+                                       <!-- --------------Common js component------------------------------------ -->  
+                                            <c:ed_commonjs ></c:ed_commonjs>
+                                         <!-- --------------End of Common js component------------------------------------ -->     
+                                         <!--  -----------------expandable collapsible jquery library Section------------------------ --->                                              
+                                            <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery-1.9.1.js')}"> </script>
+                                               <script type="text/javascript"  src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/zebracollapse.js')}"> </script>
+                                               <script>
+                                                    var j = jQuery.noConflict();
+                                                      new jQueryCollapse(j("#custom-show-hide-example"), {
+                                                            accordion: true,
+                                                          open: function() {
+                                                            this.slideDown('slow');
+                                                            
+                                                          },
+                                                          close: function() {
+                                                            this.slideUp('slow');
+                                                          }
+                                                        });
+                                                        
+                                                        j( document ).ready(function() {
+                                                            
+                                                           if('{!selectedInfoValue}'=='Collect info from All Attendees'){
+                                                                  var element =  document.getElementById('attendeeinfo');
+                                                                   element.checked ='checked';
+                                                                }else if('{!selectedInfoValue}'=='Collect info from Buyers only'){
+                                                                    var elementw =  document.getElementById('buyerinfo');
+                                                                     elementw.checked ='checked';
+                                                                }else {
+                                                                  
+                                                                   var elementz =  document.getElementById('attendeeinfo');
+                                                                   elementz.checked ='checked';
+                                                                }
+                                                                
+                                                          var cls = document.getElementsByClassName('login-content1');
+                                                            for(var r=0;r<cls.length;r++){
+                                                                   var cx = cls[r].getElementsByClassName('gpNames');
+                                                                   for(var e=0;e < cx.length;e++){
+                                                                      chkboxtoggle_div(cx[e]);
+                                                                  }
+                                                               }   
+                                                        
+                                                         });
+                                              
+                                                        function infoSet(tab){
+                                                             if(tab=='tab1'){
+                                                                var einfo ='{!selectedInfoValue}'; 
+                                                                utillTab(einfo) 
+                                                              }else{
+                                                                var  einfo ='{!event.Event_Ticket_Options__c}'; 
+                                                                 utillTab(einfo)  
+                                                               }
+                                                          }
+                                                  
+                                                        function utillTab(einfo1){
+                                                              if(einfo1  =='Collect info from Buyers only'){
+                                                                 document.getElementById('buyerinfo').checked ='true';
+                                                             }else if(einfo1 == 'Collect info from All Attendees'){
+                                                                  document.getElementById('attendeeinfo').checked ='true';
+                                                              }else{
+                                                                document.getElementById('attendeeinfo').checked ='true';
+                                                           }
+                                                       }  
+                                                  /*******Company name will be checked when Work Information.Naics Code Information, Diversity Type Information is Checked************/     
+                                                  
+                                                  
+                                                   $("input[name='Work Information']").click(function(){
+                                                   if(  $("input[name='Work Information']").is(':checked')){
+                                                   $("#businessinformation").find("tbody tr:nth-child(6)").find("input[type=checkbox]:eq(0) ,input[type=checkbox]:eq(1)").attr('checked',true);
+                                                  }
+                                                   })
+                                                       
+                                                   $("input[name='Naics Code Information']").click(function(){
+                                                             if(  $("input[name='Naics Code Information']").is(':checked')){   
+                                                   $("#businessinformation").find("tbody tr:nth-child(6)").find("input[type=checkbox]:eq(0) ,input[type=checkbox]:eq(1)").attr('checked',true);
+                                                }
+                                                  }) 
+                                                  
+                                                  $("input[name='Diversity Type Information']").click(function(){
+                                                  if(  $("input[name='Diversity Type Information']").is(':checked')){  
+                                                   $("#businessinformation").find("tbody tr:nth-child(6)").find("input[type=checkbox]:eq(0) ,input[type=checkbox]:eq(1)").attr('checked',true);
+                                                  }
+                                                  }) 
+                                                  
+                                                  
+                                                   $("#businessinformation").find("tbody tr:nth-child(6)").find("input[type=checkbox]:eq(0)" ).click(function(){
+                                                   if($("#businessinformation").find("tbody tr:nth-child(6)").find("input[type=checkbox]:eq(0)" ).not(':checked')){
+                                                    $("input[name='Work Information']").attr('checked',false) 
+                                                    $("input[name='Naics Code Information']").attr('checked',false) 
+                                                    $("input[name='Diversity Type Information']").attr('checked',false) 
+                                                   }
+                                                   }) 
+                                              
+                                                                                              /*********END************/  
+                                                         
+                                                                   
+                                                 $('.requiredchk').change(function(){
+                                                    if($(this).is(':checked') ==true){
+                                                           $(this).parent().parent().find('.includechk').attr('checked',true);                           
+                                                      }      
+                                                 });
+                                                                          
+                                                 $('.includechk').change(function(){
+                                                      $(this).parent().parent().find('.requiredchk').attr('checked',false);
+                                                  });
+             
+        
+                                                       
+                                              </script>
+                                         <!--  -----------------endexpandable collapsible jquery library Section------------------------ --->      
+                                    </apex:outputPanel>  
+                                            <!-------------------end of naics code---------------------->
+                                       <!---close of custom-show-hide-example-->
+                                      </div> 
+                                        
+                                        <div class="clear"></div>
+                                         <!--------------End of collapsible code------------------>
+                                           <div class="textcenter  padding-5px">
+                                               <apex:outputPanel rendered="{!IF(ItemsList.size>0,true,false)}">
+                                                  <input type="button" value="Save" name="Save" class="button-a blue" onclick="saveAct();"/>
+                                                    &nbsp;&nbsp;
+                                                     <!-- <button class="button-a dark-blue">Cancel</button> -->
+                                                  <apex:commandButton value="Cancel" action="{!cancelAct}"  styleClass="button-a dark-blue"/>
+                                              </apex:outputPanel>  
+                                            </div> 
+                                    </div>
+                                    <!---close of ct_wrapper------>
+                              
+                                </apex:form>  
+                            
+                                     
+                             </div>
+                                <!--close of tab1 tabbedpanelscontent-->
+                                <!-------------------------->
+                                
+                            <!--------------------start of 2nd content------------------>
+                          <div class="TabbedPanelsContent" style="padding: 5px;" >
+                           <apex:form id="frm2">
+                             <apex:inputHidden value="{!selectedInfoType}" id="infoType2"/>
+                             <apex:inputHidden value="{!selectedGroups}" id="selgps2"/>
+                           
+                              <script>     
+                                    function savedefsetUni(){
+                                          var vr = document.getElementById('buyerinfo');
+                                          var ar = document.getElementById('attendeeinfo');
+                                           var slval = '';
+                                           if(vr.checked==true){
+                                              slval = 'Collect info from Buyers only';
+                                           }else if(ar.checked==true){
+                                              slval = 'Collect info from All Attendees';
+                                           }
+                                         
+                                          document.getElementById('thePage:cmp:commoncomponent:frm2:infoType2').value =slval;
+                                          
+                                          var bck= document.getElementsByClassName('login-content1');
+                                          var isFirstRecgp =true;
+                                          
+                                          for(var r=0;r < bck.length;r++){
+                                             var cx = bck[r].getElementsByClassName('gpNames1');
+                                                for(var e=0;e < cx.length;e++){
+                                                   if(cx[e].checked ==true){
+                                                       if(isFirstRecgp){
+                                                          gps = cx[e].name; 
+                                                          isFirstRecgp =false;
+                                                       }else{
+                                                          gps += ''+cx[e].name; 
+                                                       }
+                                                    }  
+                                                }
+                                            }  
+                                      
+                                      
+                                       document.getElementById('thePage:cmp:commoncomponent:frm2:selgps2').value =gps ;
+                                       
+                                       var reqvalues = document.getElementsByClassName('reqChking');
+                                       var isRequiredMiss = true;
+                                       
+                                       for(var t=0;t<reqvalues.length;t++){
+                                          if(reqvalues[t].value==""){
+                                               reqvalues[t].style.border = "solid #FF0000";
+                                               isRequiredMiss =false;
+                                          }else{
+                                            reqvalues[t].style.border = "#000000";
+                                          }
+                                       } 
+                                      if(isRequiredMiss==true){ 
+                                        savedefset();
+                                      } 
+                                     
+                                    }  
+                                </script> 
+                                  <apex:actionFunction action="{!savedefAction}" name="savedefset" reRender="frm3">
+                                     <apex:param name="clinfo" value=""/>
+                                 </apex:actionFunction>
+                                    
+                                    <p class="notemsg_red left" style="padding-bottom: 0px;">*Note:
+                                        Any changes to default settings will affect only future
+                                        tickets.</p>
+                                   <!-----start of actions buttons nav----->
+                                    <nav class="togglebtnnav right">
+                                        <ul style="float: left; margin-top: 0px; margin-left: 4px;">
+                                            <li id="login1"><span class="togglebtn"> <i
+                                                    class="fa fa-gear">&nbsp;&nbsp;</i><strong>Additional
+                                                        Settings </strong>
+                                            </span>
+
+                                                <ul class="login-content1">
+                                                  <apex:repeat value="{!defSettings}" var="itv1" >  
+                                                      <li><a>
+                                                         <apex:outputPanel rendered="{!itv1.isSelected}"> 
+                                                            <!-- <input type="checkbox" class="gpNames1" name="{!itv1.headerValue}1"  checked ="true" onClick="chkboxtoggle_div(this)"/>-->
+                                                        <apex:outputPanel rendered="{!IF(itv1.headerValue=='Basic Information',false,true)}"> 
+                                                             <input type="checkbox" class="gpNames1" name="{!itv1.headerValue}"  checked ="true" onClick="chkboxtoggle_div(this)"/>
+                                                            </apex:outputPanel>
+                                                            
+                                                           <apex:outputPanel rendered="{!IF(itv1.headerValue=='Basic Information',true,false)}"> 
+                                                             <input type="checkbox" class="gpNames1" name="{!itv1.headerValue}" disabled="disabled" checked ="true" onClick="chkboxtoggle_div(this);"/>
+                                                            </apex:outputPanel>
+                                                           
+                                                       
+                                                       
+                                                        </apex:outputPanel>
+                                                        
+                                                       <apex:outputPanel rendered="{!NOT(itv1.isSelected)}">
+                                                            <input type="checkbox" class="gpNames1"  name="{!itv1.headerValue}1"  onClick="chkboxtoggle_div(this)"/>
+                                                        </apex:outputPanel> 
+                                                        
+                                                       <label>
+                                                                {!itv1.headerValue}</label></a></li>
+                                                     </apex:repeat>
+                                                </ul></li>
+                                        </ul>
+                                    </nav>
+                                    <div class="clear"></div>
+                                    <!-----end of actions nav---->
+                        <!--------------collapsible code------------------>  
+                        <div id="custom-show-hide-example1" class="margin-top-5px" >
+                          <!-------------------start of basic information start--------------------->
+                             <apex:variable value="{!1}" var="sec"/>
+                               <apex:repeat value="{!defSettings}" var="dfsec" id="dfsec">  
+                                    <h3  id="{!dfsec.headerValue}1" class="{!if(sec==1,'open','')} acc-title;" style="color:#3C3C3C;">
+                                    {!dfsec.regSet[0].Group_Name__c}&nbsp; 
+                                   <!-- {!dfsec.headerValue}--></h3>
+                                          <div>
+                                             <table id="businessinformation" class="display" width="100%"  style=" border:3px solid #F7F7F7;  border-collapse:collapse;">
+                                             <thead>
+                                                <tr  class="theader_labels">
+                                                <td width="20%" >Default Labels</td>
+                                                <td width="25%" >Customize Labels</td>
+                                                <td>Include Fields</td>
+                                                <td>Require Fields</td>
+                                                <td>Edit Fields <br /><font style="font-size:11px;">My Tickets</font></td>
+                                                 </tr>
+                                                <apex:variable value="{!sec+1}" var="sec"/>  
+                                              </thead>
+                                             
+                                      <tbody>
+                                             <apex:repeat value="{!dfsec.regSet}" var="sets">    
+                                                   <tr>
+                                                    <td>{!sets.Defaullt_Label__c}</td>
+                                                    <td class="textcenter"><apex:inputField value="{!sets.Label_Name__c}" styleClass="reqChking" style="222px;"/> </td>
+                                                    <td class="textcenter">
+                                                     <!-- <apex:inputField styleClass="includechk" value="{!sets.Included__c}"/> -->
+                                                     <apex:outputText rendered="{!IF((sets.Defaullt_Label__c=='Last Name')||(sets.Defaullt_Label__c=='First Name')||(sets.Defaullt_Label__c=='Email'),true,false)}"><apex:outputField value="{!sets.Included__c}"/> </apex:outputText>
+                                                     <apex:inputField styleClass="includechk" value="{!sets.Included__c}" rendered="{!IF((sets.Defaullt_Label__c=='Last Name')||(sets.Defaullt_Label__c=='First Name')||(sets.Defaullt_Label__c=='Email'),false,true)}"/>
+                                                    </td>
+                                                    
+                                                    
+                                                     <td class="textcenter">
+                                                     <apex:outputText rendered="{!IF((sets.Defaullt_Label__c=='Last Name')||(sets.Defaullt_Label__c=='First Name')||(sets.Defaullt_Label__c=='Email'),true,false)}"> <apex:outputField value="{!sets.Required__c}"/> </apex:outputText>
+                                                    <apex:inputField rendered="{!IF((sets.Defaullt_Label__c=='Last Name')||(sets.Defaullt_Label__c=='First Name')||(sets.Defaullt_Label__c=='Email'),false,true)}" styleClass="requiredchk" value="{!sets.Required__c}" />
+                                                        <br /></td>
+                                                     <td class="textcenter"> <apex:inputField value="{!sets.Update_Access__c}"/></td>
+                                                  </tr>
+                                                 </apex:repeat> 
+                                     </tbody>
+                                </table>
+                                   
+                            </div> 
+                          </apex:repeat> 
+                       </div>
+                          <!-- <apex:outputPanel rendered="{!IF(ItemsList.size>0,true,false)}"> -->
+                                  <!---close of custom-show-hide-example-->
+                                    <!--------------End of collapsible code------------------>
+                                    <div class="textcenter  padding-5px">
+                                        <!-- <button class="button-a blue" onclick="savedefsetUni();">Save</button>-->
+                                          <input type="button" value="Save" name="Save" class="button-a blue" onclick="savedefsetUni();"/>
+                                        &nbsp;&nbsp;
+                                        <button class="button-a dark-blue">Cancel</button>
+                                    </div>
+                                    <!---------->
+                                    
+                                     <script>
+                                                   var j = jQuery.noConflict();
+                                                      new jQueryCollapse(j("#custom-show-hide-example1"), {
+                                                            accordion: true,
+                                                          open: function() {
+                                                            this.slideDown('slow');
+                                                          },
+                                                          close: function() {
+                                                            this.slideUp('slow');
+                                                          }
+                                                        });
+                                                     
+                                              j( document ).ready(function() {          
+                                                var cls1 = document.getElementsByClassName('login-content1');
+                                                for(var r=0;r<cls1.length;r++){
+                                                    var cx1 = cls1[r].getElementsByClassName('gpNames1');
+                                                   for(var e=0;e < cx1.length;e++){
+                                                     if(cx1[e].checked==true){
+                                                       document.getElementById(cx1[e].name).style.display='block';
+                                                    }else{
+                                                     document.getElementById(cx1[e].name).style.display='none'; 
+                                                   }
+                                                  }
+                                              } 
+                                              
+                                                   // Making default tikcet highlight
+                                                        $(".ticketsbox:visible input:checkbox").each (function () {
+                                                                 $(this).attr('checked', false);
+                                                                 $(this).attr('disabled', false);
+                                                              });
+                                                          
+                                                           if("{!defaultTicketId}"!=""){ 
+                                                              var defItem = document.getElementById('{!defaultTicketId}');    
+                                                              settings('{!defaultTicketInn.itemInn.id}','Parent','{!defaultTicketInn.itemInn.Ticket_Settings__c}');
+                                                              
+                                                             }
+                                                         });  
+                                               
+                                            
+                                 
+                                                 
+                                 </script>   
+                              <!-- </apex:outputPanel>      -->
+                                    
+                               </apex:form>        
+                                </div>
+                                <!--close of tab2 tabbedpanelscontent-->
+                 
+                                <!--------------------End of 2nd content------------------>
+                                                   
+                           </div>
+                            <!--close of TabbedPanelsContentGroup-->
+                        </div>
+                        <!--close of tabbedpanelsgroup1-->
+                        <!-------->
+                    </div>
+                    <!--close of form-content-div---->
+                </div>
+                <!--close of form-embed-div--->
+
+            </div>
+            <!--close of grid-1---->
+            <!--------------------------->
+         <!-----------------//template code----------------------->
+      
+      </c:ed_basictemplate> 
+    <!-- -----------//end of basic template component---------------------- -->
+<c:ed_popupbox ></c:ed_popupbox>
+ <apex:form id="frm3">
+     <apex:outputPanel id="outq" rendered="{!IF(statusRec!='' && statusRec !=null ,true,false)}">
+      <script>
+         // alert('');
+          Alert.render('{!statusRec }' ,'Success','ok')
+      </script>
+     </apex:outputPanel>
+     
+ </apex:form>
+
+
+
+
+
+<!-- --------------------customize js ---------------------- -->
+    
+    <!--Intializing  tab function---->
+    <script type="text/javascript">
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1",{ defaultTab:0 });
+        
+</script>
+    <!----->
+
+  <script>
+  
+  <!--  --------------------------------------------------- Left side Panel Code Start --------------------------------------------------------- -->
+
+      $('.trigger').append('<span><span class="expcolp"></span></span> ');
+        $('.trigger span').each(function() {
+            var trigger = $(this), state = false, el = trigger.parent().next('.expcollap');
+            trigger.click(function(){
+                state = !state;
+                el.slideToggle();
+                trigger.parent().parent().parent().toggleClass('inactive');
+            });
+        });
+
+  
+ 
+ function itemAct(thv){
+    
+      $(".ticketsbox:visible input:checkbox").each (function () {
+         $(this).attr('checked', false);
+         $(this).attr('disabled', false);
+      });
+     
+       var df = $(thv).parent().children().find('input:checkbox');
+       df.attr('checked', true);
+       df.attr('disabled', true);
+       var par = $(thv).parent().parent().find('.ln_tickchkbox :checkbox').attr('disabled', true);
+       par.attr('disabled', true);
+     
+     
+ }
+ 
+ function itempoolAct(thv){
+     
+     $(".ticketsbox:visible input:checkbox").each (function () {
+         $(this).attr('checked', false);
+         $(this).attr('disabled', false);
+      });
+      
+     var df = $(thv).parent().children().find('input:checkbox');
+     df.attr('checked', true);    
+     df.attr('disabled', true); 
+     var par = $(thv).parent().parent().parent().parent().children().children().children();
+     par.attr('disabled', true);
+      
+  }
+ 
+ 
+ 
+ // When ever user select parent check box make pools check boxs un editable(We can give settings either parent level or item pool level)
+$('.itmChk').change(function(){
+    if($(this).is(":checked")){
+       var par = $(this).parent().parent().parent().find('.ln_tickchkbox :checkbox').attr('disabled', true);
+   }else{
+      var par = $(this).parent().parent().parent().find('.ln_tickchkbox :checkbox').attr('disabled', false);
+   }
+  
+})
+
+
+// When ever user select pool check box make parent check box un editable(We can give settings either parent level or item pool level)
+$('.poolChk').change(function(){
+if($(this).is(":checked")){
+      var par = $(this).parent().parent().parent().parent().parent().find('.tickchkbox :checkbox').attr('disabled', true);
+    }else{
+       var tp = $(this).parent().parent().parent().find('.poolChk');
+       var par = $(this).parent().parent().parent().parent().parent().find('.tickchkbox :checkbox');
+      var isAllunchk= true;
+       tp.each (function () {
+         
+         if($(this).is(":checked")){
+           isAllunchk =false;
+          }
+        
+      });
+       if(isAllunchk){
+          par.attr('disabled', false); 
+        }  
+          
+      //var par = $(this).parent().parent().parent().parent().parent().find('.tickchkbox :checkbox').attr('disabled', false);
+    }
+})
+ 
+ 
+ 
+ // THis function is for making selected check color diffrent 
+  $('.ticketsbox').click(function(){
+     $(".ticketsbox:visible input:checkbox").each (function () {
+        //$(this).attr('checked', false)
+         if ($(this).is(":checked")){
+            // $(this).removeClass('oldClass').addClass('newClass');
+             $(this).parent().parent().removeClass('forinactive').addClass('foractive');
+          }else{
+           //alert('hi 2');
+            $(this).parent().parent().removeClass('foractive').addClass('forinactive');
+          } 
+        
+      });
+   }) 
+
+    
+        
+
+     
+   
+      </script>
+     
+<!----------------------customize js ------------------------>
+</apex:page>

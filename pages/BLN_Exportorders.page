@@ -1,0 +1,24 @@
+<apex:page standardStylesheets="false" showHeader="false"  sidebar="false" controller="BLN_MyticketsCon" action="{!exporsed}" contentType="application/vnd.ms-excel#AllordersExport.xls" ><apex:pageBlock >  
+    
+         <apex:pageBlockTable value="{!exportOrders1}" var="current" border="1">
+            <apex:column headerValue="Order No"> {!current.Name} </apex:column>
+            <apex:column headerValue="Ordered By"> {!current.BLN_TKT_profile__r.First_Name__c} {!current.BLN_TKT_profile__r.Last_Name__c} </apex:column>
+            <apex:column headerValue="Email">  {!current.BLN_TKT_profile__r.Email__c} </apex:column>
+            <apex:column headerValue="Company">  <apex:outputText value="{!current.BLN_TKT_profile__r.TKT_Company__c}" rendered="{!IF(Contains(pcompanies,current.BLN_TKT_profile__r.BLN_Company__c),false,true)}"/></apex:column>
+            <apex:column headerValue="Phone">{!current.BLN_TKT_profile__r.Mobile__c}</apex:column>
+           <!-- <apex:column headerValue="Order Date"><apex:outputText value="{0, date, MMMM d','  yyyy hh:mm a}">
+            <apex:param value="{!current.createdDate}" /> 
+             </apex:outputText> </apex:column> -->
+              <apex:column headerValue="Order Date">
+            <!--<apex:outputText value="{0, date, MMMM d','  yyyy hh:mm a}">
+            <apex:param value="{!current.orderInn.createdDate}" /> 
+             </apex:outputText>-->
+              <c:MFSI_FormatDateTime date_Timevalue="{!current.createdDate}"/>
+              </apex:column>
+            <apex:column headerValue="Pay Type">{!current.Payments__r[0].Payment_Mode__c} </apex:column>
+            <apex:column headerValue="Order Status"> {!current.Order_Status__c}</apex:column>
+             <apex:column headerValue="Amount({!eventcurrency})"> {!current.Amount_Paid__c}</apex:column>
+          </apex:pageBlockTable>
+      </apex:pageBlock>  
+     
+</apex:page>

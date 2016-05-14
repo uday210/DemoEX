@@ -1,0 +1,2774 @@
+<apex:page controller="Eventattendees" standardStylesheets="false" showHeader="false" sidebar="false" id="Thepage" cache="false" action="{!checkUserId}">
+<head>
+<title>Boothleads</title>
+</head>
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<!--<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/screen.css")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/pro_dropline_ie.css")}"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+<apex:includeScript value="{!$Resource.PhoneSetup}"/> 
+<script type="text/javascript">
+
+    function checkDel(){
+        
+      //  alert('  111111111    '+ abc);
+        
+        return true;
+    }
+
+
+
+function Validate()
+{  
+        
+        var x = document.getElementById('{!$Component.Thepage:AddAttendee:work_Zip}');
+       var y = document.getElementById('{!$Component.Thepage:AddAttendee:shipping_Zip}');
+        var z = document.getElementById('{!$Component.Thepage:AddAttendee:Home_Zip}');
+          var PhoneId = document.getElementById('{!$Component.Thepage:AddAttendee:phone_no}');
+        var wphno=document.getElementById('{!$Component.Thepage:AddAttendee:Workphone}');
+     var CodeOne = document.getElementById('{!$Component.Thepage:AddAttendee:CodeOne}');
+     var CodeTwo = document.getElementById('{!$Component.Thepage:AddAttendee:CodeTwo}');
+     var CodeThree = document.getElementById('{!$Component.Thepage:AddAttendee:CodeThree}');
+     var CodeFour = document.getElementById('{!$Component.Thepage:AddAttendee:CodeFour}');
+     var CodeFive = document.getElementById('{!$Component.Thepage:AddAttendee:CodeFive}');
+     var dob = document.getElementById('{!$Component.Thepage:AddAttendee:dob}');
+        
+     if(PhoneId.value != ""){     
+      if( validatePhoneNumber(PhoneId.value)==false){
+           alert('Please Provide valid 10 digit phone number');
+           PhoneId.focus();
+           return false;
+         }
+        }         
+         if(wphno.value != ""){     
+      if( validatePhoneNumber(wphno.value)==false){
+           alert('Please Provide valid 10 digit phone number');
+           wphno.focus();
+           return false;
+         }
+        } 
+        
+         if(x.value != ""){
+           
+            if( validateZipCode(x.value)==false)
+             {
+           alert('Please Enter valid Zip Code');
+           x.focus(); 
+           return false;
+             }
+    }     
+         
+              if(y.value != ""){
+            if( validateZipCode(y.value)==false)
+             {
+           alert('Please Enter valid Zip Code');
+            y.focus();
+           return false;
+             }
+    }  
+    
+      if(z.value != ""){
+            if( validateZipCode(z.value)==false)
+             {
+           alert('Please Enter valid Zip Code');
+         z.focus();
+           return false;
+             }
+    }      
+        
+        if(CodeOne.value != ""){
+             if(CodeOne.value.length != eval(6)){
+                 alert('Code must be 6 digits in NAICS code1');
+                 return false;
+             }
+         }  
+         
+           if(CodeTwo.value != ""){
+             if(CodeTwo.value.length != eval(6)){
+                 alert('Code must be 6 digits in NAICS code2');
+                 return false;
+             }
+         }
+         
+         if(CodeThree.value != ""){
+             if(CodeThree.value.length != eval(6)){
+                 alert('Code must be 6 digits in NAICS code3');
+                 return false;
+             }
+         }
+         
+           if(CodeFour.value != ""){
+             if(CodeFour.value.length != eval(6)){
+                 alert('Code must be 6 digits in NAICS code4');
+                 return false;
+             }
+         }
+        
+         if(CodeFive.value != ""){
+         
+             if(CodeFive.value.length != eval(6)){
+                 alert('Code must be 6 digits in NAICS code5');
+                 return false;
+             }
+         }
+        
+         var today =  new Date();
+       
+       var dd = today.getDate();
+      
+       var mm = today.getMonth()+1;
+     
+        var yyyy = today.getFullYear();
+       
+        today = mm+'/'+dd+'/'+yyyy;
+        
+        var d1 = dob.value;
+        var d2 = today;
+        var t1 = new Date(d1);
+        var t2 = new Date(d2);
+        
+         
+         if(t1 != ""){
+         
+         
+             if(t1 >= t2){
+                 alert('DOB must be less than today ');
+                 return false;
+             }
+             else{
+                  return true;
+             }
+         
+         } 
+        
+         
+        /* if(isNaN(x)|| x.indexOf(" ")!=-1)
+        {
+                        alert("Workzip code should be the numeric value");
+            return false;
+                }
+                 if (x.length > 6)
+            {
+                            alert("Workzip  code value should be 6 digits"); 
+                return false;
+                     }            
+         if(isNaN(y)|| y.indexOf(" ")!=-1)
+    {
+                        alert("Shippingzip code should be the numeric value");
+            return false;
+                }
+                 if (y.length > 6)
+            {
+                            alert("Shippingzip code value should be 6 digits"); 
+                return false;
+                     }
+                     
+
+         if(isNaN(z)|| z.indexOf(" ")!=-1)
+    {
+                        alert("Homezip code should be the numeric value");
+            return false;
+                }
+                 if (z.length > 6)
+            {
+                            alert("Homezip code value should be 6 digits"); 
+                return false;
+                     }*/
+    
+
+           
+       
+     
+                    
+       
+}
+     function validateZipCode(elementValue){
+         var zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/;
+         return zipCodePattern.test(elementValue);
+    }   
+</script>
+
+  <script>
+  function open_win()
+{
+window.open("https://c.cs5.visual.force.com/apex/HelpLineforAttendees")
+}
+   function showbusinessinfofun() {
+           
+           
+            
+          document.getElementById("businessinfo").style.display= "block";
+          document.getElementById("businessadd").style.display="none";
+          document.getElementById("naicsinfo").style.display="none";
+          document.getElementById("shippingadd").style.display="none";
+          document.getElementById("homeadd").style.display="none";
+          
+          document.getElementById("businessinfotab").className = "activeTab";
+          document.getElementById("businessaddtab").className = "inactiveTab";
+          document.getElementById("naicsaddtab").className = "inactiveTab";
+          document.getElementById("shippingaddtab").className = "inactiveTab";
+          document.getElementById("homeaddtab").className = "inactiveTab";
+          }
+          function showbusinessaddfun() {
+          
+          document.getElementById("businessinfo").style.display= "none";
+          document.getElementById("businessadd").style.display = "block";
+          document.getElementById("naicsinfo").style.display= "none";
+          document.getElementById("shippingadd").style.display= "none";
+          document.getElementById("homeadd").style.display= "none";
+           
+           document.getElementById("businessinfotab").className = "inactiveTab";
+           document.getElementById("businessaddtab").className = "activeTab";
+           document.getElementById("naicsaddtab").className = "inactiveTab";
+           document.getElementById("shippingaddtab").className = "inactiveTab";
+           document.getElementById("homeaddtab").className = "inactiveTab";
+          }
+         
+          function shownaicsinfofun() {
+          
+           document.getElementById("businessinfo").style.display= "none";
+          document.getElementById("businessadd").style.display= "none";
+          document.getElementById("naicsinfo").style.display= "block";
+          document.getElementById("shippingadd").style.display= "none";
+          document.getElementById("homeadd").style.display= "none";
+          
+          document.getElementById("businessinfotab").className = "inactiveTab";
+           document.getElementById("businessaddtab").className = "inactiveTab";
+           document.getElementById("naicsaddtab").className = "activeTab";
+           document.getElementById("shippingaddtab").className = "inactiveTab";
+           document.getElementById("homeaddtab").className = "inactiveTab";
+          
+          }
+          
+          function showshippingaddfun() {
+          
+           document.getElementById("businessinfo").style.display= "none";
+          document.getElementById("businessadd").style.display= "none";
+          document.getElementById("naicsinfo").style.display= "none";
+          document.getElementById("shippingadd").style.display= "block";
+          document.getElementById("homeadd").style.display= "none";
+          
+          
+            document.getElementById("businessinfotab").className = "inactiveTab";
+           document.getElementById("businessaddtab").className = "inactiveTab";
+           document.getElementById("naicsaddtab").className = "inactiveTab";
+           document.getElementById("shippingaddtab").className = "activeTab";
+           document.getElementById("homeaddtab").className = "inactiveTab";
+          }
+          
+          function showhomeaddfun() {
+          
+           document.getElementById("businessinfo").style.display= "none";
+          document.getElementById("businessadd").style.display= "none";
+          document.getElementById("naicsinfo").style.display= "none";
+          document.getElementById("shippingadd").style.display= "none";
+          document.getElementById("homeadd").style.display= "block";
+          
+          document.getElementById("businessinfotab").className = "inactiveTab";
+           document.getElementById("businessaddtab").className = "inactiveTab";
+           document.getElementById("naicsaddtab").className = "inactiveTab";
+           document.getElementById("shippingaddtab").className = "inactiveTab";
+           document.getElementById("homeaddtab").className = "activeTab";
+          }
+      </script>
+     <script src="/js/dojo/0.4.1/dojo.js"></script>
+<script src="/soap/ajax/11.1/connection.js" type="text/javascript"></script>
+<script type="text/javascript">
+dojo.require("dojo.collections.Store");
+dojo.require("dojo.charting.Chart");
+dojo.require('dojo.json');
+var arYears = getYears();
+function swapYears(){
+    if(document.getElementById('calYearPicker') != null) {
+        var select = document.getElementById('calYearPicker');
+        var curValue = select.value;
+        var parentx = select.parentNode;
+        parentx.removeChild(select);
+        select = document.createElement('select');
+        select.size = 1;
+        select.id = 'calYearPicker';
+        select.name = 'calYearPicker';
+        parentx.appendChild(select);
+    }
+    if(select != null) {
+    for(x=0;x<100;x++) {
+        select.options[x] = new Option(arYears[x], arYears[x], false, false);
+    }
+    }
+}
+function getYears() {
+    sforce.sessionId = getCookie('sid');
+    sforce.connection.sessionId=sforce.sessionId;
+    var out = [];
+    var currentTime = new Date()
+    var year = currentTime.getFullYear()
+    try {
+        for(x=0;x<100;x++) {
+            out[x] = x+year-99;
+        }   
+
+    } catch(error) {
+        alert(error);
+    }
+    return out;
+}
+dojo.addOnLoad(swapYears);
+
+function blank(a) { 
+if(a.value == a.defaultValue) 
+a.value = ""; 
+}
+ <!-- function unblank(a) { if(a.value == "") a.value = a.defaultValue; } -->
+
+
+</script>
+         
+  
+  
+      
+
+<script>
+function pdf(){
+alert('-----------------sai---------------');
+window.open('/apex/Qrcode_Eventadmin_Attendees');
+
+}
+</script>
+
+
+ <style>
+ 
+     .message{
+      background-color:#ffffff;
+     }
+ 
+     .errorM3{
+     
+     color:#ff0000;
+     border-color:#ffffff;
+     }
+    
+ 
+ 
+ 
+ 
+    .header{            
+        background-color:#CCCCCC;
+        height:35px;
+        width:25%;
+        color:#000000;
+        padding-left:10px;
+    }
+
+
+
+
+        
+    ul{
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    
+    /* ------------------------------------------- */
+    
+    #breadcrumbs-one{
+      background: #eee;
+      border-width: 1px;
+      border-style: solid;
+      border-color: #f5f5f5 #e5e5e5 #ccc;
+      -moz-border-radius: 5px;
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      -moz-box-shadow: 0 0 2px rgba(0,0,0,.2);
+      -webkit-box-shadow: 0 0 2px rgba(0,0,0,.2);
+      box-shadow: 0 0 2px rgba(0,0,0,.2);
+      /* Clear floats */
+      overflow: hidden;
+      width: 100%;
+    }
+    
+    #breadcrumbs-one li{
+      float: left;
+    }
+    
+    #breadcrumbs-one a{
+      padding: .7em 1em .7em 2em;
+      float: left;
+      text-decoration: none;
+      color: #444;
+      position: relative;
+      text-shadow: 0 1px 0 rgba(255,255,255,.5);
+      background-color: #ddd;
+      background-image: -webkit-gradient(linear, left top, right bottom, from(#f5f5f5), to(#ddd));
+      background-image: -webkit-linear-gradient(left, #f5f5f5, #ddd);
+      background-image: -moz-linear-gradient(left, #f5f5f5, #ddd);
+      background-image: -ms-linear-gradient(left, #f5f5f5, #ddd);
+      background-image: -o-linear-gradient(left, #f5f5f5, #ddd);
+      background-image: linear-gradient(to right, #f5f5f5, #ddd);  
+    }
+    
+    #breadcrumbs-one li:first-child a{
+      padding-left: 1em;
+      -moz-border-radius: 5px 0 0 5px;
+      -webkit-border-radius: 5px 0 0 5px;
+      border-radius: 5px 0 0 5px;
+    }
+    
+    #breadcrumbs-one a:hover{
+      background: #fff;
+    }
+    
+    #breadcrumbs-one a::after,
+    #breadcrumbs-one a::before{
+      content: "";
+      position: absolute;
+      top: 50%;
+      margin-top: -1.5em;   
+      border-top: 1.5em solid transparent;
+      border-bottom: 1.5em solid transparent;
+      border-left: 1em solid;
+      right: -1em;
+    }
+    
+    #breadcrumbs-one a::after{ 
+      z-index: 2;
+      border-left-color: #ddd;  
+    }
+    
+    #breadcrumbs-one a::before{
+      border-left-color: #ccc;  
+      right: -1.1em;
+      z-index: 1; 
+    }
+    
+    #breadcrumbs-one a:hover::after{
+      border-left-color: #fff;
+    }
+    
+    #breadcrumbs-one .current,
+    #breadcrumbs-one .current:hover{
+      font-weight: bold;
+      background: none;
+    }
+    
+    #breadcrumbs-one .current::after,
+    #breadcrumbs-one .current::before{
+      content: normal;  
+    }
+    
+
+
+
+
+
+
+</style>
+
+
+
+
+
+<script type='text/javascript'>
+
+    //--------Script For Check RollBack ---------By Mallik
+    function ValidateRollback()
+    {
+        var r= confirm('Are you sure want to RollBack Import');
+         if (r==true){
+             return true;
+          }else{
+             return false;
+          }
+    }
+    //-----------------script for multiple delete------------
+    function multidelete()
+    {
+    //alert('ddddddddddddddddddddddddd'+hdneventName.value);
+    if(hdneventName.value == '')
+    {
+    alert('Please select an attendee to Delete');
+    return false;
+    }else{
+        var r= confirm('Are you sure want to Delete these attendees?');
+         if (r==true){
+          //alert('yyyyyyyyyyyyyyyyyyyyyyy');
+             return true;
+          }else{
+           //alert('nnnnnnnnnnnnnnnnnnnn');
+             return false;
+          }
+          }
+    }
+    
+ var checked=false;
+  function checkedAll(frm1) {
+  alert('hello check box'+ frm1 );
+ 
+ // var x= document.
+ 
+ById('homeinclude');
+  var x= document.getElementsByTagName('frm1');
+  alert('2222222222222   ' + x.value );
+    var aa= document.getElementById('{!$Component.Thepage:setting:}+ frm1');
+    alert('hello check box 22222'+ aa);
+         if (checked == false){
+           checked = true
+          }else{
+          checked = false
+          }
+     aa.checked = checked;
+   
+      }
+    
+</script>
+
+<style>
+a.nav:link {color: #000000; text-decoration: none;}
+a.nav:visited {color: #000000; text-decoration: none;}
+a.nav:hover {color: #000000; text-decoration: underline;}
+a.nav:active {color: #000000; text-decoration: none;}
+
+
+.x-grid3-hd-inner { white-space: normal; }
+
+</style>
+
+<div id="page-top-outer">    
+
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    <div id="logo">
+    
+    </div>
+    <!-- end logo -->
+         
+    <!--  start top-search -->
+    <div id="top-search">
+     
+        <table  cellpadding="0" cellspacing="0">
+        <tr>
+            
+        
+        <td Class="welcome">
+        
+        <b><font>Welcome  :</font>
+                   <font size="2" color="Sky Blue">{!$User.Firstname}&nbsp;{!$User.Lastname}</font></b>
+        
+        </td>
+        
+       
+        
+       
+  
+       <!--<apex:commandButton action="{!search}" value="search" image="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/top_search_btn.gif")}"/>-->
+       
+       
+        </tr>
+        </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+   
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+        <div id="nav-right">
+        
+            <!--<div class="nav-divider">&nbsp;</div>
+            <div class="showhide-account"><img src="images/shared/nav/nav_myaccount.gif" width="93" height="14" alt="" /></div>-->
+            <!--<div class="nav-divider">&nbsp;</div>
+            <a id="logout">
+            
+            <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/nav/nav_logout.gif")}"    value="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}">{!$Label.site.logout}</img>
+            
+           </a>-->
+           
+           
+           <!----LOGOUT ACTION -->
+             <div class="nav">
+        <div class="table">
+        
+  
+  <apex:form accept=""><div class="nav-divider">&nbsp;</div>
+      <!-- <apex:commandLink action="{!ProfileSettings}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" value="Profile"/>-->
+  <apex:outputLink value="/apex/BL_Eventadmin_Profile" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:outputLink>
+  <div class="nav-divider">&nbsp;</div>    
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+  <!-- <div class="nav-divider">&nbsp;</div>
+   <apex:outputLink target="_new" value="/apex/HelpLineforAttendees" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" >Help</apex:outputLink>-->
+   </apex:form>     
+            </div></div>
+           
+          
+        
+        </div>
+        <!-- end nav-right -->
+
+<!-- Start nav -->
+<div class="nav">
+<div class="table">
+ <apex:form >    
+     <!--<div class="nav-divider">&nbsp;</div>-->
+     <ul class="select"><li><apex:outputLink value="/apex/BL_EventAdmin_Dashboard"><b>Dashboard</b> </apex:outputLink></li></ul>
+     <div class="nav-divider">&nbsp;</div>                    
+     <ul class="select"><li>
+      <apex:outputLink value="/apex/BL_EventAdmin_Events"><b>Events</b></apex:outputLink></li></ul>        
+     <ul class="select"><li>
+     <div class="nav-divider">&nbsp;</div>
+      <apex:outputLink value="/apex/BL_Eventadmin_samplebooth"><b>Booths</b></apex:outputLink></li></ul>
+     <div class="nav-divider">&nbsp;</div>
+      <ul class="current"><li><apex:outputLink value="/apex/Qrcode_Eventadmin_Attendees" ><b>Attendees</b></apex:outputLink></li></ul>
+     <div class="nav-divider">&nbsp;</div>   
+      <ul class="select"><li><apex:outputLink value="/apex/BL_EventAdmin_Reports"><b>Reports</b> </apex:outputLink></li></ul>       
+ </apex:form>
+        
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+</div>
+<!-- End nav -->
+        
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................................................... END -->
+
+ <div class="clear"></div>
+ 
+<!-- start content-outer ....................................................................START -->
+<div id="content-outer">
+<!-- start content -->
+<div id="content">
+
+    <!--  start page-heading -->
+    <div id="page-heading">
+    
+      <table aligh="right" width="98%" border="0">
+          <tr>
+   
+        
+        <td width="282" align="left">
+        <apex:form >      
+     <font size="2" color="Black">Events</font>&nbsp;
+          
+              <apex:selectList value="{!eventSelected}" multiselect="false" size="1" style="width:180px;">
+                   <apex:selectOptions value="{!items}"/>
+               <apex:actionSupport action="{!getevents}" event="onchange" rerender="formchk" status="AjaxLoader"/>
+             </apex:selectList>
+  
+          
+    </apex:form>  
+      
+      </td>
+     
+      <td width="580">
+  <!-- <apex:outputText value="{!EventReqString}" style="color:#FF0000;Font-size:1.5em;font-family:Times New Roman; padding-left:15px;" rendered="{!EventReqStringBool}"></apex:outputText> -->
+     </td>
+    
+      <td  align="right" width="425"><apex:form >
+      <table style="padding-right:15px;" border="0" width="98%"><tr>
+      
+      <td width="140" align="right"> <strong>Search Attendee </strong>&nbsp;&nbsp;</td>
+      <td width="218"> <apex:inputText value="{!serarchstringvalue}" onfocus="blank(this)" onblur="unblank(this)" style="font-size:17px;"/> &nbsp; </td>
+      <td width="48" align="left"> <apex:commandButton action="{!search}" value="GO" styleClass="awesome"/></td>
+      </tr></table></apex:form></td>
+      </tr></table>    
+       
+    </div>
+    <!-- end page-heading -->
+
+    <table  width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">
+        
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt="" /></th>
+        <th class="topleft"></th>
+        <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        <!--  start content-table-inner ...................................................................... START -->
+        <div id="content-table-inner">
+        
+            <!--  start table-content  -->
+            <div id="table-content">
+     
+  <script>
+  function chked()
+  {
+  var state = document.getElementById('allchked').style.display;
+  if(state == none)
+   document.getElementById('allchked').style.display = 'block';
+  }
+  
+  
+  </script>          
+
+
+
+<apex:form id="formchk">
+ <!-- <apex:pagemessages />-->
+ <table width="100%" border="0" style="float:right;">
+ <tr><td>
+ <table width="100%" cellspacing="0" cellpadding="0">
+ 
+  <tr> 
+  <td width="65%">
+  <apex:repeat value="{!alphabet}" var="alpha">
+   <apex:commandLink value="{!alpha}" action="{!alphasorting}"  style="padding:0px 2px 0px 2px;">
+    <apex:param name="alphabit" value="{!alpha}"/>
+   </apex:commandLink> | 
+  </apex:repeat>
+  </td>
+ <td align="right" width="35%">
+ 
+ <apex:commandButton value="Add Attendee" styleClass="awesome" action="{!createAttendee}" onClick="initializeMembers();" title="Add Attendee"  image="{!$Resource.AddAttendee1}"/>&nbsp;&nbsp;
+ <apex:commandbutton value="Import" styleClass="awesome" action="{!ImportAttendee}"  title="Import Attendees" image="{!$Resource.Import1}" />&nbsp;&nbsp;
+  <apex:commandButton value="Convert To Booth Admin" styleClass="awesome" action="{!converLead}" onclick="functioncall();"  title="Convert to Booth Admin" image="{!$Resource.ConvertBoothAdmin }"/>&nbsp;&nbsp;
+ 
+ <apex:commandbutton value="Print Badges" styleClass="awesome" onclick="functioncall();" title="Print Badges" action="{!popup}" image="{!$Resource.PrintBadge1}" />&nbsp;&nbsp;
+ <!--apex:commandButton value="Import History" action="{!ShowPreviousList}" styleClass="awesome" rendered="{!foundHistoryBool}"/&nbsp;&nbsp;-->
+ <apex:commandButton action="{!exportAll}"   styleClass="awesome" onclick="functioncall();" image="{!$Resource.ExportAll1}"  title="Export"/>&nbsp;&nbsp;
+ <apex:commandButton action="{!deleteallattendees}" onclick="functioncall();return multidelete();"  styleClass="awesome" image="{!$Resource.DeleteAll1}"  title="Delete"/>&nbsp;&nbsp;     
+ <apex:commandbutton value="Email Badges" styleClass="awesome" action="{!emailBadge}" onclick="functioncall();" title="Email Badge" image="{!$Resource.EmailBadge1}" />&nbsp;&nbsp;  
+ <apex:outputPanel rendered="{!emailalert}">
+  <script>
+   alert('Your mail has been sent successfully');
+  </script>
+ </apex:outputPanel>
+ <apex:outputPanel rendered="{!EventReqStringBool}">
+  <script>
+   alert('Please select at least one attendee.');
+  </script>
+ </apex:outputPanel>
+  <apex:outputPanel rendered="{!limitofbadges}">
+  <script>
+   alert('Please do not select more than 500 attendees at a time to print.');
+  </script>
+ </apex:outputPanel>
+ <!--<apex:commandButton value="Export"  onclick="functioncall();" title="Export Attendees" action="{!ExportToCsv}" styleClass="awesome"/>-->
+ <apex:commandButton styleClass="awesome" value="ProfileUpdate Notification" action="{!profileUpdateNotification}" onclick="functioncall();" image="{!$Resource.ProfileNotification1}" title="Profile Update Notification" />
+   
+ </td>
+ </tr>
+ <tr ><td align="left">
+ <div id="hideshow" style="display:none; border:0px solid #FF0000;width:100%;float:Left;height:20px"> 
+  <apex:outputPanel style="Font-size:1.15em;">
+   <apex:inputCheckbox value="{!Allrecords}" style="width:1em;height:1em;" /> &nbsp;
+   <apex:outputText value="Do you want to select all records from remaining pages?"  style="padding-bottom:30px;" /> &nbsp;&nbsp;
+  </apex:outputPanel>
+ </div>
+ </td></tr>
+  <!--
+ <tr>
+ <td width="100%" >
+   <apex:outputText value="{!EventReqString}" style="color:#FF0000;Font-size:1.875em;font-style:italic;font-family:Times New Roman; padding-left:15px;" rendered="{!EventReqStringBool}"></apex:outputText> 
+ </td>
+ </tr>
+
+ <tr style="padding-down:10px;">
+ <td style="padding-left:30px;padding-down:10px;">
+  <apex:repeat value="{!alphabet}" var="alpha">
+   <apex:commandLink value="{!alpha}" action="{!alphasorting}">
+    <apex:param name="alphabit" value="{!alpha}"/>
+   </apex:commandLink>&nbsp; | &nbsp;
+  </apex:repeat>
+ </td>
+ </tr>
+ -->
+ </table>
+ </td>
+ </tr> 
+ 
+
+ 
+ 
+ <tr>
+ <td>
+ 
+
+ <script>
+    
+ function functioncall()
+ {
+  hdneventName.value=temp;
+  //location.href='/apex/anil5extJs?multipleIds=' + selection1,'dd','scrollbars=yes ,width=600,height=600,location=no,top=243,left=25';
+ }
+ function funcaldel()
+ {
+  hdneventName1.value=fordel;     
+ }  
+  
+ function ModalPopupsCustom1() 
+ {     
+  ModalPopups.Custom('idCustom1','Update Current Status Details',    
+    '<div style=\'padding: 25px;\'>' +    
+    '<table>' +
+    '<tr height=\'20\'><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td><font color=\'red\'>*</font>=Required</td></tr>' +
+    '<tr height=\'20\'><td></td><td></td></tr>' +   
+     <apex:repeat value="{!cus12}" var="row">
+       '<tr><td><font color=\'Black\'><b>Id</b></font></td><td>'{!row.id}'</td></tr>' +
+     </apex:repeat>   
+        
+    '<tr height=\'20\'><td></td><td></td></tr>' +
+    '</table>' +    
+    '</div>',    
+     {   
+      width: 650,   
+      buttons:'ok,cancel',    
+      okButtonText: 'Save',   
+      cancelButtonText: 'Cancel',   
+      onOk: 'ModalPopupsCustom1Save()',   
+      onCancel: 'ModalPopupsCustom1Cancel()'  
+     }   
+   ); 
+ }
+         
+ </script>  
+<!--
+<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all.css"/>
+-->
+<!-- load ExtJS -->
+<apex:stylesheet value="{!$Resource.ExtJS4}/resources/css/ext-all.css" />
+<apex:includeScript value="{!$Resource.ExtJS4}/ext-all.js"/>  
+<apex:includeScript value="{!$Resource.ExtJS4}/resources/Direct.js"/>  
+<apex:includeScript value="{!$Resource.ExtJS4}/resources/PagingMemoryProxy.js"/>  
+<!-- <apex:includeScript value="{!$Resource.ExtJS4}/resources/PagingSelectionPersistence.js"/>  -->
+<apex:includeScript value="{!$Resource.ExtJS4}/resources/Ext.grid.plugin.CellEditing.js"/>          
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/>        
+<script>
+temp= new Array();
+</script>  
+        
+<script type="text/javascript"> 
+// -------------------------------------------- ExtJS Grid Start ---------------------------------------------------      
+Ext.define('Ext.ux.grid.plugin.PagingSelectionPersistence', {
+alias: 'plugin.pagingselectpersist',
+extend: 'Ext.AbstractPlugin',
+pluginId: 'pagingSelectionPersistence',
+
+//array of selected records
+selection: [],
+//hash map of record id to selected state
+selected: {},
+    
+init: function(grid) {
+ 
+ this.grid = grid;
+ this.selModel = this.grid.getSelectionModel();
+ this.isCheckboxModel = (this.selModel.$className == 'Ext.selection.CheckboxModel');
+ this.origOnHeaderClick = this.selModel.onHeaderClick;
+ this.bindListeners();
+},
+
+
+destroy: function() {
+ this.selection = [];
+ this.selected = {};
+ this.disable();
+},
+
+enable: function() {
+ var me = this;
+ if(this.disabled && this.grid) {
+  this.grid.getView().on('refresh', this.onViewRefresh, this);
+  this.selModel.on('select', this.onRowSelect, this);
+  this.selModel.on('deselect', this.onRowDeselect, this);
+  if(this.isCheckboxModel) {
+   this.selModel.onHeaderClick = function(headerCt, header, e) {
+   var isChecked = header.el.hasCls(Ext.baseCSSPrefix + 'grid-hd-checker-on');
+   me.origOnHeaderClick.apply(this, arguments);        
+   if(isChecked) {
+    me.onDeselectPage();
+   }
+   else {
+    me.onSelectPage();
+    }
+   };
+  }
+ }
+ this.callParent();
+},
+    
+disable: function() {
+ if(this.grid) {
+  this.grid.getView().un('refresh', this.onViewRefresh, this);
+  this.selModel.un('select', this.onRowSelect, this);
+  this.selModel.un('deselect', this.onRowDeselect, this);
+  this.selModel.onHeaderClick = this.origOnHeaderClick;
+ }
+ this.callParent();
+},
+
+
+bindListeners: function() {
+ var disabled = this.disabled;
+ this.disable();
+ if(!disabled) {
+  this.enable();
+ }
+},
+
+   
+onViewRefresh : function(view, eOpts) {
+ var store = this.grid.getStore(),
+ sel = [],
+ hdSelectState,
+ rec,
+ i;
+ this.ignoreChanges = true;
+ for(i = store.getCount() - 1; i >= 0; i--) {
+  rec = store.getAt(i);
+  if(this.selected[rec.getId()]) {
+   sel.push(rec);
+  }
+ }
+ this.selModel.select(sel, false);
+
+ if(this.isCheckboxModel) {
+  hdSelectState = (this.selModel.selected.getCount() === this.grid.getStore().getCount());
+  this.selModel.toggleUiHeader(hdSelectState);
+ }
+ this.ignoreChanges = false;
+},
+    
+onRowSelect: function(sm, rec, idx, eOpts) {
+ if(this.ignoreChanges === true) {
+  return;
+ }
+ if(!this.selected[rec.getId()]) 
+ {  
+  this.selection.push(rec);
+  this.selected[rec.getId()] = true;
+ }
+  var r = grid.getSelectionModel().getSelection();  
+  var results=new Array();
+   for(i=0; i<=r.length-1; i++){
+    var checkarray=r[i].get('id');   
+   }
+  temp.push(checkarray);
+},
+      
+onRowDeselect: function(sm, rec, idx, eOpts) {
+ var i; 
+ if(this.ignoreChanges === true) {
+  return;
+ }    
+ if(this.selected[rec.getId()])
+ {  
+  for(i = this.selection.length - 1; i >= 0; i--) {
+   if(this.selection[i].getId() == rec.getId()) {
+    this.selection.splice(i, 1);
+    this.selected[rec.getId()] = false;
+    break;
+   }
+  }
+ }
+ var r = grid.getSelectionModel().getSelection();  
+ var results=new Array();
+  for(i=0; i<=r.length-1; i++){
+   var checkarray=r[i].get('id');   
+  }
+ temp.pop(checkarray);
+},
+    
+onSelectPage: function(){ 
+ var sel = this.selModel.getSelection(),
+ selectedCheckboxLength= this.getPersistedSelection().length, 
+ i;
+ for(i = 0; i < sel.length; i++) {
+  selection1=this.onRowSelect(this.selModel, sel[i]); 
+ }
+ if(selectedCheckboxLength!== this.getPersistedSelection().length) {
+  this.selModel.fireEvent('selectionchange', this.selModel, [], {});
+ }
+ var results=new Array();
+ var r = grid.getSelectionModel().getSelection();  
+ if(r.length==50)
+ {
+  selectall();
+ }
+ else if(r.length<50)
+ {
+  deselectall();
+ } 
+  for(i=0; i<=r.length-1; i++){  
+   var checkarray=r[i].get('id');  
+   temp.push(checkarray); 
+   temp.sort();
+   for ( var i = 1; i < temp.length; i++ ){
+    if ( temp[i] === temp[ i - 1 ] ) {
+     temp.splice( i--, 1 );
+    }  
+   }   
+  }  
+},
+   
+onDeselectPage: function() {
+ var store = this.grid.getStore(),
+ selectedCheckboxLength= this.getPersistedSelection().length,
+ i;
+    
+ for(i = store.getCount() - 1; i >= 0; i--) {
+  this.onRowDeselect(this.selModel, store.getAt(i));
+ }        
+ if(selectedCheckboxLength!== this.getPersistedSelection().length) {
+  this.selModel.fireEvent('selectionchange', this.selModel, [], {});
+ }
+ var results=new Array();
+ var r = grid.getSelectionModel().getSelection();  
+ if(r.length==50)
+ {
+  selectall();
+ }
+ else if(r.length<50)
+ {
+  deselectall();
+ }  
+  for(i=0; i<=r.length-1; i++){  
+   var checkarray=r[i].get('id');  
+   temp.pop(checkarray);
+   // temp=results;
+  }
+},  
+    
+getPersistedSelection: function() {
+  return [].concat(this.selection);
+}, 
+   
+clearPersistedSelection: function(){ 
+    var changed = (this.selection.length > 0);   
+    this.selection = [];
+    this.selected = {};
+    this.onViewRefresh();    
+    if(changed) {
+     this.selModel.fireEvent('selectionchange', this.selModel, [], {});
+   }
+}
+
+});
+
+
+var grid, store;
+var combostr1;
+var combostr2;
+var GridTitle='Attendees';   
+Ext.onReady(function(){
+ Ext.QuickTips.init();
+ var myData1=new Array();
+
+<apex:repeat value="{!TotalAttendees}" var="att">
+ <apex:repeat value="{!att}" var="row">
+  var rowArray=new Array();
+  rowArray[0]='{!row.atnd.id}';
+  var fName="{!row.atnd.AS_id__r.AS_FirstName__c}"; 
+  rowArray[1]=fName.replace(/\'/g,'\'');
+  var lName="{!row.atnd.AS_id__r.AS_LastName__c}";
+  rowArray[2]=lName.replace(/\'/g,'\'');
+  rowArray[3]='{!row.atnd.AS_id__r.AS_CellPhone__c}';
+  var eEmail="{!row.atnd.AS_id__r.AS_Email__c}";
+  rowArray[4]=eEmail.replace(/\'/g,'\'');
+  var cName ="{!row.atnd.AS_id__r.AS_Company__c}";
+  rowArray[5]=cName.replace(/\'/g,'\'');
+  
+  var profileVal = "{!row.atnd.Boothleads_Profile__c}"
+   rowArray[6]=profileVal.replace(/\'/g,'\'');
+  
+  
+  rowArray[7]='{!row.status}';
+  rowArray[8]='{!row.estatus}';
+  rowArray[9]="<apex:outputText value="{0,date,MM/dd/yyyy HH:MM:ss }">
+                <apex:param value="{!row.atnd.CreatedDate}"/>
+               </apex:outputText>"; 
+  rowArray[10]='{!row.atnd.AS_id__r.AS_ImageUrl__c}'; 
+  myData1.push(rowArray);  
+  </apex:repeat>
+ </apex:repeat> 
+
+if(myData1.length<=0)
+{
+ GridTitle=GridTitle+' - <span style=\'padding-left:200px\'><font color=\'red\'>No Records Found</font></span>';
+ tSize=0;        
+}
+
+
+store = new Ext.data.SimpleStore({
+fields:[{name:'id'},{name:'FirstName'},{name:'LastName'}, {name:'Phone'},{name:'Email'},{name:'Company'},{name:'Profile'},{name:'printstatus'},{name:'profilestatus'},{name:'createddate'},{name:'img'}],
+remoteSort: true,
+pageSize: 50,
+proxy: {
+ type: 'pagingmemory',
+ data: myData1,
+ reader: {
+  type: 'array'
+ }
+}
+});
+
+var newstore=new Ext.data.ArrayStore({
+ fields: ['abbr', 'action'],
+ data : [                                         
+   ['Printed', 'Printed'],
+   ['Not Printed', 'Not Printed']  
+  ]
+});
+
+var newstore1=new Ext.data.ArrayStore({
+ fields: ['abbr1', 'action1'],
+ data : [                                         
+   ['Sent', 'Sent'],
+   ['Not Sent', 'Not Sent']  
+  ]
+});
+
+function openrender(value, p, r)
+{
+ return String.format('<a <href="#" onClick="selectOneCheckBox(\'{0}\')" style="color:blue;text-decoration:none;">{0}</a>',value, r.data.state, r.data.ptt, 'Open');
+}       
+
+
+grid = Ext.create('Ext.grid.Panel',{
+store: store, 
+selModel: Ext.create('Ext.selection.CheckboxModel'),
+plugins: [{ptype : 'pagingselectpersist'},
+{ptype:'cellediting',
+clicksToEdit:1
+}],
+viewConfig: {
+id: 'gv',
+trackOver: true,
+stripeRows: true
+},  
+listeners:
+{
+afterrender: function (component)
+{
+component.down('#refresh').hide();
+}
+},      
+columns: [
+{header:'id', dataIndex: 'id',hidden:true },   
+{
+ header:"<b>Action</b>",dataIndex:'Action',flex:1,
+ renderer: function(value,p,r){
+  return '<a href="#" onclick="editRecord(\''+ r.data['id']+'\')" style="color:blue;text-decoration:none;" ><img src="{!URLFOR($Resource.Qrcode_edit)}" border="3"  style="border-color:#003068;width:16px;height:16px" title="Edit"/></a> ' <apex:outputText rendered=" return checkDel(); "> '+  | <a href=\'#\' onclick="deleteRecord(\''+ r.data['id']+'\')" style="color:blue;text-decoration:none;"><img src="{!URLFOR($Resource.Qrcode_delete)}" border="3"  style="border-color:#003068;width:16px;height:16px" title="Delete"/></a>'</apex:outputText>;  
+ }
+},               
+{   
+header:"<b>Name</b>",flex:2, dataIndex:'name',
+ renderer: function(value,p,r){
+  return '<a href="#" onClick="detailpage(\''+ r.data['id']+'\')" style=\"color:blue;text-decoration:underline;\"> '+r.data['FirstName'] + ' ' + r.data['LastName']+'</a>';
+ }
+},            
+{ header: "<b>Phone</b>",flex:1.5,  dataIndex: 'Phone' }, 
+{ header: "<b>E-Mail</b>",flex:2, dataIndex: 'Email'},    
+{ header: "<b>Company</b>",flex:2.5, dataIndex: 'Company'},
+{ header: "<b>Profile</b>",flex:2.5, dataIndex: 'Profile'},
+
+{
+ header:"<b>Print Status</b>",flex:1.3, dataIndex:'printstatus', tips: {
+mouseOffset:[-125,-50],
+width: 100,
+height: 25,
+},
+ editor:
+ {
+ xtype:'combo',
+ id:'myCombo1',
+ editable: false,
+ store: newstore,
+ valueField: 'abbr',
+ displayField: 'action',
+ tpl: Ext.create('Ext.XTemplate',
+    '<tpl for=".">',
+     '<div class="x-boundlist-item">{action}</div>',
+    '</tpl>'
+ ),
+ listeners:
+ { 
+  select:function(combo,value){
+    var r1 = grid.getSelectionModel().getSelection();        
+    var temp1 = '';
+    for (i=0; i<=r1.length-1; i++){
+     temp1 = r1[i].get('id');   
+    }    
+    combostr1=Ext.getCmp('myCombo1').getValue();
+    var total1=temp1+','+combostr1;
+    printedstatus(total1); 
+   },
+ }
+ },
+
+ renderer : function(val, meta, record) {
+        meta.tdAttr = 'data-qtip="Click to Change Print Status"';
+        return val;
+    }
+},
+{
+ header:"<b>Profile Update</b>",flex:1.5, dataIndex:'profilestatus',
+ tooltip: 'Click to edit',
+ editor:
+ {
+ xtype:'combo',
+ id:'myCombo2',
+ editable: false,
+ store: newstore1,
+ valueField: 'abbr1',
+ displayField: 'action1',
+ tpl: Ext.create('Ext.XTemplate',
+        '<tpl for=".">',
+            '<div class="x-boundlist-item">{action1}</div>',
+        '</tpl>'
+ ),
+ listeners:
+ { 
+  select:function(combo,value){   
+    var r2 = grid.getSelectionModel().getSelection();
+        
+    var temp2 = '';
+    for (j=0; j<=r2.length-1; j++) {
+    temp2 = r2[j].get('id') ;   
+    }   
+   combostr2=Ext.getCmp('myCombo2').getValue();
+   var total2=temp2+','+combostr2;
+   profilestatus(total2);                               
+  }, 
+ }
+ },
+  renderer : function(val, meta, record) {
+        meta.tdAttr = 'data-qtip="Click to Update Profile"';
+        return val;
+    }
+},
+{ header: "<b>Created Date</b>",flex:1.5,  dataIndex: 'createddate' },
+{
+ id:'img', header:"<b>Image</b>",flex:1,sortable:true,dataIndex:'img',renderer: function(value, metaData, record, rowIndex, colIndex, store){
+ if(value)
+  return '<image src="/servlet/servlet.FileDownload?file='+value+'" height="30px" width="30px"/>';
+ }  
+}  
+],
+height: 350, 
+width: '100%',
+title: GridTitle,
+stripeRows:true,
+bbar: Ext.create('Ext.PagingToolbar', {
+            pageSize: 50,
+            store: store,
+            displayInfo: true
+})                           
+});
+grid.render('items-grid1');
+store.load();
+grid.view.refresh();
+});
+// -------------------------------------- Grid End --------------------------------------
+     
+     
+            
+   function AssignCatFunction()
+   {  
+    return false;
+   }
+  
+   function detailpage(eventname1)
+   {
+    hdneventName.value=eventname1;
+    attendeedetail(eventname1);
+   }
+    
+   function selectOneCheckBox(selection1)
+   {   
+    hdneventName.value=selection1;
+    attendeedetail(selection1);         
+   }
+        
+   function editRecord(eventname1)
+   {
+    hdneventName.value=eventname1;
+    editAttendee(eventname1);
+   }
+        
+   function printedstatus(eventname1)
+   {  
+    hdneventName.value=eventname1;
+    pristatus(eventname1);               
+   }
+   
+   function profilestatus(eventname1)
+   {
+    hdneventName.value=eventname1;
+    prostatus(eventname1);                  
+   }
+        
+   function editstatus(eventname1)
+   {
+    hdneventName.value=eventname1;
+    changestatus(eventname1);
+   }
+   
+   function editestatus(eventname1)
+   {
+    hdneventName.value=eventname1;
+    changeemailstatus(eventname1);
+   }
+   
+   function deleteRecord(eventname1)
+   {
+    var confmsg = window.confirm ('Are you sure, you want to delete an Attendee?');
+    if(confmsg){      
+     hdneventName.value=eventname1;
+     deleteAdminRecord();
+    }
+   }
+   
+   function selectall()
+   {
+   
+     document.getElementById('hideshow').style.display = 'block';
+  
+   }
+   function deselectall()
+   {
+
+     
+     document.getElementById('hideshow').style.display = 'none';
+   }
+   // -------------------------------------------- ExtJS Grid End ---------------------------------------------------     
+ </script>
+       
+ </td></tr></table>    
+        
+       
+ <div id="items-grid1"  style="padding-top:5px;"/> 
+          
+ <apex:inputHidden value="{!eventName1}" id="eventNameValue"  immediate="true"/>
+            
+ <apex:actionFunction action="{!profileUpdateNotification}" name="profileUpdateNotification"/>
+             
+ <apex:actionFunction action="{!attendeedetail}" name="attendeedetail" reRender="foredit1" />  
+                         
+  <apex:actionFunction action="{!converLead}" name="converLead1"  />  
+                                                 
+                         
+ <apex:actionFunction action="{!editAttendee}" name="editAttendee" /> 
+ 
+ <apex:actionFunction action="{!pristatus}" name="pristatus" rerender="formchk" status="AjaxLoader" /> 
+             
+ <apex:actionFunction action="{!prostatus}" name="prostatus" rerender="formchk" status="AjaxLoader" /> 
+             
+ <apex:actionFunction action="{!changeemailstatus}" name="changeemailstatus" /> 
+
+ <apex:actionFunction action="{!deleteAdminRecord}" name="deleteAdminRecord" reRender="formchk" />
+             
+ <apex:actionFunction action="{!PrintBadge1}" name="PrintBadge1" reRender="foredit1" /> 
+         
+ <apex:actionFunction action="{!PrintBadge}" name="PrintBadge" /> 
+                
+ <!-- <apex:inputHidden value="{!fordel}" id="fordel"/>
+   <apex:actionFunction action="{!deleteallfun}" name="deleteallfun"/>-->
+                     
+ <script>
+  hdneventName = document.getElementById("{!$Component.eventNameValue}");    
+ </script>  
+      
+ </apex:form> 
+ 
+ <!-- print attendee start -->
+ 
+ 
+ <apex:form id="foredit1">
+ 
+ 
+  <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!addattendee1}"/> 
+  <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!addattendee1}">  
+
+<table width="100%" border="0"   cellspacing="0" cellpadding="0">
+<tr style="bgcolor:#75b9fe;">
+     <td colspan="3" height="40px" align="left" valign="middle" style="color:#FFFFFF; padding-left:20px;">
+     <div style="float:right;"><apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/> </div>
+     
+         <apex:commandButton value="Back" action="{!cancel}" immediate="true" styleClass="awesome" title="Cancel"/>&nbsp;&nbsp;
+ <apex:commandLink action="{!genpdf}" target="_new"><apex:commandbutton value="Print Preview"  immediate="true" styleClass="awesome" title="Print Preview" /></apex:commandLink>
+ 
+     </td>
+ </tr>
+</table>
+ <div style="overflow:scroll;widht:75%; height:500px;"> 
+ <table width="100%" border="0"   cellspacing="0" cellpadding="0"> 
+ 
+ 
+ <tr>
+
+ <td width="50%">
+ 
+ <apex:repeat value="{!LeftValues}" var="Left">
+     
+     
+     <table style="page-break-inside:avoid;margin-top:0.3in;"  cellspacing="0" cellpadding="0" border="0" valign="top">  <tr><td>
+     
+ <apex:repeat value="{!Left}" var="ss1">
+
+             
+            
+
+<table cellspacing="0" cellpadding="0" width="3.8in" height="3in" border="0">
+
+<tr style="height:7px">
+<td colspan="3">&nbsp;</td>
+</tr>
+
+
+<tr style="height:1.7cm">
+<td colspan="3" align="center"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td colspan="3" align="left"  style="padding-left:10px;">
+
+
+<table border="0" cellspacing="0" cellpadding="0" align="center" style="width:100%;">
+    <tr>
+        <td width="10%" style="padding-top:5px;"><apex:outputpanel rendered="{!logo}">
+
+<apex:image url="/servlet/servlet.FileDownload?file={!attach.EV_EventLogo__c}" width="2cm" height="1.7cm" style="{!logo}"/>
+
+</apex:outputpanel></td>
+        <td width="90%" style="text-align:right; width:90%;padding-right:5px;">{!ss1.ticket} </td>
+             </tr>   
+</table>
+</td>
+</tr>
+</table></td>
+</tr>
+<!--
+<tr>
+<td width="100%" colspan="3" align="center"><div style="text-align:center; border:0px; padding:3px 3px; ">
+{!allselectedevent[0].Event_Title__c}
+  </div></td>
+</tr>
+-->
+<tr>
+<td align="center" colspan="3">
+<font  style="color:{!selectedcolor};font-size:{!selectedsize};font-family:{!selectedfaceFir}">
+            <b>{!ss1.fname}</b>
+             </font>
+</td>
+</tr>
+
+
+<tr>
+<td align="center" colspan="3">
+ <font  style="color:{!selectedcolorS};font-size:{!selectedsizeS};font-family:{!selectedfacesec}">
+                     {!ss1.sname}
+                 </font>
+</td>
+</tr>
+
+
+<tr>
+<td width="18%" align="left" valign="top"> <!---{!eventselected}-->
+<apex:image value="https://chart.googleapis.com/chart?chs=100x100&cht=qr&chl= {!ss1.barCode}"/>
+
+</td>
+<td width="76%" colspan="2" align="left" valign="middle">
+ <font  face="TimesNewRoman" color="red" style="color:{!selectedcolorT};font-size:{!selectedsizeT};font-family:{!selectedfaceThr}">{!ss1.lname}</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="3">&nbsp;</td>
+</tr>
+
+
+
+</table>
+</apex:repeat> 
+</td></tr></table>
+
+</apex:repeat>
+ 
+ </td>
+ 
+
+ <!------------------------ SECOEND TABLE START---------------------------------->
+ <td width="50%" valign="top" style="padding-Left:10px"> 
+ 
+ 
+ <apex:repeat value="{!RightValues}" var="Right">
+   
+     <table class="page" style="page-break-inside:avoid;margin-top:0.3in;" cellspacing="0" cellpadding="0">  <tr><td>
+ <apex:repeat value="{!Right}" var="ss2">
+
+
+<table cellspacing="0" cellpadding="0" width="3.8in" height="3in" border="0" style="margin-right:5px">
+
+<tr style="height:7px">
+<td colspan="3">&nbsp;</td>
+</tr>
+
+
+<tr style="height:1.7cm">
+<td colspan="3" align="center"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td colspan="3" align="left"  style="padding-left:10px;">
+
+
+<table border="0" cellspacing="0" cellpadding="0" align="center" style="width:100%;">
+    <tr>
+        <td width="10%" style="padding-top:5px"><apex:outputpanel rendered="{!logo}">
+
+<apex:image url="/servlet/servlet.FileDownload?file={!attach.EV_EventLogo__c}" width="2cm" height="1.7cm" style="{!logo}"/>
+
+</apex:outputpanel></td>
+        <td width="90%" style="text-align:right; width:90%; padding-right:10px;"> {!ss2.ticket}</td>
+             </tr>   
+</table>
+</td>
+</tr>
+</table></td>
+</tr>
+<!--
+<tr>
+<td width="100%" colspan="3" align="center"><div style="text-align:center; border:0px; padding:3px 3px; ">
+{!allselectedevent[0].Event_Title__c}
+  </div></td>
+</tr>
+-->
+<tr>
+<td align="center" colspan="3">
+<font  style="color:{!selectedcolor};font-size:{!selectedsize};font-family:{!selectedfaceFir}">
+ <b>{!ss2.fname}</b>
+</font>  
+</td>
+</tr>
+
+
+<tr>
+<td align="center" colspan="3">
+ <font style="color:{!selectedcolorS};font-size:{!selectedsizeS};font-family:{!selectedfacesec}">
+                                                {!ss2.sname}
+                                             </font>
+</td>
+</tr>
+
+
+<tr>
+<td width="18%" align="left" valign="top"><!---{!eventselected}--->
+<apex:image value="https://chart.googleapis.com/chart?chs=100x100&cht=qr&chl= {!ss2.barCode}"/></td>
+<td width="76%" colspan="2" align="left" valign="middle">
+ <font  face="TimesNewRoman" style="color:{!selectedcolorT};font-size:{!selectedsizeT};font-family:{!selectedfaceThr};">{!ss2.Lname}</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="3">&nbsp;</td>
+</tr>
+
+
+
+</table>
+
+
+
+</apex:repeat>
+ 
+ </td></tr></table>
+
+
+ </apex:repeat>
+ 
+ 
+
+ </td> 
+ 
+ </tr>
+ 
+</table> </div>
+ </apex:outputPanel>
+ </apex:form>
+ <!-- print attendee start -->
+ <!-- ADD ATTENDEE-->
+  <apex:form id="AddAttendee">
+ <apex:outputPanel >
+ <!--  rendered="{!addattendee}" -->
+   <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!addattendee}"/> 
+        <apex:outputPanel styleClass="custPopup" layout="block" style="width:85%;"  rendered="{!addattendee}">  
+       
+       <font background-color="black">
+          
+       </font >
+       <table style="border:0px solid #CCCCCC;" width="100%">
+      <!-- <table align="center" border="0px"> Class="tableborder"-->
+        <tr height="35px">
+                    <td colspan="2" class="pophead">
+                     <table style="border:0px solid #CCCCCC;" width="100%">
+                     <tr>
+                     <td class="pophead" align="center">
+                     {!EventReqString}
+                     </td>
+                     <td class="pophead" align="right"><div style="float:right;"><apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/> </div></td>
+                     </tr></table>
+                    
+                      
+                    
+               </td>
+                </tr>
+                
+                <tr>
+                <td>
+                 <apex:pagemessages /></td></tr>
+                <tr><td align="center" valign="top">
+                
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="31%" align="center" valign="top">
+      <table style="margin:15px 0px 0px 31px;"><tr><td border="0" align="center">
+     <div style="border:3px solid #CCCCCC; height:100px; width:100px;">
+      <apex:image url="/servlet/servlet.FileDownload?file={!newattendee.AS_ImageUrl__c}" height="100px" width="100px"/></div>
+         </td></tr><tr><td>&nbsp;</td></tr>
+         <tr><td  colspan="2">
+        <apex:inputFile value="{!attendeeImage}" filename="{!myimageName}" required="{!attendeeSetting.ReqAttendeePic}"/>
+              </td></tr>
+              <tr><td>
+              <apex:outputText value="{!imageerrormsg}" rendered="{!imageerror}"></apex:outputText>
+              
+              
+              </td></tr>
+              </table>
+         
+    </td>
+    <td width="69%" align="center" valign="top"><table width="100%" cellpadding="0" cellspacing="0" class="Odd,even" style="text-align:left;">
+       <tr>
+           <td align="center" colspan="2">
+               <apex:outputText value="{!duplicateAttendee}" rendered="{!duplicateAttendeeBool}" style="color:#FF0000;text-align:center;font-size:13px"></apex:outputText>  
+           </td>
+      </tr>     
+         <apex:outputText rendered="{!attendeeSetting.Prefix}"> 
+      <tr>      
+      <td width="20%" height="28px" > 
+        <apex:outputLabel value="Prefix" style="color:Black; padding-left:50px; height:50px"/> <apex:outputText rendered="{!attendeeSetting.ReqPrefix}"><font size="4" color="red">*</font></apex:outputText>  </td><td width="20%" height="28px">
+        <apex:inputField value="{!newAttendee.As_prefixNew__c}" style="width:220px" required="{!attendeeSetting.ReqPrefix}"/></td></tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!attendeeSetting.ReqFields}"> 
+            <tr><td width="20%" height="28px">
+            <apex:outputLabel value="First Name" style="color:Black; padding-left:50px; height:50px; width:180px"/><font size="4" color="red">*</font></td>
+            <td width="20%" height="28px">
+             <apex:outputText id="FirstoutName" value="{!newAttendee.AS_FirstName__c}" style="width:220px" rendered="{!HideFirstName}"/>
+            <apex:inputField id="FirstName" value="{!newAttendee.AS_FirstName__c}" style="width:220px" rendered="{!ShowFirstName}"/>
+            
+             </td></tr><tr><td width="20%" height="28px">
+             <apex:outputLabel value="Last Name" style="color:Black; padding-left:50px; height:50px;width:180px;" /><font size="4" color="red">*</font></td>
+             <td width="20%" height="28px">
+              <apex:outputText id="LastOutName" value="{!newAttendee.AS_LastName__c}" label="First Name" style="width:220px" rendered="{!HideLastName}"/>
+             <apex:inputField id="LastName" value="{!newAttendee.AS_LastName__c}" label="First Name" style="width:220px" rendered="{!ShowLastName}"/></td></tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!attendeeSetting.sufix}"> 
+            <tr><td width="20%" height="28px">
+            <apex:outputLabel value="Suffix" style="color:Black; padding-left:50px; height:50px; width:180px"/><apex:outputText rendered="{!attendeeSetting.Reqsufix}"><font size="4" color="red">*</font></apex:outputText>  </td>
+            <td width="20%" height="28px">
+            
+            <apex:inputField value="{!newAttendee.As_SuffixNew__c}" required="{!attendeeSetting.Reqsufix}" style="width:220px"/></td></tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!attendeeSetting.ReqFields}"> 
+            <tr><td width="20%" height="28px">
+            <apex:outputLabel value="Email ID" style="color:Black; padding-left:50px; height:50px" /><font size="4" color="red">*</font></td><td width="20%" height="28px">
+            <apex:outputText id="outEmailId" value="{!newAttendee.AS_Email__c}" label="Email Id" style="width:220px" rendered="{!HideEmail}"/>
+
+            <apex:inputField id="EmailId" value="{!newAttendee.AS_Email__c}" label="Email Id" style="width:220px" rendered="{!showEmail}"/></td> 
+            </tr>
+            <tr><td></td>
+            <td width="20%">
+           <!--<apex:outputText value="{!EventReqString}" style="color:#FF0000;Font-size:1.25em;font-style:bold;font-family:Times New Roman;" rendered="{!EventReqStringBool2}"></apex:outputText>-->
+                       <apex:outputText value="{!ShowError}" style="color:#FF0000;Font-size:1.5em;font-style:italic;font-family:Times New Roman;" rendered="{!DisplayError}"></apex:outputText>
+               </td></tr> </apex:outputText>
+                
+            <apex:outputText rendered="{!attendeeSetting.comp}">
+            <tr><td width="20%" height="28px">
+            <apex:outputLabel value="Company Name" style="color:Black; padding-left:50px; height:50px"/><apex:outputText rendered="{!attendeeSetting.Reqcomp}"><font size="4" color="red">*</font></apex:outputText></td><td width="20%" height="28px">
+            <apex:inputField id="companyName" value="{!newAttendee.AS_Company__c}" required="{!attendeeSetting.Reqcomp}" label="Company Name" style="width:220px"/></td></tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!attendeeSetting.Degi}"> 
+            <tr><td width="20%" height="28px">
+            <apex:outputLabel value="Designation" style="color:Black; padding-left:50px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqDegi}"><font size="4" color="red">*</font></apex:outputText> </td><td width="20%" height="28px">
+            <apex:inputField id="degi" value="{!newAttendee.AS_Title__c}" required="{!attendeeSetting.ReqDegi}" style="width:220px" /></td></tr>
+        </apex:outputText>
+     <apex:outputText rendered="{!attendeeSetting.mobile}">   
+        <tr><td width="20%" height="28px">
+        <apex:outputLabel value="Mobile Number" style="color:Black; padding-left:50px; height:50px"/><apex:outputText rendered="{!attendeeSetting.Reqmobile}"><font size="4" color="red">*</font></apex:outputText></td><td width="20%" height="28px">
+        <apex:inputField value="{!newAttendee.AS_CellPhone__c}"  required="{!attendeeSetting.Reqmobile}" style="width:220px" id="phone_no" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td></tr>
+     </apex:outputText> 
+     <apex:outputText rendered="{!attendeeSetting.workInfo}">    
+        <tr><td width="20%" height="28px">
+        <apex:outputLabel value="Work Phone Number" style="color:Black; padding-left:50px; height:50px"/><apex:outputText rendered="{!attendeeSetting.Reqworkinfo}"><font size="4" color="red">*</font></apex:outputText> </td><td width="20%" height="28px">
+        <apex:inputField value="{!newAttendee.AS_WorkPhone__c}" required="{!attendeeSetting.Reqworkinfo}" style="width:220px;"  id="Workphone" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td></tr>
+     </apex:outputText>    
+
+     <apex:outputText rendered="{!attendeeSetting.age}"> 
+        <tr><td width="20%" height="28px">
+        <apex:outputLabel value="Age" style="color:Black; padding-left:50px; height:50px"/><apex:outputText rendered="{!attendeeSetting.Reqage}"><font size="4" color="red">*</font></apex:outputText></td><td width="20%" height="28px">
+       <apex:inputField value="{!newAttendee.AS_Age__c}" required="{!attendeeSetting.Reqage}"  id="Age"  style="width:220px"/>
+               </td></tr>
+     </apex:outputText>
+     <apex:outputText rendered="{!attendeeSetting.gen}"> 
+        <tr><td width="20%" height="28px">
+      
+      <apex:outputLabel value="Gender" style="color:Black; padding-left:50px; height:50px"/><apex:outputText rendered="{!attendeeSetting.Reqgen}"><font size="4" color="red">*</font></apex:outputText></td><td width="20%" height="28px">
+         <apex:selectRadio value="{!newAttendee.AS_Gender__c}" id="gender" required="{!attendeeSetting.Reqgen}">
+                   <apex:selectOptions value="{!select}" />
+               </apex:selectRadio>
+        
+        </td></tr>
+        </apex:outputText>
+        <apex:outputText rendered="{!attendeeSetting.dob}"> 
+        <tr><td width="20%" height="28px">
+        <apex:outputLabel value="DOB" style="color:Black; padding-left:50px; height:50px" /><apex:outputText rendered="{!attendeeSetting.Reqdob}" id="dateofbirth"><font size="4" color="red">*</font></apex:outputText></td>
+        <td width="20%" height="28px">   
+        <apex:inputField value="{!newAttendee.AS_BirthDate__c}" required="{!attendeeSetting.Reqdob}" onclick="swapYears,getYears" style="width:220px" id="dob"/>
+        <style>
+         
+         .datePicker{
+            z-index:10000;
+                    }
+         </style>
+        
+        </td> </tr></apex:outputText> 
+        <!--
+        <apex:outputText rendered="{!attendeeSetting.AttendeePic}"><apex:outputText rendered="{!attendeeSetting.ReqAttendeePic}"><font size="4" color="red">*</font></apex:outputText> 
+        <tr> <td width="20%" height="28px">
+               
+        <apex:outputLabel value="Image" style="color:Black; padding-left:50px; height:50px"/></td>
+        
+        <td>
+        <apex:inputFile value="{!attendeeImage}" filename="{!myimageName}" required="{!attendeeSetting.ReqAttendeePic}"/>
+              </td>
+              </tr>
+        
+        </apex:outputText> 
+        -->
+        <apex:outputText rendered="{!attendeeSetting.Registration}"> 
+        <tr> <td width="20%" height="28px">
+               
+       <apex:outputLabel value="Registration Type" style="color:Black; padding-left:50px; height:50px" rendered="{!attendeeSetting.ReqRegistration}"/></td>
+        
+        <td><table>
+        <tr><td width="70%">
+        
+         <apex:selectCheckboxes value="{!selectedTicTypes}" layout="pageDirection">
+            <apex:selectOptions value="{!options}"/>
+        </apex:selectCheckboxes><br/>
+        
+        </td></tr>
+        
+        </table>
+        </td>
+        
+        
+        </tr>
+        
+        </apex:outputText> 
+        
+        </table></td>
+  </tr>
+</table>
+
+                
+                
+         
+        </td></tr>
+       </table>
+   <!--    <ul id="breadcrumbs-one">
+        <li><a href="">Business Information</a></li>
+        <li><a href="">Business Address</a></li>
+        <li><a href="">NAICS Information</a></li>
+        <li><a href="">Shipping Address</a></li>
+        <li><a href="" class="current">Home Address</a></li>
+    </ul>  -->
+       
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">      <tr>
+       
+       <td > <a onclick="showbusinessinfofun();" style="text-decoration:none;" value="Bus Info">
+              
+          <div class="activeTab" id="businessinfotab" style="visibility:visible;position:relative;cursor:pointer;" onclick="showbusinessinfofun();">
+              Business Information
+           </div> </a>
+       </td><td> <a onclick="showbusinessaddfun();" style="text-decoration:none;">   
+          <div class="inactiveTab" id="businessaddtab" style="visibility:visible;position:relative;cursor:pointer" onclick="showbusinessaddfun();">
+                Business Address
+           </div> </a>
+         </td>
+         <td>    <a onclick="shownaicsinfofun();" style="text-decoration:none;"> 
+          <div class="inactiveTab" id="naicsaddtab" style="visibility:visible;position:relative;cursor:pointer" onclick="shownaicsinfofun();">
+               NAICS Information
+                                                   
+           </div> </a>
+         </td>
+         <td>   
+          <div class="inactiveTab" id="shippingaddtab" style="visibility:visible;position:relative;cursor:pointer" onclick="showshippingaddfun();">
+                Shipping Address
+                                                   
+           </div> 
+         </td>
+         <td>     
+          <div class="inactiveTab" id="homeaddtab" style="visibility:visible;position:relative;cursor:pointer" onclick="showhomeaddfun();">
+                Home Address
+                                                   
+           </div> 
+         </td>
+         
+         </tr>
+       </table>
+      
+      <table width="100%" ><tr>
+      <td>
+      
+        <!------------  BUSINES INFORMATION 1st TAB ------------>
+        <apex:outputPanel rendered="{!attendeeSetting.BusinessBool}">
+          <div id="businessinfo" style="display:visible;">
+             <table style=" font-size:12px; text-align:left;" width="100%"  align="center" border="0"> 
+                   
+                    <apex:outputText rendered="{!attendeeSetting.PBC}"> 
+                   
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="Primary Business Category" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqPBC}"><font size="4" color="red">*</font></apex:outputText> </td>
+                    <td width="50%" height="28px">
+                    <apex:inputField value="{!newAttendee.AS_PrimaryBusinessCategory1__c}" required="{!attendeeSetting.ReqPBC}" style="width:220px;"  />
+                    </td></tr>
+                   </apex:outputText>
+                 
+                    <apex:outputText rendered="{!attendeeSetting.SBC}"> 
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="Secondary Business Category" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqSBC}"><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                    <apex:inputField value="{!newAttendee.As_SecondaryBusinessCategory1__c}" required="{!attendeeSetting.ReqSBC}"  style="width:220px;" />  
+                    </td></tr>
+                    </apex:outputText>
+                 
+                    <apex:outputText rendered="{!attendeeSetting.NOEmp}"> 
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="No. of Employees" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqNOEmp}"><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                    <apex:inputField value="{!newAttendee.AS_NumberOfEmployees__c}" required="{!attendeeSetting.ReqNOEmp}" id="NoOfEmployess" style="width:220px;" /></td></tr>
+                    </apex:outputText>
+                 
+                    <apex:outputText rendered="{!attendeeSetting.BEDate}"> 
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="Business Established Date" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqBEDate}"><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                  
+                    <apex:inputField value="{!newAttendee.AS_BusinessEstablishedDate__c}" required="{!attendeeSetting.ReqBEDate}" onclick="swapYears,getYears"  style="width:220px;"/>
+                    
+                    </td></tr>
+                    </apex:outputText>
+                
+                    <apex:outputText rendered="{!attendeeSetting.BRev}"> 
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="Business Revenue" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqBRev}"><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                    <apex:inputField value="{!newAttendee.AS_BusinessRevenue__c}" required="{!attendeeSetting.ReqBRev}" id="Revenue"  style="width:220px;" /></td></tr>
+                    </apex:outputText>
+                 
+                    <apex:outputText rendered="{!attendeeSetting.BTaxID}">  
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="Business Tax ID" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqBTaxID}"><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                    <apex:inputField value="{!newAttendee.AS_BusinessTaxId__c}" required="{!attendeeSetting.ReqBTaxID}" style="width:220px;"  /></td></tr>
+                    </apex:outputText>
+                
+                    <apex:outputText rendered="{!attendeeSetting.BDN}"> 
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="Business Duns Number" style="color:Black; padding-left:80px; height:50px"/>
+                    <apex:outputText rendered="{!attendeeSetting.ReqBDN}"  ><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                    <apex:inputField value="{!newAttendee.AS_BusinessDunsNumber__c}" required="{!attendeeSetting.ReqBDN}" style="width:220px;" />
+                    </td></tr>
+                    </apex:outputText>
+                
+                    <apex:outputText rendered="{!attendeeSetting.webUrl}"> 
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="WebSite URL" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqwebUrl}"><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                    <apex:inputField value="{!newAttendee.AS_WebsiteUrl__c}" required="{!attendeeSetting.ReqwebUrl}" style="width:220px;" /></td></tr>
+                    </apex:outputText>
+                 
+                 <apex:outputText rendered="{!attendeeSetting.blogURL}"> 
+                    <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="Blog URL" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqblogURL}"><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                    <apex:inputField value="{!newAttendee.AS_BlogUrl__c}" required="{!attendeeSetting.ReqblogURL}" style="width:220px;" /></td></tr> 
+                 </apex:outputText>
+                 
+                 
+                 
+                 <apex:outputText rendered="{!attendeeSetting.BDesc}"> 
+                  <tr><td width="50%" height="28px">
+                    <apex:outputLabel value="Business Description" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqBDesc}"><font size="4" color="red">*</font></apex:outputText></td>
+                    <td width="50%" height="28px">
+                    <apex:inputTextArea value="{!newAttendee.AS_BusinessDescription__c}" required="{!attendeeSetting.ReqBDesc}" style="width:220px;"/></td></tr>
+                  </apex:outputText>
+                 
+                 
+                 
+                 
+                 <tr>
+                    <td colspan="3" class="pophead" style="text-align:left;">
+                    
+                   <apex:outputText rendered="{!attendeeSetting.DT}">
+            <apex:outputLabel value="Diversity Type" style="color:#FFFFFF; padding-left:20px;"/><apex:outputText rendered="{!attendeeSetting.ReqDT}"><font size="4" color="red">*</font></apex:outputText>
+            </apex:outputText>
+                    </td>
+                    </tr>
+                 <tr>
+                     <td colspan="2" align="center"> <apex:outputText rendered="{!attendeeSetting.DT}">
+                         <table border="0" cellspacing="0" cellpadding="0" align="center" width="98%" style="text-align:left;">
+            <tr><td height="35px">
+                 <apex:selectCheckboxes value="{!DiversityTypesforfirstLine}" layout="pageDirection">
+                 <apex:selectOptions value="{!Divoptions}"/>
+                 </apex:selectCheckboxes>     
+          </td>
+        
+      <td height="35px">
+                 <apex:selectCheckboxes value="{!DiversityTypesforsecondLine}" layout="pageDirection">
+            <apex:selectOptions value="{!Divoptionsforsecondline}"/>
+        </apex:selectCheckboxes></td>
+        </tr>
+            </table>
+                  </apex:outputText>
+                     </td>
+                 </tr>
+                 
+                </table>
+             
+             
+          </div>  <!--------************* 1st TAB END *******************----------->
+        </apex:outputPanel>  
+          <!--------************* 2nd TAB START *******************----------->
+        <apex:outputPanel rendered="{!attendeeSetting.workInfo}">
+          <div id="businessadd" style="display:none;">
+               <table style="border:0px solid #cccccc; text-align:left; font-size:12px;" width="98%" > 
+        
+        
+        <tr><td width="50%" height="28px">
+        <apex:outputLabel value="Address 1" style="color:Black; padding-left:80px; height:50px"/> <apex:outputText rendered="{!attendeeSetting.Reqworkinfo}"><font size="4" color="red">*</font></apex:outputText> </td>
+        <td width="50%" height="28px">
+        <apex:inputField value="{!newAttendee.AS_WorkAddress1__c}" required="{!attendeeSetting.Reqworkinfo}" style="width:220px;" /></td></tr>
+        
+        <tr><td width="50%" height="28px">
+        <apex:outputLabel value="Address2" style="color:Black; padding-left:80px; height:50px"/> <apex:outputText rendered="{!attendeeSetting.Reqworkinfo}"><font size="4" color="red">*</font></apex:outputText></td>
+        <td width="50%" height="28px">
+        <apex:inputField value="{!newAttendee.AS_WorkAddress2__c}" required="{!attendeeSetting.Reqworkinfo}" style="width:220px;" /></td></tr>
+        
+        <tr><td width="50%" height="28px">
+        <apex:outputLabel value="Country" style="color:Black; padding-left:80px; height:50px"/></td><td width="50%" height="28px">
+        <apex:inputField value="{!newAttendee.AS_Work_Country__c}" required="{!attendeeSetting.Reqworkinfo}"/></td></tr>
+       
+       
+        <tr><td width="50%" height="28px">
+        <apex:outputLabel value="State" style="color:Black; padding-left:80px; height:50px"/></td><td width="50%" height="28px">
+        <apex:inputField value="{!newAttendee.AS_Work_States__c}" required="{!attendeeSetting.Reqworkinfo}"/></td></tr>
+        
+        
+        
+        <tr><td width="50%" height="28px">
+        <apex:outputLabel value="City" style="color:Black; padding-left:80px; height:50px"/> <apex:outputText rendered="{!attendeeSetting.Reqworkinfo}"><font size="4" color="red">*</font></apex:outputText> </td>
+        <td width="50%" height="28px">
+        <apex:inputField value="{!newAttendee.AS_WorkCity__c}" required="{!attendeeSetting.Reqworkinfo}" style="width:220px;" /></td></tr>
+        
+       <!--  <tr><td width="20%" height="28px">
+        <apex:outputLabel value="State" style="color:Black; padding-left:20px; height:50px"/> <apex:outputText rendered="{!attendeeSetting.Reqworkinfo}"><font size="4" color="red">*</font></apex:outputText> </td><td width="20%" height="28px">
+           <apex:selectList value="{!newAttendee.AS_WorkState__c }" required="{!attendeeSetting.Reqworkinfo}" size="1" style="width:220px;">
+                <apex:selectOptions value="{!states}">
+                </apex:selectOptions>    
+            </apex:selectList>
+       
+       
+       <apex:inputField value="{!newAttendee.AS_WorkState__c }" /</td></tr>-->
+        
+        <tr><td width="50%" height="28px">
+        <apex:outputLabel value="Zip Code" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.Reqworkinfo}"><font size="4" color="red">*</font></apex:outputText></td>
+        <td width="50%" height="28px">
+        <apex:inputField value="{!newAttendee.AS_WorkZip__c}" required="{!attendeeSetting.Reqworkinfo}" style="width:220px;" id="work_zip" /></td></tr>
+          
+        </table>
+          </div>
+     </apex:outputPanel>      
+          <!--------************* 2nd TAB END *******************----------->
+              <!--------************* 3rd TAB START *******************----------->
+         <apex:outputPanel rendered="{!attendeeSetting.NAICSCodeBool}">
+        <div id="naicsinfo" style="display:none;">
+                <table style="border:0px solid #cccccc;margin-left:1%;font-size:12px; text-align:left;" width="98%" > 
+                      <tr><td>  
+                    <apex:outputText rendered="{!attendeeSetting.NAICSCode1}"> 
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="NAICS Code 1" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqNAICSCode1}"><font size="4" color="red">*</font></apex:outputText></td>
+                        <td width="50%" height="28px"> 
+                        <apex:inputText value="{!NAICS1Mod}" required="{!attendeeSetting.ReqNAICSCode1}" style="width:220px;" id="CodeOne"/> 
+                 
+                        </td></tr>
+                        </apex:outputText>
+                        
+                     <apex:outputText rendered="{!attendeeSetting.NAICSCode2}"> 
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="NAICS Code 2" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqNAICSCode2}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputText value="{!NAICS2Mod}" required="{!attendeeSetting.ReqNAICSCode2}" style="width:220px;" id="CodeTwo"/> 
+                 
+                        </td></tr>
+                        </apex:outputText>
+                        
+                     <apex:outputText rendered="{!attendeeSetting.NAICSCode3}"> 
+                        <tr>
+                        <td width="50%" height="28px"><apex:outputLabel value="NAICS Code 3" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqNAICSCode3}"><font size="4" color="red">*</font></apex:outputText></td>
+                        <td width="50%" height="28px">
+                        <apex:inputText value="{!NAICS3Mod}" required="{!attendeeSetting.ReqNAICSCode3}" style="width:220px;" id="CodeThree"/> 
+                       
+                         </td></tr>
+                       </apex:outputText>
+                       <apex:outputText rendered="{!attendeeSetting.NAICSCode4}" > 
+                        <tr>
+                        <td width="50%" height="28px"><apex:outputLabel value="NAICS Code 4" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqNAICSCode4}"><font size="4" color="red">*</font></apex:outputText></td>
+                        <td width="50%" height="28px">
+                       
+                        <apex:inputText value="{!NAICS4Mod}" required="{!attendeeSetting.ReqNAICSCode4}" style="width:220px;" id="CodeFour"/>
+                        
+                         </td>
+                        </tr>
+                     </apex:outputText>
+                    <apex:outputText rendered="{!attendeeSetting.NAICSCode5}" > 
+                        <tr>
+                        <td width="50%" height="28px"><apex:outputLabel value="NAICS Code 5" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqNAICSCode5}"><font size="4" color="red">*</font></apex:outputText></td>
+                        <td width="50%" height="28px">
+                       
+                        <apex:inputText value="{!NAICS5Mod}" required="{!attendeeSetting.ReqNAICSCode5}" style="width:220px;" id="CodeFive"/>
+                        
+                         </td>
+                        </tr>
+                     </apex:outputText></td></tr>
+                        </table>
+          </div>
+         </apex:outputPanel>  
+              <!--------************* 3nd TAB END *******************----------->
+                  <!--------************* 4th TAB START *******************----------->
+       <apex:outputPanel rendered="{!attendeeSetting.shippingInfo}">
+          <div id="shippingadd" style="display:none;">
+                      <table style="border:0px solid #cccccc; text-align:left; font-size:12px;" width="98%" > <tr><td width="20%" height="28px">
+                        <apex:outputLabel value="Address 1" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqShippinginfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_ShippingAddress1__c}" required="{!attendeeSetting.ReqShippinginfo}" style="width:220px;" /></td></tr>
+                        
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="Address 2" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqShippinginfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_ShippingAddress2__c}" required="{!attendeeSetting.ReqShippinginfo}" style="width:220px;"/></td></tr>
+                        
+                         <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="Country" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqShippinginfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.As_Shipping_Country__c}" required="{!attendeeSetting.ReqShippinginfo}" style="width:220px;"/></td></tr>
+                        
+                         <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="State" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqShippinginfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.As_Shipping_States__c}" required="{!attendeeSetting.ReqShippinginfo}" style="width:220px;"/></td></tr>
+                        
+                        
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="City" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqShippinginfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_ShippingCity__c}" required="{!attendeeSetting.ReqShippinginfo}" style="width:220px;"/></td></tr>
+                        
+                        <!--<tr><td width="20%" height="28px">
+                        <apex:outputLabel value="State" style="color:Black; padding-left:20px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqShippinginfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        
+                            <apex:selectList value="{!newAttendee.AS_shippingState__c }" required="{!attendeeSetting.ReqShippinginfo}" size="1" style="width:220px;">
+                                <apex:selectOptions value="{!states}">
+                                </apex:selectOptions>    
+                            </apex:selectList>
+                        
+                        </td></tr>-->
+                        
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="Zip Code" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqShippinginfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_shippingzip__c}" required="{!attendeeSetting.ReqShippinginfo}" style="width:220px;" id="shipping_zip"/></td></tr>
+                       <!--<tr><td width="50%" height="28px">
+                        <apex:outputLabel value="Phone Number" style="color:Black; padding-left:80px; height:50px"/><apex:outputText rendered="{!attendeeSetting.ReqShippinginfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_ShippingPhone__c}" required="{!attendeeSetting.ReqShippinginfo}" style="width:220px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td></tr>-->
+                        
+                        
+                       
+                        </table>
+          </div>
+       </apex:outputPanel>    
+              <!--------************* 4th TAB END *******************----------->
+                  <!--------************* 5th TAB START *******************----------->
+      <apex:outputPanel rendered="{!attendeeSetting.homeInfo}">
+          <div id="homeadd" style="display:none;">
+                <table style="border:0px solid #cccccc;margin-left:1%; text-align:left;" width="98%" align="left">
+                        
+                            
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="Address 1" style="color:Black; padding-left:80px;text-align:left; height:50px"/><apex:outputText rendered="{!attendeeSetting.Reqhomeinfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_HomeAddress1__c}" required="{!attendeeSetting.Reqhomeinfo}" style="width:220px;"  /></td></tr>
+                       
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="Address2" style="color:Black; padding-left:80px;text-align:left; height:50px;text-align:left;"/><apex:outputText rendered="{!attendeeSetting.Reqhomeinfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_HomeAddress2__c}" required="{!attendeeSetting.Reqhomeinfo}" style="width:220px;"  /></td></tr>
+                        
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="Country" style="color:Black; padding-left:80px;text-align:left; height:50px;text-align:left;"/><apex:outputText rendered="{!attendeeSetting.Reqhomeinfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="20%" height="28px">
+                        <apex:inputField value="{!newAttendee.As_Home_Country__c}" required="{!attendeeSetting.Reqhomeinfo}" style="width:220px;"  /></td></tr>
+                        
+                         <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="State" style="color:Black; padding-left:80px;text-align:left; height:50px;text-align:left;"/><apex:outputText rendered="{!attendeeSetting.Reqhomeinfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.As_Home_State__c}" required="{!attendeeSetting.Reqhomeinfo}" style="width:220px;"  /></td></tr>
+                        
+                        
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="City" style="color:Black; padding-left:80px;text-align:left; height:50px;text-align:left;"/><apex:outputText rendered="{!attendeeSetting.Reqhomeinfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_HomeCity__c}" required="{!attendeeSetting.Reqhomeinfo}" style="width:220px;"  /></td></tr>
+                        
+                         
+                        
+                        <!--  <tr><td width="20%" height="28px">
+                        <apex:outputLabel value="State" style="color:Black; padding-left:20px;text-align:left; height:50px;text-align:left;"/><apex:outputText rendered="{!attendeeSetting.Reqhomeinfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="20%" height="28px">
+                        
+                            <apex:selectList value="{!newAttendee.As_Home_State__c }" required="{!attendeeSetting.Reqhomeinfo}" size="1" style="width:220px;">
+                                <apex:selectOptions value="{!states}">
+                                </apex:selectOptions>    
+                            </apex:selectList>
+                        
+                        <<apex:inputField value="{!newAttendee.As_Home_State__c }" /</td></tr>-->
+                      
+                        
+                        <tr><td width="50%" height="28px">
+                        <apex:outputLabel value="Zip Code" style="color:Black; padding-left:80px;text-align:left; height:50px;text-align:left;"/><apex:outputText rendered="{!attendeeSetting.Reqhomeinfo}"><font size="4" color="red">*</font></apex:outputText></td><td width="50%" height="28px">
+                        <apex:inputField value="{!newAttendee.AS_HomeZip__c}" required="{!attendeeSetting.Reqhomeinfo}" style="width:220px;"  id="home_Zip" /></td></tr>
+                        
+                        <tr><td width="20%" height="28px">
+                        
+                        <apex:outputLabel value="Phone Number" style="color:Black; padding-left:80px; height:50px;text-align:left;"/><apex:outputText rendered="{!attendeeSetting.Reqhomeinfo}"><font size="4" color="red">*</font></apex:outputText></td>
+                        <td width="50%" height="28px"><apex:inputField value="{!newAttendee.AS_HomePhone__c}" required="{!attendeeSetting.Reqhomeinfo}" style="width:220px;"  onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);" /></td></tr>
+                        
+                       
+                        </table>
+          </div>
+              <!--------************* 5th TAB END *******************----------->
+       </apex:outputPanel>        
+      </td>
+             </tr></table>   
+      
+      <apex:outputpanel rendered="{!foraddatt}">
+       <table width="100%" cellpadding="0" cellspacing="0" border="0" style=" text-align:left;">      
+
+        <tr><td colspan="2">
+       
+         <table width="98%">
+         <tr>
+         
+         <td  height="42px" align="right" valign="bottom">
+        <apex:commandButton value="Save & Print" action="{!saveandprint}" styleClass="awesome" title="Save & Print" onclick="return Validate()"/>&nbsp;
+        <apex:commandButton value="Save"  styleClass="awesome" title="Save"  action="{!SaveAttendee}" onclick="return Validate()"/>&nbsp;
+        
+         <apex:commandbutton value="Cancel" action="{!Cancel}" immediate="true" styleClass="awesome" title="Cancel"/>
+         
+         </td></tr>
+         </table>
+         
+        </td>
+        </tr>
+        </table>
+        </apex:outputpanel>
+       <apex:outputpanel rendered="{!foreditatt}">
+       <table width="100%" cellpadding="0" cellspacing="0" border="0">      
+
+        <tr><td colspan="2">
+       
+         <table width="98%" valign="500px">
+         <tr>
+         
+         <td  height="42px" align="right" valign="bottom">
+     <apex:commandButton value="Save & Print" action="{!saveandprintforedit}" styleClass="awesome" title="Save & Print" onclick="return Validate()"/>&nbsp;
+        <apex:commandButton value="Save"  styleClass="awesome" title="Save"  action="{!updateattendee}" onclick="return Validate()"/>&nbsp;
+        
+         <apex:commandbutton value="Cancel" action="{!Cancel}" immediate="true" styleClass="awesome" title="Cancel"/>
+         
+         </td></tr>
+         </table>
+         
+        </td>
+        </tr>
+        </table>
+        </apex:outputpanel>
+      <!--   --></apex:outputPanel> 
+ </apex:outputPanel>
+ 
+ </apex:form>
+ <!---------------------------END OF ADD ATTENDEE---------------------------------------------->
+ <!------------------------------Edit AN ATTENDEE---------------------------------------------->
+  
+<!--------------------------------------END OF EDIT--------------------------------> 
+   </div>
+  <!--  end content-table  -->
+<!--  start actions-box ............................................... -->
+<!-- end actions-box........... -->
+<div class="clear"></div>
+</div>
+ <!--  end content-table-inner ............................................END  -->
+ </td>
+<td id="tbl-border-right"></td>
+</tr>
+<tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+
+</div>
+<!--  end content -->
+
+</div>
+<!--  end content-outer........................................................END -->
+
+    
+
+<!-------------------------------------------END EDITTTTTTTTT--------------------------------------------------------------> 
+
+            
+  <!--       <apex:form >           
+                    <apex:outputPanel id="DataImport">
+         <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!DataImportBool}"  style="width:100%;"/>
+         <apex:outputPanel styleClass="custPopup" layout="block"  rendered="{!DataImportBool}"  style="width:60%">
+                  
+                   <apex:dataTable value="{!ImportHistory}" var="his" width="100%" style="border:0px solid #FF0000;" rowClasses="odd,even">
+                       <apex:column value="{!his.DS_FileName__c}" headerValue="File Name" width="20%" headerClass="header" style="padding-left:20px; height:35px"  />
+                       <apex:column value="{!his.createddate}" headerValue="Importd Date" headerClass="header" style="padding-left:10px;height:35px"/>
+                       <apex:column value="{!his.DS_TotalRecords__c}" headerValue="Records Count" headerClass="header" style="padding-left:10px;height:35px"/>
+                       <apex:column headerClass="header" style="padding-left:10px;height:35px" headerValue="Action">
+                           <apex:commandLink action="{!deleteDataImportHistory}" onclick="return ValidateRollback()" value="RollBack" style="color:#FFFFFF;text-decoration:none;" styleClass="awesome" title="RollBack Import" >
+                                    <apex:param name="deleteDataImport"   value="{!his.id}" />
+                                    <!--<apex:param name="" assignTo="{!rollBackBool}"  />------------
+                           </apex:commandlink>
+                       </apex:column>        
+                   </apex:dataTable>
+                   <table width="100%"><tr>
+                       <td align="center">
+                   <apex:commandbutton Value="Cancel" style="width:100px;" styleClass="awesome" action="{!Cancel}"  /> 
+                       </td>
+                    </tr></table>   
+          </apex:outputpanel>
+          </apex:outputpanel>
+                   
+     </apex:form>  -->
+     <apex:form >
+<!-----------------------------------------------END Data Import Hisory POPUP-------------------------------------------------->
+<!------------------------------------------------------------------for Dymolabel------------------------------------>
+ <apex:outputPanel >
+ 
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!dymo}" />
+         <apex:outputPanel styleClass="custPopup" layout="block"  rendered="{!Dymo}" >
+
+<table cellspacing="0" cellpadding="0"  width="100%"   border="0">
+<tr>
+    <td class="pophead" style="text-align:left; padding-left:20px;">
+         <apex:commandbutton value="Cancel" action="{!cancel}" immediate="true" styleClass="awesome" title="Cancel" />&nbsp;&nbsp;
+ <apex:commandLink action="{!genpdf}" target="_Blank" style="textdecoration:none;">
+ <apex:commandbutton value="Print Preview"  immediate="true" styleClass="awesome" title="Print Preview" /></apex:commandLink>
+  <div style="float:right;"><apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/> </div>
+    </td>
+</tr>
+</table>
+<div style="overflow:scroll;widht:75%; height:500px;"> 
+<apex:repeat value="{!exportlistoflist}" var="Dymolist">
+<apex:repeat value="{!Dymolist}" var="att">
+
+
+<table  cellspacing="0" cellpadding="0"  width="100%"   border="0" >
+
+<tr>
+
+<td style="width:20%;" align="left"><apex:outputPanel rendered="{!Logo}">
+<apex:image url="/servlet/servlet.FileDownload?file={!attach.EV_EventLogo__c}" style="{!logo},width:50;height:50"/>
+</apex:outputPanel>
+</td>
+
+<td style="width:50%; text-align:right;">
+{!att.TicketTypes__c}
+</td>
+</tr>
+<tr><td style="width:100%;padding:0;margin:0;" align="center" colspan="2">
+{!att.EV_id__r.EV_Title__c}
+</td></tr>
+<tr><td align="center" style="font-size:18pt;padding:0;margin:0;"  colspan="2">
+{!att.AS_id__r.AS_FirstName__c}{!att.AS_id__r.AS_LastName__c}
+</td></tr>
+<tr><td align="center" style="font-size:12pt;padding:0;margin:0;"  colspan="2">
+{!att.AS_id__r.AS_Title__c}
+</td></tr>
+<tr><td align="Left" style="padding:0;">
+<apex:image value="https://chart.googleapis.com/chart?chs=80x80&cht=qr&chl={!att.EA_AttendeeBarcode__c}" /></td>
+<td style="font-size:10pt;width:80%;" >
+{!att.AS_id__r.AS_Company__c}
+</td></tr>
+</table>
+</apex:repeat>
+</apex:repeat></div>
+</apex:outputPanel>
+</apex:outputPanel>
+
+<!------------------------------------------------------Only two printers--------------------------->
+<apex:outputPanel >
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!fortwoprinters}" />
+         <apex:outputPanel styleClass="custPopup" layout="block"  style="width:50%;" rendered="{!fortwoprinters}" >
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" valign="top">
+<tr bgcolor="#75b9fe" height="35px">    
+    <td colspan="2" class="pophead" align="left">Select Desired Template
+         <div style="float:right;  padding-right:5px;">
+             <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" style="height:25px; width:25px;"  /> </div>
+    </td>
+</tr>
+
+
+
+<tr>
+<td align="middle" width="50%">
+&nbsp;
+</td>
+<td width="50%">
+&nbsp;
+</td>
+</tr>
+<tr>
+<td align="right" width="50%">
+Select Label:
+</td>
+<td width="50%">
+<apex:selectList value="{!SelectedValues}" multiselect="false" size="1">
+<apex:selectOptions value="{!SelectedValuesfortwoprinters}">
+</apex:selectOptions>
+</apex:selectList>
+</td>
+</tr>
+<tr><td colspan="2">
+</td>
+<td>
+<apex:outputText value="{!EventReqString1}" style="color:#FF0000;Font-size:1.875em;font-style:italic;font-family:Times New Roman;" rendered="{!EventReqStringBool}"></apex:outputText>
+</td>
+</tr>
+<tr height="10px"><td ></td></tr>
+<tr><td align="right">
+<apex:commandButton value="Print" action="{!printfromsaveandprint}" styleclass="awesome" />
+</td></tr>
+</table>
+
+
+</apex:outputPanel>
+</apex:outputPanel>
+<!----------------------------------------------End of DYMO---------------------------------------------------------->
+
+    
+          
+ <apex:outputPanel >
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!fbool}" />
+         <apex:outputPanel styleClass="custPopup" layout="block"  style="width:50%;" rendered="{!fbool}" >
+<table width="100%" cellpadding="0" cellspacing="0" border="0" valign="top">
+<tr bgcolor="#75b9fe" height="35px">    
+    <td colspan="2" class="pophead" align="left">Select Desired Template
+         <div style="float:right;  padding-right:5px;">
+             <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" style="height:25px; width:25px;"  /> </div>
+    </td>
+</tr>
+
+
+
+<tr>
+<td align="middle" width="50%">
+&nbsp;
+</td>
+<td width="50%">
+&nbsp;
+</td>
+</tr>
+<tr>
+<td align="right" width="50%">
+Select Label:
+</td>
+<td width="50%">
+<apex:selectList value="{!SelectedValues}" multiselect="false" size="1">
+<apex:actionSupport action="{!desiredTemplate}"  event="onchange"/>
+<apex:selectOptions value="{!fields}">
+</apex:selectOptions>
+</apex:selectList>
+</td>
+</tr>
+<tr><td colspan="2">
+</td>
+<td>
+<apex:outputText value="{!EventReqString1}" style="color:#FF0000;Font-size:1.875em;font-style:italic;font-family:Times New Roman;" rendered="{!EventReqStringBool}"></apex:outputText>
+</td>
+</tr>
+</table>
+
+
+<apex:outputPanel rendered="{!totalselectlist}">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td>
+<font  face="TimesNewRoman" color="red" style="font-size:18pt; padding-left:20px;">Customize Badge</font>
+</td></tr></table><br/>
+
+
+<table width="80%" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0px auto;">
+<!----------------------------------------------------First row------------------->
+<tr><td style="width:25%;height:30px;">
+
+ FirstLine
+ 
+ </td>
+
+ <td style="width:25%">
+ <apex:selectList value="{!selfieldvalue}" size="1" multiselect="false">
+ <apex:selectOptions value="{!fieldnames}"/>
+<!--<apex:actionSupport event="onchange"   reRender="ii"/>-->
+ </apex:selectlist>
+ </td>
+ <td style="width:25%">
+  <apex:selectList value="{!selectedcolor}" multiselect="false" size="1">
+ 
+ <apex:selectOptions value="{!colors}"/>
+ 
+ 
+ </apex:selectList>
+ </td>
+ <td style="width:25%">
+  <apex:selectList value="{!selectedsize}" multiselect="false" size="1" id="ii">
+ 
+ <apex:selectOptions value="{!font}"/>
+ </apex:selectList>
+ </td>
+ <td>
+  <apex:selectList value="{!selectedfaceFir}" multiselect="false" size="1"> 
+  <apex:selectOptions value="{!face}"/>
+  </apex:selectList>
+ </td>
+ </tr> 
+<!-------------------------------------------------------------------------------------------------Second row--> 
+ <tr>
+<td style="width:25%">
+ <apex:outputText >SecondLine
+ </apex:outputText>
+ </td>
+ <td style="width:25%">
+
+  
+
+ <apex:selectList value="{!selLvalue}" size="1">
+ <apex:selectOptions value="{!fieldnames}" ></apex:selectoptions> 
+ <!--<apex:actionSupport event="onchange"   reRender="Sec"/>-->
+ </apex:selectlist>
+ </td>
+ <td style="width:25%">
+  <apex:selectList value="{!selectedcolorS}" multiselect="false" size="1">
+ 
+ <apex:selectOptions value="{!colors}"/>
+
+ 
+ </apex:selectList>
+ </td>
+ <td style="width:25%">
+  <apex:selectList value="{!selectedsizeS}" multiselect="false" size="1" id="Sec"> 
+ <apex:selectOptions value="{!font}"/>
+  </apex:selectList>
+ </td>
+ <td>
+  <apex:selectList value="{!selectedfaceSec}" multiselect="false" size="1"> 
+  <apex:selectOptions value="{!face}"/>
+  </apex:selectList>
+ </td>
+
+ </tr>
+<!----------------------------------------------------------------------------Third Row--------------------->
+<apex:outputPanel rendered="{!custombadge1}">
+<tr><td style="width:25%">
+ ThirdLine
+ 
+ </td>
+ <td style="width:25%">
+ <apex:selectlist value="{!selTvalue}" size="1">
+ <apex:selectoptions value="{!fieldnames}" ></apex:selectoptions>
+ 
+<!-- <apex:actionSupport event="onchange"   reRender="TTT"/>-->
+ </apex:selectlist>
+ </td>
+ <td  style="width:25%">
+  <apex:selectList value="{!selectedcolorT}" multiselect="false" size="1">
+ 
+ <apex:selectOptions value="{!colors}"/>
+
+ 
+ </apex:selectList>
+ </td>
+ <td  style="width:25%">
+  <apex:selectList value="{!selectedsizeT}" multiselect="false" size="1" id="TTT">
+ 
+ <apex:selectOptions value="{!font}"/>
+ 
+
+ 
+ </apex:selectList>
+ </td>
+  <td>
+  <apex:selectList value="{!selectedfaceThr}" multiselect="false" size="1" > 
+  <apex:selectOptions value="{!face}"/>
+  </apex:selectList>
+ </td>
+ </tr></apex:outputpanel>
+</table>
+
+
+<!------------------------------------------------------------------------------------------------------>
+
+
+
+<table  cellspacing="0" cellpadding="0" border="0" style="padding-right:30px auto;" align="right">
+         <tr>  
+         <td width="300px" height="42px" align="center">
+<apex:commandButton value="Print" action="{!selectedprint}" styleClass="awesome" style="text-align:center;"/>&nbsp;
+<apex:commandButton value="Cancel" action="{!cancel}" styleClass="awesome" dir="LTR"/>
+
+</td></tr></table>
+</apex:outputpanel>
+<table cellspacing="0" cellpadding="0" border="0" style="margin:10px auto; padding-right:30px;" align="center">
+
+    <tr> <td width="100px">&nbsp;</td>
+        <td>
+        <apex:outputpanel rendered="{!print}" >
+<apex:commandButton value="Print" action="{!selectedprint}" styleClass="awesome"/>&nbsp;
+<apex:commandButton value="Cancel" action="{!cancel}" styleClass="awesome" dir="LTR"/>
+
+</apex:outputpanel>
+
+</td></tr></table>
+
+</apex:outputPanel>
+ </apex:outputPanel>
+ <!--------------------------------------------------------------------->
+ 
+ <apex:outputPanel >
+ 
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!pdfbool}" />
+         <apex:outputPanel styleClass="custPopup" layout="block"  style="width:40%;" rendered="{!pdfbool}" >
+
+<table  cellpadding="0" cellspacing="0" border="0" width="100%">
+ <tr height="35px" bgcolor="#75b9fe">
+                    <td  class="pophead">Badge  
+                    <div style="float:right;"><apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/> </div>
+               </td> </tr>
+ 
+</table>
+
+<div style="height:10px;"></div>
+ <table cellpadding="0" cellspacing="0" border="0" width="100%">
+ 
+
+<tr>
+ 
+  <td align="center" colspan="2" style="color:#FFFFFF;">
+  <font  face="TimesNewRoman" color="green" style="font-size:36pt;">
+  {!eventatt.As_id__r.AS_FirstName__c}
+</font>  
+                            
+ </td></tr>
+ <tr><td style="height:10px"></td></tr>
+ <tr>
+ 
+ <td align="center"  colspan="2">
+ <font style="font-size:24pt;padding:0px;margin:0px;" face="TimesNewRoman" color="green">
+ {!eventatt.As_id__r.AS_LastName__c}
+ </font>
+ </td></tr>
+<tr>
+<td align="center"  width="20%" valign="middle">
+<apex:image value="https://chart.googleapis.com/chart?chs=100x100&cht=qr&chl={!eventatt.EA_AttendeeBarcode__c}"/></td>
+<td align="left"  style="padding-left:25px;" width="100%">
+<font face="TimesNewRoman" color="red" style="font-size:18pt;padding-bottom:15pt;">{!eventatt.As_id__r.AS_Company__c}</font>
+                             
+ </td></tr>
+ <tr><td align="right" style="padding-right:35px;" colspan="2">
+ <apex:commandLink action="{!attbadge}" target="_new"><apex:commandButton value="Print"  styleClass="awesome"/></apex:commandLink>
+ 
+ <!--<apex:commandButton value="Back" action="{!cancel}"/>-->
+ 
+ </td></tr>
+</table>
+ <br />
+ 
+</apex:outputpanel>
+</apex:outputpanel> 
+ <!--------------------------------------------------statuschange--------------------------------->
+ <apex:outputPanel >
+ 
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!statuschange}" />
+         <apex:outputPanel styleClass="custPopup" layout="block"  style="width:50%;" rendered="{!statuschange}" >
+         <table width="100%" cellpadding="0" cellspacing="0" border="0" valign="top">
+<tr bgcolor="#75b9fe" height="35px">    
+    <td colspan="2" align="left"> <apex:outputText value="change your printing status" style="font-size:16px;font-weight:bold;padding-left:15px; color:#FFFFFF;" />
+         <div style="float:right;  padding-right:5px;">
+        
+             <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" style="height:25px; width:25px;"  /> </div>
+    </td>
+</tr>
+<tr>
+<td>
+<table cellpadding="0" cellspacing="5px" border="0" width="98%" align="center">
+    <tr height="35px">
+        <td align="right" width="49%">Status &nbsp;&nbsp;&nbsp;</td>
+        <td width="49%" align="left">
+             <apex:selectList value="{!statusvalue}" size="1">
+         <apex:selectOptions value="{!printingstatus}">
+          
+         </apex:selectOptions>
+         </apex:selectList>
+        </td>
+    </tr>
+    
+    <tr height="35px">
+       
+        <td colspan="2" align="center">
+         <apex:commandButton action="{!changingprintstatus}" value="save change" styleClass="awesome"/>
+         </td>
+    </tr>
+</table>
+
+ </td>
+<td>
+         
+        
+       </td>  </tr>
+       </table>
+ </apex:outputpanel>
+</apex:outputpanel> 
+ <!------------------------------------------------------------------------------------------------>
+ <!--------------------------------------------------emailstatuschange--------------------------------->
+ <apex:outputPanel >
+ 
+    <apex:outputPanel styleClass="popupBackground" layout="block"  rendered="{!emailstatuschange}" />
+         <apex:outputPanel styleClass="custPopup" layout="block"  style="width:50%;" rendered="{!emailstatuschange}" >
+         <table width="100%" cellpadding="0" cellspacing="0" border="0" valign="top">
+<tr bgcolor="#75b9fe" height="35px">    
+    <td colspan="2" align="left"> <apex:outputText value="change your profile update notification status" style="font-size:16px;font-weight:bold;padding-left:15px; color:#FFFFFF;" />
+         <div style="float:right;  padding-right:5px;">
+        
+             <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" style="height:25px; width:25px;"/> 
+             
+             </div>
+    </td>
+</tr>
+<tr>
+<td>
+<table cellpadding="0" cellspacing="5px" border="0" width="98%" align="center">
+    <tr height="35px">
+        <td align="right" width="49%">Status &nbsp;&nbsp;&nbsp;</td>
+        <td width="49%" align="left">
+             <apex:selectList value="{!statusvalue}" size="1">
+         <apex:selectOptions value="{!emailstatus}">
+          
+         </apex:selectOptions>
+         </apex:selectList>
+        </td>
+    </tr>
+    
+    <tr height="35px">
+       
+        <td colspan="2" align="center">
+         <apex:commandButton action="{!changingemailstatus}" value="save change" styleClass="awesome"/>
+         </td>
+    </tr>
+</table>
+
+ </td>
+<td>
+         
+        
+       </td>  </tr>
+       </table>
+ </apex:outputpanel>
+</apex:outputpanel> 
+ <!------------------------------------------------------------------------------------------------>
+</apex:form>
+
+ <apex:form > 
+            <apex:outputPanel id="showpopup">
+         <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!Successbool}"  style="width:100%"/>
+         <apex:outputPanel styleClass="custPopup" layout="block"  rendered="{!Successbool}"  style="width:80%">
+                   
+         
+         <table border="0"  cellspacing="0" cellpadding="0" width="100%" class="tabs_table" >
+                <tr>
+                    <td  align="center" class="pophead">Records Status </td> 
+                </tr>
+                <tr>
+                   <td align="Center" >
+                     
+                      &nbsp;
+                   </td>
+                </tr>
+                   <tr>
+                       <td align="Center" colspan="2"> <apex:outputText >
+                       
+                         Selected Attendees are updated to Booth Admin profile
+
+                     
+                       </apex:outputText>
+                      </td>
+                </tr>
+                
+                
+                <tr>
+                   <td align="Center" >
+                   
+                    
+                   </td>
+                </tr>
+                
+                <tr>
+                   <td align="center" style="padding-left:70px;">
+                   
+               <!--<font style="color:red;font-weight:bold;"> You want to import more users ?   </font> &nbsp; &nbsp;&nbsp;   <apex:commandbutton Value="yes" style="width:100px;" styleClass="awesome" action="{!Attendees}"/> 
+               &nbsp; &nbsp;&nbsp;  -->
+                 <apex:commandbutton Value="OK" style="width:100px;" styleClass="awesome" action="{!movetoBoothpage}"/>    
+                   </td>
+               </tr>
+                <tr>
+                   <td align="Center">
+                     
+                      &nbsp;
+                   </td>
+                </tr>
+           </table>     
+                   
+          </apex:outputpanel>
+          </apex:outputpanel>
+      
+                        
+      </apex:form>
+
+    <!-- start footer -->         
+<apex:include pageName="QRCode_Footertemplate"/>
+<!-- end footer --> 
+ </apex:page>

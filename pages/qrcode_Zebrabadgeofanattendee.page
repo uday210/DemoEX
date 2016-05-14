@@ -1,0 +1,191 @@
+<apex:page controller="BL_EventAdmin_AttendeesCon" renderAs="pdf" action="{!checkUserId}">
+
+<style>
+.tablelabel {
+    background:#25BEF5;
+   
+    padding:5px;
+    }
+</style>
+ <!-- QRCode_viewbadge, 
+ <apex:stylesheet value="{!$Resource.pdfstyle_css}"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.advancedpdfresource, 'qrstyle2.css')}"/>
+<!--apex:commandButton value="pdf" action="{!generatepdf}"/-->
+
+ <!-- QRCode_viewbadge, 
+ <apex:stylesheet value="{!$Resource.pdfstyle_css}"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.advancedpdfresource, 'qrstyle2.css')}"/>
+<!--apex:commandButton value="pdf" action="{!generatepdf}"/-->
+<style>
+.tablelabel {
+    background:#25BEF5;
+    padding:5px;
+    }
+</style>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="page-break-inside:avoid">
+  <tr>
+    <td colspan="2">
+    <table border="0" cellspacing="0" cellpadding="0" align="center" style="width:100%; margin-top:55px;">
+
+    <tr style="height:2.5cm;">
+         <td width="100%" height="100px" style="padding-Left:5px;" valign="top">
+    
+    <apex:outputPanel >
+         <apex:image url="/servlet/servlet.FileDownload?file={!eventatt.EV_id__r.EV_EventLogo__c}" 
+         style="width:95%;height:auto;padding-left:3px;padding-top:3px"/>
+        </apex:outputPanel>
+        </td>
+        <td width="70%" style="text-align:center; width:80%;padding-right:8px;font-size:15px">
+        
+        <div style="z-index:-17; text-align:center;width:125px; margin:0px auto; margin-top:-20px;position:relative; height:2.3cm;">
+       
+    
+         <apex:image value="https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl={!eventatt.EA_AttendeeBarcode__c}"/>
+   
+     
+  
+    </div>
+        
+        
+        
+        </td>
+             </tr>  
+             
+</table>
+   </td>
+</tr>
+    
+    
+    
+    
+    
+    
+    
+  <tr style="height:1.5cm;padding-top:30px;">
+<td align="center" colspan="2" valign="top">
+  
+  
+   <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra ,'Attendee')),(NOT(contains(selectedattendeetypeszebra ,'Exhibitor')))),true,false)}">
+ <div style=" position:absolute; text-align:center; width:100%;">
+ 
+<font  style="font-size:32px;margin-bottom:10px; text-align:center">
+         {!eventatt.AS_id__r.AS_FirstName__c} {!eventatt.AS_id__r.AS_LastName__c} 
+  
+   </font>            
+   </div>
+   
+   </apex:outputPanel>
+   
+   
+      <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypeszebra,'Exhibitor')),(contains(selectedattendeetypeszebra,'SPONSOR'))),true,false)}">          
+             <font  style="font-size:32px;">
+              {!eventatt.AS_id__r.AS_FirstName__c} {!eventatt.AS_id__r.AS_LastName__c} 
+             </font>
+       </apex:outputPanel>
+       <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypeszebra,'Exhibitor')),(contains(selectedattendeetypeszebra,'SPONSOR')),(contains(selectedattendeetypeszebra,'Sponsor')),(contains(selectedattendeetypeszebra,'Attendee'))),false,true)}">    
+             <font  style="font-size:24pt;">
+           {!eventatt.AS_id__r.AS_FirstName__c} {!eventatt.AS_id__r.AS_LastName__c} 
+             </font>
+             </apex:outputPanel>
+      </td> </tr>     
+              <tr>  
+    <td align="center" colspan="2" valign="top" style="padding:0;font-size:20pt;font-face:Calibri (Body);">
+      <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypeszebra,'Exhibitor')),(contains(selectedattendeetypeszebra,'SPONSOR'))),true,false)}"> 
+      {!eventatt.AS_id__r.AS_Company__c}
+     </apex:outputpanel>
+     <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypeszebra,'Exhibitor')),(contains(selectedattendeetypeszebra,'SPONSOR')),(contains(selectedattendeetypeszebra,'Attendee'))),false,true)}"> 
+                 {!eventatt.AS_id__r.AS_Company__c}
+             </apex:outputpanel>
+  
+   </td>
+  </tr>
+  <tr height="2cm">
+   <td width="100%" colspan="2" height="19" style="width:80%;font-size:18pt;font-face:Calibri (Body);Padding-Left:10px;text-align:right;">
+
+     <div style="bottom:10px;width:100%;">  
+  
+    
+     <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Exhibitor'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#008000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Exhibitor</font>
+        </apex:outputPanel>
+         <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Executive director'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#792e2e;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Executive Director</font>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Speaker'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#0b13b8;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Speaker </font>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'VIP'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#501f76;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> VIP</font>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Host'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#8a26d4;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Host</font>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Attendee'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#1b75bb;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Attendee </font>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Boardmember'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#6e325c;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Board Member</font>
+        </apex:outputPanel>
+          <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Moderator'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#314542;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Moderator</font>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Staff'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#a63032;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Staff</font>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'Security'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#2e5c77;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> Security</font>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypeszebra,'President'))),true,false)}">
+        <font style="valign:bottom;text-align:center;background-color:#2e79ce;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> President</font>
+        </apex:outputPanel>
+    
+ </div>
+    
+    </td>
+  </tr>
+  
+  
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  
+</table>
+<!----
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="page-break-inside:avoid">
+  <tr>
+    <td colspan="2">
+    <div style="border:0px solid #FF0000;">
+        <div style="float:left;width:30%;"> <apex:outputPanel >
+         <apex:image url="/servlet/servlet.FileDownload?file={!eventatt.EV_id__r.EV_EventLogo__c}" 
+         style="width:100px;height:60px;padding-left:30px;padding-top:40px"/>
+        </apex:outputPanel>
+      </div>
+        
+    <div style="float:right;width:69%;padding-top:40px; text-align:right;">{!eventatt.Attendee_Types__c}</div>
+    
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center" valign="middle" style="padding:0;font-size:35pt;font-face:Calibri (Body);"> <b>{!eventatt.AS_id__r.AS_FirstName__c}</b></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center" valign="middle" style="padding:0;font-size:26pt;font-face:Calibri (Body);">{!eventatt.AS_id__r.AS_LastName__c} </td>
+  </tr>
+  <tr>
+    <td width="60%" height="19" style="width:80%;font-size:18pt;font-face:Calibri (Body);Padding-Left:10px;text-align:right;">{!eventatt.AS_id__r.AS_Company__c}</td>
+    <td width="40%">
+    
+    <div style="z-index:-1; text-align:right; position:relative;margin-left:-5px; margin-right:-5px; margin-top:-25px;padding-right:5px;">
+
+<apex:image value="https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl={!eventatt.EA_AttendeeBarcode__c}" 
+/>
+
+</div></td>
+  </tr>
+</table>
+
+-->
+
+</apex:page>

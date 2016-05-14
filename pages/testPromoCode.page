@@ -1,0 +1,812 @@
+<apex:page controller="BLN_PromoCodecon" standardStylesheets="false" showHeader="false" id="pageid">
+
+
+<head>
+    <title>Booth Leads</title>
+</head>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References Start ------------------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/fullcalendar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/> 
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fullcalendar.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions.js')}"/>
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/> 
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+
+
+
+
+ <script>
+ function choosenForPopUp(){
+        
+        $(".chzn-select-deselect").chosen({allow_single_deselect:true});   
+        $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true});  
+         
+     }
+  </script> 
+
+<style type="text/css">
+
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+
+
+
+
+</style>
+<!-------------------------------------------- Styles, Javascript and Jquery References End ------------------------------------------------->
+  
+  <div id="header">
+        <div id="logo">
+                <apex:outputLink value="/apex/SA_ManageEvents">
+         <apex:image url="{!URLFOR($Resource.FormultiEvent, '/css/images/shared/logo.png')}" style="padding-top:10px;"/>
+      
+
+        </apex:outputLink>
+        </div><!--close of logo-->
+    </div><!--close of header--->
+    
+    <div  id="ribbon"></div><!--close of ribbon-->
+    <header>
+        <div id="centered-head" class="res"> 
+        <nav>
+            <ul>
+                <li id="login">
+                    <span id="login-trigger">
+                        <span id="login-triggers">
+                            <span id="user-panel-check"></span>
+                            <span id="user-panel-title ">My Account</span>
+                        </span>
+                    </span>
+                    <div id="login-content">
+                        <ul>
+                            <li><apex:outputLink value="/apex/SA_ManageProfile"><apex:image value="{!URLFOR($Resource.Manage_Profile)}" width="13px" height="13px"/><span> Manage Profile</span></apex:outputLink></li>
+                            <li><apex:outputLink value="/apex/SA_ResetPassword"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon">Reset Password</span></apex:outputLink></li>  
+                            <li><apex:form >
+                            <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></apex:form></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="account-name">
+            <p><span class="welcome">Welcome, </span><strong>{!$User.Firstname}&nbsp;{!$User.Lastname}</strong></p>
+                <div class="account-separator"></div>
+        </div>
+        <div class="account-name"></div>
+        <div class="account-name" style="float:left;valign:middle;align:left;">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image value="{!$Resource.HomeIcon}" height="40" width="40"/>
+        </apex:outputLink></div>
+        <!-- Navigation end--> 
+        </div>
+    </header>
+    <section id="middle" style=" border:0px #000000 solid" class="res">
+    <div id="container-main" >
+        <div id="container" style="border:0px #000000 solid">
+            <div id="content" >
+                <div class="speedbar" style=" border:0px #FF0000 solid">
+                    <div class="speedbar-nav">Booth Leads›› Promo Codes</div>
+                    <div style="float:right;padding-right:10px;">Selected Event: Gala Event <b></b></div>
+                    <!--close of speedbar-nav-->
+                </div>
+             
+    
+        <!------------------------------------------------------- Promo Codes Grid Start ---------------------------------------------------->
+          <apex:form id="AS_EventsForm">  
+                <apex:outputPanel id="PromoCodeTable" rendered="{!displaypromotionbool}">
+                <div class="grid-1">
+                    <div class="title-grid">Promo Codes<span></span></div>
+                        <div class="content-gird"> 
+                        <div class="dataTables_wrapper" id="example_wrapper">
+
+                        <table class="display" id="example" width="100%">
+                        <thead>
+                            <tr>                            
+                                
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 16%;">Promotion Name</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 14%;">PromoCode</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 16%;">Start Date</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 16%;">End Date</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 11%;">Discount</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width: 11%;">Available</th>
+                                <th class="th_title sorting" rowspan="1" colspan="1" style="width:16%;">Action</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                        <apex:outputText rendered="{!(IF(promotionslist.SIZE>0,TRUE,FALSE))}">                    
+                            <apex:repeat value="{!promotionslist}" var="p" >
+                                <tr class="item odd">
+                                    <td>  <apex:commandLink value="{!p.Name}"  reRender="profileid"  Styleclass="osx demo " style="color:#807F7F;" >
+                                          <apex:param value="{!p.Promo_Code__c}" name="viewpromo"/>
+                                           <apex:param value="{!p.Id}" name="viewid"/>
+                                         </apex:commandLink>
+                                   </td>
+                                    <td>{!p.Promo_Code__c}</td>
+                                   <td><apex:outputText value="{0,date, MMMM d, YYYY h:mm a}"><apex:param value="{!p.Eff_TimeStamp__c}"/></apex:outputText></td>                                  
+                                   <td><apex:outputText value="{0,date, MMMM d, YYYY h:mm a}"><apex:param value="{!p.Exp_TimeStamp__c}"/></apex:outputText></td>                                  
+                                   <td> <apex:outputText value=" $" rendered="{!IF(p.Discount_Type__c != 'Percent',TRUE,FALSE)}" />{!p.Discount_Value__c}  
+                                   <apex:outputText value=" %" rendered="{!IF(p.Discount_Type__c == 'Percent',TRUE,FALSE)}" />
+                                  
+                                   </td>
+                                   <td>
+                                 <apex:outputText rendered="{!(IF(p.T_Max_Count__c != null,TRUE,FALSE))}">         
+                                   {!(p.T_Used_Count__c)}﻿/{!p.T_Max_Count__c}
+                                   </apex:outputText>
+                                 <apex:outputText rendered="{!(IF(p.T_Max_Count__c == null,TRUE,FALSE))}">     
+                                  Usage Count Not given
+                                  </apex:outputText> 
+                                   </td>
+                                   <td class="subject">
+                                     <apex:commandlink action="{!editpromo}" title="Edit" reRender="AS_EventsForm,createid">
+                                    <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/edit-1.png')}"/>
+                                          <apex:param value="{!p.id}" name="promoid"/>
+                                      </apex:commandlink>  |
+                      
+                                      <apex:commandLink onclick="return confirmdel();" title="Delete">
+                                       <apex:param value="{!p.id}" name="promoid"/>
+                                    <apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/remove.png')}"/>
+                                      </apex:commandLink>  
+                                        
+                                      
+                                                        
+                                   </td>
+                                 </tr>
+                            </apex:repeat>
+                           </apex:outputText>   
+                        </tbody>
+                        </table>
+                        
+                        </div>
+                        
+                        <div class="clear"></div>        
+                  </div>            
+          </div>
+     <script type="text/javascript" >                   
+                                          
+    function confirmdel(){
+   
+        var x =  confirm('Are You sure To Delete ');
+                  if(x == true){
+                        return true;
+                   }
+                   else{
+                       return false;
+                   }
+      }
+
+</script>      
+          
+          
+          </apex:outputPanel>
+     
+          
+          
+      </apex:form>
+      <!-------------------------------------------------------- Promo Codes Grid End ----------------------------------------------------->   
+      
+    
+    
+    
+    
+    
+    
+    
+  <!--------------------------------------Adding PromoCodes Form---------------------------------------------------------> 
+       
+  <apex:form id="formid">
+       
+       <script>
+         choosenForPopUp();
+        </script>
+       
+    <!-----------------------------------------Discounts Menu--------------------------------------------------> 
+       
+       <apex:outputPanel id="menuid" Rendered="{!menubool}">
+       
+         <div class="grid-1"  >
+          <div class="title-grid">Manage Discounts</div>
+   
+           <div class="content-gird" >
+            
+            <div class="form" >
+
+             <div id="left-form" style=" margin-left:5%; margin-top:10px; width:49%; padding-bottom:20px;  border:0px #000000 solid; float:left;">
+              
+             
+              <div class="elem">
+                  <label >What Kind of discount are you building? </label>
+                 
+                  </div>   <div class="elem">
+               <ul>
+               <li>
+              
+                  <label >Discounts Based on Item Quantity </label><br/>
+             <apex:commandButton value="Multi-Items Discount" action="{!createpromotion}" reRender="AS_EventsForm,formid,menuid,createpromotionid,errorbboolid,errorMessage,ipLine" styleclass="button-a blue" style="margin-right:1000px;margin-top:10px;"/>
+                  
+               
+               </li>
+               </ul>
+              </div>
+               <div class="elem" style="width:750px;">
+               <ul>
+               <li>
+              
+                  <label >Buy an Item or quantity of items, get another item or quantity of items free or at a discounted price.</label><br/>
+             <apex:commandButton value="Buy Something Get Something" action="{!createbuyxgetypromotion}" reRender="AS_EventsForm,formid,menuid,createpromotionid,createbuyitmboolid,buyitempanel,errorbboolid,errorMessage,ipLine" styleclass="button-a blue" style="margin-right:1000px;margin-top:10px;"/>
+                  
+               
+               </li>
+               </ul>
+              </div>
+                <div class="elem" >
+               <ul>
+               <li>
+              
+                  <label >Discounts based on Billing Amount.</label><br/>
+             <apex:commandButton value="Spend More Save More" action="{!createorderpromotion}" reRender="AS_EventsForm,formid,menuid,createpromotionid,errorbboolid,errorMessage" styleclass="button-a blue" style="margin-right:1000px;margin-top:10px;"/>
+                  
+               
+               </li>
+               </ul>
+              </div>
+              <div class="elem" >
+               <ul>
+               <li>
+              
+                  <label >Discounts based on Single Item.</label><br/>
+             <apex:commandButton value="Basic Promocodes" action="{!createbasicpromotion}" reRender="AS_EventsForm,formid,menuid,createpromotionid,errorbboolid,errorMessage" styleclass="button-a blue" style="margin-right:1000px;margin-top:10px;"/>
+                  
+               
+               </li>
+               </ul>
+              </div>
+              
+              </div><!--close of left-form-->
+                
+                <div class="right-form"  style=" width:0%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:right">
+                <br/>
+                    
+                </div><!--close of right-form-->
+              <div class="clear"> </div>
+            </div>
+          </div>
+
+
+        <div class="clear"></div>
+             
+        </div>
+
+       
+       
+       
+       </apex:outputPanel>
+   <!---------------------------------------- End of Discounts Menu-------------------------------------------------->   
+       
+   <!-------------------------------------Common  Promotion Fields for all types of discounts.----------------------------->
+       
+       
+       <apex:outputPanel id="createpromotionid" rendered="{!createpromotionbool}">
+       
+        <div class="grid-1"  >
+          <div class="title-grid">Add PromoCode</div>
+            <div class="content-gird" >
+            
+            <div class="form" >
+
+            <div id="left-form" style=" margin-left:25%; margin-top:10px; width:49%; padding-bottom:20px;  border:0px #000000 solid; float:left;">            
+              <apex:repeat value="{!promotionslist}" var="p">
+                   <div class="elem">
+                     <label>Promotion Name: </label><label id="mandatory">*</label>   
+                   <div class="indent">
+                     <apex:inputField value="{!p.Name}" required="true" styleClass="medium"/>
+                   </div>
+                   </div>
+                   <div class="elem">
+                    <label>Promo Code : </label><label id="mandatory">*</label>   
+                   <div class="indent">
+                     <apex:inputField value="{!p.Promo_Code__c}" required="true" styleClass="medium"/>
+                   </div>
+                   </div> 
+                   <div class="elem">
+                  <label>Start Date :</label><label id="mandatory">*</label>
+                  <div class="indent">
+                     
+                  <c:RemoveLink id="SD"> 
+                        <apex:inputField value="{!p.Eff_TimeStamp__c}" />                      
+                  </c:RemoveLink>  </div>
+                </div>
+                
+                <div class="elem">
+                  <label>Expire Date :</label>
+                  <div class="indent">
+                     <c:RemoveLink >   <apex:inputField value="{!p.Exp_TimeStamp__c}" />               
+                  </c:RemoveLink>  </div>
+                </div>
+                  <div class="elem">
+                  <label>Total Usage Count :</label>
+                  <div class="indent">
+                    <apex:inputField value="{!p.T_Max_Count__c}"   styleClass="medium" id="tusageid"/>
+                </div>
+                </div> 
+                   <div class="elem">
+                  <label>Individual Usage Count :</label>
+                  <div class="indent">
+                  <apex:inputField value="{!p.I_Max_Count__c}"   styleClass="medium" id="iusageid"/>
+              </div>
+                </div> 
+                 </apex:repeat> 
+             <br/> 
+             
+  <!-------------------------------------End of Common Promotion Fields for all types of discounts.----------------------------->       
+             
+             
+           
+   <!------ ---------------------------------- Error Message Panel--------------------------------------------------> 
+           
+     <apex:outputPanel rendered="{!errormessagebool }" id="errorbboolid">
+           <div style="margin: 10px 10px 2px 20px;">
+               <apex:outputText value="{!failuremessageset}" id="errorMessage" style="color:red;" escape="false" ></apex:outputText>
+           </div> 
+     </apex:outputPanel>
+           
+    <!------ ----------------------------------End Error Message Panel--------------------------------------------------> 
+ 
+ 
+   <!----------------- Create Spend More Save More Discount -------------------------------------------------------------------------->                    
+              
+            <apex:outputpanel rendered="{!createorderbool}" id="createorderboolid">
+            <apex:repeat value="{!promotionslist}" var="p">
+            <div style="margin-left:-210px;width:200%;" >
+            <table      width="105%">
+            
+            <tr> <td width="32%"> 
+            <div class="elem">
+                  <label>If the Billing Amount is more than 
+                 
+                &nbsp;<strong>$</strong><apex:inputField value="{!p.Condition_Min_No__c}"  styleClass="medium" style="width:20%;" /> 
+             
+             </label></div>
+             </td>
+             
+             <td width="19%"> 
+              <div class="elem">
+                  <label>
+              and less than 
+             
+                  &nbsp;<strong>$</strong><apex:inputField value="{!p.Condition_Max_No__c}"  styleClass="medium" style="width:32%;" /> 
+              </label></div>
+              </td>
+              <td width="22%">
+              <div class="elem">
+              <label>
+                 ,get a discount of  &nbsp;
+                 
+                 <apex:selectList value="{!p.Discount_Type__c}" multiselect="false" size="1"   style="width:50%;" >               
+                   <apex:selectOptions value="{!discounttypes}"/>
+               </apex:selectList>
+            
+              <!---<apex:inputField value="{!p.Discount_Type__c}"    /> --->
+              </label></div>
+              </td>
+              <td width="38%">
+              <div class="elem">
+              <label>
+               <apex:inputField value="{!p.Discount_Value__c}"  styleClass="medium" style="width:28%;" />&nbsp; on total billing Amount.
+              </label></div>
+               </td>
+         </tr>
+
+            </table>
+            
+
+           </div>
+           
+            </apex:repeat>
+            <br/>
+             <apex:commandButton value="Add Range" action="{!Addrangemethod}" immediate="true" styleclass="button-a blue" reRender="createorderboolid" style="margin-left:-180px;"  />      
+          <div style="padding-left:200px;">
+             <apex:commandButton value="Save" action="{!saveorderpromotion}"  styleclass="button-a blue"  ReRender="errorbboolid,errorMessage,menuid,formid" />&nbsp;&nbsp;
+             <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" styleclass="button-a dark-blue"  reRender="formid,menuid"/>
+
+           </div>
+           
+                
+
+               </apex:outputpanel>  <br/>    
+                 
+   <!-----------------End of Create Spend More Save More Discount -------------------------------------------------------------------------->                 
+           
+          
+
+  <!----------- Create Multi-Items Discount ---------------------------------------------------------------------->      
+          
+     <apex:outputPanel rendered="{!createitembool}">
+         
+        <div style="margin-left:-205px;width:200%;" >
+          <table class="display dynamic"   width="100%"  >
+           <thead>
+            <tr>
+            
+            <th width="25%">Item Name</th>
+            <th width="10%">Price</th>
+            <th width="10%">Quantity</th>
+            <th width="15%">Buy Quantity</th>
+            <th width="15%">Discount Type</th>
+            <th width="15%">Discount Value</th>
+            <th width="10%">Action</th>
+            </tr>
+           <apex:variable var="increment" value="{!0}" id="itemincid"/> 
+           </thead> 
+            <apex:repeat value="{!itempromotionslist}" var="ip1" >
+           <apex:variable var="increment" value="{!increment+ 1}"/>
+           <tr>
+            <td>
+                <apex:selectList value="{!ip1.Buy_Item__c}" multiselect="false" size="1"   style="width:80%;" >               
+                   <apex:selectOptions value="{!itemnames }"/>
+                   
+                   <apex:actionSupport event="onchange" reRender="priceid,qtyid,errorbboolid,errorMessage" status="refreshContent" >
+                       </apex:actionSupport> 
+                       
+                        <apex:actionStatus id="refreshContent" >         
+                     <apex:facet name="start" >         
+                        <apex:image url="{!$Resource.LoaderImage}" />         
+                     </apex:facet>         
+                </apex:actionStatus> 
+                </apex:selectList>
+            </td>
+            
+             <td>
+                 <apex:outputText value="{!ItemMAP[ip1.Buy_Item__c].price__c}" id="priceid" > </apex:outputText> 
+             </td>
+               <td>
+                  <apex:outputText value="{!ItemMAP[ip1.Buy_Item__c].Available_Tickets__c}"  id="qtyid"></apex:outputText> 
+               </td>
+            
+            <td>
+                <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label>
+                        <apex:inputField value="{!ip1.Buy_Item_Quantity__c}" />
+                 </div>
+            </td>
+            <td>
+               <apex:selectList value="{!ip1.Item_Discount_Type__c}" multiselect="false" size="1"   style="width:80%;" >               
+                   <apex:selectOptions value="{!discounttypes}"/>
+               </apex:selectList>
+            
+            <!---<apex:inputField value="{!ip1.Item_Discount_Type__c}"   style="width:80%;"/>--->
+            </td>
+            <td>
+                 <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label>  <apex:inputField value="{!ip1.Item_Discount_Value__c}" style="width:60%;" />
+                 </div>
+            </td>
+             <td>
+               <apex:commandButton image="{!URLFOR($Resource.CreateEventsSteps, 'images/removerow.png')}" rendered="{!itempromotionslist.size > 1 }" action="{!deleteitempromoline}"  reRender="formid,itemincid,errorbboolid,errorMessage" onclick="confirm('Are you Sure To Delete An Item ?');" style="height:15px;"> 
+                   <apex:param value="{!increment-1}" name="deletedId"/>     
+               </apex:commandButton> 
+                   &nbsp;&nbsp;
+               <apex:commandButton image="{!URLFOR($Resource.CreateEventsSteps, 'images/addrow.png')}" action="{!additems}" rendered="{!itempromotionslist.size = (increment) }"  reRender="formid,itemincid,errorbboolid,errorMessage"  style="height:15px;" > 
+               </apex:commandButton>
+            
+             </td>
+           </tr>
+           </apex:repeat>
+           
+           
+         </table>
+      
+         </div><br/>
+           
+             <div style="padding-left:200px;">
+             <apex:commandButton value="Save" action="{!savepromotion}"  styleclass="button-a blue"  ReRender="errorbboolid,errorMessage,menuid,itemincid,formid" />&nbsp;&nbsp;
+             <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" styleclass="button-a dark-blue"  reRender="formid,menuid"/>
+
+           </div>
+          
+ 
+ 
+     </apex:outputPanel>
+ 
+   <!----------- End Of Create Multi-Items Discount ---------------------------------------------------------------------->                
+  
+  
+   <!----------------- Create BuyXGety Discount -------------------------------------------------------------------------->           
+           <apex:outputPanel rendered="{!createbuygetbool }" id="createbuyitmboolid">            
+          
+           <div style="margin-left:-205px;width:100%;margin-top:-5%;" >
+              <label style="margin-top:-100px;" >Buy the Following Items</label>
+            <table class="display dynamic"   width="100%"  >
+          <thead>
+            <tr>
+            
+            <th width="30%">Buy Item Name</th>
+            <th width="10%">Price</th>
+            <th width="10%">Quantity</th>
+            <th width="35%">Buy Item Quantity</th>
+            <th width="15%">Action</th>
+            </tr>
+           <apex:variable var="increment" value="{!0}" id="varid"/> 
+             </thead> 
+             
+             <apex:repeat value="{!itempromotionslist}" var="ip1" id="repaetid">
+              <apex:variable var="increment" value="{!increment+ 1}"/>
+            <tr>
+            <td>
+              <apex:selectList value="{!ip1.Buy_Item__c}" multiselect="false" size="1" style="width:80%;">
+                      <apex:selectOptions value="{!itemnames }"/>
+                      
+                      <apex:actionSupport event="onchange" reRender="priceid,qtyid,errorbboolid,errorMessage" status="refreshContent" >
+                       </apex:actionSupport> 
+                       
+                        <apex:actionStatus id="refreshContent" >         
+                     <apex:facet name="start" >         
+                        <apex:image url="{!$Resource.LoaderImage}" />         
+                     </apex:facet>         
+                </apex:actionStatus>  
+                      
+                      
+              </apex:selectList>
+            </td>
+           
+            
+                 <td>
+                 <apex:outputText value="{!ItemMAP[ip1.Buy_Item__c].price__c}" id="priceid" > </apex:outputText> 
+             </td>
+               <td>
+                  <apex:outputText value="{!ItemMAP[ip1.Buy_Item__c].Available_Tickets__c}"  id="qtyid"></apex:outputText> 
+               </td>
+           
+            <td>
+              <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label>
+              <apex:inputField value="{!ip1.Buy_Item_Quantity__c}" style="width:60%;"/></div>
+           </td>
+           
+           <td>
+           <apex:commandButton image="{!URLFOR($Resource.CreateEventsSteps, 'images/removerow.png')}" rendered="{!itempromotionslist.size > 1 }" action="{!deleteitempromoline}"  reRender="formid,varid,createbuyitmboolid,errorbboolid,errorMessage" onclick="confirm('Are you Sure To Delete An Item ?');" style="height:15px;"> 
+                   <apex:param value="{!increment-1}" name="deletedId"/>     
+                   </apex:commandButton> 
+                   &nbsp;&nbsp;
+           <apex:commandButton image="{!URLFOR($Resource.CreateEventsSteps, 'images/addrow.png')}" action="{!additems}" rendered="{!itempromotionslist.size = (increment) }"  reRender="formid,varid,createbuyitmboolid,errorbboolid,errorMessage"  style="height:15px;" > 
+                   </apex:commandButton>
+           </td>
+           
+           </tr>
+       </apex:repeat>
+           </table>
+    
+           </div>
+          <br/>
+         
+                  
+           <div style="margin-left:200px;width:100%;margin-top:-28%;" >
+           <table width="100%">
+           <tr><td width="75%"> Get the following items at a discount of &nbsp;
+           
+             <apex:selectList value="{!freeitempromotionslist[0].Item_Discount_Type__c}" multiselect="false" size="1"   style="width:80%;" >               
+                   <apex:selectOptions value="{!discounttypes}"/>
+               </apex:selectList>
+           
+           <!---<apex:inputField value="{!freeitempromotionslist[0].Item_Discount_Type__c}"    /> ----></td>
+           <td width="25%"><div class="requiredInput" style="margin-left:-10px;">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label>  <apex:inputField value="{!freeitempromotionslist[0].Item_Discount_Value__c}" style="width:70%;"/>
+                 </div>
+           </td>
+           </tr>
+           
+           </table>
+          
+         <table  class="display dynamic"    width="100%"  >
+            <tr>
+             <thead>
+            <th width="30%">Get Item Name</th>
+            <th width="10%">Price</th>
+            <th width="10%">Quantity</th>
+            <th width="35%">Get Item Quantity</th>
+            <th width="15%">Action</th>
+            <apex:variable var="incrementVAL" value="{!0}" id="incid"/> 
+            </thead> </tr>
+            <apex:repeat value="{!freeitempromotionslist}" var="ip1" >
+            <apex:variable var="incrementVAL" value="{!incrementVAL+ 1}"/>
+            <tr>
+            <td>
+              <apex:selectList value="{!ip1.Free_Item__c}" multiselect="false" size="1" style="width:80%;">
+                      <apex:selectOptions value="{!itemnames }"/>
+                       <apex:actionSupport event="onchange" reRender="priceid1,qtyid1,errorbboolid,errorMessage" status="refreshContent"  >
+                       </apex:actionSupport> 
+                       
+                        <apex:actionStatus id="refreshContent" >         
+                     <apex:facet name="start" >         
+                        <apex:image url="{!$Resource.LoaderImage}" />         
+                     </apex:facet>         
+                </apex:actionStatus> 
+           </apex:selectList>
+            </td>
+             <td>
+                 <apex:outputText value="{!ItemMAP[ip1.Free_Item__c].price__c}" id="priceid1" > </apex:outputText> 
+             </td>
+               <td>
+                  <apex:outputText value="{!ItemMAP[ip1.Free_Item__c].Available_Tickets__c}"  id="qtyid1"></apex:outputText> 
+               </td>
+            
+            
+            <td>
+              <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label>
+              <apex:inputField value="{!ip1.Free_Item_Quantity__c}" style="width:60%;"/></div>
+           </td>  
+           <td>
+           <apex:commandButton image="{!URLFOR($Resource.CreateEventsSteps, 'images/removerow.png')}" action="{!deletefreeitempromoline}"  rendered="{!freeitempromotionslist.size > 1 }"  reRender="formid,incid,createbuyitmboolid,errorbboolid,errorMessage" onclick="confirm('Are you Sure Delete Item ?');" style="height:15px;"> 
+                 <apex:param value="{!incrementVAL-1}" name="deletedId"/>           
+                   </apex:commandButton> 
+                   &nbsp;&nbsp;
+           <apex:commandButton image="{!URLFOR($Resource.CreateEventsSteps, 'images/addrow.png')}" action="{!addgetitems}" rendered="{!freeitempromotionslist.size = (incrementVAL) }"   reRender="formid,incid,createbuyitmboolid,errorbboolid,errorMessage"  style="height:15px;" > 
+                   </apex:commandButton>
+           </td>
+                  
+          </tr>
+             </apex:repeat>
+            
+            
+            
+           </table>
+             
+           </div> <br/>
+           
+             <div style="padding-left:200px;">
+             <apex:commandButton value="Save" action="{!savebuyxgetxpromotion}"  styleclass="button-a blue"  ReRender="errorbboolid,errorMessage,menuid,formid,incid,varid" />&nbsp;&nbsp;
+             <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" styleclass="button-a dark-blue"  reRender="formid,menuid"/>
+
+           </div>
+           
+           
+           </apex:outputPanel>         
+   
+   <!-----------------End of Create BuyXGety Discount -------------------------------------------------------------------------->           
+           
+            </div><!--close of left-form-->
+                
+                <div class="right-form"  style=" width:0%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:right">
+                <br/>
+                    
+                </div><!--close of right-form-->
+              <div class="clear"> </div>
+            </div>
+          </div>
+
+    <div class="clear"></div>
+         
+    </div>
+   
+       </apex:outputPanel>
+      
+   </apex:form>
+       
+       
+       
+      <!---------------------------------- End of Multitemsdiscount--------------------------------------------------> 
+       
+      
+       
+                
+    
+    </div>
+      <!-- #content--> 
+    </div>
+    <!-- #container-->
+    <apex:form >
+    <apex:outputPanel id="sideLeftid">
+        <aside class="sideLeft">
+        <span class="categories">Categories</span>
+        <ul class="menu">
+            <li><apex:outputLink id="AS_Events" styleClass="active"><span class="four-prong icon">Event Information</span></apex:outputLink>
+                <ul class="acitem" style="display: block;">
+                    <li><apex:outputLink id="AS_Events1"><span class="home icon">Dashboard</span></apex:outputLink></li>
+                    <li><apex:commandLink ><span class="four-prong icon">Attendees</span><span class="num">3</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="attendee icon">Add Attendee</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="importattendee icon">Import Attendee</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="print icon">Print Badge</span></apex:outputLink></li>
+                        </ul>
+                    </li> 
+                    <li><apex:commandLink ><span class="four-prong icon">Reports</span><span class="num">3</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Ticket Sales</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Item Sales</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="reports icon">Check in Status</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+           <li class="expand"><apex:outputLink value=""><span class="four-prong icon">Event Settings</span></apex:outputLink>
+                <ul class="acitem" style="display: none;">
+                    <li><apex:commandLink ><span class="four-prong icon">Tickets</span><span class="num">2</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style="padding-left:15px"><apex:outputLink ><span class="cal icon">Add Ticket</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink style="background-color:#5B7585;"><span class="conversations icon">Import Tickets</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                    <li><apex:commandLink ><span class="four-prong icon">Items</span><span class="num">2</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="additem icon">Add Item</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="importitem icon">Import Items</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                    <li class="expand"><apex:commandLink action="{!promotionslist}" reRender="AS_EventsForm,formid,menuid"  style="{!IF(displaypromotionbool = TRUE,'background-color:#5B7585;','')}" ><span class="four-prong icon">Promo Codes</span><span class="num">2</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:commandLink Action="{!discountmenu}" style="{!IF(menubool = TRUE,'background-color:#5B7585;','')}" reRender="AS_EventsForm,formid,menuid"><span class="addpromocode icon">Add Promo Code</span></apex:commandLink></li>
+                            <li style=" padding-left:15px"><apex:commandLink ><span >Send Invitation</span></apex:commandLink></li>    
+
+                        </ul> 
+                    </li>
+                    <li><apex:commandLink ><span class="four-prong icon">Event Staff</span><span class="num">1</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink ><span class="addpromocode icon">Add Event Staff</span></apex:outputLink></li>    
+                        </ul> 
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        </aside>
+       </apex:outputPanel> 
+    </apex:form> </div>
+  <!-- #sideLeft --> 
+  <!-- #container main-->
+
+  <footer>
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Booth Leads </p>
+      </div>
+    </div>
+  </footer>
+  
+</section>
+<!-- #middle-->
+
+ 
+<div class="clear"></div>
+                 
+
+</apex:page>

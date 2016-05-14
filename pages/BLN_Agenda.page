@@ -1,0 +1,1972 @@
+<apex:page controller="BLN_Seminars_updCon" standardStylesheets="false" showHeader="false" id="thepage">
+  <!------------common styles component------------>
+  <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+  <c:ed_commonstyles ></c:ed_commonstyles>
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+  <!------------//common styles component---------->
+  <!-----------datatable stylescss------------->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-seminar.css')}" />
+  <!-----------//datatable stylescss------------->
+  <!-------------basic template html component------------------------------------->
+  <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="comp">
+   <script>
+        var contents='';
+        
+        var iframelink=[];//storing the embed links value
+     
+        <!---------------------------youtube component script------------------------------> 
+        
+        var jq = jQuery.noConflict();
+        jq(function() {
+                 
+             ///function calling for delete youtube box 
+            jq(document.body).on('click', '.crossicon' ,function(){
+                  //alert("enter");
+                   jq(this).each(function() {
+                    var current_index=jq(this).parent().index();
+                    //alert("Currentbox Index" + jq(this).parent().index());
+                    
+                    iframelink.splice(current_index-1,1);//removing the deleted link from the array..
+                    //alert("Updated Array Size ---" + iframelink.length);
+                    //alert("Updated Array Link ---" + iframelink);
+                   jq(this).parent().remove();//deleting the box
+               
+                    if(iframelink.length==0){
+                        $(".ytwraper").css("display","none");//youtube wrapper with youtube heading will vanish
+                        }      
+               
+             
+                   })
+            try{
+         
+                    $("[id$='speakervideohidden']").val(iframelink.toString());
+                   }catch(e){}
+            });
+            
+            
+        
+        //function calling for appending youtube iframe link    
+            jq(".ytsave_btn").click(function(){
+                 
+                var iframeval=jq(".framelinkval").val();//capturing user embed link
+                var box=jq("<div class='ytbox'></div>")//creating parent div
+                var delimg=jq("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+                var iframebox=jq("<div class='iframebox'></div>");
+                var ytregex=iframeval.match(/(<iframe.+?<\/iframe>)/g);
+                //condition for shouldnot equal to null and match the regex of iframe
+                if(iframeval!="" && ytregex){
+                    //alert("has");
+                        jq(".ytwraper").css("display","block");
+                        jq(box).append(delimg);
+                        
+                        jq(iframebox).append(iframeval);
+                        iframelink.push(iframeval);
+                        jq(box).append(iframebox);
+                        jq(".ytwraper").append(box);
+                        jq(".framelinkval").val("");//clearing the embedlink textbox
+                    } 
+                    
+                else{
+                    //alert("Shouldnot Null And Provide Embed Format");
+                    Alert.render('Please Provide a Correct Youtube Embed Format' ,'Alert !','ok');
+                    jq(".framelinkval").val("");
+                    }   
+                //alert("Array Size ---" + iframelink.length);
+                // alert("Array List---" + iframelink.join(","));
+                  try{
+                   
+                    $("[id$='speakervideohidden']").val(iframelink.toString());
+                   }catch(e){}
+                        
+                         
+                })
+            //alert(iframeval)
+            });
+                
+        </script>
+
+    <apex:form id="fm">
+      <!---------------------template code------------------>
+      
+      <div id="seminartblbox" class="datatable-wrapper" style="display:{!IF(createNewSeminarBool==false,'','none')}" >
+        <div class="top-stats" style="display:{!IF(createNewSeminarBool==false,'','none')}">
+          <apex:commandButton id="new_campaign" styleClass="togglebtn right margin-ryt-5px margin-lft-5px" value="Create Seminar" style="padding:5px;" action="{!createNewSeminar}" title="Create Seminar"/>
+          <!--<button type="button" id="new_campaign" class="togglebtn right margin-ryt-5px margin-lft-5px"  style="padding:5px;" onclick="showpackage('seminarform','seminartblbox')">Create Seminar</button>  --> 
+          <!-----start of from date and to date----->
+          <p class="right" style="text-align:right; line-height:25px;"> <span class="labeltitles">Filter By:</span> <span> 
+            <!--<select id="sort-filter" onchange="updatebox(this)" class="selectlist-datatable">
+      <option value="Seminargrp">Seminar</option>
+      <option value="Trackgrp">Track</option>
+      <option value="Roomgrp">Room</option>
+       <option value="Speakergrp">Speaker </option>
+       <option value="Dategrp">Date </option>
+        
+      </select>-->
+            <apex:selectList size="1" multiselect="false" value="{!groupByoption}" styleClass="selectlist-datatable" id="sort-filter">
+              <apex:selectOptions value="{!groupByoptions}"></apex:selectOptions>
+              <apex:actionSupport action="{!onchangeAct}" event="onchange"/>
+            </apex:selectList>
+            </span> </p>
+          <!--------------------------------------->
+          <div class="clear"></div>
+          <!--close of clear--> 
+          <!----> 
+        </div> 
+        
+         <apex:actionFunction name="afDelAttach" action="{!DelAttachment}" reRender="opAtt"  status="AjaxLoader" immediate="true">
+                             <apex:param value="" name="deletedId" />   
+                   </apex:actionFunction>
+  
+
+    <!----------Start Action function for updating reordered rows of agenda table table ---------------------->             
+         <apex:actionFunction action="{!saveAgenda}" name="saveAgenda" status="AjaxLoader" rerender="none">
+            <apex:param name="AttData" value="" assignTo="{!AttData}"/>
+      <apex:param name="AttName" value="" assignTo="{!AttName}"/>
+        </apex:actionFunction>
+    <!----------End Action function for updating reordered rows of agenda table table ---------------------->  
+    
+        
+    <!----------Start Action function for updating reordered rows of agenda table table ---------------------->             
+         <apex:actionFunction action="{!updateAgendaOrder}" name="rowOrderDisplay" reRender="seminarTableId" >
+            <apex:param value="" name="agendaOrder"/>
+        </apex:actionFunction>
+    <!----------End Action function for updating reordered rows of agenda table table ---------------------->  
+        <!--close of top stats---->
+        
+        <div id="Seminargrp" class="targetdiv" style="display:block;display:{!IF(createNewSeminarBool==false,'','none')}"><!--start of grp1----> 
+          <!---start of  output table----->
+          <apex:outputPanel rendered="{!groupByoption=='Seminargrp'}" id="smgrop">
+            <table id="seminarTableId" class="example display" style="width:100.2%" >
+              <thead>
+                <tr>
+                  <th width ="2%"></th>
+                  <th style="width:20%">Seminar Name</th>
+                  <th style="width:14%">Seminar Start Date</th>
+                  <th style="width:14%">Seminar End Date</th>
+                  <th>Track</th>
+                  <th style="width:12%">Room</th>
+                  <th style="width:15%">Speaker</th>
+                  <th style="width:12%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                <!-----------parent first record-------->
+                <apex:variable var="listcou" value="{!0}" id="listcountid"/> 
+                <apex:repeat value="{!seminarInn}" var="sem">
+                  <apex:repeat value="{!sem.agendaList}" var="s">
+                  <apex:variable var="listcou" value="{!listcou+1}"/>
+                    <tr id="{!s.ID}">
+                      <td colspan="8" style="padding:0px; border:none;"><!------------>
+                        
+                        <table  class="display subtable" style="border:none; background-color:transparent;">
+                          <apex:repeat value="{!s.Time_Slots__r}" var="k">
+                            <tr style="background-color:transparent;"> 
+                              <!---->
+                              <td  width="2%" ><apex:image url="{!$Resource.DragButton}"  style="margin-left:-5px;" /> </td>
+                              <td style="width:20%;"> {!s.Agenda_Name__c}</td>
+                              <td style="width:14%;">
+                              <!-- <apex:outputText value=" {0, date, MM/dd/yyyy  hh:mm a}">
+                                  <apex:param value="{!k.Slot_Start_date__c+offset}"/>
+                                </apex:outputText>-->
+                                <c:EV_FormatDt date_Timevalue="{!k.Slot_Start_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}"/>
+                                </td>
+                              <td style="width:14%;"><!--<apex:outputText value=" {0, date, MM/dd/yyyy  hh:mm a}">
+                                  <apex:param value="{!k.Slot_End_date__c}"/>
+                                </apex:outputText>-->
+                                <c:EV_FormatDt date_Timevalue="{!k.Slot_End_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}"/>
+                                </td>
+                              <td>{!s.BLN_Track__r.Name}</td>
+                              <td style="width:12%;">{!k.Room__r.Name} ({!k.Room__r.Room_Number__c})</td>
+                              <apex:variable value="{!1}" var="partNumber"/>
+                              <td style="width:15%"><!--     <apex:repeat value="{!agendaParticipants[s.id]}" var="par">
+                  <apex:outputText value="{!partNumber}"></apex:outputText>  &nbsp;
+                     <apex:outputText value="{!par.GN_User__r.First_Name__c}"></apex:outputText>&nbsp;
+                      <apex:outputText value="{!par.GN_User__r.Last_Name__c}"></apex:outputText><br/>
+                 
+                 <apex:variable value="{!(partNumber+1)}" var="partNumber"/>
+            </apex:repeat>  --> 
+            <apex:repeat value="{!agendaParticipants[s.id]}" var="par">
+             <p style="text-align:center; margin-top:5px; "> <apex:outputText value="{!partNumber}"></apex:outputText>  &nbsp;
+                                     <apex:outputText value="{!par.BLN_TKT_profile__r.First_Name__c}"></apex:outputText> &nbsp;
+                                      <apex:outputText value="{!par.BLN_TKT_profile__r.Last_Name__c}"></apex:outputText>
+                                 </p>
+                                 <apex:variable value="{!(partNumber+1)}" var="partNumber"/>
+                                </apex:repeat>
+                                <!--{!agendaParticipants[s.id][0].GN_User__r.First_Name__c}&nbsp;{!agendaParticipants[s.id][0].GN_User__r.Last_Name__c}--> </td>
+                              <td style="width:12%;" class=" textcenter"><!--     
+            <apex:commandLink title="Edit" action="{!editSeminar}" styleClass="edit-link"  >
+                         <i class=" fa fa-pencil fa-edit20px  btnEditar"></i>
+                          <apex:param value="{!s.id}" name="editAgendaId"/>
+                      </apex:commandLink> -->
+                                
+                                <apex:commandLink title="Edit" action="{!editSeminar}" styleclass="edit-link"> <i class=" fa fa-pencil fa-edit20px  btnEditar"></i>
+                                  <apex:param value="{!s.id}" name="editAgendaId"/>
+                                </apex:commandLink>
+                                &nbsp;&nbsp;
+                                  <i class="fa fa-trash-o fa-delete20px btnExcluir " onclick="deleteasm('{!s.id}',this);" title="Delete"></i>
+                                 
+                              
+                                
+                                
+                                
+                                
+                                <!--        <a class="delete-link" title="Delete">
+            <i class="fa fa-trash-o fa-delete20px btnExcluir "></i></a>  -->
+                                
+                                <div class="expcolp_img"></div></td>
+                            </tr>
+                          </apex:repeat>
+                          <!--------->
+                        </table>
+                        
+                        <!--close of subtable----->
+                        
+                        <div class="expdiv" >
+                        
+                        <!---->
+                        
+                        <div class="form-embed-div"> 
+                          <!----------->
+                          <div class="form-content-div"> 
+                            <!----------->
+                            <p class="padding-5px  strong_700 lblheading" style=" display:inline-block" >Description</p>
+                            <p class="padding-5px right  strong_700 lblheading" style=" display:inline-block" > Speaker: <span class="labeltitles">
+                              <apex:repeat value="{!agendaParticipants[s.id]}" var="par">
+                                <apex:outputText value="{!par.BLN_TKT_profile__r.First_Name__c}"></apex:outputText>
+                                &nbsp;
+                                <apex:outputText value="{!par.BLN_TKT_profile__r.Last_Name__c}"></apex:outputText>
+                                ,&nbsp; </apex:repeat>
+                              </span></p>
+                            <!--------->
+                         <p class="padding-5px lblheading" ><apex:outputField value="{!s.Agenda_Description__c}" /> </p>   
+                            <!------> 
+                          </div>
+                          <!--form-embed-div--> 
+                        </div>
+                        
+                        <!---form-content-div-->
+     
+  <!----->
+  </div>
+   <!--close of expdiv---></td>
+                    </tr>
+                  </apex:repeat>
+                </apex:repeat>
+                <!---------------------------***********end of parentfirst-------------------------------------------> 
+                
+                <!--------->
+                
+              </tbody>
+            </table>
+            <script>
+         
+        try{
+
+            dtcl();
+            }catch(e){}
+        </script>
+            <!---end of output table-----> 
+          </apex:outputPanel>
+        </div>
+        <!--close of seminargrp---> 
+        <!------------>
+        <apex:outputPanel rendered="{!groupByoption!='Seminargrp'}" id="sem">
+          <div id="{!groupByoption}"> <!-- id="Trackgrp" class="targetdiv"--> 
+            
+            <!---start of  output table----->
+            <table class="example display" style="width:100.2%" >
+              <thead>
+                <tr>
+                  <th style="width:20%">Seminar Name</th>
+                  <th style="width:14%">Seminar Start Date</th>
+                  <th style="width:14%">Seminar End Date</th>
+                  <th>Track</th>
+                  <th style="width:12%">Room</th>
+                  <th style="width:15%">Speaker</th>
+                  <th style="width:12%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-----------parent first record-------->
+                <apex:repeat value="{!seminarInn}" var="sem">
+                  <tr>
+                    <td colspan="7" style="padding:0px; border:none"><div class="grpdiv">
+                        <label class="labeltitles">
+                          <apex:outputText value="Track Name:" rendered="{!IF((groupByoption=='Trackgrp'),true,false)}"/>
+                          <apex:outputText value="Room:" rendered="{!IF((groupByoption=='Roomgrp'),true,false)}"/>
+                          <apex:outputText value="Speaker:" rendered="{!IF((groupByoption=='Speakergrp'),true,false)}"/>
+                          <apex:outputText value="Date:" rendered="{!IF((groupByoption=='Dategrp'),true,false)}"/>
+                        </label>
+                        <label class="labeloutput"> {!sem.groupName.Name}
+                          <apex:outputText value=" {0, date, MMMM d','  yyyy }">
+                            <apex:param value="{!sem.dateValue}"/>
+                          </apex:outputText>
+                          {!sem.trackName} </label>
+                      </div>
+                      <apex:repeat value="{!sem.agendaList}" var="s">
+                      
+                      <!---close of grpdiv---> 
+                      <!---------------------------***********grprepeat-------------------------------------------> 
+                      <!------------>
+                      
+                      <table  class="display subtable" style="border:none; background-color:transparent;">
+                        <apex:repeat value="{!s.Time_Slots__r}" var="k">
+                          <tr style="background-color:transparent;"> 
+                            <!---->
+                            <td width="20%">{!s.Agenda_Name__c}</td>
+                            <td width="14%"><!--<apex:outputText value=" {0, date, MM/dd/yyyy  hh:mm a}">
+                                <apex:param value="{!k.Slot_Start_date__c}"/>
+                              </apex:outputText>-->
+                              <c:EV_FormatDt date_Timevalue="{!k.Slot_Start_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}"/>
+                              </td>
+                            <td width="14%"><!--<apex:outputText value=" {0, date, MM/dd/yyyy  hh:mm a}">
+                                <apex:param value="{!k.Slot_End_date__c}"/>
+                              </apex:outputText>-->
+                              <c:EV_FormatDt date_Timevalue="{!k.Slot_End_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}"/>
+                              </td>
+                            <td >{!s.BLN_Track__r.Name}</td>
+                            <td width="12%">{!k.Room__r.Name} ({!k.Room__r.Room_Number__c})</td>
+                            <apex:variable value="{!1}" var="partNumber"/>
+                            <td width="15%"><!--     <apex:repeat value="{!agendaParticipants[s.id]}" var="par">
+                  <apex:outputText value="{!partNumber}"></apex:outputText>  &nbsp;
+                     <apex:outputText value="{!par.GN_User__r.First_Name__c}"></apex:outputText>&nbsp;
+                      <apex:outputText value="{!par.GN_User__r.Last_Name__c}"></apex:outputText><br/>
+                 
+                 <apex:variable value="{!(partNumber+1)}" var="partNumber"/>
+            </apex:repeat>  -->
+                              <apex:outputpanel rendered="{!if((groupByoption !='Speakergrp' ),true,false)}" id="strp">
+                              <!--{!agendaParticipants[s.id][0].GN_User__r.First_Name__c}&nbsp;{!agendaParticipants[s.id][0].GN_User__r.Last_Name__c}-->
+                              <apex:repeat value="{!agendaParticipants[s.id]}" var="par" >
+                                 <p style="text-align:center; margin-top:5px; ">  <apex:outputText value="{!partNumber}"></apex:outputText>  &nbsp;
+                                     <apex:outputText value="{!par.BLN_TKT_profile__r.First_Name__c}"></apex:outputText> &nbsp;
+                                      <apex:outputText value="{!par.BLN_TKT_profile__r.Last_Name__c}"></apex:outputText>
+                                 </p>
+                                 <apex:variable value="{!(partNumber+1)}" var="partNumber"/>
+                                </apex:repeat>
+                                </apex:outputpanel>
+                              <apex:outputpanel rendered="{!if((groupByoption == 'Speakergrp'),true,false)}"> {!sem.trackName} </apex:outputpanel></td>
+                            <td width="12%" class=" textcenter">
+                            <apex:commandLink title="Edit" action="{!editSeminar}" styleclass="edit-link"> <i class=" fa fa-pencil fa-edit20px  btnEditar"></i>
+                                  <apex:param value="{!s.id}" name="editAgendaId"/>
+                                </apex:commandLink>
+                                &nbsp;&nbsp;
+                               <!-- <apex:commandLink title="Delete" action="{!deleteAgenda}" styleclass="delete-link"> <i class="fa fa-trash-o fa-delete20px btnExcluir "></i>
+                                  <apex:param value="{!s.id}" name="deleteAgendaId"/>
+                                </apex:commandLink> -->
+                                 <i class="fa fa-trash-o fa-delete20px btnExcluir " onclick="deleteasm('{!s.id}',this);" title="Delete"></i>
+                              <div class="expcolp_img"></div></td>
+                          </tr>
+                          <!---------> 
+                        </apex:repeat>
+                      </table>
+                      
+                      <!--close of subtable----->
+                      
+                      <div class="expdiv" >
+                      
+                      <!---->
+                      
+                      <div class="form-embed-div"> 
+                        <!----------->
+                        <div class="form-content-div"> 
+                          <!----------->
+                          <p class="padding-5px  strong_700 lblheading" style=" display:inline-block" >Description</p>
+                          <p class="padding-5px right  strong_700 lblheading" style=" display:inline-block" > Speaker: <span class="labeltitles">
+                            <apex:outputpanel rendered="{!if((groupByoption != "Speakergrp"),true,false)}">
+                              <apex:repeat value="{!agendaParticipants[s.id]}" var="par">
+                                <apex:outputText value="{!par.BLN_TKT_profile__r.First_Name__c}"></apex:outputText>
+                                &nbsp;
+                                <apex:outputText value="{!par.BLN_TKT_profile__r.Last_Name__c}"></apex:outputText>
+                                ,&nbsp; </apex:repeat>
+                            </apex:outputpanel>
+                            <apex:outputpanel rendered="{!if((groupByoption == "Speakergrp"),true,false)}"> {!sem.trackName} </apex:outputpanel>
+                            </span></p>
+                          <!--------->
+                          <p class="padding-5px lblheading" ><apex:outputField value=" {!s.Agenda_Description__c}"  /> </p> 
+                          <!------> 
+                        </div>
+                        <!--form-embed-div--> 
+                      </div>
+                      
+                      <!---form-content-div-->
+     
+  <!----->
+  </div>
+   <!--close of expdiv---> 
+                      <!---------------------------***********end of grprepeat------------------------------------------->
+                      
+                      </apex:repeat></td>
+                  </tr>
+                  
+                  <!----------end of parent first record--------> 
+                </apex:repeat>
+                
+                <!--------->
+                
+              </tbody>
+            </table>
+            
+            <!---end of output table-----> 
+          </div>
+          
+             <script>
+         
+        try{
+
+            dtcl();
+            }catch(e){}
+        </script>
+        </apex:outputPanel>
+        <!--close of trackgrp---> 
+        <!-----------> 
+        
+      </div>
+      <!--close of seminartblbox----> 
+      <!-------create seminar form Section----------->
+      <apex:actionFunction action="{!saveTrack}" name="nm" rerender="outPan2,addtrackpanel" status="AjaxLoader"  oncomplete="$('.trackedit').bind('click',trackedit);$('.trackdel').bind('click',trackdel);">
+        <apex:param name="newtrackname" value="" />
+        <apex:param name="tdrecid" value="" />
+      </apex:actionfunction>
+      <apex:actionFunction action="{!deleteTrack}" name="delnm" rerender="outPan2,trid" status="AjaxLoader">
+        <apex:param name="delRecid" value="" />
+      </apex:actionfunction>
+      <!-------------------------rooms ----------------------->
+      <apex:actionFunction action="{!saveRoom}" name="svrm" rerender="outPan,addroompanel" status="AjaxLoader" oncomplete="$('.roomedit').bind('click',roomedit);$('.roomdel').bind('click',roomdel);">
+        <apex:param name="roomname" value="" />
+        <apex:param name="roomnum" value="" />
+        <apex:param name="xyid" value="" />
+      </apex:actionfunction>
+      <apex:actionFunction action="{!deleteroom}" name="rmdel" rerender="outPan" status="AjaxLoader">
+        <apex:param name="delrmRecid" value="" />
+      </apex:actionfunction>
+      <!---------------------ADD Roles---------------------------->
+      
+      <apex:actionFunction action="{!ADDroleMD}" name="NMroleinsert" status="AjaxLoader"  rerender="rolepan_sel" oncomplete="appendslist_options();appendslist_options_spkr();$('.chzn-select').chosen(); $('.chzn-select-deselect').chosen({allow_single_deselect:true});">
+        <apex:param name="roleName_i" value="" />
+        <apex:param name="roleid_i" value="" />
+      </apex:actionfunction>
+      <apex:actionFunction action="{!roledelmd}" name="NndelRole" status="AjaxLoader" rerender="rlpanid,rolepan_sel" oncomplete="appendslist_options();appendslist_options_spkr();$('.chzn-select').chosen(); $('.chzn-select-deselect').chosen({allow_single_deselect:true});">
+        <apex:param name="delroleid" value="" />
+      </apex:actionfunction>
+      <!--------------------------------------speaker save------------------------------>
+      
+      <apex:actionFunction action="{!savespeakermd}" name="savespeak" reRender="none" status="AjaxLoader">
+        <apex:param name="str_v" value="" />
+      </apex:actionfunction>
+      
+      <!-----------------------------seminar delet from table------------------------------------------->
+      <apex:actionFunction action="{!deleteAgenda}" name="deleteAgendafrromlist" reRender="sem,strp,smgrop">
+                 
+                                <apex:param value="" name="deleteAgendaId"/>
+               
+                                </apex:actionFunction>
+                       <!------------------------------seminar delet from table end---------------------------------->
+                                
+      <div id="seminarform" class="createform" style="display:{!IF(createNewSeminarBool==true,'','none')}">
+        <div class="content-top-btn-box" style="margin-top:15px; margin-right:1.5%;"> 
+          <!--   <button type="button" id="new_campaign" class="togglebtn" style=" padding:5px;" onclick="showpackage('seminartblbox','seminarform');">Seminar</button> -->
+          <apex:commandButton styleClass="togglebtn" style="padding:5px;" value="Seminar"  action="{!cancelAgenda}"/>
+        </div>
+        <div class="clear"></div>
+        <div class="shadow-div" style=" margin-top:0px;">
+          <p class="padding-5px bg-font">Create Seminar</p>
+          <!--close of black-title-->
+          <div class="form-embed-div" style=" width:95%; margin-top:20px;"> 
+            <!----------->
+            <div class="form-content-div" style=" padding:0px;">
+              <div class="formbox" style=" "> 
+                
+                <!---------> 
+                <!--  <div style="border:1px solid #ddd; padding:5px;">-->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Seminar Name:</label>
+                    <label class="mandatory">*</label>
+                  </div>
+                  <div class="formelement-ryt textleft">
+                    <apex:inputField value="{!newAgendas.Agenda_Name__c}" id="seminarName"/>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                <!--close formelem_box---> 
+                <!--------->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Seminar Ticket:</label>
+                    <label class="mandatory">*</label>
+                  </div>
+                  <div class="formelement-ryt textleft" >
+                    <apex:selectList value="{!selectedItemPoolId}" id="ticketpool" multiselect="false" size="1" styleClass="selectlist" >
+                      <apex:selectOptions value="{!seminorItemPoolOptions}"/>
+                    </apex:selectList>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                <!--close formelem_box---> 
+                <!--------->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Seminar Start Date:</label>
+                    <label class="mandatory">*</label>
+                  </div>
+                  <div class="formelement-ryt textleft" >
+                    <input class="jqdatepicker" id="eventsdate" type="text" placeholder="__/__/____  __:__" />
+                    <div style="display:none">
+                     <!-- <apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}">
+                        <apex:param value="{!timeslots.Slot_Start_date__c}"/>
+                      </apex:outputText>-->
+                      <apex:outputpanel rendered="{!timeslots.Slot_Start_date__c!=null}" >
+                      <c:EV_FormatDt date_Timevalue="{!timeslots.Slot_Start_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}"  id="strValue"/>
+                      </apex:outputpanel>
+                    </div>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                <!--close formelem_box---> 
+                <!-------->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Seminar End Date:</label>
+                    <label class="mandatory">*</label>
+                  </div>
+                  <div class="formelement-ryt textleft" >
+                    <input class="jqdatepicker1" id="eventedate" type="text" placeholder="__/__/____  __:__"  />
+                    <div style="display:none" >
+                      <!--<apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}">
+                        <apex:param value="{!timeslots.Slot_End_date__c}"/>
+                      </apex:outputText>-->
+                      <apex:outputpanel rendered="{!timeslots.Slot_End_date__c!=null}" >
+                      <c:EV_FormatDt date_Timevalue="{!timeslots.Slot_End_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}" id="strValueEd" />
+                      </apex:outputpanel>
+                    </div>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                <!--close formelem_box---> 
+                <!-------->
+                <div class="formelem_boxsmall" style="">
+                  <div class="formlabel-left textright">
+                    <label>Track:</label>
+                    <!--<label class="mandatory">*</label>--->
+                  </div>
+                  <div class="formelement-ryt textleft" >
+                    <apex:outputPanel id="outPan2">
+                      <apex:selectList value="{!newAgendas.BLN_Track__c}" id="seminarsTrack" multiselect="false" size="1" styleClass="selectlist">
+                        <apex:selectOptions value="{!trackSelectOptions}"/>
+                      </apex:selectList>
+                    </apex:outputPanel>
+                    <span> <a class="togglebtn" id="track_btn" onClick="Alert_track.render('dialogbox_track','btrack_dialogoverlay','Alert_track' ,this)" title="Add Track"> <i class="fa fa-gear" style="padding:6px 5px;"></i> </a> </span> </div>
+                  <div class="clear"></div>
+                </div>
+                <!--close formelem_box---> 
+                
+                <!-------->
+                <div class="formelem_boxsmall" style="">
+                  <div class="formlabel-left textright">
+                    <label>Room:</label>
+                    <label class="mandatory">*</label>
+                  </div>
+                  <div class="formelement-ryt textleft" >
+                    <apex:outputPanel id="outPan">
+                      <apex:selectList value="{!timeslots.Room__c}" multiselect="false" size="1" styleClass="selectlist" id="seminarsRoom1" >
+                        <apex:selectOptions value="{!roomsSelectOptions}"/>
+                      </apex:selectList>
+                    </apex:outputPanel>
+                    <span> <a id="room_btn" class="togglebtn" onClick="Alert_room.render('dialogbox_room','broom_dialogoverlay','Alert_room' ,this)" title="Add Room"> <i class="fa fa-gear" style="padding:6px 5px;"></i> </a> </span> </div>
+                  <div class="clear"></div>
+                </div>
+                <!--close formelem_box--->
+                 <!--close formelem_box---> 
+                
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Panelist:</label>
+                    <!--<label class="mandatory">*</label>-->
+                  </div>
+                  <div class="formelement-ryt textleft" > 
+                    <!-----optext div speakers--->
+                    <div class="bordereddiv" > </div>
+                    <!--close of bordered div----> 
+                    <!----------> 
+                    <span style="margin-left:3px;"> <a class="togglebtn" id="role_btn" onClick="Alert_speaker.render('dialogbox_spkr','spkr_dialogoverlay','Alert_speaker' ,this);" title="Add Panelist"> <i class="fa fa-gear" style="padding:6px 5px;"></i> </a> </span> </div>
+                  <div class="clear"></div>
+                </div>
+                <!--close formelem_box---> 
+                <!--------> 
+                  <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Visibility:</label>
+                    <!--<label class="mandatory">*</label>-->
+                  </div>
+                  <div class="formelement-ryt textleft" > 
+                    <!-----optext div speakers--->
+                    
+                    <!--close of bordered div----> 
+                    <!----------> 
+                    <apex:selectList value="{!newAgendas.Visibility__c}" id="seminarsVisib" multiselect="false" size="1" styleClass="selectlist">
+                        <apex:selectOptions value="{!Visibility}"/>
+                      </apex:selectList>
+ </div>      
+         <div class="clear"></div>
+                </div>
+                <!--close formelem_box---> 
+                <!-------->
+                 
+                  <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Attachment:</label>
+                    <!--<label class="mandatory">*</label>-->
+                  </div>
+                  <div class="formelement-ryt textleft" > 
+                    <!-----optext div speakers--->
+                    
+                    <!--close of bordered div----> 
+                    <!----------> 
+                   <input type="file" id="idAttachment" onchange="checkfile()"  multiple="false" accept="application/pdf" >{!AttName} </input> 
+<!---<apex:inputFile value="{!attachment.body}" filename="{!attachment.name}" onchange="checkfile();" id="idAttachment" />---> 
+
+<apex:outputpanel id="opAtt">
+ <apex:repeat value="{!attlist}" var="attachment">
+                    <a href="{!$Label.siteurl}/servlet/servlet.FileDownload?file={!attachment.Id}" target="_blank"  style="color:black">{!attachment.Name}</a>&nbsp; 
+                    
+                    <input type="button" value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete" onclick="return deleteConfirm('{!attachment.Id}','{!attachment.Name}');"/>
+                    <!---<apex:commandlink value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete"  onclick="return deleteConfirm('{!attachment.Id}','{!attachment.Name}');" >&nbsp;
+                    </apex:commandLink>-->
+                    
+                 
+                    </apex:repeat>
+                    </apex:outputpanel>
+</div>      
+         <div class="clear"></div>
+                </div>
+                
+                <!-------->
+               
+                <!--close formelem_box---> 
+                <!-------->
+                <br/>
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Seminar Description:</label>
+                    <!--<label class="mandatory">*</label>--> 
+                  </div>
+                  <style>
+                 .cke_contents{height:200px !important;}
+                 </style>
+                  <div class="formelement-ryt textleft"  >
+                     <apex:inputField value="{!newAgendas.Agenda_Description__c}"    />
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                 <apex:inputHidden id="speakervideohidden" value="{!newAgendas.Video__c}" />  
+                <!--------Youtube Embed Link------->
+                <div class="formelem_boxsmall">
+                  <div class="formlabel-left textright">
+                    <label>Video:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft">
+                    <input class="framelinkval" type="text" id="iframevideotext"/>
+                    <i class="fa fa-save  fa-save20px ytsave_btn " title="Save">&nbsp;</i> </div>
+                  <!---close of formelement-ryt----> 
+                  <!-----End of Youtube Embed Link-------> 
+                  <!--------> 
+                </div>
+                
+                <!---close of formelem_box---> 
+                <!----------------------------------------------------->
+                <div class="clear"></div>
+                <div class="ytwraper">
+                  <p class="bg-font" >Youtube Links</p>
+                </div>
+                <div class="clear"></div>
+                <!--close formelem_box---> 
+                <!---------> 
+                
+                <!------------->
+                <div class="clear"></div>
+              </div>
+              <!--close of formbox----> 
+            </div>
+            <!--close of form-content-div----> 
+          </div>
+          <!--close of form-embed-div----->
+          <div style="margin-top:20px; text-align:center;">
+            <apex:inputHidden id="evsdate" value="{!eventStartDate}" />
+            <apex:inputHidden id="evedate" value="{!eventEndDate}" />
+            <button class="button-a blue" onclick="validationFunction(contentsatt,contentsattname);return false;">Save</button>  
+
+            <!-- <apex:commandButton styleClass="button-a blue" value="Save"  onclick="return validationFunction();" status="AjaxLoader" Title="Save" />-->
+            &nbsp;&nbsp; 
+            <!--    <button class="button-a dark-blue" onclick="showpackage('seminartblbox','seminarform')">Cancel</button>  -->
+            <apex:commandButton styleClass="button-a dark-blue" value="Cancel"  action="{!cancelAgenda}" Title="Cancel"/>
+          </div>
+        </div>
+        <!---close of shadow-div-----> 
+        
+      </div>
+      
+      <!--close of createform-----> 
+      
+      </apex:form>
+      </c:ed_basictemplate>
+      <!-------------//end of basic template component------------------------> 
+      <!--/*********************Java Script Section*******************/--> 
+      <!--------//start of datatable js component------------->
+      
+      <c:ed_datatablejs ></c:ed_datatablejs>
+      
+      <script type="text/javascript">
+
+ var deleteAgendaId='';
+  function deleteasm(delagenda,clkbtn){
+  deleteAgendaId=delagenda;
+ 
+ Alertconfirm.render('Are you sure,Do you want to Delete Seminar ?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+  
+  }
+      
+    function callback(clkbtn , okbtnn){
+    
+deleteAgendafrromlist(deleteAgendaId);
+
+}  
+ </script>     
+  
+      <script type="text/javascript" class="init">
+var j = jQuery.noConflict();
+j(document).ready(function() {
+    j('.example').dataTable( {
+        "pagingType": "full_numbers",
+        
+         "aLengthMenu": [[ 5, 15,20,25, 50], [ 5,15,20, 25, 50]],
+        "iDisplayLength": 5,
+    
+        /**default orderid in asc sorting**/
+         "order": [[ 0, "asc" ]],
+    "bSort": false,
+    "bAutoWidth": false, // Disable the auto width calculation
+
+        /**sorting coloumn disable**/
+        /*"aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] },
+     
+   ]*/
+   
+        
+    } );
+    /////
+        
+})
+</script> 
+<script> 
+function dtcl(){
+j('.example').dataTable( {
+        "pagingType": "full_numbers",
+        
+         "aLengthMenu": [[ 5, 15,20,25, 50], [ 5,15,20, 25, 50]],
+        "iDisplayLength": 5,
+    
+        /**default orderid in asc sorting**/
+         "order": [[ 0, "asc" ]],
+    "bSort": false,
+    "bAutoWidth": false, // Disable the auto width calculation
+
+        /**sorting coloumn disable**/
+        /*"aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] },
+     
+   ]*/
+   
+        
+    } );
+}
+</script> 
+      <!--------//end of datatable js component-------------> 
+      <!----/************************Datepicker js************************************************/-->
+    
+    <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+    
+    <script>
+var dt = jQuery.noConflict();        
+dt('.jqdatepicker').datetimepicker({
+   formatDate: 'Y/m/d',
+  defaultTime:'5:00 PM',
+  step:15,
+
+
+
+
+
+
+                             //minDate:'{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+                            //maxDate:'{!YEAR(myEDate)}/{!MONTH(myEDate)}/{!DAY(myEDate)}',
+                            defaultDate:'{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}' 
+                        }); 
+dt('.jqdatepicker1').datetimepicker({
+                                formatDate: 'Y/m/d',
+                                defaultTime:'5:00 PM',
+  step:15,
+                                 //minDate:'{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+                                //maxDate:'{!YEAR(myEDate)}/{!MONTH(myEDate)}/{!DAY(myEDate)}',
+                                defaultDate:'{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}' 
+});
+                                
+
+       var dateTimest;
+       try{
+       dateTimest = document.getElementById("thepage:comp:commoncomponent:fm:strValue").innerHTML;
+       
+        if(dateTimest!=""){
+           var dateTimest1=dateTimest.split(', ');
+           var newDate = new Date(dateTimest);
+           var sMonth = newDate.getMonth() + 1;
+           var sDay = newDate.getDate();
+           var dateTimest2=sMonth+'/'+sDay+'/'+dateTimest1[1].trim();
+           document.getElementById("eventsdate").value=dateTimest2.trim();
+        }
+        }catch(e){} 
+        
+        var dateTimeEd;
+        try{
+        dateTimeEd = document.getElementById("thepage:comp:commoncomponent:fm:strValueEd").innerHTML;
+       
+        if(dateTimeEd !=""){
+           var dateTime1Ed=dateTimeEd.split(', ');
+           var newDateEd = new Date(dateTimeEd);
+           var sMonthEd = newDateEd.getMonth() + 1;
+           var sDayEd = newDateEd.getDate();
+           var dateTime2Ed=sMonthEd+'/'+sDayEd+'/'+dateTime1Ed[1].trim();
+           document.getElementById("eventedate").value=dateTime2Ed.trim() ;
+            
+        }
+        }catch(e){}
+</script>
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>           
+               <!-----------------//template code----------------------->
+
+
+   
+<script>
+  /*********Group by selectionfunction *********/
+     function updatebox(selectlist_id){
+        //alert(selectlist_id.length);
+        targetdivs=document.getElementsByClassName("targetdiv");  
+         for(var i=0; i<targetdivs.length; i++)
+                {
+                    targetdivs[i].style.display='none';
+                }
+        var optvalue= selectlist_id.options[selectlist_id.selectedIndex].value;
+        
+        //alert(optvalue);
+        
+       document.getElementById(optvalue).style.display='block';
+        
+    }
+ 
+ /*********end of groupby selection*********/
+ 
+ /**************expand collapse row function*************/
+  $(".expdiv").hide(); 
+ $(".subtable tr td:nth-child(8) .expcolp_img").click(function(){
+     //alert("ddd");
+     $(this).parent().parent().parent().parent().next(".expdiv").toggle();
+     $(this).parent().find(".expcolp_img").toggleClass("up");
+     
+ })
+  /**************end of expand collapse row function*************/
+
+/**********startof Inline Editing Code*************/ 
+
+
+
+
+
+
+
+/**********-end of Inline Editing Code*************/ 
+ 
+</script>
+
+<!-----------choosen multiselect function----------------------> 
+
+
+
+<!--<script>
+    $(document).ready(function() {
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+     
+    });
+
+</script> -->
+<!---------------------------end of choosenjs---------------------------------------> 
+ <!----------------form Popup script----------------------------->  
+  <c:ed_popupbox ></c:ed_popupbox>
+  <script>
+    /*******creating instances for calling popups*******/
+var Alert_track = new Custom_formPopup(); //Area popup
+var Alert_room = new Custom_formPopup(); //room popup
+var Alert_speaker = new Custom_formPopup(); //speaker popup 
+var Alert_role = new Custom_formPopup(); //size popup   
+    /***************/   
+</script> 
+<!---------popup for tracks------->
+
+<div class="dialogoverlay" id="btrack_dialogoverlay" style="z-index:9999;"></div>
+<!-----------------> 
+ 
+<!--close of dialogoverlay-->
+ 
+<div  id="dialogbox_track" style=" display:none;z-index:99991; width:40%; margin-left:29%;"> 
+<a id="close" style="margin-top:-6px;" onclick="Alert_track.Cancel()" Title="Close">×</a> 
+<apex:outputpanel id="trid">
+<script>
+//for Tracks///
+function trackadd(){
+    //alert("sss");
+
+    $(".tracktbl tbody").append(
+
+        "<tr>"+
+        "<td><input type='text' /></td>"+
+        "<td class='textcenter'><a class='tracksave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='trackdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "<  /tr>");
+    
+    
+        $(".tracksave").bind("click",tracksave);        
+        $(".trackdel").bind("click",trackdel);
+}; 
+
+ 
+
+function tracksave(){
+    var par = $(this).parent().parent(); //tr
+    var trackname = par.children("td:nth-child(1)");
+    var tdButtons = par.children("td:nth-child(2)");
+    var tdrecid=par.children("td:nth-child(3)").text();
+    //alert(par.children("td:nth-child(3)").text());
+    trackname.html(trackname.children("input[type=text]").val());;
+    //alert(trackname.html(trackname.children("input[type=text]").val()));
+    var newtrackname=trackname.html(trackname.children("input[type=text]").val());
+   
+    if(trackname.html(trackname.children("input[type=text]").val()).trim() != "" && tdrecid.trim() == ""){
+     //alert(newtrackname.trim());
+    
+    nm(newtrackname.trim());
+    }
+    if(trackname.html(trackname.children("input[type=text]").val()).trim() != "" && tdrecid.trim() != ""){
+     //alert(tdrecid);
+     //alert(newtrackname);
+    nm(newtrackname.trim(),tdrecid.trim());
+    }
+    tdButtons.html("<a class='trackedit'><i class='fa fa-pencil fa-edit20px btnEditar' title='Edit'>&nbsp; &nbsp;</i></a><a class='trackdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+   $(".trackedit").bind("click",trackedit);
+    $(".trackdel").bind("click",trackdel);
+        /////////////////////// 
+
+}; 
+
+function trackedit(){
+    var par = $(this).parent().parent(); //tr
+
+    var trackname = par.children("td:nth-child(1)");
+    var tdButtons = par.children("td:nth-child(2)");
+
+    trackname.html("<input type='text'  value='"+trackname.html()+"'/>");
+   
+    tdButtons.html("<a class='tracksave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='trackdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".tracksave").bind("click", tracksave);
+    $(".trackedit").bind("click", trackedit);
+    $(".trackdel").bind("click", trackdel);
+};
+
+
+
+function trackdel(){
+    var par = $(this).parent().parent(); //tr
+    var delRecid=par.children("td:nth-child(3)").text();
+    //alert(delRecid);
+    if(delRecid.trim()!= ""){
+    delnm(delRecid.trim());
+    }
+    par.remove();
+}; 
+        /////////////////////// 
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".trackedit").bind("click",trackedit);
+    $(".trackdel").bind("click",trackdel);
+    $(".trackadd").bind("click",trackadd);
+    $(".tracksave").bind("click",tracksave);
+});
+///////////////////////end of tracks/////////////////////// 
+</script>
+<apex:form >
+  <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+  
+    <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;"> 
+      <!----------->
+     
+      <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+        <div class="title-grid">Tracks</div>
+        <div class="content-gird" > 
+          <!-------------->
+          
+          <div id="seminarform" class="createform">
+            <div class="content-top-btn-box" style="">
+              <button type="button" id="new_campaign" class="togglebtn trackadd" style=" padding:5px;" onclick=""  Title='Add More Tracks'>Add Track</button>
+            </div>
+            <!--close of content-top-btn-box--->
+      <div class="clear"></div>
+      
+      <!---------tracks table--------->
+      <apex:outputpanel id="addtrackpanel">
+      <div class="tablewrapper"><!--start of tablewrapper---->
+        <table class="display tracktbl" >
+          <!---->
+          <thead>
+            <tr>
+              <th>Track</th>
+              <th style="width:25%; text-indent:6%;">Action</th>
+            </tr>
+          </thead>
+          <!----> 
+          <!---->
+          <tbody>
+            <!----------->
+            
+            <apex:repeat value="{!TrckMap}" var="sd">
+              <tr>
+                <td ><apex:outputText value="{!sd.tname}"/></td>
+                <td class="textcenter"><a class="trackedit" title="Edit"><i class=" fa fa-pencil fa-edit20px"></i></a> &nbsp;&nbsp; <a class="trackdel" title="Delete"><i class="fa fa-minus-square-o fa-minus-23x"></i></a></td>
+                <td style="display:none;"><apex:outputText value="{!sd.tmapid}" /></td>
+              </tr>
+            </apex:repeat>
+            
+            <!------->
+          </tbody>
+          <!---->
+        </table>
+      </div>
+      </apex:outputpanel>
+      
+      <!--close of tablewrapper----> 
+      
+      <!--------------->
+      </div>
+      <!--close of seminarform---->
+      </div>
+      <!--close of content-grid--->
+      </div>
+      <!--close of grid-1-----> 
+      <!----->
+      </div>
+      <!----close of form-content-div----->
+      </div>
+      <!----close of form-embed-div------>
+      </apex:form>
+      </apex:outputpanel>
+      </div>
+      
+      <!--close of dialogbox----> 
+      <!------------end of popup for tracks-------------> 
+      
+      <!---------popup for Room------->
+      <div class="dialogoverlay" id="broom_dialogoverlay" style="z-index:9999;"></div>
+      <!-----------------> 
+      
+      <!--close of dialogoverlay-->
+      <div  id="dialogbox_room" style=" display:none;z-index:99991; width:40%; margin-left:29%;"> 
+     <a id="close" onClick="Alert_room.Cancel()" style="margin-top:-6px;" title="Close">×</a>
+        <apex:outputpanel id="ridroom"> 
+          <script>
+ //for Rooms///
+function roomadd(){
+    //alert("tttt");
+
+    $(".roomtbl tbody").append(
+
+        "<tr>"+
+        "<td><input type='text' /></td>"+"<td><input type='text' /></td>"+
+        "<td class='textcenter'><a class='roomsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='roomdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "<  /tr>");
+    
+    
+        $(".roomsave").bind("click",roomsave);      
+        $(".roomdel").bind("click",roomdel);
+}; 
+
+ 
+
+function roomsave(){
+    var par = $(this).parent().parent(); //tr
+    var roomname = par.children("td:nth-child(1)");
+    var roomno = par.children("td:nth-child(2)");
+    var tdButtons = par.children("td:nth-child(3)");
+    roomname.html(roomname.children("input[type=text]").val());
+    roomno.html(roomno.children("input[type=text]").val());
+    //alert(roomname.html(roomname.children("input[type=text]").val()));
+    //alert(roomno.html(roomno.children("input[type=text]").val()));
+    var roomname = roomname.html(roomname.children("input[type=text]").val());
+    var roomnum = roomno.html(roomno.children("input[type=text]").val());
+    var  roomid = par.children("td:nth-child(4)").text();
+    var xyid=roomid.trim();
+    //alert(roomid);
+    //alert(xyid.length)
+    //&& roomnum.trim() != ""
+    if(roomname.trim() != ""  &&  xyid == ""){
+    
+ 
+     svrm(roomname.trim(),roomnum.trim(),xyid);
+    }
+    //&& roomnum.trim() != ""
+    if(roomname.trim() != ""  &&  xyid != ""){
+    svrm(roomname.trim(),roomnum.trim(),xyid);
+    }
+    tdButtons.html("<a class='roomedit'><i class='fa fa-pencil fa-edit20px' title='Edit'>&nbsp; &nbsp;</i></a><a class='roomdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+   $(".roomedit").bind("click",roomedit);
+    $(".roomdel").bind("click",roomdel);
+                ///////////////////////  
+
+}; 
+
+function roomedit(){
+    var par = $(this).parent().parent(); //tr
+
+    var roomname = par.children("td:nth-child(1)");
+    var roomno = par.children("td:nth-child(2)");
+    var tdButtons = par.children("td:nth-child(3)");
+
+    roomname.html("<input type='text'  value='"+roomname.html()+"'/>");
+    roomno.html("<input type='text'  value='"+roomno.html()+"'/>");
+    tdButtons.html("<a class='roomsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='roomdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".roomsave").bind("click", roomsave);
+    $(".roomedit").bind("click", roomedit);
+    $(".roomdel").bind("click", roomdel);
+};
+
+
+
+function roomdel(){
+    var par = $(this).parent().parent(); //tr
+     var delrmRecid=par.children("td:nth-child(4)").text();
+    //alert(delrmRecid);
+    if(delrmRecid.trim()!= ""){
+    rmdel(delrmRecid.trim());
+    }
+    
+    par.remove();
+}; 
+        /////////////////////// 
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".roomedit").bind("click",roomedit);
+    $(".roomdel").bind("click",roomdel);
+    $(".roomadd").bind("click",roomadd);
+    $(".roomsave").bind("click",roomsave);
+});
+///////////////////////end of rooms/////////////////////// 
+ </script>
+          <apex:form >
+            <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+              <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;"> 
+                <!----------->
+                <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+                  <div class="title-grid">Room</div>
+                  <div class="content-gird" > 
+                    <!-------------->
+                    
+                    <div id="seminarform" class="createform">
+                      <div class="content-top-btn-box" style="">
+                        <button type="button" id="new_campaign" class="togglebtn roomadd" style=" padding:5px;" onClick="" title="Add More Rooms">Add Room</button>
+                      </div>
+                      <!--close of content-top-btn-box--->
+                      <div class="clear"></div>
+                       <apex:outputpanel id="addroompanel">
+                      <!---------room table--------->
+                      <div class="tablewrapper"><!--start of tablewrapper---->
+                        <table class="display roomtbl">
+                          <!---->
+                          <thead>
+                            <tr>
+                              <th>Room Name</th>
+                              <th>Room No</th>
+                              <th style="width:25%; text-indent:6%;">Action</th>
+                            </tr>
+                          </thead>
+                          <!----> 
+                          <!---->
+                          <tbody>
+                            <!----------->
+                            <apex:repeat value="{!RrcMap}" var="rd">
+                              <tr>
+                                <td><apex:outputText value="{!rd.rmname}"/></td>
+                                <td><apex:outputText value="{!rd.rmnumb}"/></td>
+                                <td class="textcenter"><a class="edit-link roomedit" title="Edit"><i class=" fa fa-pencil fa-edit20px"></i></a> &nbsp;&nbsp; <a class="delete-link roomdel" title="Delete"><i class="fa fa-minus-square-o  fa-minus-23x"></i></a></td>
+                                <td style="display:none;"><apex:outputText value="{!rd.rmid}" /></td>
+                              </tr>
+                            </apex:repeat>
+                            <!------->
+                          </tbody>
+                          <!---->
+                        </table>
+                      </div>
+                       </apex:outputpanel>
+                      <!--close of tablewrapper----> 
+                      
+                      <!---------------> 
+                    </div>
+                    <!--close of seminarform----> 
+                  </div>
+                  <!--close of content-grid---> 
+                </div>
+                <!--close of grid-1-----> 
+                <!-----> 
+              </div>
+              <!----close of form-content-div-----> 
+            </div>
+            <!----close of form-embed-div------> 
+          </apex:form>
+        </apex:outputpanel>
+      </div>
+      <!--close of dialogbox----> 
+      <!------------end of popup for Room-------------> 
+      
+      <!---------popup for Speakersgrp------->
+      <div class="dialogoverlay" id="spkr_dialogoverlay" style="z-index:9999;"></div>
+      <!-----------------> 
+      
+      <!--close of dialogoverlay-->
+      <div  id="dialogbox_spkr" style=" display:none;z-index:99991; width:50%; margin-left:25%;"> <a id="close" onClick="Alert_speaker.Cancel()" style="margin-top:-6px;" Title="Close">×</a>
+        <apex:outputPanel id="rolepan_sel">
+          <apex:form id="fde">
+            <apex:inputHidden value="{!allrolesandids }" id="allrolesndids" />
+            <apex:inputHidden value="{!allSpeakrids}" id="allspkrids" />
+            <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+              <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;"> 
+                <!----------->
+                <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+                  <div class="title-grid">Roles</div>
+                  <div class="content-gird" > 
+                    <!-------------->
+                    
+                    <div id="seminarform" class="createform">
+                      <div class="content-top-btn-box" style="">
+                        <button type="button" id="new_campaign" class="togglebtn " style=" padding:5px;" onClick="Alert_role.render('dialogbox_role','role_dialogoverlay','Alert_role' ,this)" Title="Add More Roles">Add Role</button>
+                        <button type="button" id="new_campaign" class="togglebtn spkradd" style=" padding:5px;" Title="Add New Row" >Add New Row</button>
+                      </div>
+                      <!--close of content-top-btn-box--->
+                      <div class="clear"></div>
+                      
+                      <!---------role table--------->
+                      <div class="tablewrapper"><!--start of tablewrapper---->
+                        <table class="display spkrtbl">
+                          <!---->
+                          <thead>
+                            <tr>
+                              <th></th>
+                              <th>Speaker</th>
+                              <th style="width:33%">Role</th>
+                              <th style="width:18%; text-indent:2%;">Action</th>
+                            </tr>
+                          </thead>
+                          <!----> 
+                          <!---->
+                          <tbody>
+                            <!----------->
+                            <tr>
+                              <td width="2%"><input type="checkbox" checked='checked'/></td>
+                              <td><div >
+                                  <select class="seltest_spkr selectlist chzn-select" style=" width:200px;">
+                                  </select>
+                                </div></td>
+                              <td><select class="seltest selectlist chzn-select"  style="width:220px;">
+                                </select></td>
+                              <td class="textcenter"><a class="delete-link spkrdel" title="Delete"><i class="fa fa-minus-square-o  fa-minus-23x"></i></a></td>
+                            </tr>
+                            
+                            <!------->
+                          </tbody>
+                          <!---->
+                        </table>
+                      </div>
+                      <!--close of tablewrapper---->
+                      <div  class="clear"></div>
+                      <!---------------> 
+                    </div>
+                    <!--close of seminarform----> 
+                  </div>
+                  <!--close of content-grid--->
+                  <div style="margin-top:100px; text-align:center;">
+                    <button class="button-a blue" onClick="Alert_speaker.Cancel();append_spkrcomb();return false;" Title="Save">Save</button>
+                    &nbsp;&nbsp;
+                    <button class="button-a dark-blue" onClick="Alert_speaker.Cancel();return false;" Title="Cancel">Cancel</button>
+                  </div>
+                </div>
+                <!--close of grid-1-----> 
+                <!-----> 
+              </div>
+              <!----close of form-content-div-----> 
+            </div>
+            <!----close of form-embed-div------> 
+            <script>
+  //for speaker group///
+function spkradd(){
+    
+$(".spkrtbl tbody").append(
+  
+        "<tr>"+
+        "<td><input type='checkbox' checked='checked'/></td>"+
+        " <td><SELECT class='seltest_spkr selectlist chzn-select'  style='width:200px;'></SELECT></td>"+
+        " <td><SELECT class='seltest selectlist chzn-select'  style='width:220px;'></SELECT></td>"+
+        "<td class='textcenter'><a class='spkrdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");
+         //updating multiselect choosen/////
+    //updating multiselect choosen/////
+         appendslist_options();
+         appendslist_options_spkr();
+        $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+        $(".spkrdel").bind("click",spkrdel); 
+}; 
+
+
+
+function spkrdel(){
+    var par = $(this).parent().parent(); //tr
+    par.remove();
+}; 
+        /////////////////////// 
+
+$(function(){
+    //Add and Delete functions code
+
+    $(".spkrdel").bind("click",spkrdel);
+    $(".spkradd").bind("click",spkradd);
+
+});
+
+
+
+  </script> 
+            <script>
+window.onload = function() {
+
+     console.log('{!nsprole}');
+     try{
+     if('{!nsprole.size}'>0)
+     $(".spkrtbl tbody").empty();
+     }catch(e){}
+     
+     <apex:repeat value="{!nsprole}" var="nsp">
+     $(".spkrtbl tbody").append(
+  
+        "<tr>"+
+        "<td><input type='checkbox' checked='checked' /></td>"+
+        " <td><SELECT class='seltest_spkr selectlist chzn-select'  style='width:200px;'></SELECT></td>"+
+        " <td><SELECT class='seltest selectlist chzn-select'  style='width:220px;'></SELECT></td>"+
+        "<td class='textcenter'><a class='spkrdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "</tr>");
+     
+     </apex:repeat>
+    appendslist_options();
+   
+appendslist_options_spkr();
+<apex:variable var="rowNum" value="{!1}"/> 
+
+<apex:repeat value="{!nsprole}" var="nsp">
+     $('.spkrtbl > tbody  > tr:nth-child({!rowNum})').find("td:nth-child(2)").find("select").val('{!nsp.Speaker}');
+     $('.spkrtbl > tbody  > tr:nth-child({!rowNum})').find("td:nth-child(3)").find("select").val('{!nsp.Role}');
+     <apex:variable var="rowNum" value="{!rowNum + 1}"/> 
+     </apex:repeat>
+
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true});
+     try{
+     if('{!nsprole.size}'>0)
+      append_spkrcomb();
+      $(".spkrdel").bind("click",spkrdel); 
+     }catch(e){}
+    
+};
+
+/**************************function for appending multiselectlist on load************************/
+            function appendslist_options(){
+          // alert( document.getElementById('{!$Component.thepage.fde.allrolesndids}').value);
+ //var sflist='a20L0000000JXU4IAO-rolea;a20L0000000JXU9IAO-roleb;a20L0000000JXUEIA4-role c;a20L0000000JXUJIA4-roled';
+ var sflist=document.getElementById('{!$Component.thepage.fde.allrolesndids}').value;
+ var optid=[];
+ var optname=[];
+ 
+var split_sflist=sflist.split(";");
+//alert(split_sflist[0]);
+ for (i=0; i<split_sflist.length-1; i++){
+     var subsplit_sflist=split_sflist[i].split("-");
+    // alert(z[0] + z[1]);
+     
+
+     optid.push(subsplit_sflist[0]);
+     optname.push(subsplit_sflist[1]);
+  
+     }
+    //alert("id------------" + id);
+//alert("name---------" + name1);
+//$('.seltest').empty();
+var opt = document.createElement('option');
+            opt.innerHTML ='';
+            opt.value ='';
+            
+            $('.seltest').append(opt);
+$('.seltest').each(function(){
+  /*  var sel = document.getElementById('seltest1');*/
+     
+
+        for(var k= 0; k< optname.length; k++) {
+              //alert(name1.length);
+            
+            var opt = document.createElement('option');
+            opt.innerHTML =optname[k];
+            opt.value =optid[k];
+            if($(this).attr('value')!=opt.value)
+            //alert(sel.id);
+            $(this).append(opt);
+            /*sel.appendChild(opt);*/
+        }
+
+})
+        }
+        
+/*******************************new javascript fucntion************************/        
+    function appendslist_options_spkr(){
+          // alert( document.getElementById('{!$Component.thepage.fde.allrolesndids}').value);
+ //var sflist='a20L0000000JXU4IAO-rolea;a20L0000000JXU9IAO-roleb;a20L0000000JXUEIA4-role c;a20L0000000JXUJIA4-roled';
+ var sflist=document.getElementById('{!$Component.thepage.fde.allspkrids}').value;
+ var optid=[];
+ var optname=[];
+ 
+var split_sflist=sflist.split(";");
+//alert(split_sflist[0]);
+ for (i=0; i<split_sflist.length-1; i++){
+     var subsplit_sflist=split_sflist[i].split("-");
+    // alert(z[0] + z[1]);
+     
+
+     optid.push(subsplit_sflist[0]);
+     optname.push(subsplit_sflist[1]);
+  
+     }
+    //alert("id------------" + id);
+//alert("name---------" + name1);
+//$('.seltest_spkr').empty();
+$('.seltest_spkr').each(function(){
+  /*  var sel = document.getElementById('seltest1');*/
+     
+
+        for(var k= 0; k< optname.length; k++) {
+              //alert(name1.length);
+            
+            var opt = document.createElement('option');
+            opt.innerHTML =optname[k];
+            opt.value =optid[k];
+            //alert(sel.id);
+            $(this).append(opt);
+            /*sel.appendChild(opt);*/
+        }
+
+})
+        }
+        /**********************end new javascript function**************************/   
+</script> 
+            <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script> 
+            
+            <!-------function calling for appending speaker combination----> 
+            <script>
+               var result='';
+               var Arrayofspkndrol= [];
+              function append_spkrcomb() {
+              Arrayofspkndrol=[];
+              result='';
+//alert($("#dd1").val());
+var spkrrows =  $('.spkrtblgrp tbody tr');
+ //alert( $('.spkrtbl tbody tr').length);
+
+ var sq=1;
+ $('.spkrtbl > tbody  > tr').each(function() {
+ console.log($(this));
+    if($(this).find('input:checkbox').is(":checked") )
+    {
+        
+        
+        var selected_spkr;
+        var sflist=document.getElementById('{!$Component.thepage.fde.allspkrids}').value;
+     var split_sflist=sflist.split(";");
+       for (i=0; i<split_sflist.length-1; i++){
+     var subsplit_sflist=split_sflist[i].split("-");
+    if(subsplit_sflist[0]==$(this).find("td:nth-child(2)").find("select").val()){
+     selected_spkr=subsplit_sflist[1];
+     break;
+     }
+  
+     }
+       
+        //var selected_spkr=$(this).find("td:nth-child(2)").find("select option[value='"+$(this).find("td:nth-child(2)").find("select").val()+"']").text();
+        
+        
+        //var slected_role=$(this).find("td:nth-child(3)").find("select option[value='"+$(this).find("td:nth-child(3)").find("select").val()+"']").text();
+        var slected_roleval=$(this).find("td:nth-child(3)").find("select").val();
+        var slected_role='';
+        var slected_rolevalues='';
+        
+        if(null!=slected_roleval){
+        //for(i=0;i<slected_roleval.length;i++)
+        //{
+          var singlerole='';
+           var sflist=document.getElementById('{!$Component.thepage.fde.allrolesndids}').value;
+              var split_sflist=sflist.split(";");
+          for (p=0; p<split_sflist.length-1; p++){
+     var subsplit_sflist=split_sflist[p].split("-");
+    if(subsplit_sflist[0]==slected_roleval){
+     singlerole=subsplit_sflist[1];
+     break;
+     }
+  
+     }
+          
+          slected_role=singlerole;
+          
+          slected_rolevalues=slected_roleval;
+          //}
+        }
+        
+        /*if(slected_role!=''){
+        slected_role= slected_role.substring(0, slected_role.length - 1);
+        slected_rolevalues= slected_rolevalues.substring(0, slected_rolevalues.length - 1);
+        }*/
+     
+        var str= sq +' '+selected_spkr + "(" + slected_role +")";
+         var str_v= selected_spkr + "(" + slected_role +")";
+         
+        
+        
+        //alert(slected_role);
+        
+          /*if(result.indexOf(slected_role)!=-1 && slected_role!=''){
+          //alert(slected_role+' role cannot be assigned more than once');
+                      Alert.render(slected_role+' role cannot be assigned more than once' ,'Alert','ok');
+          $(this).remove();
+          }
+          else{*/
+          Arrayofspkndrol.push({Speaker:$(this).find("td:nth-child(2)").find("select").val(),Role:slected_rolevalues});
+          console.log(Arrayofspkndrol);
+        result+= str + '\n<br/>' ;
+        sq++;
+       // }
+        
+    
+        }
+    else {
+        //alert("no");
+        }
+
+    
+     });
+     //alert(Arrayofspkndrol );
+     /*var stp =""
+     for(var p= 0; p< Arrayofspkndrol.length; p++){
+      stp=stp+Arrayofspkndrol[p]+".." ;
+     }
+     console.log(stp);*/
+     savespeak(JSON.stringify(Arrayofspkndrol));
+     
+
+     clr();
+    $(".bordereddiv").append($.trim(result));
+    
+    
+
+
+}
+     
+      function clr(){
+     
+     //result='';
+    
+     //alert("ddddd"+result);
+      $(".bordereddiv").empty();
+     }
+              </script> 
+            <!-------end of function calling for appending speaker combination----> 
+            
+          </apex:form>
+        </apex:outputPanel>
+      </div>
+      <!--close of dialogbox----> 
+      <!------------end of popup speakergrp-------------> 
+      
+      <!---------popup for Role------->
+      <div class="dialogoverlay" id="role_dialogoverlay" style="z-index:99999;"></div>
+      <!-----------------> 
+      <!--close of dialogoverlay-->
+      <div  id="dialogbox_role" style=" display:none;z-index:999991; width:40%; margin-left:29%;">
+        <apex:outputpanel id="rlpanid"> 
+          <script>
+    //for roles
+function roleadd(){
+    //alert("rrr");
+
+    $(".roletbl tbody").append(
+
+        "<tr>"+
+        "<td><input type='text' /></td>"+
+        "<td class='textcenter'><a class='rolesave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='roledel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "<  /tr>");
+    
+    
+        $(".rolesave").bind("click",rolesave);      
+        $(".roledel").bind("click",roledel);
+}; 
+
+ 
+
+function rolesave(){
+    var par = $(this).parent().parent(); //tr
+    var rolename = par.children("td:nth-child(1)");
+    var tdButtons = par.children("td:nth-child(2)");
+    rolename.html(rolename.children("input[type=text]").val());
+    //alert(rolename.html(rolename.children("input[type=text]").val()));
+    var roleName_i=rolename.html(rolename.children("input[type=text]").val()).trim();
+    var roleid_i = par.children("td:nth-child(3)").text();
+    //alert(roleid_i);
+    if(roleName_i !="" && roleid_i.trim() == ""){
+    NMroleinsert(roleName_i,roleid_i.trim());
+    
+    }else if(roleName_i !="" && roleid_i.trim() != ""){
+    NMroleinsert(roleName_i,roleid_i.trim());
+    }
+    tdButtons.html("<a class='roleedit'><i class='fa fa-pencil fa-edit20px' title='Edit'>&nbsp; &nbsp;</i></a><a class='roledel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+   $(".roleedit").bind("click",roleedit);
+    $(".roledel").bind("click",roledel);
+                ///////////////////////      
+
+}; 
+
+function roleedit(){
+    var par = $(this).parent().parent(); //tr
+
+    var rolename = par.children("td:nth-child(1)");
+    var tdButtons = par.children("td:nth-child(2)");
+
+    rolename.html("<input type='text'  value='"+rolename.html()+"'/>");
+    tdButtons.html("<a class='rolesave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='roledel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".rolesave").bind("click", rolesave);
+    $(".roleedit").bind("click", roleedit);
+    $(".roledel").bind("click", roledel);
+};
+
+
+
+function roledel(){
+    var par = $(this).parent().parent(); //tr
+    var delroleid = par.children("td:nth-child(3)").text();
+    //alert(delroleid);
+    if(delroleid.trim()!= ""){
+    NndelRole(delroleid.trim());
+    }
+           
+    par.remove();
+}; 
+        /////////////////////// 
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".roleedit").bind("click",roleedit);
+    $(".roledel").bind("click",roledel);
+    $(".roleadd").bind("click",roleadd);
+    $(".rolesave").bind("click",rolesave);
+});
+
+/**************end of roles*******************/
+
+    
+    </script> 
+          <apex:form > 
+        <apex:commandLink id="close" onclick="Alert_role.Cancel()" rerender="rlpanid" style="margin-top:-25px;font-size:25px;font-weight:bold;color:#fff;text-decoration:none;float:right;cursor:pointer;" value="×" title="Close"/>
+        </apex:form>
+         <!-- <a id="close" onClick="Alert_role.Cancel()" style="margin-top:-6px;"></a> -->
+          <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+            <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;"> 
+              <!----------->
+              <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+                <div class="title-grid">Roles</div>
+                <div class="content-gird" > 
+                  <!-------------->
+                  
+                  <div id="seminarform" class="createform">
+                    <div class="content-top-btn-box" style="">
+                      <button type="button" id="new_campaign" class="togglebtn roleadd" style=" padding:5px;" onClick="" Title="Add More Roles">Add Role</button>
+                    </div>
+                    <!--close of content-top-btn-box--->
+                    <div class="clear"></div>
+                    
+                    <!---------role table--------->
+                    <div class="tablewrapper"><!--start of tablewrapper---->
+                      <table class="display roletbl">
+                        <!---->
+                        <thead>
+                          <tr>
+                            <th>Role</th>
+                            <th style="width:25%; text-indent:6%;">Action</th>
+                          </tr>
+                        </thead>
+                        <!----> 
+                        <!---->
+                        <tbody>
+                          <!----------->
+                          
+                          <apex:repeat value="{!RoleMap}" var="rlw">
+                            <tr>
+                              <td><apex:outputText value="{!rlw.tname}"/></td>
+                              <td class="textcenter"><a class="edit-link roleedit" title="Edit"><i class=" fa fa-pencil fa-edit20px"></i></a> &nbsp;&nbsp; <a class="delete-link roledel" title="Delete"><i class="fa fa-minus-square-o  fa-minus-23x"></i></a></td>
+                              <td style="display:none;"><apex:outputText value="{!rlw.tmapid}" /></td>
+                            </tr>
+                          </apex:repeat>
+                          
+                          <!------->
+                        </tbody>
+                        <!---->
+                      </table>
+                    </div>
+                    <!--close of tablewrapper----> 
+                    
+                    <!---------------> 
+                  </div>
+                  <!--close of seminarform----> 
+                </div>
+                <!--close of content-grid---> 
+              </div>
+              <!--close of grid-1-----> 
+              <!-----> 
+            </div>
+            <!----close of form-content-div-----> 
+            
+          </div>
+          <!----close of form-embed-div------> 
+        </apex:outputpanel>
+      </div>
+      <!--close of dialogbox----> 
+      
+      <!------------end of popup for Role-------------> 
+      
+      <!----------------end of form Popup script-----------------------------> 
+      <!----------------end of form Popup script-----------------------------> 
+      
+      <!-----/*********************//Java Script Section*******************/--> 
+      
+      <script>
+       function deleteConfirm(inputrec,inputname){
+          var sFileExtension = inputname.split('.')[inputname.split('.').length - 1];
+          var a = inputname.replace('.'+sFileExtension, '');
+          var x =  confirm('Are you sure you want to delete ' + a + '?');
+           if(x){
+              afDelAttach(inputrec);
+              return true;
+            }
+            return false;
+          }
+      </script>
+      <script>
+      
+      var contentsatt='';
+var contentsattname='';
+         function checkfile()
+         {
+            var oFReader = new FileReader();
+          var f = document.getElementById("idAttachment").files[0];
+          var fo = document.getElementById("idAttachment").value;
+          var fopdf=fo.toLowerCase();
+          var ext = fopdf.split('.').pop();
+           var filesize= f.size;
+           if(ext=="pdf"){
+            if(filesize > 241664){
+             document.getElementById("idAttachment").value = null;
+             //window.alert("Image size cannot be greater than 200KB!");
+                                   Alert.render('Attachment size cannot be greater than 200KB!' ,'Alert','Ok');
+             return false;
+            }
+         contentsattname=f.name;
+         //alert(contentsattname);
+           if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+      contentsatt= e.target.result.split(',')[1];
+        
+//        alert(contentsatt); 
+      }
+      r.readAsDataURL(f);
+     
+    } else { 
+      //alert("Failed to load file");
+        Alert.render('Failed to load file' ,'Alert','Ok');
+    }
+    }else{
+document.getElementById("idAttachment").value = null;
+
+Alert.render('Attachments Should be in PDF Format','Alert','Ok');
+return false;
+}
+
+         }
+         
+      function   validationFunction(contentsatt,contentsattname)
+    {
+     var startDate = document.getElementById('eventsdate').value;
+     var endDate = document.getElementById('eventedate').value;
+       //alert(startDate );
+       //alert(endDate );
+    document.getElementById('{!$Component.thepage.comp.commoncomponent.fm.evsdate}').value = startDate ;
+     document.getElementById('{!$Component.thepage.comp.commoncomponent.fm.evedate}').value = endDate ;
+      var seminarNa = document.getElementById('{!$Component.thepage.comp.commoncomponent.fm.seminarName}'); 
+     
+      
+         if(seminarNa.value == ""){
+           //alert('Please Fill Seminar Name');
+           Alert.render('Please Fill Seminar Name' ,'Alert','ok');
+           //seminarNa.focus();
+           return false;
+       } 
+       
+       
+        /*var trackNo = document.getElementById('{!$Component.thepage.comp.commoncomponent.fm.seminarsTrack}');
+       
+          if(trackNo.value == ""){
+            //alert('Please Select Track');
+            Alert.render('Please Select Track' ,'Alert','ok');
+            return false;
+        }*/
+      
+       
+       
+      
+    //  alert('Seminar Name '+seminarNa.value);
+   
+       var startDate = document.getElementById('eventsdate').value;
+       var endDate = document.getElementById('eventedate').value;
+       
+        if(startDate == '__/__/____  __:__' || startDate ==""){
+           //alert('Please Select Start Time');
+            Alert.render('Please Select Start Time' ,'Alert','ok');
+            //startDate.focus();
+            return false;
+       }
+       
+       if(endDate == '__/__/____  __:__' || endDate == ""){
+            //alert('Please Select End Time');
+             Alert.render('Please Select End Time' ,'Alert','ok');
+            //endDate.focus();
+            return false;
+       }
+       var startTime = new Date(startDate );
+       var endTime = new Date(endDate);
+      // alert(startTime);
+        if(startTime == 'Invalid Date' || endTime == 'Invalid Date'){
+      //alert('123');
+       
+          //alert('Invalid Date Time');
+           Alert.render('Invalid Date Time' ,'Alert','ok');
+       
+       return false;
+       } 
+       else
+       if((startTime>= endTime ) && startDate !="" && endDate != ""){
+        //alert('Please Select Correct DateTime');
+         Alert.render('Please Select Correct DateTime' ,'Alert','ok');
+                        return false;
+        }
+    
+       document.getElementById('{!$Component.thepage.comp.commoncomponent.fm.evsdate}').value = startDate ;
+       document.getElementById('{!$Component.thepage.comp.commoncomponent.fm.evedate}').value = endDate ;
+    
+    
+      var seminarhall = document.getElementById('{!$Component.thepage.comp.commoncomponent.fm.seminarsRoom1}');
+             
+      if(seminarhall.value == 'none' || seminarhall.value ==""){
+            //alert('Please Select Room');
+             Alert.render('Please Select Room' ,'Alert','ok');
+            return false;
+        }
+      
+      
+     
+       var tc = document.getElementById('{!$Component.thepage.comp.commoncomponent.fm.ticketpool}');
+       
+          if(tc.value == "none" || tc.value == ""){
+           // alert('Please Select Ticket');
+            Alert.render('Please Select Ticket' ,'Alert','ok');
+            return false;
+        }
+       
+        
+         /*if(result=='')
+         {
+         alert('Please Select PanelList');
+            return false;
+         }*/
+         //alert('Hi');
+         //alert(contentsatt);
+                  //alert(contentsattname);
+                  saveAgenda(contentsatt,contentsattname);
+     
+    return true;
+    }
+    </script> 
+    <!-- script for DRAG & DROP Functionality -->
+        <c:ed_RowDragAndDrop ></c:ed_RowDragAndDrop> <!-- component for drag and drop -->
+    <script>         
+        $(document).ready(function() { 
+        var table = document.getElementById('seminarTableId');    
+        var tableDnD = new TableDnD();
+        tableDnD.init(table);
+        });
+    </script> 
+    <!-- DRAG and DROP Functionality End --> 
+    <script>
+  
+        
+        
+   iframelink=[];
+                        
+ if('{!newAgendas.Video__c}'!=''&&'{!newAgendas.Video__c}'!=undefined){
+
+  var st='{!newAgendas.Video__c}';
+   var res = st.split(",");
+  for(i=0;i<res.length;i++)
+  {
+
+  iframelink.push(res[i]);
+  
+        var box=jq("<div class='ytbox'></div>")//creating parent div
+         var delimg=jq("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+         var iframebox=jq("<div class='iframebox'></div>");
+         
+                 jq(".ytwraper").css("display","block");
+                 jq(box).append(delimg);
+                 
+                 jq(iframebox).append(res[i]);
+                 jq(box).append(iframebox);
+                 jq(".ytwraper").append(box);
+                 jq(".framelinkval").val("");//clearing the embedlink textbox
+                
+  }
+ }
+  
+  </script>          
+</apex:page>

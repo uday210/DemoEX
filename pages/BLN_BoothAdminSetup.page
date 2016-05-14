@@ -1,0 +1,446 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="BLN_BoothAdminSetupCon">
+ <!--  style component-->
+<c:ed_commonstyles ></c:ed_commonstyles>
+ <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/> 
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}"/> 
+    <style>
+.dataTables_info{ display:none;}
+.header_box{ width:99.2%; background-color:#f8f8f8; border:1px solid #ddd; border-right:none; border-left:none; margin-bottom:5px;
+    margin-right: -0.5%;    }
+.border-ryt0px{ border-right:0px !important;}
+.border-lft0px{ border-left:0px !important;}
+.newblock{margin-bottom:5px; min-height:100px; padding:2px; }
+.group_header{    padding: 5px; background-color: #7EBDD9;font-size: 14px;font-weight: 700; color: #FFFFFF;}
+.t_sortable tr, .ui-sortable-helper{ /*cursor:move;*/}
+.scroll_container{ white-space:nowrap; overflow:auto;}
+.scroll_container_child{ width:150%;}
+.faedit_hovereffect{display:none;}
+.show{ display:block;}
+.selectedRow, .selectedRow:active{
+   background-color: #FFFFCC;
+  cursor: move;
+  }
+}
+</style>
+  <!-- styles -->
+  <c:ed_basictemplate BLN_UtillDisplayLinks="{!leadRetrieval}" id="comp">
+<apex:form id="sform">
+<!--body code start-->
+<div class="padding-5px">
+<div class="form-embed-div left" style="width:49.5%; padding:0px;">
+<div class="form-content-div" style="padding:3px;">
+<div class="header_box padding-5px" style=" height:30px; margin-left: -0.5%;margin-right: 0;">
+<strong style="line-height:30px;">All Lead Retrieval Tickets</strong>
+</div>
+
+<div class="scroll_container">
+  <div class="scroll_container_child" id="sortbleTableDiv">
+     <!-- code for left side table  -->
+  </div><!-- //scroll_container_child-->
+</div><!--close of scroll_Container -->
+</div><!---close of form-embed-div -->
+</div><!---close of form-content-div-->
+<!-- right side Group Container -->
+<div class="form-embed-div right" style="width:49.5%; padding:0px;">
+<div class="form-content-div" style="padding:3px;">
+<div  class="header_box header_boxpk padding-5px right textright">
+<div class="left textleft" style="width:40%;">
+<!--<span><input type="text" placeholder="Email" onkeyup="filterByEmail(this)" style="width:40%;" /></span>-->
+<span>
+<input type="text" id="gpsearch" placeholder="Search with Group Name" onkeyup="filtergpname(this);" style="width:95%;"  />
+</span>
+
+</div>
+
+<span><strong>Create New Group:</strong></span>
+<span><input type="text" class="nwgrp_txt" style="width:20%" /></span>
+<span><span class=" togglebtn addgrp_btn">Add</span></span>
+</div><!--close of headerbox -->
+<div class="clear"></div>
+<div class="right_canvas scroll_container">
+</div><!-- close of right canvas -->
+</div><!---close of form-embed-div-->
+</div><!---close of form-content-div-->
+<div class="clear"></div>       
+</div><!--close of padding-5px -->
+</apex:form>
+  </c:ed_basictemplate>
+<c:ed_datatablejs ></c:ed_datatablejs>
+ <script type="text/javascript" language="javascript" class="init">
+ var eventId ;
+
+  var j = jQuery.noConflict();
+  j(document).ready(function() {
+    eventId ='{!selectedeventid}';
+    getGroupsAndUsrs(eventId);
+      
+})
+
+function filtergpname(txt){
+  var txtval = txt.value;
+   $('.grpname_txt').each(function(){
+      var htnldatOfheader = $(this).html();
+      if(htnldatOfheader!="" && txtval!=""){
+        if((htnldatOfheader.toLowerCase().indexOf(txtval.toLowerCase()))){
+           $(this).parent().parent().hide();
+        }else{
+          $(this).parent().parent().show();
+        } 
+      }else{
+         $(this).parent().parent().show();
+      }  
+  })    
+}
+
+function filterByEmail(txt){
+  var txtval = txt.value;
+   $('.t_sortable').each(function(){
+      var htnldatOfheader = $(this).html();
+      if(htnldatOfheader!="" && txtval!=""){
+        if((htnldatOfheader.toLowerCase().indexOf(txtval.toLowerCase()))){
+           $(this).parent().parent().hide();
+        } 
+      }else{
+         $(this).parent().parent().show();
+      }  
+  })    
+}
+
+// This will get all groups and uc role while page loading
+function getGroupsAndUsrs(eve) {
+ Visualforce.remoting.Manager.invokeAction(
+     '{!$RemoteAction.BLN_BoothAdminSetupCon.getGpsAndusrs}',
+      eve, 
+        function(result, event){
+         if (event.status) {
+            //if(result.tcs.length>0){
+              addValuesToLeftTable(result.tcs);
+            //}
+            //alert(result.tcs.length);
+            if(result.extUcRoles.length>0){
+               $(".right_canvas").html("");
+               for(var i=0;i<result.extUcRoles.length;i++){
+                   commonMethodToaddgrp(result.extUcRoles[i].gp.Name,result.extUcRoles[i].gp.Id,result.extUcRoles[i].ucRoles,result.extUcRoles[i].isEditPermission);
+              }  
+            }  
+           } else if (event.type === 'exception') {
+            console.log(event.message + "<br/>\n<pre>" + event.where + "</pre>");
+          } else {
+             console.log("responseErrors"+ event.message);
+          }
+        }, 
+            {escape: true}
+      );
+  }
+ // This method will put values to let side table
+function addValuesToLeftTable(leadRetrivals){
+  //alert('hi '+leadRetrivals[0].tkt_profile__r.First_Name__c);
+   var  create_nwTable="";
+     create_nwTable+='<table class="tables_ui display" id="t_draggable1" ><thead><tr><th style="width:;">Name</th> <th style="width:;">Email</th><th style="width:;">Company</th><th style="width:;">Ticket ID</th><th style="width:">Order ID</th></tr> </thead><tbody class="t_sortable" id="sortbleBody">';
+      if(leadRetrivals.length<=0)
+       create_nwTable+='<tr> <td colspan="5" style="text-align:center;">empty</td></tr>' ; 
+
+      for(var r=0;r<leadRetrivals.length;r++){
+          var temp = '<tr id="'+leadRetrivals[r].tkt_profile__r.BLN_GN_User__c+'"> <td>'+leadRetrivals[r].tkt_profile__r.First_Name__c+' '+leadRetrivals[r].tkt_profile__r.Last_Name__c+'</td> <td>'+leadRetrivals[r].tkt_profile__r.Email__c+'</td> <td>'+leadRetrivals[r].tkt_profile__r.TKT_Company__c+'</td><td>'+leadRetrivals[r].Name+'</td> <td>'+leadRetrivals[r].Order__r.Name +'</td></tr>';
+            create_nwTable+=temp;
+       } 
+     create_nwTable+='</tbody></table>';  
+     var htmlString = $("#sortbleTableDiv").html(create_nwTable);
+  //sortbleTableDiv
+}
+
+// This method will add new table for new group
+function commonMethodToaddgrp(gnpn,gnpid,ucr,iseditper){
+    var  create_nwbox;
+      create_nwbox+= "<div class='newblock scroll_container_child' id='gpi"+gnpid+"'><div class='group_header'><span class='grpname_txt'>"+gnpn+"</span>";
+      if(iseditper) {
+        create_nwbox+=" <span style='display:inline-block;'><i class='fa fa-pencil fa-edit20px faedit_grpname ' title='Edit' style='color:#fff; font-size:15px;' >&nbsp;</i></span><span style='display:inline-block;'><i style='cursor:pointer;' class='fa fa-trash-o fa-delete15px fadelete_grpname ' title='delete' id='"+gnpid+"'dl ></i></span>";
+       }else{
+         $(".header_boxpk").hide();
+       }
+        create_nwbox+="</div><table class='";
+        if(iseditper)
+         create_nwbox+="tables_ui "; 
+        
+        create_nwbox+="display' id='"+gnpid+"'><thead><th>Name</th><th>Email</th><th>Company</th><th class='border-ryt0px' style='width:20%;'>Role</th></thead><tbody class='t_sortable'>";
+     if(ucr.length>0){
+       //alert(ucroles.length);
+      for(var r=0;r<ucr.length;r++){
+        var temp = "<tr id='"+ ucr[r].Id+"'> <td>"+ucr[r].GN_User__r.First_Name__c+" "+ucr[r].GN_User__r.Last_Name__c+"</td> <td>"+ucr[r].GN_User__r.Email__c+"</td> <td>"+ucr[r].Company__r.Name+"</td><td>";
+        if(iseditper){
+          temp+="<select class='myselect selectlist' style='width:100%;' id='sel"+ucr[r].Id+"'>";
+          if(ucr[r].RoleId__r.Name=="BoothLeads Admin"){
+            temp+="<option selected='selected' value='BoothLeads Admin'>BoothLeads Admin</option>";
+            temp+="<option value='BoothLeads Staff'>BoothLeads Staff</option>"; 
+          }else if(ucr[r].RoleId__r.Name=="BoothLeads Staff"){
+             temp+="<option selected='selected' value='BoothLeads Staff'>BoothLeads Staff</option>";
+            temp+="<option value='BoothLeads Admin'>BoothLeads Admin</option>"; 
+         }else{
+            temp+="<option value='BoothLeads Staff'>BoothLeads Staff</option>";
+            temp+="<option value='BoothLeads Admin'>BoothLeads Admin</option>"; 
+         }  
+          temp+="</select></td> </tr>";
+        }else{
+          temp +=ucr[r].RoleId__r.Name+"</td> </tr>";
+        }
+
+          create_nwbox+=temp;
+       }     
+     }else{
+       var temp = "<tr class='excludetr'><td colspan='5' style='text-align:center;'> Empty</td></tr>";
+        create_nwbox+=temp;
+     }
+     create_nwbox+'</tbody></table></div>';
+     $(create_nwbox).appendTo(".right_canvas");
+                $(".nwgrp_txt").val('') ;
+            /*************updating sorting *******/
+             var $tabs = $('.tables_ui')
+              $("tbody.t_sortable").sortable({
+                connectWith: ".t_sortable",
+                appendTo: $tabs,
+                helper:"clone",
+                zIndex: 999990,
+              }).disableSelection();
+
+              var $tab_items = $($tabs).droppable({
+                 accept: ".t_sortable tr",
+                 hoverClass: "ui-state-hover",
+                 drop: function( event, ui ) { 
+                var selected = $('#t_draggable1 tr.selectedRow');
+                 var selectedusers= [];
+                 for(var f=0;f<selected.length;f++){
+                   var df = selected[f].id;
+                   selectedusers.push(df);
+                 }
+                 //alert(selectedusers); 
+                  var addedTo = $(this).closest("table.tables_ui");
+                  var gpId =addedTo.attr("id");
+                  var gnuid = $(ui.draggable).attr('id');
+                   if($(ui.draggable).parent().attr('id')=='sortbleBody'){
+                      selectedusers.push(gnuid);
+                   }
+                  // alert(' '+);
+
+                  if(gpId!="" && gpId!="t_draggable1" && selectedusers.length>0){
+                    insertUcrole(gpId,selectedusers,'moveTabletoTable');
+                  }else if(gpId!="" && gpId!="t_draggable1" && gnuid!=""){
+                     selectedusers.push(gnuid);
+                     insertUcrole(gpId,selectedusers,'groupTogroup');
+                  }else if(gpId=="t_draggable1"){
+                      deleteUcrole(gnuid);
+                  }
+                 // alert('hi');*/
+                return false; }
+           });
+ }
+
+// Saving UC role under Group
+function deleteUcrole(GnId) {
+  Visualforce.remoting.Manager.invokeAction(
+       '{!$RemoteAction.BLN_BoothAdminSetupCon.deleteUcrole}',GnId,
+          function(result, event){
+           if (event.status) {
+             if(result=='Success'){
+                getGroupsAndUsrs(eventId);
+              }
+             
+           } else if (event.type === 'exception') {
+              console.log(event.message + "<br/>\n<pre>" + event.where + "</pre>");
+            } else {
+               console.log("responseErrors"+ event.message);
+            }
+          }, 
+              {escape: true}
+        );
+}
+
+// Saving UC role under Group
+function insertUcrole(gpId,GnId,mov) {
+  Visualforce.remoting.Manager.invokeAction(
+       '{!$RemoteAction.BLN_BoothAdminSetupCon.insertUcRoles}',eventId,gpId,
+        GnId, mov,
+          function(result, event){
+           if (event.status) {
+             if(result=='Success'){
+                getGroupsAndUsrs(eventId);
+              }
+              
+           } else if (event.type === 'exception') {
+              console.log(event.message + "<br/>\n<pre>" + event.where + "</pre>");
+            } else {
+               console.log("responseErrors"+ event.message);
+            }
+          }, 
+              {escape: true}
+        );
+}
+
+// Group name insert Method
+function insertGpName(gpName) {
+  var product ='Lead Retrieval'; 
+ Visualforce.remoting.Manager.invokeAction(
+     '{!$RemoteAction.BLN_BoothAdminSetupCon.saveGroupName}',gpName,
+      eventId, product,
+        function(result, event){
+         if (event.status) {
+           if(result.message=='Success'){
+             commonMethodToaddgrp(result.gp.Name,result.gp.Id,new Array(),true)
+            }
+            else
+            alert(result.message);
+         } else if (event.type === 'exception') {
+            console.log(event.message + "<br/>\n<pre>" + event.where + "</pre>");
+          } else {
+             console.log("responseErrors"+ event.message);
+          }
+        }, 
+            {escape: true}
+      );
+  }
+
+
+
+/********end of inline editing for Role11111111*****/
+</script>
+ <!-- js component -->
+  <c:ed_commonjs ></c:ed_commonjs>
+  <!-- //jscomponent-->
+  <!--custom js-->
+  <script>
+$(".addgrp_btn").click(function(e) {
+   var grptxt_val= $(".nwgrp_txt").val().trim() ;
+   console.log(' grptxt_val '+grptxt_val);
+    insertGpName(grptxt_val);
+});
+
+</script>
+
+<script>
+$(document).ready(function() {
+  var $tabs = $('.tables_ui')
+  $("tbody.t_sortable").sortable({
+    connectWith: ".t_sortable",
+    appendTo: $tabs,
+    helper:"clone",
+    zIndex: 999990,
+  }).disableSelection();
+  
+  var $tab_items = $($tabs).droppable({
+    accept: ".t_sortable tr",
+    hoverClass: "ui-state-hover",
+    drop: function( event, ui ) { 
+     //alert('heloo ');
+      return false; }
+  });
+});
+/*************group name edit icon hover function *******/
+$(".group_header").live('hover',function(){
+    $(this).find(".faedit_hovereffect").toggleClass('show');
+});
+
+/****inline editing for group name*******/
+function edit_grpname(){
+    var orgtext=$(this).parents(".group_header").children(".grpname_txt");
+    orgtext_val=orgtext.text();
+    var imgholder=$(this).parent("span");
+    orgtext.html("<input type='text' style='width:10%' value='"+orgtext_val+"' />");
+    imgholder.html("<i class='fa fa-save  fa-save20px fasave_grpname' title='Save' style='font-size:15px;color:#fff;' >&nbsp;</i>");
+  }
+    
+function save_grpname(){
+    var orgtext=$(this).parents(".group_header").children(".grpname_txt");
+    var orgtext_updatedval=orgtext.find("input").val();
+     var imgholder=$(this).parent("span");
+    var groupId = $(this).parent().parent().parent().attr('id');
+    if(groupId!=null)
+       groupId = groupId.replace('gpi','');
+    Visualforce.remoting.Manager.invokeAction(
+     '{!$RemoteAction.BLN_BoothAdminSetupCon.updateGroupName}',groupId,orgtext_updatedval,
+       function(result, event){
+         if (event.status) {
+           if(result=='Success'){
+              orgtext.html(orgtext_updatedval);
+              imgholder.html("")
+             // alert(imgholder.html(""));
+               imgholder.html("<i class='fa fa-pencil fa-edit20px faedit_grpname' title='Edit' style='font-size:15px;color:#fff;' >&nbsp;</i>");
+              } else
+             alert(result);
+         } else if (event.type === 'exception') {
+            console.log(event.message + "<br/>\n<pre>" + event.where + "</pre>");
+          } else {
+             console.log("responseErrors"+ event.message);
+          }
+        }, 
+            {escape: true}
+      ); 
+  }   
+// To delete Group
+ function delete_grpname(){
+  var orgtext=$(this).attr('id');
+  var cof =  confirm('Are you sure? You want delete Group?');
+   if(cof==true){
+    Visualforce.remoting.Manager.invokeAction(
+     '{!$RemoteAction.BLN_BoothAdminSetupCon.deleteGroup}',orgtext,
+       function(result, event){
+         if (event.status) {
+           if(result=='Success'){
+              $(".right_canvas").html("");
+               getGroupsAndUsrs(eventId);
+           } else
+             alert(result);
+         } else if (event.type === 'exception') {
+            console.log(event.message + "<br/>\n<pre>" + event.where + "</pre>");
+          } else {
+             console.log("responseErrors"+ event.message);
+          }
+        }, 
+            {escape: true}
+       ); 
+     }
+   }  
+ // To Save Role
+ function save_Role(){
+   // alert(' Id : '+$(this).attr('id'));
+   var ucroleId = $(this).attr('id').replace('sel','');
+   var roleName =  $(this).find('option:selected').text();
+   Visualforce.remoting.Manager.invokeAction(
+     '{!$RemoteAction.BLN_BoothAdminSetupCon.UpdateRole}',ucroleId,roleName,
+       function(result, event){
+         if (event.status) {
+           if(result=='Success'){
+             // $(".right_canvas").html("");
+              // getGroupsAndUsrs(eventId);
+           } else
+             alert(result);
+         } else if (event.type === 'exception') {
+            console.log(event.message + "<br/>\n<pre>" + event.where + "</pre>");
+          } else {
+             console.log("responseErrors"+ event.message);
+          }
+        }, 
+            {escape: true}
+      ); 
+   }
+function selectrowsmn(){
+   $(this).toggleClass("selectedRow");
+   var cls = $(this).hasClass("selectedRow");
+     $(this).find('td').each (function() {
+       if(cls)
+       $(this).css("color", "#FF0000");
+        else
+         $(this).css("color", "#807f7f");  
+     });
+  }
+
+
+/**************group edit icon********************************/
+$(".myselect").live("change",save_Role);
+ $(".faedit_grpname").live("click",edit_grpname);
+ $(".fasave_grpname").live("click",save_grpname);
+ $(".fadelete_grpname").live("click",delete_grpname);
+ $("#t_draggable1 tr").live("click",selectrowsmn);
+
+
+/***************************************************************/
+</script>
+</apex:page>

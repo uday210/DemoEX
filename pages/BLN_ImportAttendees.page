@@ -1,0 +1,394 @@
+<apex:page controller="BLN_ImportAttendeesCon" sidebar="false" showheader="false" standardStylesheets="false" >
+
+ <c:ed_commonstyles ></c:ed_commonstyles>
+ <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/> 
+    <style>
+    .titlegrid2{ 
+    margin-left: -1%;
+    width: 99.5%;
+    border-radius: 0px;
+    border: 1px solid #e3e3e3;
+    }
+.mapping_div table tbody td .selectlist{ width:40%;}  
+.instructions_box{padding:10px;}
+.instructions_box p { font-size:14px;}
+.instructions_box ol { margin-left:2%; }
+.instructions_box ol li{ font-size:13px; line-height:20px;}  
+
+       </style>
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+
+<script>
+ function getstatejs(iindex,id,val)
+       {
+       ShowLoader();
+       var mySelect = $('[id$="'+iindex+'BusinessState"]');
+       Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ImportAttendeesCon.statesBasedOnCountry}',
+            val,
+            function(result, event){
+            var opt;
+             mySelect.empty();
+            mySelect.append($('<option></option>').val('').html(''));
+              $.each(result, function (i, vals) {
+          
+             opt = document.createElement('option');
+             opt.value = vals.Id;
+              if(vals.Short_Name__c == undefined ){  
+               opt.innerHTML = vals.Long_Name__c;
+      }else{
+            opt.innerHTML = vals.Short_Name__c+'-'+vals.Long_Name__c;
+            }
+            
+            mySelect.append($('<option></option>').val(opt.value).html(opt.innerHTML));
+             });
+             HideLoader();      
+            }, 
+            {escape: true}
+        );
+        
+       }
+function setactualstate(id,val)
+       {
+       $('[id$="'+id+'"]').val(val);
+       }
+</script>
+
+<c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+ <apex:form >
+<!------------------------------------------>
+  <div class="shadow-div">
+ 
+  <p class="padding-5px bg-font">Import Attendees</p><!--close of black-title-->
+  <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+<apex:actionfunction name="Importfunct" action="{!import}" > 
+</apex:actionFunction>
+ <font color="red"><apex:pagemessages /></font>
+ Selected File:{!if(csvFileName=='','None',csvFileName)} 
+<!------------------------->
+ 
+     <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Select file to import</div>
+        <div class="content-gird">
+          <apex:outputpanel rendered="{!if(ecslist.size==0,true,false)}">           
+        <div class="wrapper textcenter" style="width:100%;">
+        <apex:inputFile value="{!csvFileBody}" filename="{!csvFileName}" onchange="check(this)"  accept=".csv" id="inpfile"/>
+         
+         <div class="formelem_boxsmall" style="display:block; margin-top:20px;">
+              <div class="formlabel-left textright">
+                <label style="color:#000;">Select Ticket:</label>
+               </div>
+              <div class="formelement-ryt textleft" >
+                <apex:selectList styleClass="selectlist" style="width:55%;" value="{!selecteditem}" multiselect="false" size="1"  ><apex:selectOptions value="{!items}"/>
+                        </apex:selectList>
+ 
+
+               <apex:commandButton value="Next" action="{!importCSVFile}" style="margin-left:5px;" styleclass="togglebtn" onclick="return extValidation()"></apex:commandButton>  
+        </div>
+               <div class="clear"></div>
+        </div><!--close offormelem_boxsmall--->
+     <!---------------------------------->
+             
+     <!---------------------------------->    
+        </div><!--close of wrapper--->
+  <!---start of mapping div---->  
+    <div class="mapping_div" style=" padding-bottom:10px;">
+              
+     <div class="title-grid titlegrid2">Create/Edit Mapping ( Unmapped columns will be skipped during actual load )</div>
+       <table width="100%" class="display" style=" margin-top:5px;">
+         <thead>
+         
+        <tr>
+    <th>Csv Header</th>
+    <th>Map To</th>
+         </tr>
+     
+          </thead>
+          
+          <tbody>
+          <apex:repeat value="{!gridrows}" var="r" >
+<!---apex repeat---->  
+             <tr>
+    <td><apex:outputText value="{!r.csvheader}"/>Prefix</td>
+    <td>
+      <apex:selectList value="{!r.field}" multiselect="false" size="1" styleClass="selval selectlist" >
+          <apex:selectOptions value="{!fieldsoptions}"/>
+      </apex:selectList>
+ </td>
+     </tr>     
+<!-----//apex repeat----->
+          </apex:repeat>
+          </tbody>
+</table>
+
+     <div style="margin-top:20px; text-align:center;">
+<button type="button" onclick ="validatemsg();"  class="button-a blue">Import</button>
+      &nbsp;&nbsp;
+     
+     <apex:commandButton value="Cancel" onclick="window.location.href='{!$Label.SiteURL}/apex/BLN_Attendees';return false;" styleclass="button-a dark-blue"/>
+ 
+ </div> 
+   
+      </div><!--close of mapping div---->  
+ </apex:outputpanel>
+ <!-----------------------------------second part------------------------------------------------------------>
+               
+  <apex:outputpanel rendered="{!if(ecslist.size!=0,true,false)}" id="send_part_panel">   
+    <div class="title-grid titlegrid2">Please map the exception countries and there respective states</div>
+       <table id="excepcountrytable" width="100%" class="display" style=" margin-top:5px;">
+         <thead>
+         
+        <tr>
+    <th>Input Country</th>
+    <th>Input State</th>
+    <th>Output Country</th>
+    <th>Output State</th>
+        </tr> 
+          </thead>
+          
+          <tbody>
+<!---apex repeat---->  
+          <apex:variable var="istateindex" value="{!0}"/>
+          <apex:repeat value="{!ecslist}" var="e" >
+             <tr>
+    <td><apex:outputText value="{!e.InputCountry}" rendered="{!e.InputCountry!=null&&e.InputCountry!=''}"/></td>
+    <td><apex:outputText value="{!e.InputState}" rendered="{!e.InputState!=null&&e.InputState!=''}"/></td>
+      <td><apex:selectList id="BusinessCountry" onchange="getstatejs('{!istateindex}',this.id,this.value);" value="{!e.OutputCountry}" multiselect="false" size="1" styleClass="selectlist country_onchange" style="width:70%;" >
+    <apex:selectOption itemLabel="" itemValue=""/>
+                                                            <apex:selectOptions value="{!countryOptions}"/>
+                                                   
+                                                        </apex:selectList></td>
+    <td><apex:outputpanel rendered="{!e.outputstatenotneeded==false}">
+    <select id="{!istateindex}BusinessState" onchange="setactualstate({!istateindex}+'\\:BusinessActualState',this.value)" size="1" class="selectlist" style="width:70%;">
+    </select>
+    <apex:inputhidden value="{!e.OutputState}" id="BusinessActualState"/> 
+    </apex:outputpanel></td>
+     </tr> 
+<!-----//apex repeat----->
+     <apex:variable var="istateindex" value="{!istateindex+1}"/>    
+          </apex:repeat>
+          </tbody>
+</table>
+     <!-------------------------------------------------------------------------->
+      <div style="margin-top:20px; text-align:center;">
+
+      <apex:commandButton value="Import" onclick="return validatecountrystates()" action="{!callFinalImport}" styleclass="button-a blue"/>&nbsp;&nbsp;
+ <apex:commandButton value="Cancel" onclick="window.location.href='{!$Label.SiteURL}/apex/BLN_Attendees';return false;" styleclass="button-a dark-blue"/>
+</div>
+    <!----------------------------------------------------------------------------------------------------->
+ </apex:outputpanel>
+    <!------------------>
+ <script>
+ function validatecountrystates() {
+ var error='';
+  $('#excepcountrytable select').each(function(){
+ var s=$(this).attr('id');
+    if(s.indexOf("BusinessState")==-1){
+    if($(this).val()=='')
+    {
+      error='true';
+    }}
+  });
+  if(error=='true')
+  {
+   alert('All the country fields should be mapped');
+  return false;
+  }
+  else;
+  return true;
+}
+ </script>
+    <!------------------>
+    <div class="clear"></div>
+                     
+<div class="instructions_box" style="">
+<!----------------->
+ <p class="strong_700 padding-5px">Notes:</p>
+ <ol>
+                <li>Multiple values for naics codes and diversities should be separated with semi-colon(;)</li>
+                <li>Date should entered either in yyyy-mm-dd or dd/mm/yyyy format</li>
+                <li>Custom barcode if given should be unique</li>
+ <li>Please use a CSV file or the standard template to upload Attendees.</li>
+ <li><apex:commandLink value=" Click here "  action="{!exportToCSV}" title=" Click here " target="_blank"/> to download the template.  </li>
+ <li><apex:commandLink onclick="return getcountries(this.id);" value=" Click here " action="{!getcoutries}" id="country_id" title=" Click here "/> to see long and short forms of countries and states.</li>
+ </ol>
+ </div> 
+        </div><!----close of content grid---> 
+        </div><!--close of grid-1--->
+
+
+<!-------------------------->
+
+               
+<!-------------------------------------------------->     
+     </div><!--close of form-embed-div-->
+    <!------------------->  
+      </div><!---close of shadow-div--->
+<!------------------------------------------->
+ </apex:form> 
+ 
+ </c:ed_basictemplate>
+ <c:ed_commonjs ></c:ed_commonjs>
+ <c:ed_popupbox ></c:ed_popupbox>
+  <!-- popup start  --->
+ <apex:form >
+ <div class="dialogoverlay" style=" z-index:9999;" id="bl_dialogoverlay"></div>
+    <div  id="dialogbox_bl" style=" display:none;z-index:99991; width:56%; margin-left:22%;"><a id="close" onclick="Alert_countries.Cancel()" style=" margin-top:-5px;">×</a>
+    <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px;;">
+    <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+        <div class="title-grid">Countries And States List</div>
+        <div class="content-gird" style="max-height:450px; overflow:auto;" >
+       <!--------------> 
+        <div style="width:70%; margin:0px auto; margin-bottom:10px;">
+      <label>Country:</label>
+      
+      
+        
+        <apex:selectList id="bps_selectlst" style="width:70%;" onchange="get_states(this.value);" value="{!selectedcountry}" multiselect="false" size="1" styleClass="selectlist country_onchange" >
+                                                            <apex:selectOptions value="{!countryOptions}"/>
+                                                   
+                                                        </apex:selectList>
+        </div><!--close of conteent-grid--->
+        
+        
+        
+                <!------apex code-------->
+               <apex:outputPanel id="stoutputpannel">
+                <table style="width: 100%" id="example" class="display">
+                    <thead>
+                    <tr>
+                        <th style="text-align:left;padding-left: 8px;">Country</th> <!--- style="width: 33%" --->
+                        <th style="text-align:left;padding-left: 8px;">Country Short Name</th>
+                        <th style="text-align:left;padding-left: 8px;">State</th><!---  style="width: 33%" ---> 
+                        <th style="text-align:left;padding-left: 8px;">State Short Name</th><!---  style="width: 34%" --->
+                    </tr>
+                    </thead>
+                    <tbody>
+                     <apex:repeat value="{!statelist}" var="d">
+                    <tr>
+                        <td >{!d.Country__r.Long_Name__c}</td> 
+                        <td>{!d.Country__r.Short_Name__c}</td>
+                        <td >{!d.Long_Name__c}</td> 
+                        <td >{!d.Short_Name__c}</td>
+                    </tr>
+                    </apex:repeat>
+                    </tbody>
+                </table>
+                </apex:outputPanel> 
+            
+        
+        
+        
+        
+        
+         <!-----------------> 
+       
+       <!--------------->  
+       <!-----------------> 
+        </div><!--close of content-grid--->
+        </div><!--close of grid-1----->
+                </div><!--close of form content div--->
+        </div><!--close of form embed div--->
+        </div><!--close of dialogbox---->
+       <!------------end of popup for Assign Badgelabel------------->  
+       <apex:actionFunction name="get_states" action="{!getstates}" reRender="stoutputpannel" status="AjaxLoader" immediate="true">
+                             <apex:param value="" name="countryid" />   
+                   </apex:actionFunction>
+                  
+      </apex:form> 
+ <script>
+ var Alert_countries = new Custom_formPopup(); //Countries
+ function getcountries(couid){
+  
+  Alert_countries.render('dialogbox_bl','bl_dialogoverlay','Alert_countries' ,'country_id');
+ return false;
+ }
+ 
+
+ 
+ 
+ </script>
+ 
+ <script>
+       function extValidation()
+       {
+          ShowLoader();
+          var fileName = jQuery('[id$=inpfile]').val();
+          var Extension=".csv";
+          if(fileName.substr(fileName.length - Extension.length, Extension.length).toLowerCase()!=Extension)
+          {
+              Alert.render('Please choose <b>.csv</b> file only','Alert','OK');
+              HideLoader();
+              return false;
+          }                    
+       }
+       
+       function check(obj){ 
+           var path = obj.value;
+           var filesize= obj.files[0].size;
+           if(filesize > 5242880){
+            obj.value = null;
+            Alert.render('You cannot upload greater than 5MB file!','Alert','OK');
+            return false;
+           }
+           }
+     Visualforce.remoting.timeout = 120000; 
+      function header(){
+          this.csvheader= null; 
+          this.field= null;
+          }
+       
+    
+     function validatemsg(){
+     var valuearray= new Array();
+     $('.selval').each(function(){
+     
+     valuearray.push($(this)[0].value);
+     
+     });
+     
+     
+     
+     var headerlist= new Array();
+     var aMap= new Array();
+    
+     var a=0;
+     <apex:repeat value="{!gridrows}" var="rs" >
+     var hd= new header();
+     hd.csvheader= "{!JSENCODE(rs.csvheader)}";
+     hd.field= valuearray[a];
+     headerlist.push(hd);
+     a++
+     </apex:repeat>
+     <apex:repeat value="{!reqfieldsandlabels}" var="skey">
+      var ed= new header();
+       ed.csvheader="{!JSENCODE(skey)}";
+       ed.field="{!reqfieldsandlabels[skey]}";
+      aMap.push(ed);
+     </apex:repeat>
+      var lablest= new Array();
+     <apex:repeat value="{!reqfieldsandlabels}" var="lb">
+     lablest.push("{!JSENCODE(lb)}");
+     </apex:repeat>
+              
+           Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_ImportAttendeesCon.validatemd}','{!selecteditem}','{!selectedeventid}',headerlist,'{!csvFileName}',aMap,lablest,
+            function(result, event){
+            
+             if(result.length > 1){
+           
+             Alert.render(result  , 'Alert !','ok');
+             
+             }else{
+               
+              Importfunct();
+              
+             }
+            }); 
+      
+     }
+    
+ 
+ </script>
+</apex:page>

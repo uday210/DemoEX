@@ -1,0 +1,458 @@
+<apex:page showHeader="false" controller="MM_Eventadmin_surveyCon" id="pg">
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/>
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+  <head>
+      <style>
+          .display  {
+        background-color:#ffffff;
+        border:0px; /*  */
+        border-spacing:0px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        width:100%;
+        border-collapse: collapse;
+        word-break: break-all;
+        
+        
+    }
+
+    
+.display thead tr th {
+        height:27px;
+        text-align:left;
+        color:#333;
+        background-color:#e7f5fe;
+        border-bottom:2px solid #ddd;
+        word-break: break-all;
+        font-size:14px;
+        font-family:Arial, Helvetica, sans-serif;
+        padding-left:10px;
+    }
+    
+    
+.display>tbody>tr:nth-child(odd) {
+        background-color:#ffffff;
+    }
+    
+.display>tr:nth-child(odd)  {
+        background-color:#ffffff;
+    }   
+.display>tbody>tr:nth-child(even) {
+        background-color:#f6fbff;
+    }   
+    
+.display>tr:nth-child(even)   {
+        background-color:#f6fbff;
+    }       
+    
+.display>tbody>tr:hover{ background-color:#f6fbff;}
+
+.display>tr td:hover{ background-color:#f6fbff;}
+    
+.display tbody tr td {
+        height:27px;
+        border-bottom:1px solid #dddddd;
+        border-right:1px solid #dddddd;
+        padding-left:10px;
+        color:#807f7f;
+        word-break: break-all;
+    
+        
+    }
+    
+.display  tr td {
+        height:27px;
+        border-bottom:1px solid #dddddd;
+        border-right:1px solid #dddddd;
+        padding-left:10px;
+        color:#807f7f;
+        word-break: break-all;
+    
+        
+    }
+      </style>
+  </head>
+ 
+  <c:MMHeader ></c:MMHeader>
+  
+  <!--menublock start-->
+<div id="menublock">
+<div id='cssmenu' >
+<ul>
+ 
+                      <li><apex:outputLink value="/apex/Matchleads_eventsPage" ><span>Events</span></apex:outputLink></li>
+                       <li ><apex:outputLink value="/apex/MM_Eventadmin_schedule" ><span>Schedule</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_ExhibitorsDirectory" ><span>{!exhibitoralias }</span></apex:outputLink></li>
+                        <apex:outputPanel rendered="{!IF($User.Username =='mcmillen@hartford.edu',true,false )}">
+                         <li><apex:outputLink value="/apex/bl_eventadmin_corporatestaff" ><span>Prime Partners</span></apex:outputLink></li>
+                       </apex:outputPanel>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_AttendeesDirectory" ><span>{!attendeealias}</span></apex:outputLink></li>
+                       <apex:outputPanel rendered="{!IF($User.Username =='mcmillen@hartford.edu',true,false )}">
+                         <li><apex:outputLink value="/apex/MM_eventadmin_SponsorsDirectory" ><span>Resource Partner Directory</span></apex:outputLink></li>
+                        </apex:outputPanel>
+                        <li><apex:outputLink value="/apex/MM_EventAdmin_Reports" ><span>Reports</span></apex:outputLink></li>
+                          <li class="active"><apex:outputLink value="/apex/MM_Eventadmin_survey" ><span>Survey Questions</span></apex:outputLink></li>
+             </ul>
+     </div>
+</div>
+  
+  
+  
+   <div style="min-height:550px;max-height:auto; background-color:#ffffff;"> 
+          <apex:form >
+           <div style="width:98%; margin:0px auto; text-align:right;"><apex:commandButton style="float:right;margin:5px;" value="Add Survey Question" action="{!addSurveyQuetion}" /></div>
+           <!-- -------------------------------------------------------------------------- Gried Display ----------------------------------------------------------- -->
+           
+             <apex:actionFunction action="{!updateanswerslist2}" name="questionorder2" reRender="examplesury" status="AjaxLoader">
+                <apex:param value="" name="answeroptorder2"/>
+             </apex:actionFunction>  
+              <table style="width:98%;line-height:40px;margin:0px auto; border:1px solid #ddd;" border="0" class="display" id="examplesury">
+                <apex:variable value="{!0}" var="pNo"/>
+                <thead>
+               <tr>
+                         <th style="font-weight:bold;color:Black;width:25%;">Question</th >
+                         <th style="font-weight:bold;color:Black;width:10%;">Question Type </th > 
+                         <th style="font-weight:bold;color:Black;width:30%;">Options</th > 
+                         <th style="font-weight:bold;color:Black;width:15%;">User Type </th > 
+                         <th style="font-weight:bold;color:Black;width:20%;">Actions</th > 
+               </tr>
+               </thead>
+                   <apex:repeat value="{!inn}" var="pQue">
+                    <!-- --------------------------------------------- Parent Questions Start------------------------------------------------------ --> 
+                     <tr id="{!pQue.que.id}">
+                  <td style="font-weight:bold;color:#489cdf;" valign="top"> <apex:variable value="{!pNo+1}" var="pNo"/> {!pNo}.{!pQue.que.Name}</td>
+                   <td> {!pQue.que.Type__c} </td>
+                   <td>  <apex:repeat value="{!pQue.que.Options__r}" var="wr"> {!wr.Name},</apex:repeat></td>
+                   <td> {!pQue.que.Whom__c}</td>
+                   <td> <apex:commandLink value="Edit" action="{!EditPQuestion}" style="color:blue;">
+                        <apex:param value="{!pQue.que.id}" name="pidvalue"/>
+                        </apex:commandLink>
+                         &nbsp;
+                        <apex:commandLink value="Delete" action="{!deletePQuestion}" style="color:blue;">
+                        <apex:param value="{!pQue.que.id}" name="pidvalue"/>
+                        </apex:commandLink>
+                          &nbsp; 
+                        <apex:commandLink style="color:blue;" rendered="{!IF(pQue.que.Type__c=='Radio Buttons' || pQue.que.Type__c=='PickList',true,false)}"  action="{!addCondition}">
+                         <apex:image value="{!URLFOR($Resource.MMsurveyicon)}" width="30px" height="30px" title="Add Conditional Questions" style="border:0px; margin:0px; padding:0px;margin:0px;" />
+                  
+                         <apex:param value="{!pQue.que.id}" name="pidvalue"/>
+                         </apex:commandLink>
+                  </td> </tr>
+                           <!-- --------------------------------------------- Parent Questions End------------------------------------------------------ -->   
+                               <!-- <tr >
+                                   <td colspan="4" style="border-bottom:2px solid #cccccc;">
+                                      <table style="width:100%;line-height:20px;">-->
+                                       <!-- --------------------------------------------- Sub Questions Start------------------------------------------------------ --> 
+                                         <apex:variable value="{!0}" var="sNo"/>
+                                           <apex:repeat value="{!pQue.subQuestions}" var="sQue">                
+                                            <tr>
+                                            <td style="padding-left:30px;">
+                                              <apex:variable value="{!sNo+1}" var="sNo"/>
+                                              {!sNo}.{!sQue.Question__r.Name}</td>
+                                              <td> {!sQue.Question__r.Type__c} </td>
+                                              <td>
+                                                <apex:repeat value="{!mapQueWithOpts[sQue.Question__r.id]}" var="subQue">
+                                                   {!subQue.Name},
+                                                </apex:repeat>
+                                               
+                                               </td> 
+                                              
+                                              <td>{!sQue.Question__r.Whom__c} </td>
+                                              <td> 
+                                              <apex:commandLink value="Edit" action="{!EditSQuestion}" style="color:blue;">
+                                                  <apex:param value="{!pQue.que.id}" name="pidvalue"/>
+                                                  <apex:param value="{!sQue.id}" name="sq"/>
+                                               </apex:commandLink>
+                                              &nbsp;
+                                              <apex:commandLink value="Delete" action="{!deleteSQuestion}" style="color:blue;">
+                                                 <apex:param value="{!sQue.Question__r.id}" name="sq"/>
+                                               </apex:commandLink>
+                                              </td>
+                                            </tr>
+                                          </apex:repeat>
+                                       <!-- --------------------------------------------- Sub Questions End------------------------------------------------------ -->     
+                                    <!-- </table>
+                                  </td>
+                               </tr>-->
+                            <!--<tr><td colspan="5" style="border-top:2px solid #FFFFFF;"></td></tr>     -->
+             </apex:repeat>
+          </table>
+         
+         </apex:form>
+         <!-- -------------------------------------------------------------------------- Gried Display End----------------------------------------------------------- -->
+         <apex:form id="frm2">
+          <apex:actionFunction action="{!addOptions}" name="getOptions" reRender="frm2"/>
+        
+          
+           <apex:outputPanel layout="block" styleClass="popupBackground" rendered="{!addSurveyQuetionbool}" />
+             <apex:outputPanel layout="block" styleClass="custPopup" rendered="{!addSurveyQuetionbool}" style="width:55%">
+                 <div style="width:100%; background-color:#3498db;"><h3 style="color:#ffffff; margin:10px;line-height:35px;">Survey Questions</h3></div>
+                 <table border="0" cellpadding="8" cellspacing="0" style="width:85%; margin:0px auto; line-height:38px;">
+                    
+                    <apex:outputPanel rendered="{!isConditionalQue}">
+                    <tr>
+                    
+                    <td style="width:20%;">Parent Questions Ans : </td>
+                    
+                    <td>
+                        <apex:selectList value="{!selectedOptionValue}" multiselect="false" size="1">
+                           <apex:selectOptions value="{!options}"/>
+                        </apex:selectList>
+                    </td>
+                    </tr>
+                    </apex:outputPanel>
+                 
+                 
+                    <tr><td style="width:20%;">Question Title :</td><td> <apex:inputField value="{!pQuestion.Name}" style="width:87.5%;"/></td></tr>
+                    <tr><td valign="top" style="width:20%;">Question Type :</td><td> <apex:inputField value="{!pQuestion.Type__c}" onchange="getOptions();" style="width:90%;"/>
+                      <apex:outputPanel rendered="{!isOptionsShow}">
+                          <table style="width:100%"> 
+                           <apex:variable value="{!0}" var="Lcount"/>
+                           <apex:repeat value="{!liOfOptions}" var="lp">
+                             <tr><td align="left" style="text-align:left;"><apex:inputField value="{!lp.Name}" style="width:87.5%;"/>&nbsp; 
+                                 <apex:variable value="{!Lcount+1}" var="Lcount"/>
+                                 
+                                <apex:commandButton value="-" action="{!deleteOpt}" rendered="{!if(liOfOptions.size != Lcount ,true,false)}" reRender="frm2">
+                                    <apex:param value="{!Lcount}" name="count"/>
+                                </apex:commandButton> 
+                                <apex:commandButton value="+" action="{!AddOpt}" rendered="{!if(liOfOptions.size == Lcount ,true,false)}" reRender="frm2"/>
+                                
+                               </td></tr>                  
+                          </apex:repeat></table>
+                      </apex:outputPanel>
+                    
+                    </td></tr>
+                    
+                    <tr><td valign="top" style="width:20%;">User type:</td><td>
+                     <apex:inputField value="{!pQuestion.Whom__c}" style="width:90%;"/>
+                     
+                    </td></tr>
+                    
+                    <tr>
+                    <td>&nbsp;</td>
+                    <td style="text-align:left;">
+                      <apex:commandButton value="Save" action="{!saveQuestion}"/>
+                      <apex:commandButton value="Cancel" action="{!Cancel}"/>
+                    </td></tr>
+                    </table>   
+           
+            </apex:outputpanel>
+         </apex:form>
+   </div>
+ <c:MMFooter ></c:MMFooter>
+  <script>
+// JavaScript Document
+
+<!------------------drag and drop jslibrary--------------------->
+document.onmousemove = function(ev){
+    if (currenttable && currenttable.dragObject) {
+        ev   = ev || window.event;
+        var mousePos = currenttable.mouseCoords(ev);
+        var y = mousePos.y - currenttable.mouseOffset.y;
+        if (y != currenttable.oldY) {
+            // work out if were going up or down...
+            var movingDown = y > currenttable.oldY;
+            // update the old value
+            currenttable.oldY = y;
+            // update the style to show were dragging
+            currenttable.dragObject.style.backgroundColor = "#eee";
+            // If were over a row then move the dragged row to there so that the user sees the
+            // effect dynamically
+            var currentRow = currenttable.findDropTargetRow(y);
+            if (currentRow) {
+                if (movingDown && currenttable.dragObject != currentRow) {
+                    currenttable.dragObject.parentNode.insertBefore(currenttable.dragObject, currentRow.nextSibling);
+                } else if (! movingDown && currenttable.dragObject != currentRow) {
+                    currenttable.dragObject.parentNode.insertBefore(currenttable.dragObject, currentRow);
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+// Similarly for the mouseup
+document.onmouseup   = function(ev){
+    if (currenttable && currenttable.dragObject) {
+        var droppedRow = currenttable.dragObject;
+        // If we have a dragObject, then we need to release it,
+        // The row will already have been moved to the right place so we just reset stuff
+        droppedRow.style.backgroundColor = '';
+        currenttable.dragObject   = null;
+        // And then call the onDrop method in case anyone wants to do any post processing
+        currenttable.onDrop(currenttable.table, droppedRow);
+        currenttable = null; // let go of the table too
+    }
+}
+
+
+/** get the source element from an event in a way that works for IE and Firefox and Safari
+ * @param evt the source event for Firefox (but not IE--IE uses window.event) */
+function getEventSource(evt) {
+    if (window.event) {
+        evt = window.event; // For IE
+        return evt.srcElement;
+    } else {
+        return evt.target; // For Firefox
+    }
+}
+
+/**
+ * Encapsulate table Drag and Drop in a class. Well have this as a Singleton
+ * so we dont get scoping problems.
+ */
+function TableDnD() {
+    /** Keep hold of the current drag object if any */
+    this.dragObject = null;
+    /** The current mouse offset */
+    this.mouseOffset = null;
+    /** The current table */
+    this.table = null;
+    /** Remember the old value of Y so that we dont do too much processing */
+    this.oldY = 0;
+
+    /** Initialise the drag and drop by capturing mouse move events */
+    this.init = function(table) {
+        this.table = table;
+        var rows = table.tBodies[0].rows; //getElementsByTagName("tr")
+
+        for (var i=0; i<rows.length; i++) {
+        
+            // John Tarr: added to ignore rows that Ive added the NoDnD attribute to (Category and Header rows)
+            var nodrag = rows[i].getAttribute("NoDrag")
+            if (nodrag == null || nodrag == "undefined") { //There is no NoDnD attribute on rows I want to drag
+                this.makeDraggable(rows[i]);
+            }
+        }
+    }
+
+   /** This function is called when you drop a row, so redefine it in your code
+        to do whatever you want, for example use Ajax to update the server */
+
+ this.onDrop = function(table,row){
+ var rows = this.table.tBodies[0].rows;
+            //alert(+this.table.tBodies.length);
+        var answeroptorder2= "";
+        for (var i=0,j=rows.length; i<rows.length; i++,j--) {
+            answeroptorder2 += rows[i].id+","+Number(i+1)+" ";
+           // alert(rows[i].id);
+           // alert('11111111111111:'+answeroptorder2);
+        }
+        //alert('2222222222222222222:'+answeroptorder2);
+        questionorder2(answeroptorder2);
+       
+ 
+ }
+ 
+ 
+    /** Get the position of an element by going up the DOM tree and adding up all the offsets */
+    this.getPosition = function(e){
+        var left = 0;
+        var top  = 0;
+        /** Safari fix -- thanks to Luis Chato for this! */
+        if (e.offsetHeight == 0) {
+            /** Safari 2 doesnt correctly grab the offsetTop of a table row
+                this is detailed here:
+                http://jacob.peargrove.com/blog/2006/technical/table-row-offsettop-bug-in-safari/
+                the solution is likewise noted there, grab the offset of a table cell in the row - the firstChild.
+                note that firefox will return a text node as a first child, so designing a more thorough
+                solution may need to take that into account, for now this seems to work in firefox, safari, ie */
+            e = e.firstChild; // a table cell
+        }
+
+        while (e.offsetParent){
+            left += e.offsetLeft;
+            top  += e.offsetTop;
+            e     = e.offsetParent;
+        }
+
+        left += e.offsetLeft;
+        top  += e.offsetTop;
+
+        return {x:left, y:top};
+    }
+
+    /** Get the mouse coordinates from the event (allowing for browser differences) */
+    this.mouseCoords = function(ev){
+        if(ev.pageX || ev.pageY){
+            return {x:ev.pageX, y:ev.pageY};
+        }
+        return {
+            x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+            y:ev.clientY + document.body.scrollTop  - document.body.clientTop
+        };
+    }
+
+    /** Given a target element and a mouse event, get the mouse offset from that element.
+        To do this we need the elements position and the mouse position */
+    this.getMouseOffset = function(target, ev){
+        ev = ev || window.event;
+
+        var docPos    = this.getPosition(target);
+        var mousePos  = this.mouseCoords(ev);
+        return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
+    }
+
+    /** Take an item and add an onmousedown method so that we can make it draggable */
+    this.makeDraggable = function(item) {
+   
+        if(!item) return;
+        var self = this; // Keep the context of the TableDnd inside the function
+        item.onmousedown = function(ev) {
+            // Need to check to see if we are an input or not, if we are an input, then
+            // return true to allow normal processing
+            var target = getEventSource(ev);
+            if (target.tagName == 'INPUT' || target.tagName == 'SELECT') return true;
+            currenttable = self;
+            self.dragObject  = this;
+            self.mouseOffset = self.getMouseOffset(this, ev);
+            return false;
+        }
+        item.style.cursor = "move";
+    }
+
+    /** Were only worried about the y position really, because we can only move rows up and down */
+    this.findDropTargetRow = function(y) {
+        var rows = this.table.tBodies[0].rows;
+        for (var i=0; i<rows.length; i++) {
+            var row = rows[i];
+            // John Tarr added to ignore rows that Ive added the NoDnD attribute to (Header rows)
+            
+            var nodrop = row.getAttribute("NoDrop");
+            if (nodrop == null || nodrop == "undefined") {  //There is no NoDnD attribute on rows I want to drag
+                var rowY    = this.getPosition(row).y;
+                var rowHeight = parseInt(row.offsetHeight)/2;
+                if (row.offsetHeight == 0) {
+                    rowY = this.getPosition(row.firstChild).y;
+                    rowHeight = parseInt(row.firstChild.offsetHeight)/2;
+                   // alert('ddddd');
+                }
+                // Because we always have to insert before, we need to offset the height a bit
+                if ((y > rowY - rowHeight) && (y < (rowY + rowHeight))) {
+                    // thats the row were over
+                    return row;
+                }
+            } 
+        }
+        return null;
+    }
+}
+
+<!------------------ END drag and drop Djslibrary--------------------->
+
+<!------------------CALLING drag and drop METHOD AND ASSIGNING TO TABLE--------------------->
+
+$(document).ready(function() {
+var table1 = document.getElementById('examplesury');
+var tableDnD = new TableDnD();
+tableDnD.init(table1);
+
+})
+</script>
+
+  
+</apex:page>

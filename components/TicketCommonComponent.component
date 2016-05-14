@@ -1,0 +1,1331 @@
+<apex:component controller="BLN_ReUse_EventsEditCon">
+
+ <apex:attribute name="eventids" description="This is the eventid" type="String" required="true"/>
+
+ <!---------------------------------------popup for managetags------------------------------------------------------>        
+     <div id="dialogoverlay"></div>
+<!--close of dialogoverlay-->
+<div id="dialogbox"><a  id="close" onclick="Alert.Cancel()">×</a>
+<div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+    <div class="title-grid">Manage Tag</div>
+    <div class="content-gird" >
+    
+    <!--<button id="btnAdicionar">Novo</button>-->
+        <table id="managetagpopup" style="width:100%;">         
+            <thead>
+                <tr style="background-color:#BCBCBC; ">
+                    <td colspan="3" style="color:#ffffff;">Edit or Delete your Tags</td>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td width="85%">Attendee</td>
+                
+                    <td><img src=" {!URLFOR($Resource.createevents,'createevents/images/delete1.png')}" class="btnExcluir" style="margin-right:20%;"/><img src="{!URLFOR($Resource.createevents,'createevents/images/pencil.png')}" width="20" height="20" class="btnEditar"/></td>
+                </tr>
+               
+                <tr>
+                    <td width="85%">Exhibitor</td>
+                    
+                    <td><img src="{!URLFOR($Resource.createevents,'createevents/images/delete1.png')}" class="btnExcluir" style="margin-right:20%"/><img src="{!URLFOR($Resource.createevents,'createevents/images/pencil.png')}" width="20" height="20" class="btnEditar"/></td>
+                </tr>
+                
+                 <tr>
+                    <td width="85%">Sponsor</td>
+                    
+                    <td><img src="{!URLFOR($Resource.createevents,'createevents/images/delete1.png')}" class="btnExcluir" style="margin-right:20%"/><img src="{!URLFOR($Resource.createevents,'createevents/images/pencil.png')}" width="20" height="20" class="btnEditar"/></td>
+                </tr>
+            
+            </tbody>
+        </table>
+    
+    
+    </div><!--close of content-grid-->
+    </div><!--close of grid1-->
+</div>  <!--close of dialogbox-->
+
+
+
+<!-------------------------------------------------->    
+<!------------------------------ticket more --info content popup------------->
+        <div id="dialogoverlay2"></div>
+          <div id="dialogbox3">
+          <a  id="close" onclick="Alert3.Cancel()">×</a>
+        
+              <div class="grid-1" style="text-align:left;"  >
+             
+                <div class="title-grid">More Information</div>
+                <div class="content-gird" style="">
+     
+
+                
+                  <div class="form">
+                    <div id="left-form" style=" width:49%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:left">
+                   
+                    
+                   
+                      <div class="elem">
+                        <label>Ticket Name: </label>
+                        <label id="mandatory">*</label>
+                        <div class="indent">
+                          <input type="text"  id="tminfoname" name="tminfoname" class="medium" disabled="disabled"/>
+                        </div>
+                      </div>
+                       <div class="elem">
+                        <label>
+                        
+                         Type: </label>
+                        <label id="mandatory">*</label>
+                        <div class="indent">
+                        <apex:repeat value="{!paymentSelectOptions}" var="paytype">
+                        <input type="radio"  style="outline:none;" checked="checked" onchange="validfreetick()"   name="payradio" value="{!paytype.value}"/><span style="margin-left:5px; ">{!paytype.label}</span><br/>
+                        </apex:repeat>
+                        <script>
+                        Visualforce.remoting.timeout = 120000; // Set timeout at page level
+                        function validfreetick()
+                        {
+                            var tmtable = document.getElementById("mytab1");
+       for (var p = 1,row; row = tmtable.rows[p]; p++) {
+        if(document.querySelector('input[name="payradio"]:checked').value=='Free'){
+       row.cells[6].children[0].value=0;
+       row.cells[6].children[0].disabled="disabled";
+       }
+       else{
+       row.cells[6].children[0].disabled=false;
+       }
+       }
+       
+                        }
+                        </script>
+
+                        </div>
+                      </div>
+                      
+                        <div class="elem">
+                        <label>Ticket Type:</label>
+                        <div class="indent">
+                         <select id="itemtype" style="width:76%" class="selectlist" onchange="editticketbadgelabel(this.value)">
+                           <optgroup label="Tickets">
+                            <apex:repeat value="{!individualTicketsSelectOptions}" var="indittype">
+                            <option value="{!indittype.value}">{!indittype.label}</option>
+                            </apex:repeat> 
+                            </optgroup>
+                             <optgroup label="BL Products">
+
+                            <apex:repeat value="{!BLPRODTicketsSelectOptions}" var="indittype">
+                            <option value="{!indittype.value}">{!indittype.label}</option>
+                            </apex:repeat>
+                            </optgroup>                         
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <script>
+                          function editticketbadgelabel(titemtype)
+                         {
+                            
+                            
+                            Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getbadgeinfo}',
+            titemtype,
+            1,
+           function(result, event){
+           
+           
+           if(result.badgable!='B - Badge')
+                            {
+                                document.getElementById('tbdglabel').value="";
+                                document.getElementById('tbdglabel').disabled="disabled";
+                             }
+                           else{
+                             document.getElementById('tbdglabel').disabled=false; 
+                             document.getElementById('tbdglabel').value=result.badgelabel;
+                         }
+             });
+             }
+             
+             function editticketbadgelabelmoreinfo(titemtype)
+                         {
+                            
+                            
+                            Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getbadgeinfo}',
+            titemtype,
+            1,
+           function(result, event){
+           
+           
+           if(result.badgable!='B - Badge')
+                            {
+                               
+                                document.getElementById('tbdglabel').disabled="disabled";
+                             }
+                           else{
+                             document.getElementById('tbdglabel').disabled=false; 
+                             
+                         }
+             });
+             }
+                            
+                      </script>
+                     
+                    
+                        
+                      
+                         <div class="elem">
+                        <label for="ch_effects">Ticket visibility: </label>
+                        
+                     
+                        <div class="indent">
+                        <input type="checkbox"  style="outline:none;" checked="checked"   id="tvisib" value="" />
+                        </div>
+             
+                                   
+                      </div>
+                     
+                        
+                     <div class="elem">
+                        <label for="ch_effects">Tax Rate: </label>
+                        
+                     
+                        <div class="indent">
+                        <input type="checkbox"  style="outline:none;" id="ttaxrate" value="" />
+                        </div>
+             
+                                   
+                      </div>
+                    
+                     
+                    </div>
+                    <!--close of left-form-->
+
+
+<!--script for add tags flag------------------->
+                    
+                <script>
+                  var flagexppp=0;
+                function showet1(){
+                if(flagexppp==0)
+                        { 
+                        flagexppp=1;
+                        /*alert("block");*/
+                            document.getElementById("tagcontentblock").style.display="";
+                            
+                        }
+                        else if (flagexppp==1)
+                        {
+                            /*alert("hide");*/
+                            flagexppp=0;
+                            document.getElementById("tagcontentblock").style.display="none";
+                             
+                        
+                        }
+                        
+            }
+            
+   var TagMap = {};       
+                
+                </script>    
+                   <!--------close of script---------------> 
+                    <script type="text/javascript">//<![CDATA[ 
+                    
+$(window).load(function(){
+//code for adding existing event tags
+   
+    Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getEventTag}',
+            '{!eventids}',
+           function(result, event){
+           
+           if (event.status){
+                    var appendTxt = '';
+                    $.each(result, function(i, resulteach){
+                    TagMap[resulteach.Id]=resulteach.Tag_Text__c;
+                   
+                     $('#abc').append('<table class="results">'
+                         +'<tr>' 
+                          +'<td>'+'<input type="checkbox" />'+'</td>'
+                            +'<td>'+resulteach.Tag_Text__c+'</td>'
+                            
+                           +'</tr>'
+                       + '</table>');
+                      
+                       $('#abcpk').append('<table class="resultspk">'
+                         +'<tr>' 
+                          +'<td>'+'<input type="checkbox" />'+'</td>'
+                            +'<td>'+resulteach.Tag_Text__c+'</td>'
+                            
+                           +'</tr>'
+                       + '</table>');
+                       
+                   
+                    console.log(TagMap);
+                    });
+                     $('#addtextlabel').val(''); //clearing textbox value
+                      $('#addtextlabelpk').val(''); //clearing textbox value
+                    }
+                    }
+                    );
+                    
+$(function() {
+   $('#btn_s').click(function(e) {
+     e.preventDefault();
+     var name  = $('input[name="addtagtext"]').val()
+if(name !==''){
+//code for saving event tag
+Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.createEventTag}',
+            '{!eventids}',
+            name,
+           function(result, event){
+            if (event.status){
+            if(result!=''){
+             $('#abc').append('<table class="results">'
+                         +'<tr>' 
+                          +'<td>'+'<input type="checkbox" />'+'</td>'
+                            +'<td>'+name+'</td>'
+                            
+                           +'</tr>'
+                       + '</table>');
+                       
+                    $('#addtextlabel').val(''); //clearing textbox value
+                    $('#abcpk').append('<table class="resultspk">'
+                         +'<tr>' 
+                          +'<td>'+'<input type="checkbox" />'+'</td>'
+                            +'<td>'+name+'</td>'
+                            
+                           +'</tr>'
+                       + '</table>');
+                       
+                    $('#addtextlabelpk').val(''); //clearing textbox value
+                    TagMap[result] = name;
+                    console.log(TagMap);
+                    }
+                    else
+                    {
+                       alert('Duplicate value');
+                    }
+            }
+           });
+//
+        /*alert('no value for addtagtext');*/
+   //if($('.results').length < 1) {
+      
+
+ //  }
+    }
+   }
+    );
+    $('#btn_i').click(function() {
+      $('.results').remove();  
+    });
+});
+});//]]>  
+
+
+ function addtagsshow(){
+     document.getElementById("addtagtext").style.display="";
+     document.getElementById("addtagsshow").style.display="none";
+     
+     }
+</script>
+                    <!------------------------->
+               <style> 
+              
+    #tagwrapper {
+        width:20%; height:auto; background-color:#ffffff; margin-left:13%; border-radius:3px;  position:absolute;margin-top: -2px;
+        }               
+     #tagtitleblock{
+        width:100%; border:1px solid #D0D0D0; height:auto; border-radius:3px; padding:5px 0px;background :url({!URLFOR($Resource.createevents,'createevents/images/ul_playlist_li.png')} ) repeat-x center bottom #F5F5F5; 
+         }             
+          #tagtitleblock p{  
+          font-size:13px; color: #424242; text-align:center;
+           } 
+           
+           #addtagsdiv{width:100%; height:auto; padding-bottom:0px; background-color:#ffffff; padding-top:5px;}      
+           /* Styles for results table */
+.results {
+  /*  width: 600px;*/
+    width:95%; 
+    margin:0px auto;
+    margin-top: 0px;
+    text-align:left;
+    border: 0px solid #999;
+    padding:3px;
+    display:block; margin-bottom:5px;
+    background-color:#F5F5F5;
+    overflow:hidden;
+}
+
+.results td{ padding:0px 2px;}
+
+        </style>                
+                    <div class="right-form"  style=" width:49%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:right">
+                       <!--start of tags--->
+                       <div style="float:left;">Tags:</div>
+                       <div id="tagwrapper" style="">
+                       
+                       <div id="tagtitleblock" onClick="showet1()" style="">
+                       
+                       <p ><span><img src="  {!URLFOR($Resource.createevents,'createevents/images/check_black.png')}"  style="margin-right:5%;"/></span>Tags</p>
+                       </div><!--close of tagtitleblock-->
+         
+          <div id="tagcontentblock" style="width:100%;height:auto; display:none; z-index:999999; border:1px solid #D0D0D0; border-top:0px; position:relative; background-color:#ffffff; ">
+          
+          
+          <div id="addtagsdiv" style="">
+          
+           <!----------------------------------------------------->
+            <div id="abc" style="width:100%;">
+
+
+</div>
+
+  <!--------------------------------------->
+  <div style="display:block; border-top: 1px #E5E5E5 solid;border-bottom: 1px #E5E5E5 solid; background-color:#F7F7F7; text-align:center;font-size:18px; font-family:cuprum; color:#5283cc;">
+    <div id="addtagsshow" onClick="addtagsshow()" >
+     <span style="margin-right:10%;"><img src=" {!URLFOR($Resource.createevents,'createevents/images/addtag.png')}" width="18px" height="18px" style="margin-right:2%; margin-bottom:-3px;"/>Add Tags</span>
+    </div>
+    <table id="addtagtext" border="0" width="95%" style="margin:0px auto; margin-top:5px; margin-bottom:5px; display:none;">
+    <tbody>
+        <tr>
+      <!--<td style="text-align:left">Tag Name</td>-->
+      <td><input id="addtextlabel" type="text" name="addtagtext" placeholder="" style="width:80%;"/></td>
+      <td>
+       <div class="buttonHolder">   
+    <input class="button-a blue"  type="button" name="submit" value="Save" onclick="" id="btn_s" />
+    <!--<input class="button-a blue"  value="clear" type="button" id="btn_i">--> 
+  </div></td>
+      <!--<td><input type="checkbox" name="check"></td>-->
+    
+    </tr>
+    
+  </tbody></table>
+  </div>
+ 
+ 
+             <!-------------------------------------------------------->
+          </div><!--close of addtagsdiv-->
+           
+           <div id="managetagbtn" onclick="Alert.render()"  style="width:100%; cursor:pointer; text-align:center; background-color:#F7F7F7; padding:5px 0px; font-size:18px; font-family:cuprum; color:#5283cc;">
+           
+           <img src=" {!URLFOR($Resource.createevents,'createevents/images/manage.png')}" width="20px" height="20px" style="margin-right:2%; margin-bottom:-3px;"/>Manage Tags
+           
+           </div><!--close of managetagbutton-->
+          
+          <!--------------------------------------------------------------------->
+            </div><!--close of tagcontentblock-->
+          
+          </div><!--close of tagwrapper-->
+                        <!--End of tags--->
+                     
+                      <div class="elem" style="margin-top:25px;">
+                        <label>Ticket Description:</label>
+                        <div class="indent">
+                          <textarea class="medium" id="tdesc" name="tdesc" rows="5" style="width:75%"></textarea>
+                        </div>
+                      </div>
+                       <div class="elem">
+                        <label>Ticket Image:</label>
+                        <div class="indent">
+                          <div>
+<input type="file" id="ticketlogo" onchange="checkticketlogo()" accept="image/jpeg,image/png" style="width:95px;color:transparent;"/>
+<img  width="50" height="50" id="savedticketimage"/>
+                          </div>
+                        </div>
+                      </div>
+                        
+                        <div class="elem">
+                        <label> Badge Label:</label>
+                        <div class="indent">
+                          <input type="text" id="tbdglabel" value=""/>
+                        </div>
+                      </div>
+                      <!------------------------------------->
+                       <br/>
+                       </div> <!--close of right-form-->
+                    <script>
+                 var ticketlogourl='';
+function showet()
+{
+
+$(".dynamic3").find("tr:gt(0)").remove();
+var appendTxt = "<tr><td><input type='text' id='one' name='input_box_one[]' placeholder='' value='"+earlybudname+" Early'/></td><td>  <input type='text' style='width:75%' class='datetimepickers' value='"+new Date().today()+" " + new Date().timeNow()+"'/></td><td><input type='text' style='width:75%' class='datetimepickers' id='elate1'/></td><td><input type='text' id='three' name='input_box_three[]'  value='"+earlybudqty+"'/></td><td><input type='text' id='three' name='input_box_three[]' value='{!itemdefaultminqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  value='{!itemdefaultmaxqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  value='"+earlybudprice+"'/></td><td id='regticket' style='display:none;'><input type='button' class='del2' title='Delete Ticket' value='' /></td></tr>";
+appendTxt += "<tr><td><input type='text' id='one' name='input_box_one[]' placeholder='' value='"+earlybudname+" Regular'/></td><td>  <input type='text' style='width:75%' class='datetimepickers' id='estart2'/></td><td><input type='text' style='width:75%' class='datetimepickers' id='elate2'/></td><td><input type='text' id='three' name='input_box_three[]'  /></td><td><input type='text' id='three' name='input_box_three[]' value='{!itemdefaultminqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  value='{!itemdefaultmaxqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  /></td><td id='regticket' style='display:none;'><input type='button' class='del2' title='Delete Ticket' value='' /></td></tr>";
+appendTxt += "<tr><td><input type='text' id='one' name='input_box_one[]' placeholder='' value='"+earlybudname+" Late'/></td><td>  <input type='text' style='width:75%' class='datetimepickers' id='estart3'/></td><td><input type='text' style='width:75%' class='datetimepickers' value='"+defaultendtime+"'/></td><td><input type='text' id='three' name='input_box_three[]'  /></td><td><input type='text' id='three' name='input_box_three[]' value='{!itemdefaultminqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  value='{!itemdefaultmaxqty}'/></td><td><input type='text' id='three' name='input_box_three[]' /></td><td id='regticket' style='display:none;'><input type='button' class='del2' title='Delete Ticket' value='' /></td></tr>";
+$(".dynamic3 tbody").append(appendTxt);
+try{
+document.getElementById('elate1').onchange=function(){document.getElementById('estart2').value=document.getElementById('elate1').value};
+document.getElementById('estart2').onchange=function(){document.getElementById('elate1').value=document.getElementById('estart2').value};
+document.getElementById('elate2').onchange=function(){document.getElementById('estart3').value=document.getElementById('elate2').value};
+document.getElementById('estart3').onchange=function(){document.getElementById('elate2').value=document.getElementById('estart3').value};
+}catch(e){}
+var tmtable = document.getElementById("mytab1");
+       for (var p = 1,row; row = tmtable.rows[p]; p++) {
+        if(document.querySelector('input[name="payradio"]:checked').value=='Free'){
+       row.cells[6].children[0].value=0;
+       row.cells[6].children[0].disabled="disabled";
+       }
+       else{
+       row.cells[6].children[0].disabled=false;
+       }
+       }
+//document.getElementById("earlybirdbuttons").style.backgroundImage="none";
+//document.getElementById("earlybirdbuttons").style.border="none";
+//document.getElementById("earlybirdbuttons").style.outline="none";
+document.getElementById("earlybirdtickpric").style.display="";
+}
+            
+ </script>
+                    
+                    <div style="clear:both;"></div>
+      <!--------------------------->
+                      <div style="float:left; margin-bottom:10px;width:100%">
+         <button id="earlybirdbuttons" class="button-a blue" onClick="showet()"  style="float:left">Early Bird Tickets</button>
+         <div id="earlybirdtickpric" style="float: right; padding: 5px; border-radius: 3px; background-color: rgb(238, 238, 238);display:none">
+              
+              <table border="0">
+  <tbody><tr>
+    <td>Early Bird Ticket Pricing Display :</td>
+    <td>   <input type="checkbox" style="outline:none;" checked="checked" value="" id="ebudprcflag"/></td>
+  </tr>
+</tbody></table>
+
+                     </div>
+         
+               </div>
+                   
+          <!-------------------------------------------------->
+  
+                   <table class="display dynamic3" id="mytab1" style="width:100%; margin:0px auto; display:;">
+            <thead>
+              <tr>
+                <th width="27%" style="padding:3px 0px 3px 2px; font-size:13px; text-indent:8px;">Ticket Name</th>
+                <th width="15%" style="padding:3px 0px 3px 2px;font-size:13px;text-indent:8px;">Sale Start Date</th>
+                <th width="15%" style="padding:3px 0px 3px 2px;font-size:13px;text-indent:8px;">Sale End Date</th>
+                  <th width="11%" style="padding:3px 0px 3px 2px;font-size:13px;text-indent:8px;">Qty</th>
+                  <th width="10%" style="padding:3px 0px 3px 2px;font-size:13px;;text-indent:0px;">Order Min-Qty</th>
+                  <th width="10%" style="padding:3px 0px 3px 2px;font-size:13px;text-indent:0px;">Order Max-Qty</th>
+                <th width="13%" style="padding:3px 0px 3px 2px;font-size:13px;text-indent:8px;">Price</th>
+               
+                <th id="regth" width="" style="display:none;"></th>
+              </tr>
+            </thead>
+            
+            <tbody>
+          </tbody></table> 
+          
+       
+                   
+                    <div class="indent" style="float:right; margin-top:10px; margin-right:10px;"> 
+   
+                        <button class="button-a blue" onclick="saveticketalert()" >Apply</button>
+                        <script>
+                        function saveticketalert()
+                        {
+                          var table = document.getElementById("mytab1");
+                                 for (var i = 1, row; row = table.rows[i]; i++) {
+                                 try{
+                                 var endTime = new Date(defaultendtime);
+                                 var tendTime = new Date(row.cells[2].children[0].value);
+                      if( tendTime>endTime){
+                             alert('Ticket End date cannot be greater than Event End date');
+                             return;
+                            }
+                      }catch(e){alert(e);}
+                                 try{
+                      var tstartTime = new Date(row.cells[1].children[0].value);
+                      var tendTime = new Date(row.cells[2].children[0].value);
+                      if( tstartTime > tendTime){
+                             alert('Start date cannot be greater than End date');
+                             return;
+                            }
+                      }catch(e){alert(e);}
+                      
+                      if(Number(row.cells[5].children[0].value)>Number(row.cells[3].children[0].value))
+                      {
+                        
+                        alert('Order Max-Qty cannot be greater than actual quanity');
+                        return;
+                       
+                        
+                      }
+                      if(Number(row.cells[4].children[0].value)>Number(row.cells[3].children[0].value))
+                      {
+                        
+                        alert('Order Min-Qty cannot be greater than actual quanity');
+                        return;
+                       
+                        
+                      }
+                      if(Number(row.cells[4].children[0].value)>Number(row.cells[5].children[0].value))
+                      {
+                        
+                        alert('Order Min-Qty cannot be greater than Order Max-Qty');
+                        return;
+                       
+                        
+                      }
+                      if(Number(row.cells[4].children[0].value)<0)
+                      {
+                        
+                        alert('Order Min-Qty cannot be less than zero');
+                        return;
+                       
+                        
+                      }
+                 
+                                 }
+                           if(tckcontents=='')
+                           {
+                              getAll();
+                              ticketlogourl='';
+                           }
+                           else{
+                           saveTicketLogo(tckcontents);
+                           document.getElementById('ticketloader').style.display='';}
+                           Alert3.Cancel();
+                           return false;
+                        }
+                        </script>
+                        &nbsp;&nbsp;
+                        <button class="button-a dark-blue" onclick="Alert3.Cancel()" >Cancel</button>
+                      </div>
+                        <apex:form >
+      <apex:actionfunction name="saveTicketLogo" action="{!saveEventLogo}" rerender="reRenderedPanelToSetTicketVariable" oncomplete="getAll();document.getElementById('ticketloader').style.display='none';">
+      <apex:param name="imageData" value="" assignTo="{!imageData}"/>
+</apex:actionfunction></apex:form>
+<apex:outputPanel id="reRenderedPanelToSetTicketVariable">
+   <script type="text/javascript">
+       
+      ticketlogourl= "{!eventlogourl}";
+      
+   </script>
+</apex:outputPanel>
+                      <script>
+                     var tckcontents='';
+                     function checkticketlogo()
+                     {
+                          
+                             var oFReader = new FileReader();
+                     var f = document.getElementById("ticketlogo").files[0];
+          
+
+           if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+      tckcontents = e.target.result.split(',')[1];
+       document.getElementById('savedticketimage').src=e.target.result;
+                 
+      }
+      r.readAsDataURL(f);
+     
+    } else { 
+      alert("Failed to load file");
+    }
+    
+                     }
+                      
+                     function getAll()
+                     {
+                        
+                                                 
+                        for(var pi=0;pi<ticketlist.length;pi++) 
+                        {
+                             if(ticketlist[pi].trowid==parentrowindex)
+                             {
+                                  //set the grouptickets array to null
+                                 if(ticketlist[pi].grouptickets.length==0)
+                                   ticketlist[pi].grouptickets=[];
+                                   
+                                 //Get the inner table values
+                                 var table = document.getElementById("mytab1");
+                                 for (var i = 1, row,nhiderow=0,totqty=0,totprice=0; row = table.rows[i]; i++) {
+                                 if(row.style.display!='none'){
+                       if(ticketlist[pi].grouptickets[nhiderow]==undefined)
+                        ticketlist[pi].grouptickets.push({itemid:"",tname:"",sdate:"",edate:"",qty:"",minqty:"",maxqty:"",tprice:"",availabletickets:""})
+                        ticketlist[pi].grouptickets[nhiderow].tname=row.cells[0].children[0].value;
+                        ticketlist[pi].grouptickets[nhiderow].sdate=row.cells[1].children[0].value;
+                        ticketlist[pi].grouptickets[nhiderow].edate=row.cells[2].children[0].value;
+                        ticketlist[pi].grouptickets[nhiderow].qty=row.cells[3].children[0].value;
+                        ticketlist[pi].grouptickets[nhiderow].minqty=row.cells[4].children[0].value;
+                        ticketlist[pi].grouptickets[nhiderow].maxqty=row.cells[5].children[0].value;
+                        if(Number(ticketlist[pi].grouptickets[nhiderow].maxqty)>Number(ticketlist[pi].grouptickets[nhiderow].qty))
+                        ticketlist[pi].grouptickets[nhiderow].maxqty=ticketlist[pi].grouptickets[nhiderow].qty;
+                        ticketlist[pi].grouptickets[nhiderow].tprice=row.cells[6].children[0].value;
+                        totqty+=Number(row.cells[3].children[0].value);
+                        totprice+=Number(row.cells[6].children[0].value);
+                        nhiderow++;
+                        }
+                             }
+                             
+                             ticketlist[pi].ticketcount=nhiderow;
+                              ticketlist[pi].itemtype=document.getElementById('itemtype').value;
+                             ticketlist[pi].ispackage="false";
+                             if(ticketlist[pi].grouptickets.length==1)
+                             document.getElementById('tminfoname').value=ticketlist[pi].grouptickets[0].tname;
+                             
+                             document.getElementById("tickettable").rows[parentrowindex].cells[2].children[0].value=totqty;
+                             if(ticketlist[pi].ticketcount>1)
+                             document.getElementById("tickettable").rows[parentrowindex].cells[3].children[0].value='Group Tickets';
+                             else
+                             document.getElementById("tickettable").rows[parentrowindex].cells[3].children[0].value=totprice;
+                             try{
+                             document.getElementById("tickettable").rows[parentrowindex].cells[0].children[1].value=document.getElementById('tminfoname').value;}catch(e){}
+                             document.getElementById("tickettable").rows[parentrowindex].cells[1].children[0].value=document.querySelector('input[name="payradio"]:checked').value;
+                            
+                             ticketlist[pi].tvisib=$('#tvisib').attr('checked');
+                             ticketlist[pi].taxrateflag=$('#ttaxrate').attr('checked');
+                             ticketlist[pi].tebudprcflag=$('#ebudprcflag').attr('checked');
+                             if(ticketlist[pi].grouptickets.length==1){
+                             
+                             ticketlist[pi].tebudprcflag=true;
+                             }
+                             ticketlist[pi].tdesc=document.getElementById('tdesc').value;
+                             ticketlist[pi].tbdglabel=document.getElementById('tbdglabel').value;
+                              Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.getbadgeinfo}',
+            ticketlist[pi].itemtype,
+            pi,
+           function(result, event){
+            ticketlist[result.arrindex].tbadgable=result.badgable;
+             });
+                             
+
+  if(ticketlogourl!=''){
+  ticketlist[pi].tcketlogo=ticketlogourl;
+  tckcontents='';
+  ticketlogourl='';
+  }
+                             //
+                             
+                             //set the tags array to null
+                                   
+                                  ticketlist[pi].tags=[];
+                             //code for adding tags
+                             var testimonialElements = $(".results");
+                             
+                             for(var f=0,tgindex=0; f<testimonialElements.length; f++){
+                                  
+                                  var element = testimonialElements.eq(f);
+                                  if(element[0].children[0].children[0].children[0].children[0].checked){
+                                  ticketlist[pi].tags.push({tagname:""});
+                                  ticketlist[pi].tags[tgindex].tagname=getKeyByValue(TagMap,element[0].children[0].children[0].children[1].innerHTML);
+                                  tgindex++;
+                                  }
+                                  }
+                             //end of tags
+                            
+                        }
+                        }
+                         
+                      
+                     
+                    }
+                     </script>
+                      
+                    <!----dynamic table for tickets on the popup---->
+                       
+          <!------------------------------end of dynamic table------------>
+                    <div class="clear"> </div>
+                  </div><!--close of form-->
+                   <!------------------->
+                <div class="clear"> </div>
+                </div><!--close of contentgrid-->
+             
+           </div><!--close of grid-1-->
+           
+            </div><!--close of dialogbox3-->
+            
+            
+         <style>
+     #blprodlink{background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(253,253,253,1)), color-stop(100%,rgba(227,227,227,1)));
+background: -webkit-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: -o-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: -ms-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#e3e3e3',GradientType=0 );
+border: 1px solid #e3e3e3;
+padding:5px; border-radius:3px; color:#3895ba; font-size:12px;}
+
+ #blprodlink:hover{ text-decoration:none;}
+ 
+ .pkgbttn{background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(253,253,253,1)), color-stop(100%,rgba(227,227,227,1)));
+background: -webkit-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: -o-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: -ms-linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+background: linear-gradient(top, rgba(253,253,253,1) 0%,rgba(227,227,227,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#e3e3e3',GradientType=0 );
+border: 1px solid #e3e3e3;
+padding:5px; border-radius:3px; color:#3895ba; font-size:12px; cursor:pointer; float:right; margin-bottom:10px; margin-top:-5px; margin-right:10px;}
+ 
+ #boothleadsprodcontents table{ border-collapse:collapse; margin-left:1%;border: 1px solid #e3e3e3; margin-top:-3px;}
+   #boothleadsprodcontents table tr td{ padding:0px 3px; border:none;}  
+   #boothleadsprodcontents table tr{  border:none;}   
+       </style>
+       <style>
+#tagwrapperpk {
+width:20%; height:auto; background-color:#ffffff; margin-left:13%; border-radius:3px; position:absolute;margin-top: -2px;
+}
+#tagtitleblockpk{
+width:100%; border:1px solid #D0D0D0; height:auto; border-radius:3px; padding:5px 0px;background: url({!URLFOR($Resource.createevents,'createevents/images/ul_playlist_li.png')} ) repeat-x center bottom #F5F5F5;
+}
+#tagtitleblockpk p{
+font-size:13px; color: #424242; text-align:center;
+}
+
+#addtagsdiv{width:100%; height:auto; padding-bottom:0px; background-color:#ffffff; padding-top:5px;}
+/* Styles for results table */
+.resultspk {
+/* width: 600px;*/
+width:95%;
+margin:0px auto;
+margin-top: 0px;
+text-align:left;
+border: 0px solid #999;
+padding:3px;
+display:block; margin-bottom:5px;
+background-color:#F5F5F5;
+overflow:hidden;
+}
+
+.resultspk td{ padding:0px 2px;}
+
+</style>         
+<!--------------------------------close of more ticket info popup------------->
+<!------------------------------package Moreinfo popup------------->
+        <div id="dialogoverlay2"></div>
+            <div id="dialogbox4">
+          <a  id="close" onclick="Alert4.Cancel()">×</a>
+          
+
+<!---tmore package info popup------------->
+          
+          
+          <div id="morepackageinfo">
+                     <div class="grid-1" style="text-align:left;"  >
+                <div class="title-grid">Create Package</div>
+                <div class="content-gird">
+                  <div class="form">
+                    <div id="left-form" style=" width:49%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:left">
+                   
+                    
+                   
+                      <div class="elem">
+                        <label>Package Name: </label>
+                        <label id="mandatory">*</label>
+                        <div class="indent">
+                          <input type="text"  id="pminfoname" name="pminfoname" class="medium"/>
+                        </div>
+                      </div>
+                       <div class="elem">
+                        <label>Package Type: </label>
+                        <label id="mandatory">*</label>
+                        <div class="indent">
+                        <apex:repeat value="{!paymentSelectOptions}" var="paytype">
+                        <input type="radio" onchange="validfreepack()"  style="outline:none;" checked="checked" name="pkgpayradio" value="{!paytype.value}"/><span style="margin-left:5px; ">{!paytype.label}</span><br/>
+                        </apex:repeat>
+                        <script>
+                        function validfreepack()
+                        {
+                            var pmtable = document.getElementById("packagemoreinfotable");
+       for (var p = 1,row; row = pmtable.rows[p]; p++) {
+        if(document.querySelector('input[name="pkgpayradio"]:checked').value=='Free'){
+       row.cells[6].children[0].value=0;
+       row.cells[6].children[0].disabled="disabled";
+       }
+       else{
+       row.cells[6].children[0].disabled=false;
+       }
+       }
+       
+                        }
+                        </script>
+                        </div>
+                      </div>
+                      
+                     <div class="elem">
+                        <label>Ticket Type:</label>
+                        <div class="indent">
+                          <select class="selectlist" style=" width:76%;" id="pkitemtype">
+                          
+                            <apex:repeat value="{!itemtypespackage}" var="ittype">
+                            <option value="{!ittype.value}">{!ittype.label}
+                            </option>
+                            </apex:repeat>
+                            
+                            
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <div class="elem">
+                        <label>Package visibility: </label>
+                         <div class="indent" style="margin-top:5px;">
+                       <input type="checkbox"  id="pkvisib" value="" />
+                      </div>
+                      </div>
+                     <div class="elem">
+                        <label for="ch_effects">Tax Rate: </label>
+                        
+                     
+                        <div class="indent">
+                        <input type="checkbox"  style="outline:none;" id="ptaxrate" value="" />
+                        </div>
+             
+                                   
+                      </div>
+         
+                     
+                    </div>
+                    <!--close of left-form-->
+                    
+                    <div class="right-form"  style=" width:49%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:right">
+                      <!---------------------PACKAGE TAGS------>
+                   <div style="float:left;">Tags:</div>
+                   <div id="tagwrapperpk" style="">
+                       
+                       <div id="tagtitleblockpk" onclick="showet2()" style="">
+                       
+                       <p style=""><span><img src="{!URLFOR($Resource.createevents,'createevents/images/check_black.png')}" style="margin-right:5%;"/></span>Tags</p>
+                       </div><!--close of tagtitleblock1-->
+         
+          <div id="tagcontentblockpk" style="display:none;width: 100%; height: auto; z-index: 999999; border-width: 0px 1px 1px; border-right-style: solid; border-bottom-style: solid; border-left-style: solid; border-right-color: rgb(208, 208, 208); border-bottom-color: rgb(208, 208, 208); border-left-color: rgb(208, 208, 208); position: relative; background-color: rgb(255, 255, 255);">
+          
+          
+          <div id="addtagsdivpk" style="">
+          
+           <!----------------------------------------------------->
+            <div id="abcpk" style="width:100%; padding-top:5px;">
+
+
+</div>
+
+<!--script for add tags flag------------------->
+                    
+                <script>
+                  var flagexppp=0;
+                function showet2(){
+                if(flagexppp==0)
+                        { 
+                        flagexppp=1;
+                        /*alert("block");*/
+                            document.getElementById("tagcontentblockpk").style.display="";
+                            
+                        }
+                        else if (flagexppp==1)
+                        {
+                            /*alert("hide");*/
+                            flagexppp=0;
+                            document.getElementById("tagcontentblockpk").style.display="none";
+                             
+                        
+                        }
+                        
+            }
+            
+        
+                
+                </script>    
+                   <!--------close of script---------------> 
+                    <script type="text/javascript">//<![CDATA[ 
+$(window).load(function(){
+$(function() {
+   $('#btn_spk').click(function(e) {
+     e.preventDefault();
+     var name  = $('input[name="addtagtextpk"]').val()
+if(name !==''){
+       Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_ReUse_EventsEditCon.createEventTag}',
+            '{!eventids}',
+            name,
+           function(result, event){
+            if (event.status){
+            if(result!=''){
+       $('#abcpk').append('<table class="resultspk">'
+                         +'<tr>' 
+                          +'<td>'+'<input type="checkbox" />'+'</td>'
+                            +'<td>'+name+'</td>'
+                            
+                           +'</tr>'
+                       + '</table>');
+                       
+                    $('#addtextlabelpk').val(''); //clearing textbox value
+                     $('#abc').append('<table class="results">'
+                         +'<tr>' 
+                          +'<td>'+'<input type="checkbox" />'+'</td>'
+                            +'<td>'+name+'</td>'
+                            
+                           +'</tr>'
+                       + '</table>');
+                       
+                    $('#addtextlabel').val(''); //clearing textbox value
+                     TagMap[result] = name;
+                    console.log(TagMap);
+                    }
+                    else
+                    {
+                       alert('Duplicate value');
+                    }
+            }
+           });
+
+ //  }
+    }
+   }
+    );
+    $('#btn_ipk').click(function() {
+      $('.resultspk').remove();  
+    });
+});
+});//]]>  
+
+
+ function addtagsshow2(){
+     document.getElementById("addtagtextpk").style.display="";
+     document.getElementById("addtagsshowpk").style.display="none";
+     
+     }
+</script>
+                    <!------------------------->
+
+
+  <!--------------------------------------->
+  <div style="display:block; border-top: 1px #E5E5E5 solid;border-bottom: 1px #E5E5E5 solid; background-color:#F7F7F7; text-align:center;font-size:18px; font-family:cuprum; color:#5283cc;" class="inactive">
+    <div id="addtagsshowpk" onclick="addtagsshow2()" style="padding-top: 1px; display: none;">
+     <span style="margin-right:10%;"><img src="images/addtag.png" width="18px" height="18px" style="margin-right:2%; margin-bottom:-3px;"/>Add Tags</span>
+    </div>
+    <table id="addtagtextpk" border="0" width="95%" style="margin: 5px auto;">
+    <tbody>
+        <tr>
+      <!--<td style="text-align:left">Tag Name</td>-->
+      <td><input id="addtextlabelpk" type="text" name="addtagtextpk" placeholder="" style="width:80%;"/></td>
+      <td>
+       <div class="buttonHolder">   
+    <input class="button-a blue" type="button" name="submit" value="Save" onclick="" id="btn_spk"/>
+    <!--<input class="button-a blue"  value="clear" type="button" id="btn_i">--> 
+  </div></td>
+      <!--<td><input type="checkbox" name="check"></td>-->
+    
+    </tr>
+    
+  </tbody></table>
+  </div>
+ 
+ 
+             <!-------------------------------------------------------->
+          </div><!--close of addtagsdiv-->
+           
+           <div id="managetagbtn1" onclick="Alert.render()" style="width:100%; cursor:pointer; text-align:center; background-color:#F7F7F7; padding:5px 0px; font-size:18px; font-family:cuprum; color:#5283cc;">
+           
+           <img src="{!URLFOR($Resource.createevents,'createevents/images/manage.png')}" width="20px" height="20px" style="margin-right:2%; margin-bottom:-3px;"/>Manage Tags
+           
+           </div><!--close of managetagbutton-->
+          
+          <!--------------------------------------------------------------------->
+            </div><!--close of tagcontentblock-->
+          
+          </div>
+                   <!--END OF PACKAGE TAGS-->
+                      
+                        
+                      <div class="elem">
+                        <label>Package Description:</label>
+                        <div class="indent">
+                          <textarea class="medium" id="pkdesc" name="pkdesc" rows="5" style="width:75%"></textarea>
+                        </div>
+                      </div>
+                       <div class="elem">
+                        <label>Package Image:</label>
+                        <div class="indent">
+                          <div>
+                             <input type="file" id="pklogo" onchange="checkpackagelogo()" accept="image/jpeg,image/png" style="width:95px;color:transparent;"/>
+                              <img  width="50" height="50" id="savedpackageimage" />
+                          </div>
+                        </div>
+                      </div>
+                      <br/>
+                   
+                    </div> <!--close of right-form-->
+                     <script>
+                 
+function showetpck()
+{
+
+$(".dynamic4").find("tr:gt(0)").remove();
+var appendTxt = "<tr><td><input type='text' id='one' name='input_box_one[]' value='"+earlybudname+" Early'/></td> <td><input type='text' style='width:75%' class='datetimepickers' value='"+new Date().today()+" " + new Date().timeNow()+"'/></td><td><input type='text' style='width:75%' class='datetimepickers' id='elate1pck' /></td><td><input type='text' id='three' name='input_box_three[]' value='"+earlybudqty+"'/></td><td><input type='text' id='three' name='input_box_three[]' value='{!itemdefaultminqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  value='{!itemdefaultmaxqty}'/></td><td><input type='text' id='three' name='input_box_three[]' value='"+earlybudprice+"'/></td></tr>";
+appendTxt += "<tr><td><input type='text' id='one' name='input_box_one[]' value='"+earlybudname+" Regular'/></td> <td><input type='text' style='width:75%' class='datetimepickers' id='estart2pck'/></td><td><input type='text' style='width:75%' class='datetimepickers'  id='elate2pck'/></td><td><input type='text' id='three' name='input_box_three[]' value=''/></td><td><input type='text' id='three' name='input_box_three[]' value='{!itemdefaultminqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  value='{!itemdefaultmaxqty}'/></td><td><input type='text' id='three' name='input_box_three[]' value=''/></td></tr>";
+appendTxt += "<tr><td><input type='text' id='one' name='input_box_one[]' value='"+earlybudname+" Late'/></td> <td><input type='text' style='width:75%' class='datetimepickers' id='estart3pck'/></td><td><input type='text' style='width:75%' class='datetimepickers'  value='"+defaultendtime+"'/></td><td><input type='text' id='three' name='input_box_three[]' value=''/></td><td><input type='text' id='three' name='input_box_three[]' value='{!itemdefaultminqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  value='{!itemdefaultmaxqty}'/></td><td><input type='text' id='three' name='input_box_three[]' value=''/></td></tr>";
+$(".dynamic4 tbody").append(appendTxt);
+try{
+document.getElementById('elate1pck').onchange=function(){document.getElementById('estart2pck').value=document.getElementById('elate1pck').value};
+document.getElementById('estart2pck').onchange=function(){document.getElementById('elate1pck').value=document.getElementById('estart2pck').value};
+document.getElementById('elate2pck').onchange=function(){document.getElementById('estart3pck').value=document.getElementById('elate2pck').value};
+document.getElementById('estart3pck').onchange=function(){document.getElementById('elate2pck').value=document.getElementById('estart3pck').value};
+}catch(e){}
+
+/*document.getElementById("optionspck").style.display="";
+document.getElementById("options1pck").style.display="";
+document.getElementById("regpck").style.display="";
+document.getElementById("regtdpck").style.display="";
+document.getElementById("earlybirdbuttons1").style.backgroundImage="none";
+document.getElementById("earlybirdbuttons1").style.border="none";
+document.getElementById("earlybirdbuttons1").style.outline="none";*/
+document.getElementById("earlybirdpackkpric").style.display="";
+
+}
+            
+ </script> 
+ <div style="clear:both;"></div>
+                    <div style="float:left; margin-bottom:10px;width:100%">
+         <button id="earlybirdbuttons1" class="button-a blue" onclick="showetpck()" style="float:left">Early Bird Package</button>
+         <div id="earlybirdpackkpric" style="float: right; padding: 5px; border-radius: 3px; background-color: rgb(238, 238, 238);display:none">
+              
+              <table border="0">
+  <tbody><tr>
+    <td>Early Bird Package Pricing Display :</td>
+    <td>   <input type="checkbox" style="outline:none;" checked="checked" value="" id="pebudprcflag"/></td>
+  </tr>
+</tbody></table>
+
+                     </div>
+               </div>
+                    
+                     <table class="display dynamic4" id="packagemoreinfotable" style="width:100%; margin:0px auto;">
+            <thead>
+              <tr>
+                <th width="28%" style="padding:3px 0px 3px 2px; text-indent:5px;">Package Item Name</th>
+                <th width="15%" style="padding:3px 0px 3px 2px;text-indent:5px;">Start Date</th>
+                <th width="15%" style="padding:3px 0px 3px 2px;text-indent:5px;">End Date</th>
+                  <th width="11%" style="padding:3px 0px 3px 2px;text-indent:5px;">Qty</th>
+               <th width="10%" style="padding:3px 0px 3px 2px;font-size:13px;;text-indent:0px;">Order Min-Qty</th>
+                  <th width="10%" style="padding:3px 0px 3px 2px;font-size:13px;text-indent:0px;">Order Max-Qty</th>
+                 <th width="15%" style="padding:3px 0px 3px 2px;text-indent:5px;">Price</th>
+                 <!--<th id="regpck" width="" ><input type='button' class='add3' value='' /></th>-->
+              </tr>
+            </thead>
+            <tbody>
+                 
+                       
+            
+            
+          </tbody></table>
+        
+                <div class="indent" style="float:right; margin-top:10px; margin-right:10px;"> 
+   
+                        <button class="button-a blue" onclick="calpackagegrouptotal()">Apply</button>
+                        <button class="button-a dark-blue" onclick="cancelpackagegrouptotal()">Cancel</button>
+                        <script>
+                        function cancelpackagegrouptotal()
+                        {
+                           var rowindex;
+      if(isnewpackage=="true")
+       rowindex=$(".dynamic tr:last").index()+1;
+        else
+       rowindex=parentrowindex-1;
+       var appendTxt='';
+       var totprice=0,totqty=0;
+       for(var j=0,count=0;j<ticketlist[rowindex].ticketcount;j++)
+           {
+             
+          appendTxt += "<tr><td><input type='text' id='one' name='input_box_one[]' value='"+escape(ticketlist[rowindex].grouptickets[j].tname)+"'/></td> <td><input type='text' style='width:75%' class='datetimepickers' value='"+ticketlist[rowindex].grouptickets[j].sdate+"'/></td><td><input type='text' style='width:75%' class='datetimepickers'  value='"+ticketlist[rowindex].grouptickets[j].edate+"'/></td><td><input type='text' id='three' name='input_box_three[]' value='"+ticketlist[rowindex].grouptickets[j].qty+"'/></td><td><input type='text' id='three' name='input_box_three[]' value='"+ticketlist[rowindex].grouptickets[j].minqty+"'/></td><td><input type='text' id='three' name='input_box_three[]'  value='"+ticketlist[rowindex].grouptickets[j].maxqty+"'/></td><td><input type='text' id='three' name='input_box_three[]' value='"+document.getElementById('packageprice').value+"'/></td></tr>";
+           totqty+=Number(ticketlist[rowindex].grouptickets[j].qty);
+              totprice+=Number(ticketlist[rowindex].grouptickets[j].tprice);
+              count++;
+           }
+           if(appendTxt!=''){
+           $(".dynamic4").find("tr:gt(0)").remove();
+      $(".dynamic4 tbody").append(appendTxt);}
+      else
+      {
+           var datetime =new Date().today()+" " + new Date().timeNow();
+     var txt= "<tr><td><input type='text' id='one' name='input_box_one[]' value='"+escape(earlybudname)+"'/></td> <td><input type='text' style='width:75%' class='datetimepickers' value='"+datetime+"'/></td><td><input type='text' style='width:75%' class='datetimepickers'  value='"+defaultendtime+"'/></td><td><input type='text' id='three' name='input_box_three[]' value='"+earlybudqty+"'/></td><td><input type='text' id='three' name='input_box_three[]' value='{!itemdefaultminqty}'/></td><td><input type='text' id='three' name='input_box_three[]'  value='{!itemdefaultmaxqty}'/></td><td><input type='text' id='three' name='input_box_three[]' value='"+earlybudprice+"'/></td></tr>";
+      $(".dynamic4").find("tr:gt(0)").remove();
+      $(".dynamic4 tbody").append(txt);
+      }
+      
+      if(appendTxt!=''){
+       if(count>1)
+                             document.getElementById('packageprice').value='Group Packages';
+                             else
+                             document.getElementById('packageprice').value=totprice;
+               document.getElementById('packageqty').value=totqty;
+               }
+       Alert4.Cancel();
+                        }
+                        function calpackagegrouptotal()
+                        {
+                             var table = document.getElementById("packagemoreinfotable");
+                             
+                             var totprice=0,totqty=0;
+                             for (var i = 1, row,nhiderow=0; row = table.rows[i]; i++) {
+       
+        if(row.style.display!='none'){
+              totqty+=Number(row.cells[3].children[0].value);
+              totprice+=Number(row.cells[6].children[0].value);
+              try{
+                                 var endTime = new Date(defaultendtime);
+                                 var tendTime = new Date(row.cells[2].children[0].value);
+                      if( tendTime>endTime){
+                             alert('Package End date cannot be greater than Event End date');
+                             return;
+                            }
+                      }catch(e){alert(e);}
+              try{
+                      var pstartTime = new Date(row.cells[1].children[0].value);
+                      var pendTime = new Date(row.cells[2].children[0].value);
+                      if( pstartTime > pendTime){
+                             alert('Start date cannot be greater than End date');
+                             return;
+                            }
+                      }catch(e){alert(e);}
+                      
+                      if(Number(row.cells[5].children[0].value)>Number(row.cells[3].children[0].value))
+                      {
+                        
+                        alert('Order Max-Qty cannot be greater than actual quanity');
+                        return;
+                       
+                        
+                      }
+                      if(Number(row.cells[4].children[0].value)>Number(row.cells[3].children[0].value))
+                      {
+                        
+                        alert('Order Min-Qty cannot be greater than actual quanity');
+                        return;
+                       
+                        
+                      }
+                      if(Number(row.cells[4].children[0].value)>Number(row.cells[5].children[0].value))
+                      {
+                        
+                        alert('Order Min-Qty cannot be greater than Order Max-Qty');
+                        return;
+                       
+                        
+                      }
+                      if(Number(row.cells[4].children[0].value)<0)
+                      {
+                        
+                        alert('Order Min-Qty cannot be less than zero');
+                        return;
+                       
+                        
+                      }
+                 
+              nhiderow++;
+         }
+       }
+       if(nhiderow>1)
+                             document.getElementById('packageprice').value='Group Packages';
+                             else
+                             document.getElementById('packageprice').value=totprice;
+               document.getElementById('packageqty').value=totqty;
+        Alert4.Cancel();
+                        }
+                        </script>
+           </div>      
+                   
+                   
+                      
+                    <!----dynamic table for tickets on the popup---->
+                       
+          <!------------------------------end of dynamic table------------>
+                    <div class="clear"> </div>
+                  </div><!--close of form-->
+             
+                  <div class="clear"> </div>
+                </div><!--close of contentgrid-->
+           </div>
+            </div>
+            
+            
+            <!--close of more package info popup------------->
+          
+          </div><!--close of dialogbox4--------->
+<!---------------------------end of package moreinfo content popup------------------>
+
+          
+          <div id="package1" style="width:99%; margin:0px auto; margin-top:20px;  height:auto; display:none;"> 
+         
+          
+           <div class="grid-1" style=" width:100%; margin-left:0px;"  >
+          <div class="title-grid1" style=" border:0px solid #000;"><span></span>
+          <img src="{!URLFOR($Resource.createevents,'createevents/images/redheaderbg.png')}"  style="margin-top:-8px; 
+          margin-left:-2%;"/> <p style="color:#FFF; font-size:16px; font-family:segoe ui; margin-top:-34px;">Create Package </p>
+          
+        </div><!--close of title-grid1-->
+          
+          <div class="content-gird"  style=" border: 0px solid #e3e3e3;  padding:0px;">
+           <!----------------------Dynamic Table for Package-------------------------->
+            <table width="100%" border="0" style="border-collapse:collapse;  background-color:#F6F6F6; padding:5px; border-top: 1px solid #BDBDBD;border-bottom: 0px solid #BDBDBD; font-size:13px; color:#424242; 
+          font-family:Arial, Helvetica, sans-serif;">
+          <tr>
+          <td  style="font-size:17px; text-align:left;  text-indent:10px; color: #4f91cd;font-family:cuprum">1.</td>
+    <td width="10%" height="55px"  style="texr-indent:5px; text-align:right;">Package Name:</td>
+    <td width="20%" style="">      <input type="text"  id="packagename" name="packagename" class="medium" onKeyUp="pkgnmkeyupvalid()" onBlur="pkgnmblurvalid()"
+  style="width:78%;margin-left:10px;"/></td>
+   
+    <td width="12%" style="text-align:right;">Price:</td>
+    <td width="10%">      <input type="text"  id="packageprice" name="packageprice" class="medium" style="margin-left:10px; width:60%;" onKeyUp="pkgpricekeyupvalid()" onBlur="pkgpriceblurvalid()"
+/></td>
+     <td width="16%" height="55px" style="text-align:right;">Quantity:</td>
+    <td width="20%">      <input type="text"  id="packageqty" name="packageqty" class="medium" style="margin-left:10px;width:80%;" onKeyUp="pkgqtykeyupvalid()" onBlur="pkgqtyblurvalid()"/></td>
+
+  <td  >
+  <a onClick="Alert4.render(this.parentNode.parentNode.children[2].children[0].value,this.parentNode.parentNode.children[4].children[0].value,this.parentNode.parentNode.children[6].children[0].value)">
+  <div id="nwmoreinfodiv">
+ <apex:image url="{!URLFOR($Resource.createevents,'createevents/images/addmore.png')}" width="25px" height="25px"/>
+ </div>
+   </a>
+  <!--<a href="#" style="text-decoration:none;color: #FFF;" data-reveal-id="morepackageinfo" data-animation="none">
+   <img id="ticketinfo" src="creditcards/document_add.png" title="Add more info">
+   </a> -->
+ </td>
+  </tr>
+  
+ 
+  
+</table>
+<!--------------------------------------------------------------------------> 
+          
+          <table class="display dynamic2" id="packagetable" style="width:100%; margin:0px auto; margin-top:0px;" >
+            <thead>
+              <tr>
+                <th width="26%" style="padding:3px 0px 3px 2px; text-indent:5px;">Package Item Name</th>
+              
+                <th width="16.5%" style="padding:3px 0px 3px 2px;text-indent:5px;">Package Item Qty</th>
+                 <!-- <th width="11%" style="padding:3px 0px 3px 2px;text-indent:5px;">Price</th>-->
+                <th width="20%" style="padding:3px 0px 3px 2px;text-indent:5px;">Ticket Type</th>
+             <!--   <th width="9%" style="padding:3px 0px 3px 2px;text-indent:5px; ">More Info</th>-->
+                  <th width="20%" style="padding:3px 0px 3px 2px;text-indent:5px;">Badge label</th>
+   
+                  
+                <th width=""><a class="add1" title="Add Package Item" style="color:#807f7f; text-decoration:none;"><img src="{!URLFOR($Resource.createevents,'createevents/images/addrow.png')}" width="18" height="18" style="margin-right:5px; margin-bottom:-5px;"/>Add Package Item</a></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            
+          </table>
+          <!-------------------------------->   
+           <div style="margin-top:10px; margin-bottom:5px; text-align:right;">
+   
+                        <button class="button-a blue" onClick="pkgvalid();return false;" >Apply</button>
+                        &nbsp;&nbsp;
+                        <button class="button-a dark-blue" onClick="showclose('package1','dynamictickets')" >Cancel</button>
+               </div>
+                      
+          
+          
+          </div></div>
+          
+          </div>
+          
+           
+          <!------------------------End of create Package Div------------------------->   
+            
+
+<c:ticketdragdrop />
+</apex:component>

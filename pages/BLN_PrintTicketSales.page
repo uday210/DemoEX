@@ -1,0 +1,209 @@
+<apex:page showHeader="false" sidebar="false" controller="BLN_TicketSalesReportCon" renderAs="PDF">
+
+<apex:stylesheet value="{!URLFOR($Resource.boothscreen_pdf, 'boothscreen.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.landscape_pdf, 'landscape_pdf.css')}"/>
+
+
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+
+<!--<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ticketreport.css')}"/>-->
+
+
+ 
+         
+   
+<!-- header start renderAs="PDF"-->
+<div style=" text-align:center;" class="printpdfreportname">Tickets Report</div>
+<div>
+<c:EventDetails BLN_EventDetails="{!eventInfo}"></c:EventDetails>
+</div>
+<!-- header end -->
+
+<table id="example" class="myTable myTable-zebra myTable-horizontal display" border="0" cellspacing="0" cellpadding="0" style="margin-top:5px; width:100%;page-break-inside: avoid !important;">
+                <thead>
+                    <tr>
+                        <th>Ticket Name</th>
+                        <th>Ticket Type</th>
+                        <th>Payment Type</th>
+                        <th>Quantity</th>
+                        <th>Price ({!currencySymbol})</th>
+                        <th>Tax ({!currencySymbol})</th>
+                        <th>Fee ({!currencySymbol})</th>
+                        <th>Discount ({!currencySymbol})</th>
+                        <th>Amount ({!currencySymbol})</th>
+                    </tr>
+                </thead>
+              <!----->  
+                
+   <tbody>
+   <apex:repeat value="{!TicketsInnerList}" var="ticket">
+
+  <!----FirsRecord tr--->
+  <tr style="display:{!IF(ticket.ticketData.item_type__r.Name != 'Package' && ticket.ticketData.item_name__c != NULL && ticket.usedTickets!=0,'','none')}">
+  <td class="grptd" colspan="9" style="padding:0px;">
+ <!--------------->
+ <div class="record_wrap" style="page-break-inside: avoid !important;">
+ <table class="ticktrec_tbl"  width="100.1%" border="0" cellspacing="0" cellpadding="0" style="page-break-inside: avoid !important;">
+  <thead>
+  <tr>
+      <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!ticket.ticketData.item_name__c}</div></td>
+    <td style="width:22%;" colspan="2"><div style="page-break-inside: avoid !important;">{!ticket.ticketData.item_type__r.Name}</div></td>
+  
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!ticket.usedTickets}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"><apex:outputText rendered="{!IF(ticket.ticketData.price__c != NULL, TRUE, FALSE)}" value="{!currencySymbol} {!ticket.ticketData.price__c}"/></div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!ticket.totalTax}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!ticket.totalFee}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"> {!currencySymbol}{!ticket.totalDiscount}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"><apex:outputText value="{!currencySymbol} {0, number, ###,##0.00}">
+      <apex:param value="{!ticket.totalAmount}"/>
+    </apex:outputText></div></td>
+  </tr>
+  </thead>
+<tbody>
+  <apex:repeat value="{!ticket.paymentTypeInnerList}" var="payment">
+  <tr style="display:{!IF(ticket.ticketData.item_type__r.Name != 'Package','','none')}">
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">&nbsp;</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">&nbsp;</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!payment.paymentType.Name}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!payment.typeCount}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">&nbsp;</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!payment.typeTax}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!payment.typeFee}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"> {!currencySymbol}{!payment.typeDiscount}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">(<apex:outputText value="{!currencySymbol} {0, number, ###,##0.00}">
+    <apex:param value="{!payment.typeAmount}"/>
+    </apex:outputText>)</div></td>
+  </tr>
+  </apex:repeat>
+  </tbody>
+</table>
+ </div><!--close of record wrap-->
+  </td>
+  </tr>
+  
+  
+  
+  
+  
+  
+  
+  <tr style="display:{!IF(ticket.ticketData.item_type__r.Name == 'Package' && ticket.ticketData.item_name__c != NULL && ticket.usedTickets!=0,'','none')}">
+  <td class="grptd" colspan="9" style="padding:0px;">
+ <!--------------->
+ <div class="record_wrap" style="page-break-inside: avoid !important;">
+ <table class="ticktrec_tbl" style="width:100%" border="0" cellspacing="0" cellpadding="0">
+  <thead>
+  <tr style="display:{!IF(ticket.ticketData.item_name__c != NULL,'','none')}">
+  
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!ticket.ticketData.item_name__c}</div></td>
+    <td style="width:28%;" colspan="2"><div style="page-break-inside: avoid !important;">{!ticket.ticketData.item_type__r.Name}</div></td>
+ 
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!ticket.usedTickets}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"><apex:outputText rendered="{!IF(ticket.ticketData.price__c != NULL, TRUE, FALSE)}" value="{!currencySymbol} {!ticket.ticketData.price__c}"/></div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!ticket.totalTax}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!ticket.totalFee}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"> {!currencySymbol}{!ticket.totalDiscount}</div></td>
+    <td style=""><div style="page-break-inside: avoid !important;"><apex:outputText value="{!currencySymbol} {0, number, ###,##0.00}">
+      <apex:param value="{!ticket.totalAmount}"/>
+    </apex:outputText></div></td>
+  </tr>
+  </thead>
+<tbody>
+<!-----line items repeat---->  
+<apex:repeat value="{!ticket.itemPoolInnerList}" var="pool">
+  <tr style="display:{!IF(ticket.ticketData.item_type__r.Name=='Package' && ticket.ticketData.item_name__c == pool.poolData.Addon_Parent__r.Item_Pool_Name__c,'','none')}">
+    <td colspan="3" class="pkg_itemsrow" style="width:33%; border-right:none;"><div style="page-break-inside: avoid !important;">{!pool.poolData.Item_Pool_Name__c}</div></td>
+    
+    <td style="width:11%;" class="pkg_itemsrow"><div style="page-break-inside: avoid !important;">{!pool.poolData.Addon_Count__c}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">&nbsp;</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"/></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"/></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"/></td>
+    <td style=""><div style="page-break-inside: avoid !important;"/></td>
+  </tr>
+  </apex:repeat>
+<apex:repeat value="{!ticket.paymentTypeInnerList}" var="payment"> 
+  <tr style="display:{!IF(ticket.ticketData.item_name__c != NULL,'','none')}">
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"/></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">&nbsp;</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!payment.paymentType.Name}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!payment.typeCount}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">&nbsp;</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!payment.typeTax}</div></td>
+    <td style="width:11%;"><div style="page-break-inside: avoid !important;"> {!currencySymbol} {!payment.typeFee}</div></td>
+    <td style="width:11%;"> <div style="page-break-inside: avoid !important;">{!currencySymbol} {!payment.typeDiscount}</div></td>
+    <td style=""><div style="page-break-inside: avoid !important;">(<apex:outputText value="{!currencySymbol} {0, number, ###,##0.00}">
+  <apex:param value="{!payment.typeAmount}"/>
+</apex:outputText>)</div></td>
+  </tr>
+  </apex:repeat>
+  
+  </tbody>
+</table>
+ </div><!--close of record wrap-->
+  </td>
+  </tr>
+  
+  
+  
+  
+
+  <!-----End of FirstRecord-------> 
+  </apex:repeat>
+  
+    </tbody>
+    <tfoot>
+  <apex:repeat value="{!TicketsInnerList}" var="ticket">
+   <tr style="display:{!IF(ticket.ticketData.item_name__c == NULL,'','none')}">
+        <td colspan="3" style="border-left:1px solid #DDD; width:33%;"><div style="page-break-inside: avoid !important;"><i>Total Sales</i></div></td>
+                
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!ticket.usedTickets}</div></td>
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;"><apex:outputText rendered="{!IF(ticket.ticketData.price__c != NULL, TRUE, FALSE)}" value="{!currencySymbol} {!ticket.ticketData.price__c}"/></div></td>
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!ticket.totalTax}</div></td>
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!ticket.totalFee}</div></td>
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!ticket.totalDiscount}</div></td>
+                        <td style=""><div style="page-break-inside: avoid !important;">
+                            <apex:outputText value="{!currencySymbol} {0, number, ###,##0.00}">
+                                <apex:param value="{!ticket.totalAmount}"/>
+                            </apex:outputText> </div>
+                        </td>
+     </tr> 
+     <apex:repeat value="{!ticket.paymentTypeInnerList}" var="payment">
+     <tr style="display:{!IF(ticket.ticketData.item_name__c == NULL,'','none')}">
+        <td colspan="3" style="border-left:1px solid #DDD; width:33%;" ><div style="page-break-inside: avoid !important;">{!payment.paymentType.Name}</div></td>
+                
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!payment.typeCount}</div></td>
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;"/></td>
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;"> {!currencySymbol} {!payment.typeTax}</div></td>
+                        <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!payment.typeFee}</div></td>
+                         <td style="width:11%;"><div style="page-break-inside: avoid !important;">{!currencySymbol} {!payment.typeDiscount}</div></td>
+                        <td style=""><div style="page-break-inside: avoid !important;">(<apex:outputText value="{!currencySymbol} {0, number, ###,##0.00}">
+                          <apex:param value="{!payment.typeAmount}"/>
+                        </apex:outputText> )</div></td>
+     </tr> 
+     </apex:repeat> 
+   </apex:repeat>  
+     </tfoot>
+ </table>
+
+
+<!-- footer start
+
+<table class="myTable myTable-zebra myTable-horizontal printpdffooter" border="0" cellspacing="0" cellpadding="0" style="width:100%;">
+  <thead>
+    <tr>
+      <td style="padding:15px;">Contact Us: <a href="mailto:support@boothleads.com" class="link"> support@boothleads.com</a></td>
+      <td style="text-align:right;padding:15px;">
+      
+      <a href="http://www.eventdex.com/"><img src="https://www.boothleads.com/images/eventdex-footerlogo.png" style="max-width:50px; height:15px;"/></a>
+      
+      </td>
+       
+    </tr>
+  </thead>
+</table> -->
+
+<c:printPageFooter ></c:printPageFooter>
+<!-- footer end -->
+</apex:page>

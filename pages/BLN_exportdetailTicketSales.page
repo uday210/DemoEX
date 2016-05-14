@@ -1,0 +1,53 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_TicketSalesReportCon" contentType="application/vnd.ms-excel#TicketDetailReport.xls" readOnly="true"><apex:pageBlock >
+
+<table border="1">
+  <tr>
+    <th>Ticket Number</th>
+    <th>Ticket Name</th>
+    <th>Order ID</th>
+    <th>Ticket Type</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Email</th>
+    <th>Title</th>
+    <th>Company</th>
+    <th>Status</th>
+    <th>Sale Date</th>
+  </tr>
+ 
+  <apex:repeat value="{!ShowticketDetail}" var="ticket">
+
+      <tr>
+        <td>{!ticket.Name}</td>
+        <td>
+        <apex:outputText rendered="{!ticket.Item_Type__r.Name=='Package'}" >{!ticket.Item_pool__r.Item_Pool_Name__c} 
+                            <br/>
+                            <p class="pkg_label labeltitles" style="font-size:10px">({!ticket.Item__r.Item_Pool__r.Item_Pool_Name__c})
+        </p></apex:outputText>
+        
+        <apex:outputText rendered="{!ticket.Item_Type__r.Name!='Package'}" >{!ticket.Item_pool__r.Item_Pool_Name__c} 
+        </apex:outputText>
+        </td>                    
+        <td>{!ticket.Order__r.Name}</td>
+        <td>{!ticket.Item_type__r.Name}</td>
+        <td>{!ticket.tkt_Profile__r.First_Name__c}</td>
+        <td>{!ticket.tkt_Profile__r.Last_Name__c}</td>
+        <td>{!ticket.tkt_Profile__r.Email__c}</td>
+        <td>{!ticket.tkt_Profile__r.TKT_Job_Title__c}</td>
+        <td>{!ticket.tkt_Profile__r.TKT_Company__c}</td>
+        <td>{!ticket.Ticket_Status__c}</td>
+        <td><c:EV_FormatDt date_Timevalue="{!ticket.Order__r.CreatedDate}" t_Zone="{!se.Time_Zone__c}"></c:EV_FormatDt> 
+        <!-- <c:MFSI_FormatDateTime date_Timevalue="{!ticket.Order__r.CreatedDate}" />--></td> 
+      </tr>
+
+
+  </apex:repeat>
+ 
+</table>
+
+
+    
+
+
+</apex:pageBlock>
+</apex:page>

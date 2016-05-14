@@ -1,0 +1,564 @@
+<apex:page controller="BLN_ExhibitorScanReportCon" standardStylesheets="false" sidebar="false" showHeader="false" action="{!displayPermissions}" id="pg" apiVersion="29.0">
+   <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+   <c:DateFormatChange />
+ <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+   <!--------//end of datatable js component------------->
+   <c:ed_commonjs ></c:ed_commonjs>
+   <!------------start of popup component function------------------>
+   <c:ed_popupbox >
+   </c:ed_popupbox>
+   <!------------/close of popup component function------------------>
+   <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+   <!-----------//datatable stylescss------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+        <apex:form id="fm">
+         <!-------------------------print and export button-------------------------------------------->
+        <div class="print_export_cont">
+                <!-- <apex:commandLink styleClass="datatables_btn" id="Export_Summary"
+                    onclick="selectedIds();return false;">
+                    <span>Export Summary</span>
+                </apex:commandLink>
+                
+                <apex:commandLink styleClass="datatables_btn"
+                     onclick="printselect();return false;" target="_blank" id="Print_summary">
+                    <span>Print Summary</span>
+                </apex:commandLink>
+                <apex:commandLink styleClass="datatables_btn"
+                    onclick="selectedIds1();return false;" id="Detail_Export">
+                    <span>Detail Export</span>
+                </apex:commandLink>-->
+                
+                <nav class="togglebtnnav" style="display: inline-block;">
+                    <ul style="float: none; margin-top: 0px; margin-left: 4px;">
+                        <li id="login1">
+                            <span class="togglebtn"> 
+                           <i class="fa fa-gear">&nbsp;&nbsp;</i> <strong> Print <i class="fa fa-angle-down fa-1x"></i> </strong>
+                            </span>
+                            <ul class="login-content1">
+                                
+                                <li><a id="Print_summary" onclick="printselect();return false;" target="_new">Print Summary</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            
+                <nav class="togglebtnnav" style="display: inline-block;">
+                    <ul style="float: none; margin-top: 0px; margin-left: 4px;">
+                        <li id="login1">
+                            <span class="togglebtn"> 
+                           <i class="fa fa-gear">&nbsp;&nbsp;</i> <strong> Export <i class="fa fa-angle-down fa-1x"></i> </strong>
+                            </span>
+                            <ul class="login-content1">
+                                <li><a id="Export_Summary" onclick="selectedIds();return false;">Export Summary</a></li>
+                                <li><a id="Detail_Export" onclick="selectedIds1();return false;">Export Detail</a></li>
+                                <li><!--<a id="Export_All" onclick="exportAll();return false;">Export All</a>-->
+                                
+                                <apex:outputText > 
+                                  <a id="Export_All" onclick="checkTypeOfExportForExportAllExbitorScans(); return false;">Export All</a>
+                                </apex:outputText>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+        </div>
+         <!--------------------------//end of print and export button----------------------------------> 
+        <div class="clear"></div>
+        
+        <div class="datatable-wrapper">
+                    <table style="width: 100%" id="example" class="display">
+                        <thead>
+                            <tr>
+                                <th style="width: 2px;"><input onclick="setChecked1(this)" name="selall[]" type="checkbox" /></th>
+                                <th style="width: 18;text-align:left;padding-left: 8px;">Name</th>
+                                <th style="width:12;text-align:left;padding-left: 8px;">Company Name</th>
+                                <th style="width: 15;text-align:left;padding-left: 8px;">Email</th>
+                                <th style="width: 6;text-align:left;padding-left: 8px;">Number of Scans</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:repeat value="{!leadlist}" var="l">
+                                <tr>
+                                    <td style="width: 2px;"><input type="checkbox" name="id[]" onClick="rowchk1(this)" value="1" id="'{!l['i']}'"/></td>
+                                    <td style="width: 18">{!l['fname']} &nbsp; {!l['lname']}</td>
+                                    <td style="width:12">{!l['company']}</td>
+                                    <td style="width: 15">{!l['email']}</td>
+                                    <td style="width: 6">
+                                        <apex:commandLink title="Details" status="AjaxLoader" value="{!l['cnt']}" onclick="callpopup('{!l['i']}','{!l['fname']}','{!l['lname']}','{!l['company']}','{!l['email']}');return false;">
+                                            <apex:param value="{!l['i']}" name="scaner" /> 
+                                        </apex:commandLink>                     
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                </div>
+<apex:inputHidden value="{!selectAll}" id="selectAll"/>
+<c:ed_popupbox ></c:ed_popupbox>  
+ <script>
+
+ function continueToBatch(clkbtn)
+ {
+     Alertconfirm.render('<h2>Your Batch Export will be scheduled. Data will be split into multiple files and will be sent to your email. Please check your email after 10 minutes.<br/> <br/>Are you sure you want to schedule this report?</h2>','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+ }
+ 
+ function callback(clkbtn , okbtnn){
+     if(clkbtn =='sendToMail')
+     {
+        exportAllBulk();
+     }
+     
+}
+function callbackcancel(clkbtn,cnclbtnn)
+{
+    if(clkbtn =='sendToMail')
+     {
+         //alert('cancel');
+     }
+     return false;
+}
+
+
+    /* Action for : Current View Button */
+ function checkTypeOfExportForExportAllExbitorScans(){
+                
+                ShowLoader();
+                
+                /* Checking Total Number Of Attendees From BackEnd */
+                Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.BLN_ExhibitorScanReportCon.getCheckTypeOfExportForTotalExbtorscans}','{!selectedeventid}',
+                function(res, eve){
+
+
+                if(eve.status) 
+                {
+                HideLoader();
+                console.log('---Result Frm Remote Action--- '+res); 
+                if(res==true){
+                
+            
+              continueToBatch('sendToMail'); /* Bulk Export Action Function */
+                return false;
+
+                }
+                else if(res==false){
+                exportallscans();     /* Normal Export Action Function */
+                }
+
+                } 
+                else if (eve.type === 'exception') 
+                {
+                 //Alert.render('We are Unable to Process your Request. Please try after some time!' ,'Alert','Ok');
+                console.log('--There is Some Exception in @RemoteAction Method: getCheckTypeOfExport---- '+eve.message);
+                }
+
+                });  
+                HideLoader();
+                }
+
+
+
+
+  </script>
+  
+<script>
+    $(document).ready(function() {
+    try{
+   // exportLoad();
+    }catch(e){}
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+     
+    });
+
+</script>
+
+
+<script>
+$(document).ready(function(){
+   var allcheck = document.getElementsByName("selall[]");
+   allcheck[0].checked = false;
+   $("[id$='selectAll']").val(false);
+   var check = document.getElementsByName("id[]");
+        for (var i=0; i<check.length; i++) 
+        {
+          check[i].checked = false;
+        }
+});  
+
+ var checkSize=0;
+var allchecked=false;
+  function setChecked1(obj) 
+    {     
+       var allcheck = document.getElementsByName("selall[]");
+       if(allcheck[0].checked == true){
+           allchecked=true;
+           $("[id$='selectAll']").val(true);
+       }else{
+           $("[id$='selectAll']").val(false);
+       }
+           
+           
+        var check = document.getElementsByName("id[]");
+        checkSize=check.length;
+     // alert(checkSize);
+        for (var i=0; i<check.length; i++) 
+         {
+          check[i].checked = obj.checked;
+           if(obj.checked==true){ 
+             arr.push(check[i].id);//id's adding into array 
+           }else{
+               arr=[];//on unchecked clearing the arraylist 
+           }
+        
+           }
+}
+
+var arr=[];
+var uncheckedids=[];
+var unchecked ='';
+function rowchk1(rowchks)
+{
+   // alert('uncheckedids111'+uncheckedids);
+    if(rowchks.checked==true){
+        arr.push(rowchks.id);//adding into the arraylist
+         var allcheck = document.getElementsByName("selall[]");
+        if(allcheck[0].checked == true){
+          /*  if(uncheckedids.indexOf(rowchks.id) != -1){
+            alert('rowchks.id'+rowchks.id);
+                uncheckedids.replace(rowchks.id,"");
+                alert('uncheckedids'+uncheckedids);
+            }*/
+           //uncheckedids.remove(rowchks.id);
+           for(var i=0;i<uncheckedids.length;i++){
+           if(rowchks.id == uncheckedids[i])//comparing the rowid if already in the list
+           {
+               uncheckedids.splice(i,1);//removing the unselectedchkbox row id
+           }
+           }
+           unchecked = JSON.stringify(uncheckedids);
+           
+           //alert('uncheckedids'+uncheckedids);
+        }
+    }
+    else{
+       for(var i=0;i<arr.length;i++){
+           if(rowchks.id == arr[i])//comparing the rowid if already in the list
+           {
+               arr.splice(i,1);//removing the unselectedchkbox row id
+           }
+       }
+       var allcheck = document.getElementsByName("selall[]");
+       if(allcheck[0].checked == true){
+           uncheckedids.push(rowchks.id);
+           unchecked = JSON.stringify(uncheckedids);
+       }
+    }
+}
+
+function selectedIds(){
+var searchkey=$('#example_filter').find('input').val();
+if(arr.length>=1){
+        var selectedck = JSON.stringify(arr);
+        setTimeout(function(){HideLoader()},5000);
+        exportReport(selectedck,unchecked,'Summary',searchkey);
+
+}else{
+    Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+    
+}
+}
+
+
+function selectedIds1(){
+var searchkey=$('#example_filter').find('input').val();
+var allcheck = document.getElementsByName("selall[]");
+if(allcheck[0].checked == true){
+   Alert.render('Please select indiviual records for Detail Export' ,'Alert','ok');
+}else if(arr.length>=1){
+  var selectedck = JSON.stringify(arr);
+        //alert('unchecked'+unchecked);
+        setTimeout(function(){HideLoader()},5000);
+        exportReport(selectedck,unchecked,'Detail',searchkey);
+}else{
+    Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+    
+}
+}
+
+function printselect(){
+var searchkey=$('#example_filter').find('input').val();
+if(arr.length>=1){
+  var selectedck = JSON.stringify(arr);
+        //alert('unchecked'+unchecked);
+        setTimeout(function(){HideLoader()},3000);
+        printReport(selectedck,unchecked,'Summary',searchkey);
+}else{
+    Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+    
+}
+}
+
+function exportallscans(){
+    setTimeout(function(){HideLoader()},5000);
+    exportAll();
+}
+
+ </script> 
+         <apex:inputHidden id="scnId" value="{!scnId}"/>
+         <apex:actionFunction action="{!scanDetails}" name="scanDetails" reRender="pop" status="AjaxLoader" oncomplete="dt1call()">
+                <apex:param value="" name="scaner"/>
+        </apex:actionFunction> 
+        
+        <apex:actionFunction Status="AjaxLoader" action="{!exportReport}"
+            name="exportReport" ReRender="">
+            <apex:param value="" name="selectedck" />
+            <apex:param value="" name="unchecked" />
+            <apex:param value="" name="type" />
+            <apex:param value="" name="searchkey" />
+        </apex:actionFunction>  
+            
+        <apex:actionFunction status="AjaxLoader" action="{!printReport}"
+            name="printReport" ReRender="">
+            <apex:param value="" name="selectedck" />
+            <apex:param value="" name="unchecked" />
+            <apex:param value="" name="type" />
+            <apex:param value="" name="searchkey" />
+        </apex:actionFunction>     
+        
+        <apex:actionFunction action="{!exportAll}" name="exportAll" ReRender="none" status="AjaxLoader"/>
+        <apex:actionFunction action="{!exportallmethod}" name="exportAllBulk" ReRender="none" status="AjaxLoader"/>
+        
+        <apex:inputHidden id="fnm" value="{!frstNm}"/>
+        <apex:inputHidden id="lnm" value="{!lastNm}"/>
+        <apex:inputHidden id="cmp" value="{!cmpny}"/>
+        <apex:inputHidden id="eml" value="{!email}"/>
+       <!--- <apex:actionfunction action="{!exportedMailData}" name="exportLoad" rerender="statrender" status="AjaxLoader" />  ---> 
+        </apex:form>
+        
+    </c:ed_basictemplate>    
+ <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+
+    <script type="text/javascript" class="init">
+var j = jQuery.noConflict();
+j(document).ready(function() {
+    j('#example').dataTable( {
+        "pagingType": "full_numbers",
+         "aLengthMenu": [[5,10,25,50], [5,10,25,50]],
+        "iDisplayLength": 10,
+         "bAutoWidth": false, // Disable the auto width calculation
+        "bSort" : false,
+    
+        "fnDrawCallback": function()
+        {
+          var allcheck = document.getElementsByName("selall[]");
+          console.log(allcheck[0].checked);
+          if(allcheck[0].checked == true){
+        
+            var check = document.getElementsByName("id[]");
+           checkSize=check.length;
+           for (var i=0; i<check.length; i++) 
+            {
+                
+                if(unchecked.indexOf(check[i].id) == -1){
+                    check[i].checked = true;
+                }
+          
+           }  
+            }
+            else
+            {
+                var check = document.getElementsByName("id[]");
+           checkSize=check.length;
+       
+           for (var i=0; i<check.length; i++) 
+            {
+                 if(arr.indexOf(check[i].id) == -1){
+                 check[i].checked = false;
+                  }
+          
+           } 
+            
+            
+            }
+        }   
+    } );
+
+})
+</script>
+    <script>
+    var Alert_scans = new Custom_formPopup(); //Scans popup
+    </script>
+
+    <!---------popup start------->
+   <script>
+      var sid = '';
+    function callpopup(scanerid,fname,lname,comp,email){
+        sid = scanerid; 
+        $("[id$='fnm']").val(fname);
+        $("[id$='lnm']").val(lname);
+        $("[id$='cmp']").val(comp);
+        $("[id$='eml']").val(email);
+         $("[id$='scnId']").val(scanerid);
+       //  dt1call();
+    scanDetails(scanerid);
+    }
+    </script>
+    <apex:form id="pop">
+    <!--close of dialogoverlay-->
+    <div class="dialogoverlay" id="scans_dialogoverlay" style="z-index: 9999;"></div>
+    <div id="dialogbox_scans" style="display: none; width:80%; margin-left:10%; z-index: 99991;">
+        <a id="close" onclick="Alert_scans.Cancel()">x</a>
+        <div class="grid-1"
+            style="width:100%; padding-right: 0px;">
+            <div class="title-grid">Scan Details</div>
+            <div class="content-gird" style="max-height:450px; overflow:auto;">
+                <!------apex code-------->
+                <b>Name:</b> {!frstNm}&nbsp;{!lastNm} &nbsp; <b>Company:</b> {!cmpny} &nbsp; <b>Email:</b> {!email}<br/><br/>
+               <table style="width: 100%" id="example1" class="display">
+                    <thead>
+                    <tr>
+                        <th style="text-align:left;padding-left: 8px;">Name</th>
+                        <th style="text-align:left;padding-left: 8px;">Title</th>
+                        <th style="text-align:left;padding-left: 8px;">Company</th>
+                        <th style="text-align:left;padding-left: 8px;">Phone</th>
+                        <th style="text-align:left;padding-left: 8px;">Email</th>
+                        <th style="text-align:left;padding-left: 8px;">Scan Time</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!----------------------->
+            </div>
+            <!--close of content-grid--->
+        </div>
+        <!--close of grid-1----->
+    </div>
+    <!--close of dialogbox---->
+      <script type="text/javascript" class="init">
+         var table;
+         
+         var j1 = jQuery.noConflict();
+         j1(document).ready(function() {
+         
+             table = j1('#example1').DataTable( {      
+             "pagingType": "full_numbers",
+              "aLengthMenu": [[5,10,25,50], [5,10,25,50]],
+             "iDisplayLength": 10,
+                           "sDom": 'W<"clear">lfrtip', 
+         
+         /**default orderid in asc sorting**/
+              "order": [[ 0, "asc" ]],
+         "bSort": false,
+             "processing": true,
+             "serverSide": true,
+                            "ajax": '{!$Page.BLN_ExhibitorScan_report_helperpage}',
+                            "fnServerData" : function ( sSource, aoData, fnCallback ) {
+                            
+          aoData.push({ "name": "scaner", "value": $("[id$='scnId']").val()});
+          aoData.push({ "name": "fnm", "value": $("[id$='fnm']").val()});
+          aoData.push({ "name": "lnm", "value": $("[id$='fnm']").val()});
+          aoData.push({ "name": "cmp", "value": $("[id$='fnm']").val()});
+          aoData.push({ "name": "eml", "value": $("[id$='fnm']").val()});
+
+         $.ajax( {
+         "dataType": 'json',
+         "type": "GET",
+         "url": '{!$Page.BLN_ExhibitorScan_report_helperpage}',
+         "data": aoData,
+         "success": fnCallback,
+         "error": function (e) {
+                console.log(e);
+            }
+         } );
+         
+         },
+                            "fnPreDrawCallback": function() {
+                            
+                              },
+                              
+                               "columns": [ 
+                        
+                        {
+                     data:   "item",
+                     render: function ( data, type, row ) {
+                    var returnstring='';
+                    returnstring= row.item.First_Name__c+' '+row.item.Last_Name__c;
+                    return returnstring;  
+                    }
+                     
+                 },
+                 
+                 
+                 {
+                     data:   "item",
+                     render: function ( data, type, row ) {
+                  return row.item.Title__c;  
+                    
+                     }
+                 },
+                 
+                 {
+                     data:   "item",
+                     render: function ( data, type, row ) {
+                    return row.item.Company__c; 
+                    
+                     }
+                 },
+                 
+                 {
+                     data:   "item",
+                     render: function ( data, type, row ) {
+                    return row.item.Cell_Phone__c
+                    
+                     }
+                 },
+                 
+                 {
+                     data:   "item",
+                     render: function ( data, type, row ) {
+                    return row.item.Lead_Email__c
+                    
+                     }
+                 },
+                 
+                 {
+                     data:   "item",
+                     render: function ( data, type, row ) {
+                    
+                    return row.createdon;
+                     }
+                 }
+                 
+                 
+                 
+                 ]
+              
+            
+         
+             
+         } );
+         
+         
+         
+         
+         } );
+         
+         
+         
+         function dt1call(){
+         Alert_scans.render('dialogbox_scans','scans_dialogoverlay','Alert_scans' ,this);
+         }
+      </script>
+        <script>
+         $('.dataTables_filter').hide();
+      </script>
+ </apex:form>
+    <!------------end of popup------------->
+</apex:page>

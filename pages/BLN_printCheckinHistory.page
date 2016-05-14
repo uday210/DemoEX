@@ -1,0 +1,222 @@
+<apex:page showHeader="false" sidebar="false" controller="BLN_CheckinHistoryReportCon" renderAs="PDF" readOnly="true">
+
+<apex:stylesheet value="{!URLFOR($Resource.boothscreen_pdf, 'boothscreen.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-checkinhistory-report.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.landscape_pdf, 'landscape_pdf.css')}"/>
+ 
+<!-- header start renderAs="PDF"-->
+<div style=" text-align:center;" class="printpdfreportname">Checkin History Report</div>
+<div>
+
+<c:EventDetails BLN_EventDetails="{!eventInfo}"></c:EventDetails>
+<!--<table width="100%" border="0" cellspacing="0" cellpadding="8" class="printpdfheaderborder" id="contentsTable" >
+  <tr>
+    <td width="200px" align="center" valign="top">
+        <apex:image url="/Eventdex/servlet/servlet.ImageServer?id={!eventslist.Logo_URL__c}&oid={!$Organization.Id}"  width="100px" height="100px" style="margin:5px;"/>
+    </td>
+    <td width="79%" align="left" valign="middle"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:0px;">
+      <tr>
+        <td width="50%" align="right">&nbsp;</td>
+        <td width="50%" align="right" class="printpdfdate">
+            <apex:outputText value="{0,date,MMM' 'dd', 'yyyy}">
+                <apex:param value="{!eventslist.Start_Date__c}" /> 
+                </apex:outputText>
+            &nbsp; to &nbsp; 
+                <apex:outputText value="{0,date,MMM' 'dd', 'yyyy}">
+                <apex:param value="{!eventslist.End_Date__c}" /> 
+                </apex:outputText></td>
+      </tr>
+      <tr>
+        <td height="45" colspan="2" align="left" bgcolor="#e3e3e3" class="printpdfeventname">{!eventslist.name}</td>
+        </tr>
+      <tr>
+        <td align="left" valign="top" class="printpdfaddress">
+        {!eventslist.Venue_Name__c},<br/>
+        {!eventslist.Street1__c},{!eventslist.Street2__c} <br/>
+        {!eventslist.city__c},{!eventslist.BLN_State__r.Long_Name__c}, {!eventslist.BLN_Country__r.Short_Name__c} {!eventslist.ZipCode__c}.</td>
+        <td align="right" valign="middle"  class="printpdfreportname">&nbsp;</td>
+      </tr>
+    </table></td>
+  </tr>
+</table>-->
+</div>
+<!-- header end -->
+
+
+<br />
+  
+<apex:outputpanel rendered="{!ShowCHForAttendee}">
+  
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="myTable myTable-zebra myTable-horizontal display" id="example" style="border-collapse:collapse;">
+  <thead>
+    <tr>
+        <th style="width:23%;">Ticket Name</th>
+        <th style="width:17%;">Ticket Number</th>
+        <th style="width:20%;">Checkin-out Date/Time</th>
+        <th style="width:23%;">Scanned By</th>
+        <th style="width:17%;">Device Name</th>
+    </tr>
+  </thead>
+  <tbody>
+  <apex:repeat value="{!ticClas}" var="CheckInHistory">
+        <!--------------------Start of first Record (Main Repeat)------------------------>
+        <tr>
+          <td  colspan="5"  class="grptd" style="text-align:left;"><!-----------> 
+            <!--Group header-->
+            
+            
+             Name: &nbsp;&nbsp;{!CheckInHistory.GuestName.Tkt_profile__r.First_Name__c} &nbsp; {!CheckInHistory.GuestName.Tkt_profile__r.Last_Name__c}
+             
+           
+            
+            <!---------------->
+            <table width="100%" border="0" class="noborder" cellspacing="0" cellpadding="0" style="margin:0px auto;border-collapse:collapse;">
+          
+              <tbody>
+                <apex:repeat var="Check" value="{!CheckInHistory.tcinn}"> 
+                  <!-----inside repeat for ticket belongs to pc----->
+    <tr>
+                    <td style="width:23%">{!Check.Item_Pool__r.Item_Pool_Name__c}</td>
+                    <td style="width:17%">{!Check.Name}</td>
+                    <!--<td style="width:14.2%">Rahil Gupta</td>-->
+                    <td class="grptd" colspan="3" style="width:60%;"><!----------->
+                      
+                      <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                        <!---inside repeat for checked in checkedout tr---->
+                        <apex:repeat value="{!Check.tstatus__r}" var="tsat">
+        <tr>
+                            <td style="width:33%;" ><apex:outputText rendered="{!tsat.Tstatus_name__c == true}"> 
+                                <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/checkin.png')}"/>
+                                <c:MFSI_FormatDateTime date_Timevalue="{!tsat.LastModifiedDate}" />
+                              </apex:outputText>
+                              <apex:outputText rendered="{!tsat.Tstatus_name__c == false}"> <span class="red_clr"> <i class="fa fa-share-square-o"></i>
+                                <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/checkout01.png')}"/>
+                                <c:MFSI_FormatDateTime date_Timevalue="{!tsat.LastModifiedDate}" />
+                                </span><br/>
+                              </apex:outputText></td>
+                            <td style="width:38%;">{!tsat.Owner.Name}</td>
+                            <td style="width:28%;">{!tsat.Device_Name__c}</td>
+        </tr>
+                          <!-------> 
+                            </apex:repeat>
+                        <!---close of inside repear for checked in checkedout tr---->
+                        
+                      </table>
+                      
+                      <!-------------------></td>
+                    <!---------> 
+                    
+                </tr>
+                  <!----> 
+            </apex:repeat> 
+                
+                <!-------->
+              </tbody>
+            </table>
+            
+            <!-----------------></td>
+        </tr>
+        
+        <!--------------------End of first Record (Main Repeat)------------------------> 
+    </apex:repeat>
+      
+      <!-------------->
+  </tbody>
+</table>
+</apex:outputpanel>
+
+<apex:outputpanel rendered="{!ShowCHForTicket}">
+<table width="100%" border="0" cellpadding="0" cellspacing="0" class="myTable myTable-zebra myTable-horizontal display" id="example" style="border-collapse:collapse;">
+  <thead>
+    <tr>
+       
+        <th style="width:23%;">Name</th>
+        <th style="width:17%;">Ticket Number</th>
+        <th style="width:20%;">Checkin-out Date/Time</th>
+        <th style="width:23%;">Scanned By</th>
+        <th style="width:17%;">Device Name</th>
+        
+        
+        
+    </tr>
+  </thead>
+  <tbody>
+      <!--------------------Start of first Record (Main Repeat)------------------------>
+    <apex:repeat value="{!ticClas}" var="ticketName">
+    <tr>
+          <td  colspan="6"  class="grptd"><!-----------> 
+            <!--Group header-->
+            
+            Ticket Name:&nbsp;&nbsp;{!ticketName.GuestName.Item_Pool__r.Item_Pool_Name__c}
+           
+            
+            <!---------------->
+            
+            <table width="100%" border="0" class="noborder" cellspacing="0" cellpadding="0" style="margin:0px auto;border-collapse:collapse;">
+              <tbody>
+                <apex:repeat value="{!ticketName.tcinn}" var="guest"> 
+                  <!-----inside repeat for ticket belongs to pc----->
+                  <tr>
+                    <td style="width:23%">{!guest.Tkt_profile__r.First_Name__c} &nbsp; {!guest.Tkt_profile__r.Last_Name__c}</td>
+                    <td style="width:17%">{!guest.Name}</td>
+                    <!--<td style="width:14.2%">Rahil Gupta</td>-->
+                    <td class="grptd" colspan="3"><!----------->
+                      
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                        <!---inside repeat for checked in checkedout tr---->
+                        <apex:repeat value="{!guest.tstatus__r}" var="tsat">
+        <tr>
+                            <td style="width:33%;" ><apex:outputText rendered="{!tsat.Tstatus_name__c == true}">
+                            <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/checkin.png')}"/>
+                                <c:MFSI_FormatDateTime date_Timevalue="{!tsat.LastModifiedDate}" />
+                              </apex:outputText>
+                              <apex:outputText rendered="{!tsat.Tstatus_name__c == false}">
+                                <apex:image url="{!URLFOR($Resource.edsr_master, 'edsr_root/images/checkout01.png')}"/>
+                                <c:MFSI_FormatDateTime date_Timevalue="{!tsat.LastModifiedDate}" />
+                              </apex:outputText></td>
+                            <td style="width:38%;">{!tsat.Owner.Name}</td>
+                            <td  style="width:28%">{!tsat.Device_Name__c}</td>
+        </tr>
+                        </apex:repeat>
+                        <!-------> 
+                        
+                        <!---close of inside repear for checked in checkedout tr---->
+                        
+                      </table>
+                      
+                      <!-------------------></td>
+                    <!---------> 
+                    
+                </tr>
+                  <!--------> 
+            </apex:repeat>
+              </tbody>
+            </table>
+            
+            <!-----------------></td>
+    </tr>
+  </apex:repeat>
+      
+      <!--------------------End of first Record (Main Repeat)------------------------> 
+      
+      <!-------------->
+  </tbody>
+</table>
+</apex:outputpanel>
+
+
+<table class="myTable myTable-zebra myTable-horizontal printpdffooter">
+  <thead>
+    <tr>
+      <td style="padding:15px;">Contact Us: <a href="mailto:support@boothleads.com" class="link"> support@boothleads.com</a></td>
+      <td style="text-align:right;padding:15px;">
+      
+      <a href="http://www.eventdex.com/"><img src="https://www.boothleads.com/images/eventdex-footerlogo.png" style="max-width:50px; height:15px;"/></a>
+      
+      </td>
+       
+    </tr>
+  </thead>
+</table>
+</apex:page>

@@ -1,0 +1,55 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" cache="true" controller="BLN_RegistrationnewCon3" id="BLN_EventheaderPage">
+
+ <div id='eventheadetdiv'>
+ 
+ </div>
+ <script>
+  //remote action to append individual widgets html into main grid
+      Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_RegistrationnewCon3.getIndividualwidgets}','{!selectedevent}','{!template.id}', function(result, event){
+       
+            for(var i=0;i<result.length;i++){
+             // console.log(result[i]);
+           //   <apex:image url="/servlet/servlet.ImageServer?id={!ee.Logo_URL__c}&oid={!$Organization.Id}" width="280px" height="180px" rendered="{!if(ee.Logo_URL__c!=null,true,false)}"/>
+           // <apex:image url="http://www.jnvu.edu.in/images/no_image.jpg" width="280px" height="180px" rendered="{!if(ee.Logo_URL__c!=null,false,true)}"/>
+       
+              //event header replace with  data
+              if(result[i].Template_Name__c=="Event_Header")
+              {
+              $('#eventheadetdiv').html(result[i].HTML__c);
+             // alert({!ee.Name});
+          
+         try{  $('#event-title').html($('#event-title').html().replace('Event Name','{!ee.Name}'));}
+         catch(err){}
+             //  $('.eventlogo').html(' <apex:image url="/servlet/servlet.ImageServer?id={!ee.Logo_URL__c}&oid={!$Organization.Id}"  rendered="{!if(ee.Logo_URL__c!=null,true,false)}"/>');
+             //$('.eventlogo')
+            //  $('.eventdate').html('{!ee.Start_Date__c}'+' to '  +'{!ee.End_Date__c}');
+               $('.eventdate').html($('#ssdate').html()+' To '  +$('#enddate').html());
+                 $('.eventlogo').html(' <apex:image url="/servlet/servlet.ImageServer?id={!ee.Logo_URL__c}&oid={!$Organization.Id}"  rendered="{!if(ee.Logo_URL__c!=null,true,false)}"/>');
+            
+              }
+              else{
+             // $('#'+result[i].Template_Name__c).html(result[i].HTML__c);
+              
+              }
+            }
+            },{escape: false});
+  
+  
+ 
+  </script>
+  
+  
+  <!------ Event Dates -------------> 
+   
+ <div id='ssdate' style='display:none'>
+ <c:EV_FormatDt date_Timevalue="{!ee.Start_Date__c}" t_Zone="{!ee.Time_Zone__c}" t_format="MM/dd/yyyy hh:mm a"/>
+<!--{!ee.Start_Date__c}-->
+ </div>
+ 
+  <div id='enddate' style='display:none'>
+<c:EV_FormatDt date_Timevalue="{!ee.End_Date__c}" t_Zone="{!ee.Time_Zone__c}" t_format="MM/dd/yyyy hh:mm a"/>
+<!-- {!ee.End_Date__c}-->
+ </div>
+   <!------ //Event Dates -------------> 
+  
+</apex:page>

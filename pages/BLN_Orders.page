@@ -1,0 +1,1531 @@
+<apex:page controller="BLN_MyticketsCon" action="{!displayPermissions}"
+    standardStylesheets="false" showHeader="false" id="thepage">
+
+    <!------------Ajaxloader component------------>
+    <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}" />
+    <!------------//Ajaxloader component------------>
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+        <!------------common Validations component------------>
+    <c:ValidationsCommon ></c:ValidationsCommon>
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <style>
+.formlabel-left {
+    width: 35% !important;
+}
+
+.formelement-ryt {
+    width: 64% !important;
+}
+
+.ColVis {
+    display: none;
+    !
+    important;
+}
+</style>
+  <!-----start of actions buttons nav----->
+     <style>
+     .nav1 ul{
+     margin: 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+     
+     }
+     
+     .nav1 .login-content1 {
+          display: none;
+          position: absolute;
+          /*top:32px;*/
+          right: 0;
+          z-index: 999; background-color:#7f8c8d; opacity:3;
+          
+         
+        }
+
+
+
+.nav1 li .login-content1 {
+          right: 0;
+          width:auto;
+          position: absolute;
+top: 100%;
+/*left: 0;*/
+z-index: 99;
+display: none;
+float: left;
+/* min-width: 160px; */
+padding: 5px 0;
+margin: 2px 0 0;
+font-size: 14px;
+text-align: left;
+list-style: none;
+background-color: #fff;
+-webkit-background-clip: padding-box;
+background-clip: padding-box;
+border: 1px solid #ccc;
+border: 1px solid rgba(0,0,0,.15);
+border-radius: 4px;
+-webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+box-shadow: 0 6px 12px rgba(0,0,0,.175);  
+          
+        }
+        
+     
+     </style>
+    <!------------//common styles component---------->
+    <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}" />
+    <!-----------//datatable stylescss------------->
+
+    <!-------------basic template html component------------------------------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="thecomp">
+        <apex:variable value="{!se.BLN_Country__r.Currency__r.Currency_Symbol__c}"
+            var="curSym" />
+
+        <apex:form >
+            <div class="clear" style="height: 0px;"></div>
+           <!-- <apex:actionFunction name="naicsCodesFunction" reRender="thepage"
+                action="{!sendNaicsCodes}">
+                <apex:param name="naicsCodes" value="" />
+            </apex:actionFunction> -->
+        </apex:form>
+
+        <apex:form id="firstfrm">
+         <style>
+         .content-row{
+       
+            float:left;
+          }
+         </style>
+         <apex:outputPanel id="outid">
+            <!---------------------template code------------------>
+            <!-------------------------------------->
+            <div class="datatable-wrapper">
+                <!-------->
+                <div class="top-stats">
+                    <!--------->
+                    <apex:outputpanel id="statrender" styleclass="top-stats">
+                    <ul class="left" style="width: 90%; height: 10px;">
+                        <!---->
+                        <li class="labeltitles">Total Orders:</li>
+                        <li class="labeloutput" id="TotalTransactions"></li>
+                        <!----->
+                        <!---->
+                        <li class="labeltitles">Total Tickets Sold:</li>
+                        <li class="labeloutput" id="TotalAttendees"></li>
+                         <!----->
+                       <li class="labeltitles">Payment Type:
+                        
+                       <ul style="display:inline-block;list-style-type: none;">
+                           <li class="labeloutput" id="PaymentType1" ></li>
+                           <li class="labeloutput" id="PaymentType2"></li>
+                           <li class="labeloutput" id="PaymentType3" ></li>
+                           <li class="labeloutput" id="PaymentType4"></li>
+                           <li class="labeloutput" id="PaymentType5" ></li>                          
+                       
+                       </ul>
+
+                       <ul style="display:inline-block;list-style-type: none;">
+                           <li class="labeloutput" id="paidrevenue1"></li>
+                           <li class="labeloutput" id="paidrevenue2"></li>
+                           <li class="labeloutput" id="paidrevenue3"></li>
+                           <li class="labeloutput" id="paidrevenue4"></li>
+                           <li class="labeloutput" id="paidrevenue5"></li>                           
+                       </ul>                       
+                       </li>                               
+                         <!----->
+                       
+
+                        <li class="labeltitles">Total Amount:</li>
+                        <li class="labeloutput"><apex:outputText >{!curSym}</apex:outputText>
+                           <!-- <apex:outputText value="{0, number, ###,##0.00}">
+                                <apex:param value="{!TotalAmount}" />
+                            </apex:outputText>-->
+                            <span class="amount" id="TotalAmount"></span ></li>
+                        <!----->
+                         <li class="labeltitles">Total Revenue:</li>
+                        <li class="labeloutput" id="TotalRevenue"></li>
+                    </ul>
+
+                    </apex:outputpanel>
+                   
+                    <!--close of left-->
+
+                    <!-----start of from date and to date----->
+
+                    <!--------------------------------------->
+                    <div class="clear"></div>
+                    <!--close of clear-->
+                    <!-----start of actions buttons nav----->
+                    <div class="nav1 right togglebtnnav" style="display: inline-block;">
+                        <ul style="float: left; margin-top: 0px; margin-left: 4px;">
+                            <li id="login1"><span style="padding: 4px;"
+                                class="togglebtn"> <i class="fa fa-gear">&nbsp;&nbsp;</i><strong><i
+                                        class="fa fa-angle-down fa-1x"></i> </strong>
+                            </span>
+                                <ul class="login-content1">
+                                    <li ><a id="print_navbtn" onclick="checklen(this)" > <i
+                                            class="fa fa-print" target="_blank" >&nbsp;</i>Print
+                                    </a></li>
+                                    <li><a id="cancelord_btn" onclick="checklen(this)"> <i
+                                            class="fa fa-times">&nbsp;</i>Cancel Order
+                                    </a></li>
+                                    <li><a id="export_btn" onclick="checklen(this);"><i
+                                            class="fa fa-external-link">&nbsp;</i>Export
+                                    </a></li>
+                                    <li><a id="sendOrdConfirm_btn" onclick="checklen(this)"> <i
+                                            class="fa fa-times">&nbsp;</i>Send Order Confirmation
+                                    </a></li>
+                                    <li><a id="sendInvoice_btn" onclick="checklen(this)"> <i
+                                            class="fa fa-times">&nbsp;</i>Send Invoice
+                                    </a></li>
+                                </ul></li>
+                        </ul>
+                    </div>
+                    <!-----end of actions nav---->
+                    <!-- <ul class="right">
+                        <li class="labeltitles">Filter:</li>
+                        <li><apex:selectList value="{!selectedOrderType}"
+                                multiselect="false" size="1" styleClass="selectlist-datatable">
+                                <apex:selectOptions value="{!orderTypes}" />
+                                <apex:actionSupport event="onchange" action="{!onchangeEvent}" status="AjaxLoader" rerender="outid"/>
+                            </apex:selectList></li>
+                    </ul> -->
+                    <!--close of right-->
+                    <!--------->
+
+                    <div class="clear"></div>
+                    <!--close of clear-->
+                    <!---->
+                </div>
+                <!--close of top-stats-->
+
+                <!-----datatable start----->
+               
+                <table id="example" class="sss display">
+                    <thead>
+                        <tr>
+                            <th>
+                                <!--<input id="selector_check" type="checkbox" onClick="JavaScript: check_uncheck_all();setChecked1(this);"/>-->
+
+                                <input onclick="setChecked1(this)" name="selall[]" type="checkbox" />
+                            </th>
+                            <th>Action</th>
+                            <th>Order No</th>
+                            <th>Ordered By</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Company</th>
+                            <th>Order Date</th>
+                            <th>Pay Type</th>
+                            <th>Order Status</th>
+                            <th>Amount({!eventcurrency})</th>
+                            <th>Registration Type</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                
+               
+                
+                <!-----------end of datatable table-->
+            </div>
+            <!--close of datatable-wrapper-->
+            <!--------------------------------------------------->
+            <!-----------------//template code----------------------->
+            <!------------------------------- ACTION FUNCTIONS------------------------------------->
+            <apex:actionFunction action="{!exportOrders}" name="exportOrder" />
+            <apex:actionFunction action="{!userSelectPerticularToExport}"
+                name="individualexport" ReRender="">
+                <apex:param value="" name="arr" assignTo="{!selectedck}"/>
+                </apex:actionFunction>
+
+            <!-- For Print --> 
+             <apex:actionFunction action="{!printOrders}" name="printOrder" />
+            <apex:actionFunction action="{!userSelectParticularToprint}"
+                name="individualprint" ReRender="">
+                <apex:param value="" name="arr" assignTo="{!selectedck}"/>
+                </apex:actionFunction>
+            
+            <apex:actionFunction action="{!displayorderEditform}"
+                name="Editordform" reRender="secfrm" status="AjaxLoader">
+                <apex:param value="" name="edform" />
+            </apex:actionFunction>
+
+            <apex:actionFunction action="{!renderDetails}" name="renderDetail"
+                reRender="firstfrm">
+                <apex:param value="" name="guestindex" />
+            </apex:actionFunction>
+
+
+            <apex:actionFunction action="{!cancelTotalorder}" name="canord"
+                reRender="firstfrm">
+                <!--  oncomplete="location.reload( true );" -->
+                <apex:param value="" name="guestindex12" />
+            </apex:actionFunction>
+
+            <apex:actionFunction action="{!renderDetailsfororder}"
+                name="detailsOforder" status="AjaxLoader" rerender="frm2">
+                <apex:param value="" name="selectedordId" />
+            </apex:actionFunction>
+
+            <apex:actionFunction action="{!sendOrdConfirmation}"
+                name="sendOrdConfirmation" status="AjaxLoader" rerender="aaa" oncomplete="Alert.render('Order Confirmation Sent Successfully!','Alert','ok');">
+                <apex:param value="" name="ordId" />
+            </apex:actionFunction>
+            
+            <apex:actionFunction action="{!sendInvoice}"
+                name="sendInvoice" status="AjaxLoader" rerender="bbb" oncomplete="Alert.render('Invoice Sent Successfully!','Alert','ok');">
+                <apex:param value="" name="sendinvordid" />
+            </apex:actionFunction>
+
+            <!------------------------------- //ACTION FUNCTIONS------------------------------------->
+            <script>
+                 try{
+                    calldt();
+                    }catch(e){}
+                    </script>
+                     </apex:outputPanel>
+        </apex:form>
+
+        <!------------------------------- JS FUNCTIONS------------------------------------->
+        <script> 
+function  displayordeItem(ordItem,ststus){
+             renderDetail(ordItem);
+             return false;
+    }
+    
+function  displayordeItem(ordItem){
+     detailsOforder(ordItem);
+    }
+    
+    function editOrder(edform,clk)    <!--- Edit PopUp Function---> 
+    {
+        //alert('abcd'+edform);
+         $("[id$='buyercomp']").val('');  
+          Editordform(edform);
+          $("[id$='buyercomp']").val('');  
+          return false; 
+       }
+       
+    function refundpayment()
+        {
+           if(person.length>1){
+             alert('Please select only one record at a time');
+           }else{
+            if(person.length==0){
+              alert('Please select record to refund');
+           }
+          } 
+        }   
+
+    function clearCompany(vad){
+    
+      document.getElementById('{!$Component.thepage.secfrm.xyz}').value  = '';
+  }
+  
+   function getRemoteAccount(thi,bool,act,field) {
+           var searchstr = thi.value;
+           
+             clearPreviousValues(act,field);           
+           var emailid;
+           if(bool=='true'){//thepage:secfrm:buyeremailid
+             emailid= document.getElementById('{!$Component.thepage.secfrm.Email}').value;
+           
+          }else{
+             emailid= document.getElementById('{!$Component.thepage.secfrm.buyeremailid}').value;
+           
+          } 
+          
+                   
+           Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.BLN_MyticketsCon.getCompanies}', 
+        searchstr , emailid,
+        function(result, event){
+            if (event.status) {
+              var s='';
+                 for(var i=0;i<result.length;i++){
+                       var x = '\''+result[i].Name+'\'';
+                       var z = '\''+result[i].Id+'\'';
+                       var y =  '\''+thi.id+'\'';
+                      if(bool=='true'){ 
+                       s=s+'<div style="border-bottom:1px solid #DDD;"><a  class="someclass" style="color:#FFF;font-size :14px;cursor:pointer;" onclick="linkonclick(this)"  id="'+result[i].Id+ '" name="'+result[i].Name  + '" value="' +result[i].Name+'">'+result[i].Name+' </a> </div>';
+                      }else{
+                       s=s+'<div style="border-bottom:1px solid #DDD;"><a  class="someclass" style="color:#FFF;font-size :14px;cursor:pointer;" onclick="linkonclick1(this)"  id="'+result[i].Id+ '" name="'+result[i].Name  + '" value="' +result[i].Name+'">'+result[i].Name+' </a> </div>';
+                   
+                      }
+                 }
+              
+               if(bool=='true'){ 
+                  document.getElementById('acctId').innerHTML = s;
+                    if(result.length>0){
+                      document.getElementById('acctId1').style.display='';
+                  }
+                }else{
+                    document.getElementById('acctId40').innerHTML = s;
+                    if(result.length>0){
+                      document.getElementById('acctId30').style.display='';
+                   }
+                }  
+                   
+               
+            } else if (event.type === 'exception') {
+                document.getElementById("responseErrors").innerHTML = event.message;
+            } else {
+                document.getElementById("responseErrors").innerHTML = event.message;
+            }
+        }, 
+        {escape: true}
+     );
+  }       
+  
+  function clearPreviousValues(act,field){
+                    if(field=='Email'){
+                       document.getElementById('thepage:secfrm:buyercomp').value ='';
+                    }
+                       document.getElementById('{!$Component.secfrm.xyz}').value  = '';
+                        
+                      
+                     }
+                  
+  function linkonclick(vs){
+             clearPreviousValues('Onchange','compedit')
+         document.getElementById('{!$Component.thepage.secfrm.xyz}').value  = vs.id;
+        var dr = document.getElementsByClassName('CompanyTicket');
+          for(var z=0;z<dr.length;z++){
+            document.getElementById(dr[z].id).value  = vs.name;
+             //getRemoteComp(vs.id);
+          }
+         
+         document.getElementById('acctId1').style.display='none';            
+     }
+     
+  function closediv(dr){
+          document.getElementById(dr).style.display='none';
+          document.getElementById(dr+'1').style.display='none';
+       }
+
+  function linkonclick1(vs){
+   
+         document.getElementById('{!$Component.thepage.secfrm.xyz}').value  = vs.id;
+       
+        var dr = document.getElementsByClassName('CompanyTicket1');
+          for(var z=0;z<dr.length;z++){
+            document.getElementById(dr[z].id).value  = vs.name;
+          }
+         
+         document.getElementById('acctId30').style.display='none';            
+     } 
+ 
+      // For getting company Ext
+     function getRemoteComp(extId) {
+  var searchstr = extId;
+  
+  Visualforce.remoting.Manager.invokeAction(
+        '{!$RemoteAction.BLN_MyticketsCon.getCompaniesext}', 
+        searchstr , 
+        function(result, event){
+            if (event.status) {
+              var s='';
+                 for(var i=0;i<result.length;i++){
+                    //alert(result[i].Id);
+                     console.log(result[i].Id);
+                    document.getElementById('thepage:thecomp:commoncomponent:secfrm:repid:14:BusinessAddress1').value = result[i].Business_Address1__c;
+                    document.getElementById('thepage:thecomp:commoncomponent:secfrm:repid:14:BusinessAddress2').value = result[i].Business_Address2__c;
+                    
+                    document.getElementById('thepage:thecomp:commoncomponent:secfrm:repid:14:BusinessCity').value = result[i].Business_City__c;
+                    document.getElementById('thepage:thecomp:commoncomponent:secfrm:repid:14:BusinessCountry').value = result[i].BLN_Business_Country__c;
+                  
+                    document.getElementById('thepage:thecomp:commoncomponent:secfrm:repid:14:BusinessState').value = result[i].BLN_Business_State__c;
+                    document.getElementById('thepage:thecomp:commoncomponent:secfrm:repid:14:BusinessZip').value = result[i].Business_Zipcode__c;
+                  
+                  }
+           
+           } else if (event.type === 'exception') {
+                alert('Error '+event.message);
+            } else {
+                alert('Error '+event.message);
+            }
+        }, 
+        {escape: true}
+     );
+  }   
+        </script>
+        <!--------------------------------//JS FUNCTIONS------------------------------------>
+
+        <c:ed_popupbox >
+        </c:ed_popupbox>
+
+    </c:ed_basictemplate>
+    <!-------------//end of basic template component------------------------>
+
+    <!--/*********************Java Script Section*******************/-->
+    <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script>
+    <script type="text/javascript" language="javascript" class="init">
+var table;
+var pagedata={};
+var localArray=[];
+<!----------------------------------->
+var j = jQuery.noConflict();
+function tbraw()
+{
+
+table.draw();
+}
+j(document).ready(function() {
+
+//alert(fd);
+        table = j('#example').DataTable( {
+        
+            
+        "pagingType": "full_numbers",
+         "scrollX": true,
+          "sScrollX": "100%",
+        "sScrollXInner": "120%",
+          dom: 'C<"clear">lfrtip',
+         "aLengthMenu": [[10,20,25, 50], [10,20, 25, 50]],
+        "iDisplayLength": 10,
+         "bAutoWidth": false, // Disable the auto width calculation
+        
+    /**default orderid in asc sorting**/
+        <!---//!important to hide the sorting in the header for checkbox td------>
+        "sDom": 'W<"clear">lfrtip', 
+"oColumnFilterWidgets": { 
+"aiExclude": [ 0,1,2,3,4,5,6,7,10 ] 
+
+},
+        
+    "aoColumnDefs": [
+      { 'bSortable': false,'aTargets': [0,1,11]},
+   ],
+    "order": [],
+        /***********/   
+        "processing": true,
+                      "serverSide": true,
+                       
+                        "ajax": {
+                        "url":'{!$Page.BLN_orders_helperpage}?core.apexpages.devmode.url=1',
+                        
+                       
+                        "data": function ( pagedata ) {
+                       
+                                pagedata["fdate"]=$("[id$='idFromDate']").val();
+                                pagedata["tdate"]=$("[id$='idToDate']").val();
+                          }
+                        },
+                       
+                         "rowCallback": function( row, data ) {
+                         
+                         
+                         localArray.push(data.DT_RowId)
+                         if ( j.inArray(data.DT_RowId, arr) !== -1 ) {
+                               j(row).addClass("currenttr");
+                               j(row).find(":checkbox").prop("checked",true);
+                                
+                            }
+                       
+                              
+                              
+                         
+                                
+                                     
+                                },
+                       
+                       
+                       
+                       "columns": [ 
+                   {
+                data:   "active",
+                render: function ( data, type, row ) {
+                      // return '<input type="checkbox" />';
+                       return '<input type="checkbox" name="id[]" onClick="rowchk1(this)" value="1" />';
+                    
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return '<a onclick=editOrder("'+data.Id+'",this);><i class="fa fa-pencil fa-edit20px" title="Edit" /></a>';
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return '<a onclick=detailsOforder("'+data.Id+'");>'+data.Name+'</a>';
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.BLN_TKT_profile__r.First_Name__c+' '+data.BLN_TKT_profile__r.Last_Name__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.BLN_TKT_profile__r.Email__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.BLN_TKT_profile__r.Mobile__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.BLN_TKT_profile__r.TKT_Company__c;
+                        
+                }
+            },
+            {
+                data:   "createdon",
+                render: function ( data, type, row ) {
+                  
+                        
+                
+                    //return  data.CreatedDate.substr( 0,10 );
+                        return data;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  var s='';
+                  try{
+                  s=data.Payments__r.records[0].Payment_Mode__c;
+                  }catch(e){}
+                        return s;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.Order_Status__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                var a=0;
+                //  console.log(data.Order_Items__r.totalSize);
+                 for(i=0;i<data.Order_Items__r.totalSize;i++){
+                 a = a+ data.Order_Items__r.records[i].Item_Total__c+data.Order_Items__r.records[i].Item_Fee__c;
+                 }
+                        return '<div class="amount">'+data.Amount_Paid__c+'</div>';
+                     //  return a;
+                        
+                }
+            },
+             {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  var s='';
+                  try{
+                  s=data.Payments__r.records[0].Registration_Type__c;
+                  }catch(e){}
+                        return s;
+                        
+            }
+            }
+            ],
+            
+            "fnDrawCallback":function(){
+       //  console.log( api.rows( {page:'current'} ).data() );
+    
+       
+       var select1 = j('[class$=widget-8]');      
+                                j('[class$=widget-8]').removeAttr( "disabled" );       
+                                select1.empty();       
+                           select1.append( '<option value>Pay Type</option>' );      
+                           <apex:repeat value="{!Visibility1}" var="vsb">
+
+                           select1.append( '<option value={!vsb.label}>{!vsb.label}</option>' );  
+                            
+                            </apex:repeat>    
+                            
+    
+ var select2 = j('[class$=widget-9]');      
+                                j('[class$=widget-9]').removeAttr( "disabled" );       
+                 select2.empty();       
+                 select2.append( '<option value>Order Status</option>' );  
+                      
+                                  <apex:repeat value="{!Visibility2}" var="vsb">
+                               if('{!vsb.label}' != 'Abandoned'){
+                           select2.append( '<option value={!vsb.label}>{!vsb.label}</option>' );  
+                         }
+                            </apex:repeat>
+                            
+var select3 = j('[class$=widget-11]');      
+                                j('[class$=widget-11]').removeAttr( "disabled" );       
+                 select3.empty();       
+                 select3.append( '<option value>Registration Type</option>' );      
+                           <apex:repeat value="{!Visibility}" var="vsb">
+                          
+                           select3.append( '<option value={!vsb.label}>{!vsb.label}</option>' );  
+                           
+                            
+                            </apex:repeat>    
+                            
+                            }                            
+                            
+    } );
+
+} );
+
+function calldt(){
+var pagedataDate={};
+  j('.togglebtn').click(
+    function(){ j(this).next('.login-content1').slideToggle(); 
+
+    })
+        j('#example').DataTable( {      
+        "pagingType": "full_numbers",
+         "scrollX": true,
+          "sScrollX": "100%",
+        "sScrollXInner": "120%",
+          dom: 'C<"clear">lfrtip',
+         "aLengthMenu": [[10,20,25, 50], [10,20, 25, 50]],
+        "iDisplayLength": 10,
+         "bAutoWidth": false, // Disable the auto width calculation
+        
+    /**default orderid in asc sorting**/
+        <!---//!important to hide the sorting in the header for checkbox td------>
+        "sDom": 'W<"clear">lfrtip', 
+"oColumnFilterWidgets": { 
+"aiExclude": [ 0,1,2,3,4,5,6,7,10 ] 
+
+},
+        
+    "aoColumnDefs": [
+      { 'bSortable': false,},
+   ],
+    "order": [],
+        /***********/   
+        "processing": true,
+                      "serverSide": true,
+                      
+                       
+                        "ajax": {
+                        "url":'{!$Page.BLN_orders_helperpage}?core.apexpages.devmode.url=1',
+                        
+                        //"data":({"fdate":document.getElementById("thepage:thecomp:commoncomponent:firstfrm:idFromDate").value,"tdate":fd})
+                        "data": function ( pagedataDate) {
+
+                                pagedataDate["fdate"]=$("[id$='idFromDate']").val();
+                                pagedataDate["tdate"]=$("[id$='idToDate']").val();
+                          }
+                        },
+                    "columns": [ 
+                   {
+                data:   "active",
+                render: function ( data, type, row ) {
+                      // return '<input type="checkbox" />';
+                       return '<input type="checkbox" name="id[]" onClick="rowchk1(this)" value="1" />';
+                    
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return '<a onclick=editOrder("'+data.Id+'",this);><i class="fa fa-pencil fa-edit20px" title="Edit" /></a>';
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return '<a onclick=detailsOforder("'+data.Id+'");>'+data.Name+'</a>';
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.BLN_TKT_profile__r.First_Name__c+' '+data.BLN_TKT_profile__r.Last_Name__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.BLN_TKT_profile__r.Email__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.BLN_TKT_profile__r.Mobile__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.BLN_TKT_profile__r.TKT_Company__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.CreatedDate;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  var s='';
+                  try{
+                  s=data.Payments__r.records[0].Payment_Mode__c;
+                  }catch(e){}
+                        return s;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.Order_Status__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  
+                        return data.Amount_Paid__c;
+                        
+                }
+            },
+            {
+                data:   "item",
+                render: function ( data, type, row ) {
+                  var s='';
+                  try{
+                  s=data.Payments__r.records[0].Registration_Type__c;
+                  }catch(e){}
+                        return s;
+                        
+            }
+            }
+            ],
+            
+            "fnDrawCallback":function(){
+       //  console.log( api.rows( {page:'current'} ).data() );
+    
+       
+        
+       var select1 = j('[class$=widget-8]');      
+                                j('[class$=widget-8]').removeAttr( "disabled" );       
+                                select1.empty();       
+                                select1.append( '<option value>Pay Type</option>' );      
+                           <apex:repeat value="{!Visibility1}" var="vsb">
+
+                           select1.append( '<option value={!vsb.label}>{!vsb.label}</option>' );  
+                            
+                            </apex:repeat> 
+                            
+    
+    
+ var select2 = j('[class$=widget-9]');      
+                                j('[class$=widget-9]').removeAttr( "disabled" );       
+                 select2.empty();       
+                 select2.append( '<option value>Order Status</option>' );       
+                           <apex:repeat value="{!Visibility2}" var="vsb">
+                           if('{!vsb.label}' != 'Abandoned'){
+                           select2.append( '<option value={!vsb.label}>{!vsb.label}</option>' );  
+                            }
+                            </apex:repeat>    
+                                   
+var select3 = j('[class$=widget-11]');      
+                                j('[class$=widget-11]').removeAttr( "disabled" );       
+                 select3.empty();       
+                 select3.append( '<option value>Registration Type</option>' );      
+                           <apex:repeat value="{!Visibility}" var="vsb">
+
+                           select3.append( '<option value={!vsb.label}>{!vsb.label}</option>' );  
+                            
+                            </apex:repeat>    
+                            }                             
+                       
+                       } );
+
+
+}
+    </script>
+    <!--------//end of datatable js component------------->
+
+    <!---------------------------------------------------------ORDERPOPUPINFO PAGE HERE-------------------------------------------------------------------------------->
+
+    <apex:include pageName="BLN_Orderinfo_popup" rendered="true"
+        id="ordpopup" />
+    <!--------------------------------------------------------//ORDERPOPUPINFO PAGE HERE-------------------------------------------------------------------------------->
+
+    <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+    <script>
+var dt = jQuery.noConflict();        
+dt('.ED').datetimepicker({
+timepicker:false,
+format:'m/d/Y',
+formatDate: 'm/d/Y',
+
+});
+</script>
+
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+
+    <!-----------choosen multiselect function---------------------->
+
+    <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script>
+    <script>
+    $(document).ready(function() {
+    try{
+    ShowLoader();
+     Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_MyticketsCon.statistics}',
+            '{!SelectedEvent}',
+           function(stats, eventd){
+           HideLoader();
+           if(stats.totalcompOrders!='0')
+           $('#TotalTransactions').html(stats.totalcompOrders);
+           else
+           {
+          
+           $( "#TotalTransactions" ).prev().remove(); $( "#TotalTransactions" ).remove();
+           }
+           if(stats.totalSoldTickets!='0')
+           $('#TotalAttendees').html(stats.totalSoldTickets);
+           else
+           {
+           
+           $( "#TotalAttendees" ).prev().remove();$( "#TotalAttendees" ).remove();
+           }
+           if(stats.totalrevenue!='0'){
+           $('#TotalAmount').html(stats.totalrevenue);
+           
+           }
+           else
+           {
+           
+           $( "#TotalAmount" ).prev().remove();$( "#TotalAmount" ).remove();
+           }
+           var paygateyString = '';
+           var paymentString = '';
+           for(var i=0;i<stats.innRevList.length;i++)
+           {
+               paygateyString += stats.innRevList[i].paygatey+',';  
+               paymentString += stats.innRevList[i].revenue+',';
+               if(i==0){
+                       $("#PaymentType1").html(stats.innRevList[i].paygatey);              
+                       $("#paidrevenue1").text('$ '+stats.innRevList[i].revenue);
+           
+           }
+               if(i==1){
+                     $("#PaymentType2").html(stats.innRevList[i].paygatey);              
+                     $("#paidrevenue2").text('$ '+stats.innRevList[i].revenue);
+              }
+              if(i==2){
+                     $("#PaymentType3").html(stats.innRevList[i].paygatey);              
+                     $("#paidrevenue3").text('$ '+stats.innRevList[i].revenue);
+              }
+              if(i==3){
+                     $("#PaymentType4").html(stats.innRevList[i].paygatey);              
+                     $("#paidrevenue4").text('$ '+stats.innRevList[i].revenue);
+              }
+              if(i==4){
+                     $("#PaymentType5").html(stats.innRevList[i].paygatey);              
+                     $("#paidrevenue5").text('$ '+stats.innRevList[i].revenue);
+              }
+           }                         
+           
+           $("#TotalRevenue").text('$ '+stats.totalrevenue);  
+           }
+           );
+    }catch(e){}
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+     
+    });
+
+</script>
+
+    <script>
+    /*******creating instances for calling popups*******/
+
+var Alert_editbuyer = new Custom_formPopup(); //Edit Buyer popup  
+
+ 
+ /***************/  
+</script>
+    <!---------popup for Buyer Information------->
+    <apex:form id="secfrm">
+        <script>
+        try{
+ Alert_editbuyer.render('dialogbox_editbuyer','editbuyer_dialogoverlay','Alert_editbuyer',this);
+ }catch(e){}
+ </script>
+        <div class="dialogoverlay" id="editbuyer_dialogoverlay"
+            style="z-index: 99999;"></div>
+        <!----------------->
+        <!--close of dialogoverlay-->
+        <div id="dialogbox_editbuyer"
+            style="display: none; z-index: 999991; width: 36%; margin-left: 32%;">
+            <a id="close" onclick="Alert_editbuyer.Cancel()"
+                style="margin-top: -6px;">×</a>
+            <div class="form-embed-div" style="margin-top: 20px;">
+                <div class="form-content-div"
+                    style="padding: 0px; max-height: 575px; overflow: auto;">
+                    <!----------->
+                    <!----------->
+                    <div class="grid-1"
+                        style="width: 98%; margin-left: 1%; margin-bottom: 10px; padding-right: 0px;">
+                        <div class="title-grid">Edit Buyer Information</div>
+                        <div class="content-gird">
+                            <!-------------->
+                            <div class="formbox">
+                                <!------->
+                                <div class="formelem_boxbig">
+                                    <div class="formlabel-left textright">
+                                        <label>First Name:</label>
+                                    </div>
+                                    <!---close of formlabel--->
+                                    <div class="formelement-ryt textleft">
+                                        <!-------->
+                                        <apex:inputText value="{!tktprofile.First_Name__c}" id="Firstname"/>
+                                        <!---------->
+                                    </div>
+                                    <!---close of formelement-ryt---->
+                                    <div class="clear"></div>
+                                </div>
+                                <!---close of formelem_boxbig---->
+                                <!------>
+
+                                <!------->
+                                <div class="formelem_boxbig">
+                                    <div class="formlabel-left textright">
+                                        <label>Last Name:</label>
+                                    </div>
+                                    <!---close of formlabel--->
+                                    <div class="formelement-ryt textleft">
+                                        <!-------->
+                                        <apex:inputText value="{!tktprofile.Last_Name__c}" id="Lastname"/>
+                                        <!---------->
+                                    </div>
+                                    <!---close of formelement-ryt---->
+                                    <div class="clear"></div>
+                                </div>
+                                <!---close of formelem_boxbig---->
+                                <!------>
+
+                                <!------->
+                                <div class="formelem_boxbig">
+                                    <div class="formlabel-left textright">
+                                        <label>Email:</label>
+                                    </div>
+                                    <!---close of formlabel--->
+                                    <div class="formelement-ryt textleft">
+                                        <!-------->
+                                       <apex:inputField id="buyeremailid" value="{!tktprofile.Email__c}" onfocus="this.oldvalue = this.value;" styleClass="EmailTicket" onchange="showemailalert(this);this.oldvalue = this.value;"/>             
+  
+                                      <!--  <apex:inputText id="buyeremailid" value="{!gnUser.Email__c}"
+                                            onchange="clearCompany(this);" /> -->
+                                        <!---------->
+                                    </div>
+                                    <!---close of formelement-ryt---->
+                                    <div class="clear"></div>
+                                </div>
+                                <!---close of formelem_boxbig---->
+                                <!------>
+
+                                <!------->
+                                <div class="formelem_boxbig">
+                                    <div class="formlabel-left textright">
+                                        <label>Company:</label>
+                                    </div>
+                                    <!---close of formlabel--->
+                                    <div class="formelement-ryt textleft">
+                                        <!-------->
+                                        <apex:inputText id="buyercomp" value="{!tktprofile.TKT_Company__c}"  styleClass="CompanyTicket1" />
+                                       <!--<apex:inputHidden value="{!compidchanged}" id="xyz"/> -->
+                                        <!--<apex:inputText id="buyercomp" value="{!companyName}"
+                                            onkeyup="getRemoteAccount(this,'false','Onchange','compedit');"
+                                            onclick="getRemoteAccount(this,'false','Onclick','compedit');"
+                                            styleClass="CompanyTicket1" />
+                                        <div id="acctId30" class="div_exp2"
+                                            style="max-height: 100px; color: #fff; background-color: #93969F; margin-top: 3px; display: none; position: absolute; text-align: right; width: 45.5%;">
+                                            <a id="close" onclick="closediv('acctId30')"
+                                                style="font-size: 25px; color: #fff; padding: 3px; margin-top: -5px;">X</a>
+                                            <br />
+                                            <div id="acctId40" class="div_exp1"
+                                                style="width: 100%; position: inherit; max-height: 100px; overflow: auto; background-color: #93969F; color: #fff; margin-top: -5px; text-align: left;">
+                                            </div>
+                                        </div>-->
+
+                                        <!---------->
+                                        </div>
+                                    <!---close of formelement-ryt---->
+                                     <!------->
+                                <div class="formelem_boxbig">
+                                    <div class="formlabel-left textright">
+                                        <label>Mobile:</label>
+                                    </div>
+                                    <!---close of formlabel--->
+                                    <div class="formelement-ryt textleft">
+                                        <!-------->
+                                        <apex:inputText value="{!tktprofile.Mobile__c}" onkeyup="validatephone(this)" onblur="validatephone2(this)" id="mobileno"/>
+                                        <!---------->
+                                    </div>
+                                    <!---close of formelement-ryt---->
+                                    <div class="clear"></div>
+                                </div>
+                                <!---close of formelem_boxbig---->
+                                <!------>
+                                    <div class="clear"></div>
+                                </div>
+                                <!---close of formelem_boxbig---->
+                                
+                                <!------>
+                                <div style="margin-top: 10px; text-align: center;">
+
+                                    <apex:commandButton value="Save" action="{!Saveord}"
+                                        styleClass="button-a blue" />
+                                    &nbsp;&nbsp;
+                                    <button type="button" class="button-a dark-blue"
+                                        onclick="Alert_editbuyer.Cancel();return false;">Cancel</button>
+                                    <!--  <button class="button-a blue" onclick="Alert_editbuyer.Cancel()">Save</button>
+      &nbsp;&nbsp;
+      -->
+                                </div>
+
+                                <!------->
+                            </div>
+                            <!--close of formbig---->
+                            <!--------------->
+                        </div>
+                        <!--close of content-grid--->
+                    </div>
+                    <!--close of grid-1----->
+                    <!----->
+                    <!----->
+                </div>
+                <!----close of form-content-div----->
+            </div>
+            <!----close of form-embed-div------>
+        </div>
+        <!--close of dialogbox---->
+
+    </apex:form>
+    <!------------end of popup for Buyer Information------------->
+
+    <!---------checkbox select function-------------------->
+    <script>
+var arr=[]; //Global array list variable 
+/*******adding select row arraylist function*******/
+function pusharrobj(rowidd){
+        arr.push(rowidd);
+    /*alert(arr.length)*/
+    } 
+/*****************function calling on select all checkbox*******************************/
+var checkSize=0;
+  function setChecked1(obj) 
+    {
+     /*arr=[];//on unchecked clearing the arraylist 
+        check = document.getElementsByClassName("id[]");
+        //alert('check'+check.length);
+        checkSize=check.length;
+        for (var i=0; i<check.length; i++) 
+         {
+          check[i].checked = obj.checked;
+           if(obj.checked==true){ 
+            $(check[i]).parent().parent().addClass("currenttr");//highlighting the checked rows
+             var x=check[i].parentNode.parentNode.setAttribute('id' , 'trr' +(i+1));//assign select row's id
+             pusharrobj(check[i].parentNode.parentElement.id);//id's adding into array
+            //alert(check[i].parentNode.parentElement.id); 
+           }else{
+                  $(check[i]).parent().parent().removeClass("currenttr");//removing the highlight the checked rows
+               arr=[];//on unchecked clearing the arraylist 
+           }
+        
+           }*/
+           
+             
+        var check = document.getElementsByName("id[]");
+        checkSize=check.length;
+    //    alert(check);
+        for (var i=0; i<check.length; i++) 
+         {
+          check[i].checked = obj.checked;
+           if(obj.checked==true){ 
+            $(check[i]).parent().parent().addClass("currenttr");//highlighting the checked rows
+           //  var x=check[i].parentNode.parentNode.setAttribute('id' , 'trr' +(i+1));//assign select //row's id
+             pusharrobj(check[i].parentNode.parentElement.id);//id's adding into array
+           // alert(check[i].parentNode.parentElement.id); 
+           }else{
+                 $(check[i]).parent().parent().removeClass("currenttr");//removing the highlight the checked rows
+               arr=[];//on unchecked clearing the arraylist 
+           }
+        
+           }
+}
+/********************function for rowlevel(individual) check****************************/
+function rowchk1(rowchks)
+{
+    if(rowchks.checked==true){
+ $(rowchks).parent().parent().addClass("currenttr");//highlighting the checked rows
+        pusharrobj(rowchks.parentNode.parentNode.id);//adding into the arraylist
+        }
+        
+        else{
+         $(rowchks).parent().parent().removeClass("currenttr");//highlighting the checked rows
+               for(var i=0;i<arr.length;i++){
+                   if(rowchks.parentNode.parentNode.id == arr[i])//comparing the rowid if already in the list
+                   {
+                       arr.splice(i,1);//removing the unselectedchkbox row id
+                   }
+               
+               }
+            
+                        }
+    }
+
+/*******************************************************/
+/****************function calling on click of options(condition if arraylength greater than1)******************/
+
+function checklen(clkbtn_id){
+    if(arr.length>=1){
+        //alert(arr);
+        //alert("true");
+        //alert(clkbtn_id.id);
+        cancellbool=true; 
+    if(clkbtn_id.id=='cancelord_btn'){
+
+         if(arr.length>1){
+         Alert.render('Please Select Only One Record' ,'Alert','ok');
+           }
+           else{
+           // Alertconfirm.render('Are you sure you want to cancel the order ?' , 'Confirmation',clkbtn_id,'Yes','No','Alertconfirm');
+           var aa=confirm('Are you sure you want to cancel the order');
+           if (aa){
+           cancelTotalOrder(arr[0]);
+           }
+           }
+    
+        cancellbool=true;
+        }   
+        else if (clkbtn_id.id=='export_btn'){
+        //alert("Export Action")
+        exporder();
+        
+        }
+    
+    else if (clkbtn_id.id=='print_navbtn')
+    {
+   // alert("Print Action");
+   printorder();
+    }
+    else if(clkbtn_id.id=='sendOrdConfirm_btn'){
+         if(arr.length>1){
+             Alert.render('Please Select Only One Record' ,'Alert','ok');
+         }
+         else{
+             //alert(arr[0]);
+             var ordId=arr[0];
+            sendOrdConfirmation(ordId);
+         }
+    }else if(clkbtn_id.id=='sendInvoice_btn'){
+        if(arr.length>1){
+             Alert.render('Please Select Only One Record' ,'Alert','ok');
+         }
+         else{
+             var ordId=arr[0];
+ 
+            sendInvoice(ordId);
+         }
+    }
+    
+        
+    }
+     else{
+         Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+         }  
+}
+/****************End of function calling on click of options(condition if arraylength greater than1)******************/
+
+/****************function calling back on click of confirmation box save for Cancel Order *****************/
+
+function callback(clkbtn , okbtnn){
+//alert(arr[0]);
+if(clkbtn.id=="cancelord_btn"){
+    
+            
+        //alert("cancelbtn action");
+    // var oid=document.getElementById(arr[0]).childNodes[5].innerHTML;
+    // cancelTotalOrder(arr[0]);  
+     }
+
+}
+
+function cancelTotalOrder(ordId){
+     
+               canord(ordId);
+              
+     }
+/****************end of function calling back on click of confirmation box save for Cancel Order *****************/ 
+<!--------function for export-------->
+function exporder(){
+         //alert('DDDDDDDD '+ arr.length);
+         
+           if(arr.length==checkSize){
+            
+                var r=confirm("Do you want to export all pages?");
+                if (r == true) {
+                   exportOrder();
+                  } else {
+                   constructstr();
+                   
+                }
+             }else{
+                constructstr();
+              }
+        
+       } 
+
+function printorder(){
+         //alert('DDDDDDDD '+ arr.length);
+         
+           if(arr.length==checkSize){
+            
+                var r=confirm("Do you want to print all pages?");
+                if (r == true) {
+                   printOrder();
+                  } else {
+                   constructstr1();
+                   
+                }
+             }else{
+                constructstr1();
+              }
+        
+       } 
+  
+ function constructstr(){
+         //alert(arr);
+           individualexport(JSON.stringify(arr));
+         }
+         
+  function constructstr1(){
+         //alert(arr);
+           individualprint(JSON.stringify(arr));
+         }        
+  individualprint       
+          </script>
+    
+    <!------------//checkbox function------------------>
+
+    <!-----/*********************//Java Script Section*******************/-->
+    <c:currencyFormatting ></c:currencyFormatting>
+   <script> 
+          function amountfunction()
+          {
+              rightJustificationOrders('{!eventcurrency}');          
+          }
+    </script>      
+<!---- <script> 
+          var EditBtnDisable;
+          var UpdtAc = '{!RegSett[0].Update_Access__c}';
+          alert('-----Update Access------- '+UpdtAc );
+          if(UpdtAc=='true'){
+            EditBtnDisable = true;
+            alert('--Edit Access true(Event Staff)-- '+EditBtnDisable);
+          }
+          else if(UpdtAc=='false'){
+          EditBtnDisable = false;
+          //$(".fa.fa-trash-o.fa-delete20px").css({"color": "#c1d7d7"});
+          alert('--Edit Access false(Event Staff)-- '+EditBtnDisable);
+          
+          }
+          else {
+          EditBtnDisable = true;
+          //$(".fa.fa-trash-o.fa-delete20px").css({"color": "#c1d7d7"});
+          alert('--Index Null(Event Admin)-- '+EditBtnDisable);
+          
+          }
+          
+
+
+          
+    </script>  ----> 
+    <script>
+                    var oldemail='';
+                    function showemailalert(textbox)
+                    {
+                      if(textbox.value!=textbox.oldvalue){
+                    oldemail=textbox.oldvalue;
+                      Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_MyticketsCon.checkUser}',
+            textbox.value,
+           function(result, event){
+          
+           if(result=='Exist')
+           {
+                 var conf=confirm('If you change the email address, the complete user information will be replaced with the new user details.');
+                 if(conf==true)
+                 {
+                 
+                 //alert('::::::::::BLN_Attendeeinfo_popup:::::;;'+conf);
+                  Visualforce.remoting.Manager.invokeAction(
+                 '{!$RemoteAction.BLN_MyticketsCon.getGnuser}',
+                   textbox.value,
+                    function(gnuser, event){
+                    console.log(gnuser);
+                    
+                    $("[id$='FirstName']").val(gnuser.First_Name__c);
+                    $("[id$='Prefix']").val(gnuser.Prefix__c);
+                    $("[id$='LastName']").val(gnuser.Last_Name__c);
+                    $("[id$='Suffix']").val(gnuser.Suffix__c);
+                    $("[id$='mobileno']").val(gnuser.Mobile__c);
+                    $("[id$='HomePhone']").val(gnuser.Home_Phone__c);
+                    $("[id$='Age']").val(gnuser.Age__c);
+                    $("[id$='Gender']").val(gnuser.Gender__c);
+                    //$("[id$='DOB']").val(gnuser.DOB__c);
+                    Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_MyticketsCon.getTimeZoneValue}',
+            gnuser.DOB__c,
+           function(resulted, eventd){
+           $("[id$='DOB']").val(resulted);
+           });
+                    $("[id$='fbid']").val(gnuser.FaceBookId__c);
+                    $("[id$='twtid']").val(gnuser.TwitterId__c);
+                    $("[id$='blogid']").val(gnuser.Blogger__c);
+                    $("[id$='linkedinid']").val(gnuser.LinkedInId__c);
+                    var bt= $('<div/>').html(gnuser.Biography__c).text();
+                   $('.cke_wysiwyg_frame').contents().find('body').html(bt);
+                    $("[id$='HomeAddress1']").val(gnuser.Address1__c);
+                    $("[id$='HomeAddress2']").val(gnuser.Address2__c);
+                    $("[id$='HomeCity']").val(gnuser.City__c);
+                    $("[id$='HomeCountry']").val(gnuser.Country__c);
+                    $("[id$='HomeState']").val(gnuser.State__c);
+                    $("[id$='HomeZip']").val(gnuser.Zip_Code__c);
+                    iframelink=[];
+                    $(".ytbox").remove();
+  $(".ytwraper").css("display","none");
+                    if(gnuser.Video__c!=''&&gnuser.Video__c!=undefined){
+ 
+ var st= $('<div/>').html(gnuser.Video__c).text();
+ var res = st.split(",");
+ for(i=0;i<res.length;i++)
+ {
+ 
+ iframelink.push(res[i]);
+       var box=$("<div class='ytbox'></div>")//creating parent div
+        var delimg=$("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+        var iframebox=$("<div class='iframebox'></div>");
+        
+                $(".ytwraper").css("display","block");
+                $(box).append(delimg);
+                
+                $(iframebox).append(res[i]);
+                $(box).append(iframebox);
+                $(".ytwraper").append(box);
+                $(".framelinkval").val("");//clearing the embedlink textbox
+ }
+ }
+                    
+                    $img = $('<img />').attr('src',"/servlet/servlet.ImageServer?id="+tktprofile.User_Pic__c+"&oid={!orgId}").fadeIn();
+                   $('.dropzone div').html($img);
+                        }, 
+                     {escape: true}
+                    );
+                    }
+                    else
+                    {
+                    
+                      $("[id$='Email']").val(oldemail);
+                     
+                    }
+                    
+            
+           }
+           else
+           {
+               var alertmsg='New User '+textbox.value+'will be created.Do you want to copy all the data from '+oldemail+'?';
+                var conf=confirm(alertmsg);
+                 if(conf==false)
+                {
+               // alert('cancel');
+                  $("[id$='Firstname']").val('');
+                    $("[id$='Prefix']").val('');
+                    $("[id$='buyercomp']").val('');
+                    $("[id$='Lastname']").val('');
+                    $("[id$='Suffix']").val('');
+                    $("[id$='mobileno']").val('');
+                    $("[id$='HomePhone']").val('');
+                    $("[id$='Age']").val('');
+                    $("[id$='Gender']").val('');
+                    $("[id$='DOB']").val('');
+                    $("[id$='fbid']").val('');
+                    $("[id$='twtid']").val('');
+                    $("[id$='blogid']").val('');
+                    $("[id$='linkedinid']").val('');
+                   $('.cke_wysiwyg_frame').contents().find('body').html('');
+                    $("[id$='HomeAddress1']").val('');
+                    $("[id$='HomeAddress2']").val('');
+                    $("[id$='HomeCity']").val('');
+                    $("[id$='HomeCountry']").val('');
+                    $("[id$='HomeState']").val('');
+                    $("[id$='HomeZip']").val('');
+                    iframelink=[];
+                    $(".ytbox").remove();
+                    $(".ytwraper").css("display","none");
+                    
+                   $('.dropzone div').html('');
+                 }
+           }
+           }
+           , 
+            {escape: true}
+        );
+       
+        }
+                    
+                    
+                    }
+    </script>     
+</apex:page>

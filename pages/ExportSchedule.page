@@ -1,0 +1,92 @@
+<!--------------- <apex:page contentType="text/csv#Corporate_MBE_Schedule.csv" controller="MM_EventAdmin_ReportsCon" cache="true" language="en-US" sidebar="false" >{!exhibitoralias},{!exhibitoralias} Contact,{!exhibitoralias} Email,{!exhibitoralias} #,{!attendeealias},{!attendeealias} Contact,{!attendeealias} Email,{!attendeealias} #,Appointment Time,Table #
+ <apex:repeat value="{!matforexport}" var="bn">
+  <apex:repeat value="{!bn}" var="match">
+  "{!match.MM_To_UPE__r.BT_id__r.BT_Name__c}","{!match.MM_To_UPE__r.BoothAdmin_id__r.Name}",{!match.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c},{!match.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c},{!match.MM_To_EAM__r.AS_id__r.AS_Company__c},{!match.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!match.MM_To_EAM__r.AS_id__r.AS_LastName__c},{!match.MM_To_EAM__r.AS_id__r.AS_Email__c},{!match.MM_To_EAM__r.AS_id__r.AS_CellPhone__c},{!match.MM_slot_StartTime__c} - {!match.MM_Slot_End_Time__c},{!match.MM_To_UPE__r.BT_id__r.MM_TableNo__c}
+  </apex:repeat>
+ </apex:repeat>  
+</apex:page>             --------------------------> 
+
+
+
+
+<apex:page contentType="application/vnd.ms-excel#Corporate_MBE_Schedule.xls" controller="MM_EventAdmin_ReportsCon" >  
+<table width="100%" border="2" cellspacing="0" cellpadding="0" >
+<tr>
+  <td width="10%" height="30" align="center"><strong>{!exhibitoralias}</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!exhibitoralias} Contact</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!exhibitoralias} Email</strong></td>
+ <apex:outputPanel rendered="{!IF(cancelledbool= true,'false','true')}"> <td width="10%" height="30" align="center"><strong>{!exhibitoralias} #</strong></td></apex:outputPanel>
+  <td width="10%" height="30" align="center"><strong>{!attendeealias}</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!attendeealias} Contact</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!attendeealias} Email</strong></td>
+  <td width="10%" height="30" align="center"><strong>{!attendeealias} #</strong></td>
+  <td width="10%" height="30" align="center"><strong>Appointment Time</strong></td>
+    <apex:outputPanel rendered="{!cancelledbool}"> <!---- Canceled Appointments ------> 
+    <td width="10%" height="30" align="center"><strong> Cancelled Date </strong></td>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!missedbool}">   <!---- Missed Appointments ------> 
+    <td width="10%" height="30" align="center"><strong>Missed Date</strong></td>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!totalmatchesbool}">   <!---- Total Appointments ------> 
+    <td width="10%" height="30" align="center"><strong>Appointment Date</strong></td>
+    </apex:outputPanel>
+ 
+  <td width="10%" height="30" align="center"><strong>Table #</strong></td>
+</tr>
+  <apex:repeat value="{!matforexport}" var="bn">
+  <apex:repeat value="{!bn}" var="match">
+  
+<tr>
+  <td height="30" align="center" valign="middle">{!match.MM_To_UPE__r.BT_id__r.BT_Name__c}</td> 
+  <td height="30" align="center" valign="middle">{!match.MM_To_UPE__r.BoothAdmin_id__r.Name}</td> 
+  <apex:outputPanel rendered="{!IF(cancelledbool= true,'false','true')}"><td height="30" align="center" valign="middle">{!match.MM_To_UPE__r.Attendee_Summary__r.AS_Email__c}</td></apex:outputPanel> 
+  <td height="30" align="center" valign="middle">{!match.MM_To_UPE__r.Attendee_Summary__r.AS_CellPhone__c}</td> 
+  <td height="30" align="center" valign="middle">{!match.MM_To_EAM__r.AS_id__r.AS_Company__c}</td> 
+  <td height="30" align="center" valign="middle">{!match.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!match.MM_To_EAM__r.AS_id__r.AS_LastName__c}</td> 
+  <td height="30" align="center" valign="middle">{!match.MM_To_EAM__r.AS_id__r.AS_Email__c}</td> 
+  <td height="30" align="center" valign="middle">{!match.MM_To_EAM__r.AS_id__r.AS_CellPhone__c}</td> 
+  <td height="30" align="center" valign="middle">{!match.MM_slot_StartTime__c} - {!match.MM_Slot_End_Time__c}</td>
+ <apex:outputPanel rendered="{!cancelledbool}">
+   <td height="30" align="center" valign="middle">
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Eastern Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.1666666666666667}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Central Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.2083333333333333}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Mountain Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.25}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Pacific Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.2916666666666667}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Indian Standard Time(IST)'}"><apex:param value="{!match.LastModifiedDate-0.2208333333333333}"/></apex:outputText>
+  </td>
+  <!-- <td height="30" align="center" valign="middle"><apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}"><apex:param value="{!match.lastmodifieddate-0.208333}"/></apex:outputText> --> 
+  </apex:outputPanel> 
+  
+  <apex:outputPanel rendered="{!totalmatchesbool}">
+   <td height="30" align="center" valign="middle">
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Eastern Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.1666666666666667}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Central Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.2083333333333333}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Mountain Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.25}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Pacific Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.2916666666666667}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Indian Standard Time(IST)'}"><apex:param value="{!match.LastModifiedDate-0.2208333333333333}"/></apex:outputText>
+  </td>
+  <!-- <td height="30" align="center" valign="middle"><apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}"><apex:param value="{!match.lastmodifieddate-0.208333}"/></apex:outputText> --> 
+  </apex:outputPanel>
+  
+  <apex:outputPanel rendered="{!missedbool}">
+  <td height="30" align="center" valign="middle">
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Eastern Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.1666666666666667}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Central Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.2083333333333333}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Mountain Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.25}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Pacific Time(USA)'}"><apex:param value="{!match.LastModifiedDate-0.2916666666666667}"/></apex:outputText>
+  <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}" rendered="{!match.EV_id__r.EV_HostingTimeZone__c=='Indian Standard Time(IST)'}"><apex:param value="{!match.LastModifiedDate-0.2208333333333333}"/></apex:outputText>
+  <!-- <apex:outputText value="{0,date,MM/dd/YYYY hh:mm a}"><apex:param value="{!match.lastmodifieddate-0.208333}"/></apex:outputText> --> 
+  </td> 
+  </apex:outputPanel>
+
+  <td height="30" align="center" valign="middle">{!match.MM_To_UPE__r.BT_id__r.MM_TableNo__c}</td> 
+</tr>
+ 
+ 
+
+   </apex:repeat>
+   </apex:repeat>
+</table>
+</apex:page>

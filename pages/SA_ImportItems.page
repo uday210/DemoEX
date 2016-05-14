@@ -1,0 +1,428 @@
+<apex:page controller="SA_ImportItemsController" standardStylesheets="false" showHeader="false" id="Thepage">
+
+<head>
+    <title>Scan Attendee</title>
+</head>
+<!-------------------------------------------- Styles, Javascript and Jquery References Start ------------------------------------------------->
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/style-button.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/jquery-ui-1.8.16.custom.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/fullcalendar.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tipTip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/tables.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/chosen.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/responsive.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/css/popup.css')}"/>
+
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery5.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery-ui-1.8.16.custom.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fancybox.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/fullcalendar.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/elfinder.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.wysiwyg.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/jquery.tipTip.minified.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/forms.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/chosen.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/autoresize.jquery.min.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/colorpicker.js')}"></script>
+<script type="text/javascript" src="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/js/functions1.js')}"></script>
+
+<style type="text/css">
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+</style>
+
+<script type="text/javascript"> 
+    $(document).ready(function(){  
+        var sb1= '{!$Component.Thepage:fileform1234}' 
+        var vb = '#{!$Component.Thepage:fileform1234}' +' input:file';
+        $('#fileform  input:file').change(function(event){
+            file = this.files[0]; 
+            $('#fileinfo').html('<b>Name:</b> ' + file.name + '<br />' +
+                                '<b>Size:</b> ' + file.size + '<br />' +
+                                '<b>Type:</b> ' + file.type);
+            
+            reader = new FileReader();
+            reader.onload = function(event){
+                $('#filecontents').html(event.target.result.replace(/\r/g,'aazz11ttt222ggg'));
+            }
+            reader.onerror = function(stuff){
+                $('#errorlog').html(stuff.getMessage());
+            }
+            reader.readAsText(file)
+        });
+    });
+    
+    function checkLoadData(){  
+        var x=document.getElementById("filecontents").innerHTML;
+        x =x+ "????:::::******&&&&&&%%%%;;;;"+  file.name;
+        loaddatafunction(x);
+    } 
+</script>
+    
+<script language="JavaScript">
+ 
+    function validateImportFields(){
+    
+        var lvFnId = document.getElementById('j_id0:fo:j_id54:1:sel');
+        var lvLnId = document.getElementById('j_id0:fo:j_id66:1:sel');
+        var lvEmId = document.getElementById('j_id0:fo:j_id54:2:sel');
+
+        lvFnId.value=lvFnId.value.trim();
+        lvLnId.value=lvLnId.value.trim();
+        lvEmId.value=lvEmId.value.trim();
+
+        if(lvFnId.value == "NONE"){
+            alert("Please select Item Name");
+            return false;
+        }
+    
+        if(lvLnId.value == "NONE"){
+            alert("Please select Item Price");
+            return false;
+        } 
+    
+        if(lvEmId.value == "NONE"){
+            alert("Please select Item Quantity");
+            return false;
+        }    
+    }
+    
+    var RollBackBool;
+    function ValidateRollback(){
+    
+        var r= confirm('Are you sure want to rollback Import');
+        if (r==true){
+            rollBackBool = true;
+            return true;
+        }
+        else{
+            rollBackBool =false;
+            return false;
+        }
+    }
+
+</script>
+
+<!-------------------------------------------- Styles, Javascript and Jquery References End ------------------------------------------------->
+
+<div id="filecontents"  style="display:none;">
+</div>
+
+<apex:form id="SA_ImportItemsForm">
+<div id="header">
+        <div id="logo">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image url="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/aslogo.png')}" style="padding-top:10px;"/>
+        </apex:outputLink>
+        </div><!--close of logo-->
+    </div><!--close of header--->
+    
+    <div  id="ribbon"></div><!--close of ribbon-->
+    <header>
+        <div id="centered-head" class="res"> 
+        <nav>
+            <ul>
+                <li id="login">
+                    <span id="login-trigger">
+                        <span id="login-triggers">
+                            <span id="user-panel-check"></span>
+                            <span id="user-panel-title ">My Account</span>
+                        </span>
+                    </span>
+                    <div id="login-content">
+                        <ul>
+                            <li><apex:outputLink value="/apex/SA_ManageProfile"><apex:image value="{!$Resource.Manage_Profile}" width="15px" height="15px"/><span class="editprofile icon">Manage Profile</span></apex:outputLink></li>
+                            <li><apex:outputLink value="/apex/SA_ResetPassword"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/reset.png')}" width="13px" height="13px"/><span class="reset icon">Reset Password</span></apex:outputLink></li>  
+                            <li><apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp"><apex:image value="{!URLFOR($Resource.ScanAttendee_V1, 'AttendeeScan/scanattendee/images/logout.png')}"/><span>{!$Label.site.logout}</span></apex:commandLink></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="account-name">
+            <p><span class="welcome">Welcome, </span><strong>{!$User.Firstname}&nbsp;{!$User.Lastname}</strong></p>
+                <div class="account-separator"></div>
+        </div>
+        <div class="account-name"></div>
+        <div class="account-name" style="float:left;valign:middle;align:left;">
+        <apex:outputLink value="/apex/SA_ManageEvents">
+            <apex:image value="{!$Resource.HomeIcon}" height="40" width="40"/>
+        </apex:outputLink></div>
+        <!-- Navigation end--> 
+        </div>
+    </header>
+ </apex:form>
+    <section id="middle" style=" border:0px #000000 solid" class="res">
+    <div id="container-main">
+        <div id="container" style="border:0px #000000 solid">
+            <div id="content">
+                <div class="speedbar" style=" border:0px #FF0000 solid">
+                    <div class="speedbar-nav">Scan Attendee ›› Import Items</div>
+                    <div style="float:right;padding-right:10px;">Selected Event: <b>{!SelectedEvent.Ev_Title__c}</b></div>
+                    <!--close of speedbar-nav-->
+                </div>
+                <!--------------------------------------------------- Import Items Grid Start --------------------------------------------------->
+                
+                
+                <div class="grid-1">
+                <div class="title-grid">Import Items</div>
+                <div class="content-gird">
+                
+                <div class="form">
+
+                <div id="left-form" style=" width:100%; padding-bottom:0px;  border:0px #000000 solid; float:left;">
+
+                        <div class="elem" style="margin-top:20px;">
+                            <div class="indent" style="margin-left:350px;">
+                                    <form id="fileform" action="" method="post"> 
+                                        <input type="file" name="file" style="font-size:15px;"/>
+                                    </form>  
+                            </div>
+                        </div>
+                        <br/><br/>
+                        
+                        <apex:form id="fileform1234">     
+                        <div class="indent" style=" margin-left:350px;">
+                            <input style="height:30px; cursor:pointer" type="button" value="Show Mapping" onclick="checkLoadData();" class="button-a blue"/>
+                            <apex:actionFunction action="{!showItemMapping}" name="loaddatafunction" reRender="showselectCSVForm">
+                                <apex:param name="one" value=""/>
+                            </apex:actionFunction> 
+                        </div>
+                        <br/>
+                        
+                        <div id="note" style=" margin-left:20px">
+                            <label id="note-heading">Note:</label>
+                                <span id="note-content"> Please use a CSV file or the standard template to upload Items.<font color="#FFFF00"> <b><u><apex:commandLink value="Click here" action="{!exportItemToCSV}" title=" Click here " target="_blank"/></u></b></font> to download the template.</span><hr/>   
+                            <label id="note-heading">Supported Formats:</label><br/>
+                                <span id="note-instructions" >You can use csv format for importing Items.</span><br/><br/>
+                            <label id="note-heading">Maximum Limits</label><br/>
+                                <span id="note-instructions-red" >It is recommended to import 100 records at a time.</span><br/><br/>
+                            <label id="note-heading">Important Notes</label><br/>
+                            <ul>
+                                <li>First row of the given file will be treated as field names.</li>
+                                <li>Item Name, Item Price and Quantity are mandatory fields.</li>
+                            </ul>
+                            <br/>
+                            <div id="bottom-instruction" >
+                                <label id="mandatory" >*</label><b>It is recommended to test your import with a sample file before you import the actual data.</b>
+                            </div>
+                        </div><!--close of note-->  
+                        <br/>
+                        </apex:form>
+
+                    </div><!--close of left-form-->
+                    <div class="clear"> </div>
+                </div>
+            </div>
+        <div class="clear"></div>
+        </div>
+      
+      <!---------------------------------------------------------- Import Items Grid End --------------------------------------------------------->   
+
+      </div>
+      <!-- #content--> 
+    </div>
+    <!-- #container-->
+    <apex:form id="BLS_Form">
+        <aside class="sideLeft">
+        <span class="categories">Categories</span>
+        <ul class="menu">
+            <li><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events" styleClass="active"><span class="four-prong icon">Event Information</span></apex:outputLink>
+                <ul class="acitem" style="display: block;">
+                    <li><apex:outputLink value="/apex/SA_EventDashboard" id="AS_Events1"><span class="home icon">Dashboard</span></apex:outputLink></li>
+                    <li><apex:commandLink action="/apex/SA_Attendees"><span class="four-prong icon">Attendees</span><span class="num">2</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_AddAttendee"><span class="attendee icon">Add Attendee</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportAttendees"><span class="importattendee icon">Import Attendee</span></apex:outputLink></li>
+                        </ul>
+                    </li> 
+                    <li><apex:commandLink action="/apex/SA_Reports"><span class="four-prong icon">Reports</span><span class="num">6</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Ticket Sales</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Item Sales</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Orders</span></apex:outputLink></li>                                                   
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Refunds</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Check In Status</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Reports"><span class="reports icon">Check In History</span></apex:outputLink></li>                      
+
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            
+           <li class="expand"><apex:outputLink value="/apex/SA_Tickets"><span class="four-prong icon">Event Settings</span></apex:outputLink>
+                <ul class="acitem" style="display: none;">
+                    <li><apex:commandLink action="/apex/SA_Tickets"><span class="four-prong icon">Tickets</span><span class="num">2</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style="padding-left:15px"><apex:outputLink value="/apex/SA_Tickets"><span class="cal icon">Add Ticket</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportTickets"><span class="conversations icon">Import Tickets</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                    <li class="expand"><apex:commandLink action="/apex/SA_Items" style="background-color:#5B7585;"><span class="four-prong icon">Items</span><span class="num">2</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_Items"><span class="additem icon">Add Item</span></apex:outputLink></li>
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_ImportItems" style="background-color:#5B7585;"><span class="importitem icon">Import Items</span></apex:outputLink></li>
+                        </ul>
+                    </li>
+                   
+                    <li><apex:commandLink action="/apex/SA_AddUsers"><span class="four-prong icon">Event Staff</span><span class="num">1</span></apex:commandLink>
+                        <ul class="acitem" style="display: none;">
+                            <li style=" padding-left:15px"><apex:outputLink value="/apex/SA_AddUsers"><span class="addpromocode icon">Add Event Staff</span></apex:outputLink></li>    
+                        </ul> 
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        </aside>
+      </apex:form>  
+    </div>
+  <!-- #sideLeft --> 
+  <!-- #container main-->
+
+  <footer>
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Scan Attendee </p>
+      </div>
+    </div>
+  </footer>
+  
+</section>
+<!-- #middle-->
+
+<div class="clear"></div>
+
+<!------------------------------------------------------- Mapping & Success Popups Start ------------------------------------------------> 
+<apex:form id="showselectCSVForm">   
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!showselectCSV}"/>
+    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!showselectCSV}" style="width:80%;height:355px;">
+
+    <div style="float:right;position: absolute;top:1px;right:-2px;">
+        <apex:commandButton action="{!closeItem}" value="Close" image="{!$Resource.PopUpClose}" title="Close" style="width:26px;height:26px; color:#000000;font-size:16; font-weight:bold;" immediate="true"/>
+    </div>
+
+    <div style="height:280px;">
+    
+        <div>
+    
+            <div class="grid-1" style="text-align:left">
+                <div class="title-grid">Items Mapping</div>
+                <div class="content-gird">
+                    <div class="form">
+                        <div id="left-form" style=" width:98%; padding-top:10px;padding-left:30px;text-align:center;align:center;">
+                        
+                            <table cellpadding="0" cellspacing="0"  width="90%" style="padding-top:10px;padding-left:30px;text-align:center;align:center;" >
+                            <tr>
+                                <td width="100%" align="center" valign="top" style="align:center;text-align:center;">
+                                    <apex:dataTable value="{!inn}" var="yu" rendered="{!inn!=null}" border="0" width="100%" rowClasses="odd,even" style="border:0px solid Black;align:center;text-align:center;">
+                                        <apex:column headerClass="headercls" style="height:30px;padding-left:15px;width:50%;">
+                                            <B>{!yu.dbFieldvalue}</B><apex:outputText value="*" style="color:red; font-size:16px" rendered="{!IF((yu.dbFieldvalue == 'Item Name')|| (yu.dbFieldvalue == 'Item Price') || (yu.dbFieldvalue == 'Item Quantity'),True,False)}"></apex:outputText>
+                                            <apex:facet name="header">Available Fields</apex:facet>
+                                        </apex:column>
+                                        <apex:column headerValue="CSV Fields" headerClass="headercls" style="height:30px;padding-left:15px;width:50%;">
+                                            <apex:selectList value="{!yu.selectedValue}" size="1" multiselect="false" style="width:180px;">
+                                                <apex:selectOptions value="{!CSVHeaders}" /> 
+                                            </apex:selectList> 
+                                        </apex:column>      
+                                    </apex:dataTable> 
+                                </td>
+                            </tr>
+                            <tr>
+                            <td colspan="2"  style="vertical-align:top; text-align:center; padding-top:20px;">
+                                <apex:commandButton value="Insert Items" action="{!importItemValues}" onclick="return validateImportFields();" styleclass="button-a blue" style="height:30px; cursor:pointer"/>
+                                &nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!closeItem}" styleclass="button-a blue" style="height:30px; cursor:pointer"  />
+                            </td>
+                            </tr>
+                            </table>
+                        </div>
+                    
+                    <div class="clear"></div>
+                </div>  
+            
+                <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </apex:outputPanel>  
+</apex:form> 
+
+<apex:form > 
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!Successbool}"/>
+    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!Successbool}" style="width:80%;height:230px;">
+    
+    <div style="float:right;position: absolute;top:1px;right:-2px;">
+        <apex:commandButton action="{!closeItem}" value="Close" image="{!$Resource.PopUpClose}" title="Close" style="width:26px;height:26px; color:#000000;font-size:16; font-weight:bold;" immediate="true"/>
+    </div>
+
+    <div style="height:280px;">
+    
+    <div>
+    
+        <div class="grid-1" style="text-align:left">
+            <div class="title-grid">Records Status</div>
+            <div class="content-gird">
+            <div class="form">
+    
+            <table border="0"  cellspacing="0" cellpadding="0" width="100%" class="tabs_table" align="center">
+                <tr>
+                    <td align="Center">
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td align="Center" colspan="2">
+                        <apex:outputText >       
+                            Scan Attendee application will now begin importing your file. You will be notified by email at <B style="color:#FF0000; Font-size:13px; Font-weight:bold; text-align:center;">  {!$User.Username}</B> when your import is completed.<br/><br/>Based on the current volume of import activity, we estimate that your import will be completed in approximately <B style="color:#177f0c; Font-size:13px; Font-weight:bold; text-align:center;"> 1 minutes</B>.
+                        </apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="Center" >
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding-left:70px;">
+                       <apex:commandButton value="OK" action="{!closeItem}" styleclass="button-a blue" style="height:30px; cursor:pointer"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="Center">
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>     
+    
+           </div>
+
+            <div class="clear"></div>
+        </div>
+        </div>
+                
+            
+            
+        </div>
+    </div>
+    </apex:outputPanel>  
+</apex:form> 
+
+<!------------------------------------------------------- Mapping & Success Popups Start ------------------------------------------------> 
+
+</apex:page>

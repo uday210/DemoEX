@@ -1,0 +1,3050 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="BLN_CustomBagdeConNew" id="stylepage">
+   <apex:outputText value="{!$CurrentPage.parameters.urlparm}" />
+   
+   <title>Eventdex Badge Creator</title>
+   <script>var resourcePath='{!URLFOR($Resource.badgeToolAssets)}';</script>
+   <script src="{!URLFOR($Resource.badgeToolAssets, '/scripts/lib/jquery-2.1.4.min.js')}"></script>
+ <!---   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js"></script>--->
+   <script src="{!URLFOR($Resource.badgeToolAssets, '/scripts/lib/angular.min.js')}"></script>
+   <script src="{!URLFOR($Resource.badgeToolAssets, '/scripts/lib/angular-resource.min.js')}"></script>
+   <script src="{!URLFOR($Resource.badgeToolAssets, '/scripts/lib/angular-animate.min.js')}"></script>
+   <img id="loading-image" src="https://graphiclineweb.files.wordpress.com/2013/10/ajaxloader.gif" style="display: none"></img>
+         <script>
+var app = angular.module('app', ['ng','ngAnimate', 'ngResource', 'ui.bootstrap', 'colorpicker.module']);
+app.constant("config", {
+    viewPath: window.resourcePath+"/views/build" || "/staging/globalnest/assets/views/build",
+    fontFamilies: {
+        arial: { displayName: "Arial", fontStack: "'Arial', sans-serif" },
+        droid: { displayName: "Droid Serif", fontStack: "'Droid Serif', serif" },
+        raleway: { displayName: "Raleway", fontStack: "'Raleway', sans-serif" }
+    }
+});
+app.controller("MainController", ["$scope", "Style", "LayerText", "$timeout", "Canvas", "LayerTypes", "$timeout", "DefaultStyles", function($scope, Style, LayerText, $timeout, Canvas, LayerTypes, $timeout, DefaultStyles) {
+    
+    
+    
+    
+    $scope.layerTypes = LayerTypes.iterable;
+    $scope.styles = [];
+    $scope.Allstyles = [];
+    var selectedEvent={!Evid}
+    var eventname = 
+   // console.log('!!!!! '+selectedEvent);
+    
+    Style.getAll(function(result, event) {
+   // alert('i am in Style.getAll');
+        $scope.styles = result;
+//        console.log(result);
+        
+        $timeout(function() {
+            if (!$scope.styles.length) {
+                $scope.openTemplateChooser();
+            } else {
+                $scope.switchStyle(0, true);
+            }
+        });
+    });
+    
+    
+    
+      Style.getAllStyles(function(result, event) {
+//alert('i am in Style.getAllStyles');    
+    $scope.Allstyles = result;
+     //   console.log(result);
+      
+    });
+    
+    var canvas = new Canvas(angular.element("#canvas"));
+    
+    $scope.addLayer = function(layerType) {
+        var layer = new layerType();
+        canvas.add(layer);
+    }
+    
+    $scope.switchStyle = function(index, ignoreConfirmation) {
+   // alert('just switched');
+   
+   var mod = $scope.styles[index].module;
+   var def = $scope.styles[index].onsitedefault;
+   console.log(def);
+  // console.log($scope.styles[index]);
+   var res = mod.split(";");
+  
+        canvas.loadStyle($scope.styles[index], "selectedStyle", ignoreConfirmation);
+        
+         for(i=0;i<res.length-1;i++){
+        //console.log('uuu '+res[i] );
+        if(res[i]=='Scan Attendee'){
+        $('#SA').prop('checked',true);}
+       else   if(res[i]=='Quick Registration'){
+        $('#QR').prop('checked',true);
+      }
+      }
+      if(def)
+      {
+     
+       $('#DefaultOnsiteBadge').prop('checked',true);
+      }
+      else
+      {
+       $('#DefaultOnsiteBadge').prop('checked',false);
+      }
+        $scope.AllTemplates=false;
+        $scope.AllTemplatesVisible=false;
+    }
+    
+    $scope.saveStyle = function() {
+        for (var i = 0, j = $scope.styles.length; i < j; i++) {
+        
+            if ($scope.styles[i].id == $scope.selectedStyle) {
+    //          console.log('scope.savestyle function '+i);
+    //  console.log($scope.styles[i]);
+    
+                canvas.saveStyle($scope.styles[i]);
+                break;
+            }
+        }
+    }
+    
+    $scope.saveAsNewStyle = function() {
+        var styleName = prompt("Enter the name of the new badge style:", "Untitled");
+        var newStyle = new Style({
+            name: (styleName.length ? styleName : "Untitled"),
+            layers: $scope.layers.slice()
+        });
+        $scope.styles.push(newStyle);
+        $scope.switchStyle($scope.styles.length-1, true);
+        canvas.saveStyle($scope.styles[$scope.styles.length-1]);
+    }
+    
+    $scope.duplicateStyle = function(index) {
+        var newStyle = new Style({
+            name: $scope.styles[index].name + " 2",
+            layers: $scope.styles[index].layers.slice()
+        });
+        $scope.styles.push(newStyle);
+        $scope.switchStyle($scope.styles.length-1, true);
+    }
+    
+    $scope.deleteStyle = function(index) {
+        if (confirm("!!!!Are you sure you wish to delete "+$scope.styles[index].name+"?")) {
+            $scope.styles[index].delete();
+            $scope.styles.splice(index, 1);
+            $scope.switchStyle(0, true);
+        }
+    }
+    
+    $scope.openTemplateChooser = function() {
+    //alert("Template Chooser....");
+    $scope.AllTemplates = false;
+        $scope.AllTemplatesVisible = false;
+        $scope.templateChooserOpen = true;
+        $scope.templateChooserVisible = true;
+    }
+    
+    $scope.openOtherEventTemplates = function() {
+    //alert("hello...");
+     $scope.templateChooserOpen = false;
+        $scope.templateChooserVisible = false;
+        $scope.AllTemplates = true;
+        $scope.AllTemplatesVisible = true;
+    }
+    
+    $scope.closeTemplateChooser = function() {
+        $scope.templateChooserVisible = false;
+        $timeout(function() {
+            $scope.templateChooserOpen = false;
+        }, 300);
+    }
+    
+    $scope.createNewStyle = function(style) {
+        var styleObject;
+        if (style != -1) {
+            styleObject = DefaultStyles.styles[style]();
+        } else {
+            styleObject = new Style();
+        }
+        $scope.styles.push(styleObject);
+        $scope.switchStyle($scope.styles.length - 1);
+        $scope.closeTemplateChooser();
+    }
+    
+    $scope.renameLayer = function(index) {
+        var name = prompt("Enter a new name for the layer:");
+        if (name && name.length > 0) {
+            $scope.styles[index].name = name;
+            $scope.styles[index].saveName();
+        }
+    }
+    
+}]);
+// http://stackoverflow.com/a/23134194/744410
+
+app.directive('dynamicDirective',["$compile", function($compile){
+  return {
+      restrict: 'A',
+      replace: false, 
+      terminal: true, 
+      priority: 1001,
+      link:function(scope,element,attrs){
+        element.attr(scope.$eval(attrs.dynamicDirective),"");//add dynamic directive
+
+        element.removeAttr("dynamic-directive"); //remove the attribute to avoid indefinite loop
+        element.removeAttr("data-dynamic-directive");
+
+        $compile(element)(scope);
+      }
+  };
+}]);
+app.directive("formatOptionAlign", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-align.html",
+        link: function(scope, elem, atts) {
+            scope.alignVertically = function() {
+                scope.details.optionFor.alignVertically();
+            }
+            
+            scope.alignHorizontally = function() {
+                scope.details.optionFor.alignHorizontally();
+            }
+        }
+    }
+    
+}]);
+app.directive("formatOptionArrange", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-arrange.html",
+        link: function(scope, elem, atts) {
+            scope.forward = function() {
+                scope.details.optionFor.bringForward();
+            }
+            
+            scope.backward = function() {
+                scope.details.optionFor.sendBackward();
+            }
+        }
+    }
+    
+}]);
+app.directive("formatOptionAttendeeContent", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="
+        },
+        templateUrl: config.viewPath + "/format-option-attendee-content.html",
+        link: function(scope, elem, atts) {
+            scope.contents = [
+                ["Full name", "John Smith"],
+                ["First name", "John"],
+                ["Last name", "Smith"],
+                ["Company", "My Company"],
+                ["Title", "President"],
+              //  ["City", "Kansas City"],
+                ["Ticket type", "Attendee"],
+                ["Badge Label","Label"],
+                ["Badge Status","Printed"],
+               // ["Checkin Status","Checked In"],
+                ["Seat No","012"],
+              //  ["Pay Type","Check"],
+                ["Payment Status","Fully Paid"],
+                ["Buyer Name","Buyer Name"],
+             //   ["Tag","Tag"],
+                ["Order Id","O-00062251"],
+                ["Ticket Id","TKT-1265433"],
+                ["Scan Id","0723"]
+ 
+            ];
+           //  scope.contents.push( ["Tag","Tag"]);
+          //   scope.contents.push( ["123","123"]);
+            scope.selectValue = "";
+            
+            var temp=[];
+            
+      /*      Visualforce.remoting.Manager.invokeAction(
+                'BLN_CustomBagdeConNew.regsettings',function(result, event) {
+                
+               //  console.log(result);
+                // var te='['+result+','+result+']';
+                 var te = JSON.stringify(result);
+                 temp.push(te);
+                 temp.push(te);
+                 console.log(te);
+                       scope.contents.push(temp);
+                      
+                   
+                });*/
+            
+            
+            
+            
+            for (var i = 0, j = scope.contents.length; i < j; i++) {
+                if (scope.contents[i][1] == scope.details.optionFor[scope.details.model]) {
+                    scope.selectValue = i;
+                }
+            }
+            
+            scope.$watch("selectValue", function(newValue, oldValue) {
+                try {
+                    scope.details.optionFor[scope.details.model] = scope.contents[newValue][1];
+                } catch (e) {
+                    scope.details.optionFor[scope.details.model] = scope.contents[0][1];
+                }
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionBarCode", ["config", "LayerBarCode", function(config, LayerBarCode) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="
+        },
+        templateUrl: config.viewPath + "/format-option-bar-code.html",
+        link: function(scope, elem, atts) {
+            scope.barCodes = LayerBarCode.barCodes;
+              
+
+            
+            scope.selectValue = scope.details.optionFor[scope.details.model];
+           // alert( scope.selectValue+"uday 123");
+            scope.$watch("selectValue", function(newValue, oldValue) {
+                try {
+                  scope.details.optionFor[scope.details.model] = newValue;
+                   scope.barCodes[newValue][1](scope.details.optionFor);
+                } catch (e) {
+                  scope.details.optionFor[scope.details.model] = 0;
+                }
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionColor", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-color.html",
+        link: function(scope, elem, atts) {
+       
+            scope.pickerValue = scope.details.optionFor[scope.details.model];
+            
+            scope.$watch("pickerValue", function(newValue, oldValue) {
+           // console.log(document.getElementById("newcolor").innerHtml);
+                if (!newValue) return;
+                scope.details.optionFor[scope.details.model] = newValue;
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionDelete", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-delete.html",
+        link: function(scope, elem, atts) {
+            scope.delete = function() {
+                scope.details.optionFor.delete();
+            }
+        }
+    }
+    
+}]);
+app.directive("formatOptionDocumentSize", ["config", "Canvas", function(config, Canvas) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="
+        },
+        templateUrl: config.viewPath + "/format-option-document-size.html",
+        link: function(scope, elem, atts) {
+            scope.defaultSizes = Canvas.defaultSizes;
+            scope.width = scope.details.optionFor.widthInches;
+            scope.height = scope.details.optionFor.heightInches;
+            scope.guidelines = scope.details.optionFor.guidelines;
+            scope.sizeName = scope.details.optionFor.sizeName;
+            
+            scope.changeSize = function() {
+                scope.details.optionFor.changeSize(scope.width, scope.height, scope.guidelines);
+                scope.details.optionFor.sizeName = scope.sizeName;
+            }
+        }
+    }
+    
+}]);
+app.directive("formatOptionFontFamily", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="
+        },
+        templateUrl: config.viewPath + "/format-option-font-family.html",
+        link: function(scope, elem, atts) {
+            scope.families = Object.keys(config.fontFamilies).map(function(k) {
+                var family = config.fontFamilies[k];
+                family.key = k;
+                return family;
+            });
+            
+            scope.selectValue = "";
+            for (var family in config.fontFamilies) {
+                if (scope.details.optionFor[scope.details.model] == config.fontFamilies[family].fontStack) {
+                    scope.selectValue = family;
+                }
+            }
+            scope.displayText = config.fontFamilies[scope.selectValue].displayName;
+            
+            scope.$watch("selectValue", function(newValue, oldValue) {
+                try {
+                    scope.details.optionFor[scope.details.model] = config.fontFamilies[newValue].fontStack;
+                    scope.displayText = config.fontFamilies[newValue].displayName;
+                } catch (e) {
+                    scope.details.optionFor[scope.details.model] = config.fontFamilies["arial"].fontStack;
+                    scope.displayText = config.fontFamilies["arial"].displayName;
+                }
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionFontStyle", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="
+        },
+        templateUrl: config.viewPath + "/format-option-font-style.html",
+        link: function(scope, elem, atts) {
+            scope.styles = [
+                ["Regular", "normal", "400"],
+                ["Italic", "italic", "400"],
+                ["Bold", "normal", "700"],
+                ["Bold Italic", "italic", "700"]
+            ];
+            
+            scope.selectValue = "";
+            
+            for (var i = 0, j = scope.styles.length; i < j; i++) {
+                if (scope.styles[i][1] == scope.details.optionFor[scope.details.model[0]]
+                    && scope.styles[i][2] == scope.details.optionFor[scope.details.model[1]]) {
+                    scope.selectValue = i;
+                }
+            }
+            
+            scope.$watch("selectValue", function(newValue, oldValue) {
+                try {
+                    scope.details.optionFor[scope.details.model[0]] = scope.styles[newValue][1];
+                    scope.details.optionFor[scope.details.model[1]] = scope.styles[newValue][2];
+                } catch (e) {
+                    scope.details.optionFor[scope.details.model[0]] = scope.styles[0][1];
+                    scope.details.optionFor[scope.details.model[1]] = scope.styles[0][1];
+                }
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionImage", ["config", "$timeout", function(config, $timeout) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-image.html",
+        link: function(scope, elem, atts) {
+            var fileReader = new FileReader();
+            
+            
+             
+            
+            
+            fileReader.onload = function(data) {
+            
+        
+            
+                Visualforce.remoting.Manager.invokeAction(
+                'BLN_CustomBagdeConNew.uploadImage',fileReader.result,{!Evid},function(result, event) {
+                    scope.$apply(function(scope) {
+                 
+                       scope.details.optionFor[scope.details.model] = '/servlet/servlet.FileDownload?file='+result+'&oid={!orgId}';
+                    //  scope.details.optionFor[scope.details.model] = '/servlet/servlet.ImageServer?id=result&oid={!orgId}';  
+
+                     //   scope.details.optionFor[scope.details.model] = window.location.origin + '/servlet/servlet.FileDownload?file=' + result;
+                    
+                    });
+                });
+                
+                
+                
+            }
+            
+            scope.fileChanged = function(element) {
+                scope.$apply(function(scope) {
+                    var file = element.files[0];
+                    fileReader.readAsDataURL(file);
+                });
+                }
+            scope.clearImage = function() {         
+                scope.details.optionFor[scope.details.model] = null;
+            }
+        }
+    }
+    
+}]);
+app.directive("formatOptionImageFill", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="
+        },
+        templateUrl: config.viewPath + "/format-option-image-fill.html",
+        link: function(scope, elem, atts) {
+            scope.styles = [
+                ["Stretch", "100% 100%", "center center", "no-repeat"],
+                ["Contain", "contain", "center center", "no-repeat"],
+                ["Cover", "cover", "center center", "no-repeat"]
+            ];
+            
+            scope.selectValue = "";
+            
+            for (var i = 0, j = scope.styles.length; i < j; i++) {
+                if (scope.styles[i][1] == scope.details.optionFor[scope.details.model[0]]) {
+                    scope.selectValue = i;
+                }
+            }
+            
+            scope.$watch("selectValue", function(newValue, oldValue) {
+                try {
+                    scope.details.optionFor[scope.details.model[0]] = scope.styles[newValue][1];
+                    scope.details.optionFor[scope.details.model[1]] = scope.styles[newValue][2];
+                    scope.details.optionFor[scope.details.model[2]] = scope.styles[newValue][3];
+                } catch (e) {
+                    scope.details.optionFor[scope.details.model[0]] = scope.styles[0][1];
+                    scope.details.optionFor[scope.details.model[1]] = scope.styles[0][2];
+                    scope.details.optionFor[scope.details.model[2]] = scope.styles[0][3];
+                }
+            });
+        }
+    }
+    
+}]);
+
+<!----papersize directive---->
+
+app.directive("formatOptionPaperSize", ["config", "Canvas", function(config, Canvas) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="
+        },
+        templateUrl: config.viewPath + "/format-option-paper-size.html",
+        link: function(scope, elem, atts) {
+            scope.defaultSizes = Canvas.paperSizes;
+            
+            scope.selectValue = 0;
+            for (var i = 0, j = scope.defaultSizes.length; i < j; i++) {
+                if (scope.defaultSizes[i] == scope.details.optionFor[scope.details.model]) {
+                    scope.selectValue = i;
+                    break;
+                }
+            }
+            
+            scope.$watch("selectValue", function(newValue, oldValue) {
+                try {
+                    scope.details.optionFor[scope.details.model] = scope.defaultSizes[newValue];
+                } catch (e) {
+                    scope.details.optionFor[scope.details.model] = scope.defaultSizes[0];
+                }
+            });
+        }
+    }
+    
+}]);
+
+
+<!---papersize directive end--->
+
+
+app.directive("formatOptionRotation", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-rotation.html",
+        link: function(scope, elem, atts) {
+            scope.textValue = scope.details.optionFor[scope.details.model];
+            
+            scope.$watch("textValue", function(newValue, oldValue) {
+                scope.details.optionFor[scope.details.model] = newValue;
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionShapes", ["config", "LayerShape", function(config, LayerShape) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="
+        },
+        templateUrl: config.viewPath + "/format-option-shapes.html",
+        link: function(scope, elem, atts) {
+            scope.shapes = LayerShape.shapes;
+            
+            scope.selectValue = scope.details.optionFor[scope.details.model];
+            
+            scope.$watch("selectValue", function(newValue, oldValue) {
+                try {
+                    scope.details.optionFor[scope.details.model] = newValue;
+                    scope.shapes[newValue][1](scope.details.optionFor);
+                } catch (e) {
+                    scope.details.optionFor[scope.details.model] = 0;
+                }
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionText", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-text.html",
+        link: function(scope, elem, atts) {
+            scope.textValue = scope.details.optionFor[scope.details.model];
+            
+            scope.$watch("textValue", function(newValue, oldValue) {
+                scope.details.optionFor[scope.details.model] = newValue;
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionTextAlign", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-text-align.html",
+        link: function(scope, elem, atts) {
+            scope.btnValue = scope.details.optionFor[scope.details.model];
+            
+            scope.$watch("btnValue", function(newValue, oldValue) {
+                scope.details.optionFor[scope.details.model] = newValue;
+            });
+        }
+    }
+    
+}]);
+app.directive("formatOptionTextTransform", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            details: "="    
+        },
+        templateUrl: config.viewPath + "/format-option-text-transform.html",
+        link: function(scope, elem, atts) {
+            scope.btnValue = scope.details.optionFor[scope.details.model];
+            
+            scope.$watch("btnValue", function(newValue, oldValue) {
+                scope.details.optionFor[scope.details.model] = newValue;
+            });
+        }
+    }
+    
+}]);
+app.directive("layerBarCode", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            model: "="
+        },
+        templateUrl: config.viewPath + "/layer-bar-code.html",
+        link: function(scope, elem, atts) {
+      
+            scope.model.registerNodesForResizing(elem, scope, false, true);
+            scope.model.registerForLayerSelection(elem, scope);
+            scope.model.registerForZIndexManagement(elem, scope);
+            scope.model.registerForAutomaticResizing(elem, scope);
+            scope.model.registerForSmartAlignment(elem);
+            scope.model.registerForDeletion(elem);
+            
+            scope.model.elem = elem;
+            scope.model.scope = scope;
+            
+            scope.resourcePath = window.resourcePath;
+        }
+    }
+    
+}]);
+app.directive("layerImage", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            model: "="
+        },
+        templateUrl: config.viewPath + "/layer-image.html",
+        link: function(scope, elem, atts) {
+            scope.model.registerNodesForResizing(elem, scope, false, false);
+            scope.model.registerForLayerSelection(elem, scope);
+            scope.model.registerForZIndexManagement(elem, scope);
+            scope.model.registerForAutomaticResizing(elem, scope);
+            scope.model.registerForSmartAlignment(elem);
+            scope.model.registerForDeletion(elem);
+        }
+    }
+    
+}]);
+app.directive("layerShape", ["config", "LayerShape", function(config, LayerShape) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            model: "="
+        },
+        templateUrl: config.viewPath + "/layer-shape.html",
+        link: function(scope, elem, atts) {
+            scope.model.registerNodesForResizing(elem, scope);
+            scope.model.registerForLayerSelection(elem, scope);
+            scope.model.registerForZIndexManagement(elem, scope);
+            scope.model.registerForAutomaticResizing(elem, scope);
+            scope.model.registerForSmartAlignment(elem);
+            scope.model.registerForDeletion(elem);
+            
+            scope.model.elem = elem;
+            scope.model.scope = scope;
+            
+            LayerShape.shapes[scope.model.shape][1](scope.model);
+        }
+    }
+    
+}]);
+app.directive("layerText", ["config", function(config) {
+    
+    return {
+        restrict: 'A',
+        scope: {
+            model: "="
+        },
+        templateUrl: config.viewPath + "/layer-text.html",
+        link: function(scope, elem, atts) {
+            scope.model.registerNodesForResizing(elem, scope);
+            scope.model.registerForLayerSelection(elem, scope);
+            scope.model.registerForZIndexManagement(elem, scope);
+            scope.model.registerForSmartAlignment(elem);
+            scope.model.registerForDeletion(elem);
+            var textElem = elem.find(".text");
+            
+            var textWidth = null, textWidthUnrotated = null;
+            
+            var getTextWidth = function() {
+                var spanText = angular.element("body #spanCalculateTextWidth");
+                if (spanText.size() <= 0) {
+                  spanText = angular.element("<span id='spanCalculateTextWidth' style='filter: alpha(0);'></span>");
+                  spanText.appendTo("body");
+                }
+                var valu = textElem.val();
+                if (!valu) valu = textElem.text();
+                spanText.text(valu);
+                spanText.css({
+                  "fontSize": textElem.css('fontSize'),
+                  "fontWeight": textElem.css('fontWeight'),
+                  "fontFamily": textElem.css('fontFamily'),
+                  "textTransform": textElem.css('textTransform'),
+                  "position": "absolute",
+                  "top": 0,
+                  "opacity": 0,
+                  "left": -2000
+                });
+                return spanText.outerWidth() + parseInt(textElem.css('paddingLeft')) + 'px';
+            }
+            
+            var getTextHeight = function() {
+                var spanText = angular.element("body #spanCalculateTextWidth");
+                if (spanText.size() <= 0) {
+                  spanText = angular.element("<span id='spanCalculateTextWidth' style='filter: alpha(0);'></span>");
+                  spanText.appendTo("body");
+                }
+                var valu = textElem.val();
+                if (!valu) valu = textElem.text();
+                spanText.text(valu);
+                spanText.css({
+                  "fontSize": textElem.css('fontSize'),
+                  "fontWeight": textElem.css('fontWeight'),
+                  "fontFamily": textElem.css('fontFamily'),
+                  "textTransform": textElem.css('textTransform'),
+                  "position": 'absolute',
+                  "top": 0,
+                  "opacity": 0,
+                  "left": -2000,
+                  "lineHeight": 1
+                });
+                return spanText.innerHeight() + 'px';
+            }
+            
+            var autoTextSize = function(minSize, maxSize) {
+                var _self = elem,
+                    _text = textElem,
+                    _width = scope.model.normalize(scope.model.width),
+                    _height = scope.model.normalize(scope.model.height),
+                    _textWidthUnrotated = parseInt(getTextWidth()),
+                    _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated)),
+                    _fontSize = parseInt(_text.css('font-size'));
+                
+                var rot = _text.css("transform");
+                if (rot == "none" || !rot) {
+                    var _rotation = 0;
+                } else {
+                    var rotValues = rot.split('(')[1].split(')')[0].split(',');
+                    var rotA = rotValues[0];
+                    var rotB = rotValues[1];
+                    var rotC = rotValues[2];
+                    var rotD = rotValues[3];
+                    var _rotation = Math.atan2(rotB, rotA);
+                }
+                
+                if (_rotation < 0) {
+                    _rotation += Math.PI * 2;
+                }
+                
+                var _rotationDeg = _rotation * 180 / Math.PI;
+                if (_rotationDeg > 90 && _rotationDeg <= 180) {
+                    _rotationDeg = 180 - _rotationDeg;
+                    _rotation = _rotationDeg * Math.PI / 180;
+                } else if (_rotationDeg > 180 && _rotationDeg <= 270) {
+                    _rotationDeg = _rotationDeg - 180;
+                    _rotation = _rotationDeg * Math.PI / 180;
+                } else if (_rotationDeg > 270 && _rotationDeg <= 360) {
+                    _rotationDeg = 360 - _rotationDeg;
+                    _rotation = _rotationDeg * Math.PI / 180;
+                }
+                
+                var trig1 = Math.cos(_rotation),
+                    trig2 = Math.cos((Math.PI/2)-_rotation),
+                    trig3 = Math.sin(_rotation),
+                    trig4 = Math.sin((Math.PI/2)-_rotation);
+                
+                var _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                var _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                
+                if (!_textWidth) return false;
+                
+                if ( (_rotationDeg >= 0 && _rotationDeg <= 45) ) {
+                    if (_width > _textWidth) {
+                        while (_width > _textWidth) {
+                            _fontSize++;
+                            _text.css('font-size', _fontSize + 'px');
+                            
+                            _textWidthUnrotated = parseInt(getTextWidth());
+                            _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                            _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                            _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                        }
+                        _fontSize--;
+                        _text.css('font-size', _fontSize + 'px');
+                        _textWidthUnrotated = parseInt(getTextWidth());
+                        _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                        _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                        _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                    } else {
+                        while (_width < _textWidth || (maxSize && _fontSize > parseInt(maxSize))) {
+                            if (minSize && _fontSize <= parseInt(minSize)) break;
+                            
+                            _fontSize--;
+                            _text.css('font-size', _fontSize + 'px');
+                            
+                            _textWidthUnrotated = parseInt(getTextWidth());
+                            _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                            _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                            _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                        }
+                    }
+                
+                    while (_textHeight > _height) {
+                        _fontSize--;
+                        _text.css('font-size', _fontSize + 'px');
+                        
+                        _textWidthUnrotated = parseInt(getTextWidth());
+                        _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                        _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                        _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                    }
+                } else {
+                    if (_height > _textHeight) {
+                        while (_height > _textHeight) {
+                            _fontSize++;
+                            _text.css('font-size', _fontSize + 'px');
+                            
+                            _textWidthUnrotated = parseInt(getTextWidth());
+                            _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                            _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                            _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                        }
+                        _fontSize--;
+                        _text.css('font-size', _fontSize + 'px');
+                        _textWidthUnrotated = parseInt(getTextWidth());
+                        _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                        _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                        _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                    } else {
+                        while (_height < _textHeight || (maxSize && _fontSize > parseInt(maxSize))) {
+                            if (minSize && _fontSize <= parseInt(minSize)) break;
+                            
+                            _fontSize--;
+                            _text.css('font-size', _fontSize + 'px');
+                            
+                            _textWidthUnrotated = parseInt(getTextWidth());
+                            _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                            _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                            _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                        }
+                    }
+                
+                    while (_textWidth > _width) {
+                        _fontSize--;
+                        _text.css('font-size', _fontSize + 'px');
+                        
+                        _textWidthUnrotated = parseInt(getTextWidth());
+                        _textHeightUnrotated = parseInt(getTextHeight(_textWidthUnrotated));
+                        _textWidth = _textWidthUnrotated * trig1 + _textHeightUnrotated * trig2;
+                        _textHeight = _textWidthUnrotated * trig3 + _textHeightUnrotated * trig4;
+                    }
+                }
+                
+                _text.css('line-height', _width * trig3 + _height * trig4 + "px");
+                _text.css('top', '50%');
+                _text.css('marginTop', (_width * trig3 + _height * trig4)/2*-1 + "px");
+                
+                var align = _text.parent().css('text-align');
+                if (!align || align == "left") {
+                    _text.css('left', 0);
+                    _text.css('marginLeft', _textWidthUnrotated/2*-1 + _textWidth/2);
+                    _text.css('right', 'auto');
+                    _text.css('marginRight', 0);
+                } else if (align == "center") {
+                    _text.css('left', '50%');
+                    _text.css('marginLeft', _textWidthUnrotated/2*-1);
+                    _text.css('right', 'auto');
+                    _text.css('marginRight', 0);
+                } else if (align == "right") {
+                    _text.css('right', '0');
+                    _text.css('left', 'auto');
+                    _text.css('marginLeft', 0);
+                    _text.css('marginRight', _textWidthUnrotated/2*-1 + _textWidth/2);
+                }
+                
+                textWidth = _textWidth;
+                textWidthUnrotated = _textWidthUnrotated;
+            }
+            
+            scope.$watchGroup(["model.content", "model.fontFamily", "model.fontStyle", "model.fontWeight", "model.transform", "model.width", "model.height", "model.rotation", "model.align"], function(newValues, oldValues) {
+                autoTextSize();
+            });
+            
+            scope.$watch("model.height", function(newValue, oldValue) {
+                textElem.css("line-height", scope.model.normalize(scope.model.height) + "px");
+            });
+            
+            scope.model.registerForAutomaticResizing(elem, scope, function() {
+                textElem.css("line-height", scope.model.normalize(scope.model.height) + "px");
+                autoTextSize();
+            });
+        }
+    }
+    
+}]);
+angular.module('colorpicker.module', [])
+    .factory('Helper', function () {
+      'use strict';
+      return {
+        closestSlider: function (elem) {
+          var matchesSelector = elem.matches || elem.webkitMatchesSelector || elem.mozMatchesSelector || elem.msMatchesSelector;
+          if (matchesSelector.bind(elem)('I')) {
+            return elem.parentNode;
+          }
+          return elem;
+        },
+        getOffset: function (elem, fixedPosition) {
+          var
+              x = 0,
+              y = 0,
+              scrollX = 0,
+              scrollY = 0;
+          while (elem && !isNaN(elem.offsetLeft) && !isNaN(elem.offsetTop)) {
+            x += elem.offsetLeft;
+            y += elem.offsetTop;
+            if (!fixedPosition && elem.tagName === 'BODY') {
+              scrollX += document.documentElement.scrollLeft || elem.scrollLeft;
+              scrollY += document.documentElement.scrollTop || elem.scrollTop;
+            } else {
+              scrollX += elem.scrollLeft;
+              scrollY += elem.scrollTop;
+            }
+            elem = elem.offsetParent;
+          }
+          return {
+            top: y,
+            left: x,
+            scrollX: scrollX,
+            scrollY: scrollY
+          };
+        },
+        // a set of RE's that can match strings and generate color tuples. https://github.com/jquery/jquery-color/
+        stringParsers: [
+          {
+            re: /rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d+(?:\.\d+)?)\s*)?\)/,
+            parse: function (execResult) {
+              return [
+                execResult[1],
+                execResult[2],
+                execResult[3],
+                execResult[4]
+              ];
+            }
+          },
+          {
+            re: /rgba?\(\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d+(?:\.\d+)?)\s*)?\)/,
+            parse: function (execResult) {
+              return [
+                2.55 * execResult[1],
+                2.55 * execResult[2],
+                2.55 * execResult[3],
+                execResult[4]
+              ];
+            }
+          },
+          {
+            re: /#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/,
+            parse: function (execResult) {
+              return [
+                parseInt(execResult[1], 16),
+                parseInt(execResult[2], 16),
+                parseInt(execResult[3], 16)
+              ];
+            }
+          },
+          {
+            re: /#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/,
+            parse: function (execResult) {
+              return [
+                parseInt(execResult[1] + execResult[1], 16),
+                parseInt(execResult[2] + execResult[2], 16),
+                parseInt(execResult[3] + execResult[3], 16)
+              ];
+            }
+          }
+        ]
+      };
+    })
+    .factory('Color', ['Helper', function (Helper) {
+      'use strict';
+      return {
+        value: {
+          h: 1,
+          s: 1,
+          b: 1,
+          a: 1
+        },
+        // translate a format from Color object to a string
+        'rgb': function () {
+          var rgb = this.toRGB();
+          return 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')';
+        },
+        'rgba': function () {
+          var rgb = this.toRGB();
+          return 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + rgb.a + ')';
+        },
+        'hex': function () {
+          return  this.toHex();
+        },
+
+        // HSBtoRGB from RaphaelJS
+        RGBtoHSB: function (r, g, b, a) {
+          r /= 255;
+          g /= 255;
+          b /= 255;
+
+          var H, S, V, C;
+          V = Math.max(r, g, b);
+          C = V - Math.min(r, g, b);
+          H = (C === 0 ? null :
+              V === r ? (g - b) / C :
+                  V === g ? (b - r) / C + 2 :
+                      (r - g) / C + 4
+              );
+          H = ((H + 360) % 6) * 60 / 360;
+          S = C === 0 ? 0 : C / V;
+          return {h: H || 1, s: S, b: V, a: a || 1};
+        },
+
+        //parse a string to HSB
+        setColor: function (val) {
+          val = val.toLowerCase();
+          for (var key in Helper.stringParsers) {
+            if (Helper.stringParsers.hasOwnProperty(key)) {
+              var parser = Helper.stringParsers[key];
+              var match = parser.re.exec(val),
+                  values = match && parser.parse(match);
+              if (values) {
+                this.value = this.RGBtoHSB.apply(null, values);
+                return false;
+              }
+            }
+          }
+        },
+
+        setHue: function (h) {
+          this.value.h = 1 - h;
+        },
+
+        setSaturation: function (s) {
+          this.value.s = s;
+        },
+
+        setLightness: function (b) {
+          this.value.b = 1 - b;
+        },
+
+        setAlpha: function (a) {
+          this.value.a = parseInt((1 - a) * 100, 10) / 100;
+        },
+
+        // HSBtoRGB from RaphaelJS
+        // https://github.com/DmitryBaranovskiy/raphael/
+        toRGB: function (h, s, b, a) {
+          if (!h) {
+            h = this.value.h;
+            s = this.value.s;
+            b = this.value.b;
+          }
+          h *= 360;
+          var R, G, B, X, C;
+          h = (h % 360) / 60;
+          C = b * s;
+          X = C * (1 - Math.abs(h % 2 - 1));
+          R = G = B = b - C;
+
+          h = ~~h;
+          R += [C, X, 0, 0, X, C][h];
+          G += [X, C, C, X, 0, 0][h];
+          B += [0, 0, X, C, C, X][h];
+          return {
+            r: Math.round(R * 255),
+            g: Math.round(G * 255),
+            b: Math.round(B * 255),
+            a: a || this.value.a
+          };
+        },
+
+        toHex: function (h, s, b, a) {
+          var rgb = this.toRGB(h, s, b, a);
+          return '#' + ((1 << 24) | (parseInt(rgb.r, 10) << 16) | (parseInt(rgb.g, 10) << 8) | parseInt(rgb.b, 10)).toString(16).substr(1);
+        }
+      };
+    }])
+    .factory('Slider', ['Helper', function (Helper) {
+      'use strict';
+      var
+          slider = {
+            maxLeft: 0,
+            maxTop: 0,
+            callLeft: null,
+            callTop: null,
+            knob: {
+              top: 0,
+              left: 0
+            }
+          },
+          pointer = {};
+
+      return {
+        getSlider: function() {
+          return slider;
+        },
+        getLeftPosition: function(event) {
+          return Math.max(0, Math.min(slider.maxLeft, slider.left + ((event.pageX || pointer.left) - pointer.left)));
+        },
+        getTopPosition: function(event) {
+          return Math.max(0, Math.min(slider.maxTop, slider.top + ((event.pageY || pointer.top) - pointer.top)));
+        },
+        setSlider: function (event, fixedPosition) {
+          var
+            target = Helper.closestSlider(event.target),
+            targetOffset = Helper.getOffset(target, fixedPosition),
+            rect = target.getBoundingClientRect(),
+            offsetX = event.clientX - rect.left,
+            offsetY = event.clientY - rect.top;
+
+          slider.knob = target.children[0].style;
+          slider.left = event.pageX - targetOffset.left - window.pageXOffset + targetOffset.scrollX;
+          slider.top = event.pageY - targetOffset.top - window.pageYOffset + targetOffset.scrollY;
+
+          pointer = {
+            left: event.pageX - (offsetX - slider.left),
+            top: event.pageY - (offsetY - slider.top)
+          };
+        },
+        setSaturation: function(event, fixedPosition) {
+          slider = {
+            maxLeft: 100,
+            maxTop: 100,
+            callLeft: 'setSaturation',
+            callTop: 'setLightness'
+          };
+          this.setSlider(event, fixedPosition);
+        },
+        setHue: function(event, fixedPosition) {
+          slider = {
+            maxLeft: 0,
+            maxTop: 100,
+            callLeft: false,
+            callTop: 'setHue'
+          };
+          this.setSlider(event, fixedPosition);
+        },
+        setAlpha: function(event, fixedPosition) {
+          slider = {
+            maxLeft: 0,
+            maxTop: 100,
+            callLeft: false,
+            callTop: 'setAlpha'
+          };
+          this.setSlider(event, fixedPosition);
+        },
+        setKnob: function(top, left) {
+          slider.knob.top = top + 'px';
+          slider.knob.left = left + 'px';
+        }
+      };
+    }])
+    .directive('colorpicker', ['$document', '$compile', 'Color', 'Slider', 'Helper', function ($document, $compile, Color, Slider, Helper) {
+      'use strict';
+      return {
+        require: '?ngModel',
+        restrict: 'A',
+        link: function ($scope, elem, attrs, ngModel) {
+          var
+              thisFormat = attrs.colorpicker ? attrs.colorpicker : 'hex',
+              position = angular.isDefined(attrs.colorpickerPosition) ? attrs.colorpickerPosition : 'bottom',
+              inline = angular.isDefined(attrs.colorpickerInline) ? attrs.colorpickerInline : false,
+              fixedPosition = angular.isDefined(attrs.colorpickerFixedPosition) ? attrs.colorpickerFixedPosition : false,
+              target = angular.isDefined(attrs.colorpickerParent) ? elem.parent() : angular.element(document.body),
+              withInput = angular.isDefined(attrs.colorpickerWithInput) ? attrs.colorpickerWithInput : false,
+              inputTemplate = withInput ? '<input type="text" name="colorpicker-input">' : '',
+              closeButton = !inline ? '<button type="button" class="close close-colorpicker">&times;</button>' : '',
+              template =
+                  '<div class="colorpicker dropdown">' +
+                      '<div class="dropdown-menu">' +
+                      '<colorpicker-saturation><i></i></colorpicker-saturation>' +
+                      '<colorpicker-hue><i></i></colorpicker-hue>' +
+                      '<colorpicker-alpha><i></i></colorpicker-alpha>' +
+                      '<colorpicker-preview></colorpicker-preview>' +
+                      inputTemplate +
+                      closeButton +
+                      '</div>' +
+                      '</div>',
+              colorpickerTemplate = angular.element(template),
+              pickerColor = Color,
+              sliderAlpha,
+              sliderHue = colorpickerTemplate.find('colorpicker-hue'),
+              sliderSaturation = colorpickerTemplate.find('colorpicker-saturation'),
+              colorpickerPreview = colorpickerTemplate.find('colorpicker-preview'),
+              pickerColorPointers = colorpickerTemplate.find('i');
+
+          $compile(colorpickerTemplate)($scope);
+
+          if (withInput) {
+            var pickerColorInput = colorpickerTemplate.find('input');
+            pickerColorInput
+                .on('mousedown', function(event) {
+                  event.stopPropagation();
+                })
+                .on('keyup', function(event) {
+                  var newColor = this.value;
+                  elem.val(newColor);
+                  if(ngModel) {
+                    $scope.$apply(ngModel.$setViewValue(newColor));
+                  }
+                  event.stopPropagation();
+                  event.preventDefault();
+                });
+            elem.on('keyup', function() {
+              pickerColorInput.val(elem.val());
+            });
+          }
+
+          var bindMouseEvents = function() {
+            $document.on('mousemove', mousemove);
+            $document.on('mouseup', mouseup);
+          };
+
+          if (thisFormat === 'rgba') {
+            colorpickerTemplate.addClass('alpha');
+            sliderAlpha = colorpickerTemplate.find('colorpicker-alpha');
+            sliderAlpha
+                .on('click', function(event) {
+                  Slider.setAlpha(event, fixedPosition);
+                  mousemove(event);
+                })
+                .on('mousedown', function(event) {
+                  Slider.setAlpha(event, fixedPosition);
+                  bindMouseEvents();
+                })
+                .on('mouseup', function(event){
+                  emitEvent('colorpicker-selected-alpha');
+                });
+          }
+
+          sliderHue
+              .on('click', function(event) {
+                Slider.setHue(event, fixedPosition);
+                mousemove(event);
+              })
+              .on('mousedown', function(event) {
+                Slider.setHue(event, fixedPosition);
+                bindMouseEvents();
+              })
+              .on('mouseup', function(event){
+                emitEvent('colorpicker-selected-hue');
+              });
+
+          sliderSaturation
+              .on('click', function(event) {
+                Slider.setSaturation(event, fixedPosition);
+                mousemove(event);
+                if (angular.isDefined(attrs.colorpickerCloseOnSelect)) {
+                  hideColorpickerTemplate();
+                }
+              })
+              .on('mousedown', function(event) {
+                Slider.setSaturation(event, fixedPosition);
+                bindMouseEvents();
+              })
+              .on('mouseup', function(event){
+                emitEvent('colorpicker-selected-saturation');
+              });
+
+          if (fixedPosition) {
+            colorpickerTemplate.addClass('colorpicker-fixed-position');
+          }
+
+          colorpickerTemplate.addClass('colorpicker-position-' + position);
+          if (inline === 'true') {
+            colorpickerTemplate.addClass('colorpicker-inline');
+          }
+
+          target.append(colorpickerTemplate);
+
+          if(ngModel) {
+            ngModel.$render = function () {
+              elem.val(ngModel.$viewValue);
+            };
+            $scope.$watch(attrs.ngModel, function(newVal) {
+              update();
+
+              if (withInput) {
+                pickerColorInput.val(newVal);
+              }
+            });
+          }
+
+          elem.on('$destroy', function() {
+            colorpickerTemplate.remove();
+          });
+
+          var previewColor = function () {
+            try {
+              colorpickerPreview.css('backgroundColor', pickerColor[thisFormat]());
+            } catch (e) {
+              colorpickerPreview.css('backgroundColor', pickerColor.toHex());
+            }
+            sliderSaturation.css('backgroundColor', pickerColor.toHex(pickerColor.value.h, 1, 1, 1));
+            if (thisFormat === 'rgba') {
+              sliderAlpha.css.backgroundColor = pickerColor.toHex();
+            }
+          };
+
+          var mousemove = function (event) {
+            var
+                left = Slider.getLeftPosition(event),
+                top = Slider.getTopPosition(event),
+                slider = Slider.getSlider();
+
+            Slider.setKnob(top, left);
+
+            if (slider.callLeft) {
+              pickerColor[slider.callLeft].call(pickerColor, left / 100);
+            }
+            if (slider.callTop) {
+              pickerColor[slider.callTop].call(pickerColor, top / 100);
+            }
+            previewColor();
+            var newColor = pickerColor[thisFormat]();
+            elem.val(newColor);
+            if(ngModel) {
+              $scope.$apply(ngModel.$setViewValue(newColor));
+            }
+            if (withInput) {
+              pickerColorInput.val(newColor);
+            }
+            return false;
+          };
+
+          var mouseup = function () {
+            emitEvent('colorpicker-selected');
+            $document.off('mousemove', mousemove);
+            $document.off('mouseup', mouseup);
+          };
+
+          var update = function () {
+            pickerColor.setColor(elem.val());
+            pickerColorPointers.eq(0).css({
+              left: pickerColor.value.s * 100 + 'px',
+              top: 100 - pickerColor.value.b * 100 + 'px'
+            });
+            pickerColorPointers.eq(1).css('top', 100 * (1 - pickerColor.value.h) + 'px');
+            pickerColorPointers.eq(2).css('top', 100 * (1 - pickerColor.value.a) + 'px');
+            previewColor();
+          };
+
+          var getColorpickerTemplatePosition = function() {
+            var
+                positionValue,
+                positionOffset = Helper.getOffset(elem[0]);
+
+            if(angular.isDefined(attrs.colorpickerParent)) {
+              positionOffset.left = 0;
+              positionOffset.top = 0;
+            }
+
+            if (position === 'top') {
+              positionValue =  {
+                'top': positionOffset.top - 147,
+                'left': positionOffset.left
+              };
+            } else if (position === 'right') {
+              positionValue = {
+                'top': positionOffset.top,
+                'left': positionOffset.left + 126
+              };
+            } else if (position === 'bottom') {
+              positionValue = {
+                'top': positionOffset.top + elem[0].offsetHeight + 2,
+                'left': positionOffset.left
+              };
+            } else if (position === 'left') {
+              positionValue = {
+                'top': positionOffset.top,
+                'left': positionOffset.left - 150
+              };
+            }
+            return {
+              'top': positionValue.top + 'px',
+              'left': positionValue.left + 'px'
+            };
+          };
+
+          var documentMousedownHandler = function() {
+            hideColorpickerTemplate();
+          };
+
+          var showColorpickerTemplate = function() {
+
+            if (!colorpickerTemplate.hasClass('colorpicker-visible')) {
+              update();
+              colorpickerTemplate
+                .addClass('colorpicker-visible')
+                .css(getColorpickerTemplatePosition());
+              emitEvent('colorpicker-shown');
+
+              if (inline === false) {
+                // register global mousedown event to hide the colorpicker
+                $document.on('mousedown', documentMousedownHandler);
+              }
+
+              if (attrs.colorpickerIsOpen) {
+                $scope[attrs.colorpickerIsOpen] = true;
+                if (!$scope.$$phase) {
+                  $scope.$digest(); //trigger the watcher to fire
+                }
+              }
+            }
+
+          };
+
+          if(inline === false) {
+            elem.on('click', showColorpickerTemplate);
+          } else {
+            showColorpickerTemplate();
+          }
+
+          colorpickerTemplate.on('mousedown', function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+          });
+
+          var emitEvent = function(name) {
+            if(ngModel) {
+              $scope.$emit(name, {
+                name: attrs.ngModel,
+                value: ngModel.$modelValue
+              });
+            }
+          };
+
+          var hideColorpickerTemplate = function() {
+            if (colorpickerTemplate.hasClass('colorpicker-visible')) {
+              colorpickerTemplate.removeClass('colorpicker-visible');
+              emitEvent('colorpicker-closed');
+              // unregister the global mousedown event
+              $document.off('mousedown', documentMousedownHandler);
+
+              if (attrs.colorpickerIsOpen) {
+                $scope[attrs.colorpickerIsOpen] = false;
+                if (!$scope.$$phase) {
+                  $scope.$digest(); //trigger the watcher to fire
+                }
+              }
+            }
+          };
+
+          colorpickerTemplate.find('button').on('click', function () {
+            hideColorpickerTemplate();
+          });
+
+          if (attrs.colorpickerIsOpen) {
+            $scope.$watch(attrs.colorpickerIsOpen, function(shouldBeOpen) {
+
+              if (shouldBeOpen === true) {
+                showColorpickerTemplate();
+              } else if (shouldBeOpen === false) {
+                hideColorpickerTemplate();
+              }
+
+            });
+          }
+
+        }
+      };
+    }]);
+/*
+ * angular-ui-bootstrap
+ * http://angular-ui.github.io/bootstrap/
+
+ * Version: 0.13.0 - 2015-05-02
+ * License: MIT
+ */
+angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.dropdown","ui.bootstrap.position"]),angular.module("ui.bootstrap.tpls",[]),angular.module("ui.bootstrap.dropdown",["ui.bootstrap.position"]).constant("dropdownConfig",{openClass:"open"}).service("dropdownService",["$document","$rootScope",function(t,e){var n=null;this.open=function(e){n||(t.bind("click",o),t.bind("keydown",i)),n&&n!==e&&(n.isOpen=!1),n=e},this.close=function(e){n===e&&(n=null,t.unbind("click",o),t.unbind("keydown",i))};var o=function(t){if(n&&(!t||"disabled"!==n.getAutoClose())){var o=n.getToggleElement();if(!(t&&o&&o[0].contains(t.target))){var i=n.getElement();t&&"outsideClick"===n.getAutoClose()&&i&&i[0].contains(t.target)||(n.isOpen=!1,e.$$phase||n.$apply())}}},i=function(t){27===t.which&&(n.focusToggleElement(),o())}}]).controller("DropdownController",["$scope","$attrs","$parse","dropdownConfig","dropdownService","$animate","$position","$document",function(t,e,n,o,i,r,l,u){var p,s=this,f=t.$new(),c=o.openClass,d=angular.noop,a=e.onToggle?n(e.onToggle):angular.noop,g=!1;this.init=function(o){s.$element=o,e.isOpen&&(p=n(e.isOpen),d=p.assign,t.$watch(p,function(t){f.isOpen=!!t})),g=angular.isDefined(e.dropdownAppendToBody),g&&s.dropdownMenu&&(u.find("body").append(s.dropdownMenu),o.on("$destroy",function(){s.dropdownMenu.remove()}))},this.toggle=function(t){return f.isOpen=arguments.length?!!t:!f.isOpen},this.isOpen=function(){return f.isOpen},f.getToggleElement=function(){return s.toggleElement},f.getAutoClose=function(){return e.autoClose||"always"},f.getElement=function(){return s.$element},f.focusToggleElement=function(){s.toggleElement&&s.toggleElement[0].focus()},f.$watch("isOpen",function(e,n){if(g&&s.dropdownMenu){var o=l.positionElements(s.$element,s.dropdownMenu,"bottom-left",!0);s.dropdownMenu.css({top:o.top+"px",left:o.left+"px",display:e?"block":"none"})}r[e?"addClass":"removeClass"](s.$element,c),e?(f.focusToggleElement(),i.open(f)):i.close(f),d(t,e),angular.isDefined(e)&&e!==n&&a(t,{open:!!e})}),t.$on("$locationChangeSuccess",function(){f.isOpen=!1}),t.$on("$destroy",function(){f.$destroy()})}]).directive("dropdown",function(){return{controller:"DropdownController",link:function(t,e,n,o){o.init(e)}}}).directive("dropdownMenu",function(){return{restrict:"AC",require:"?^dropdown",link:function(t,e,n,o){o&&(o.dropdownMenu=e)}}}).directive("dropdownToggle",function(){return{require:"?^dropdown",link:function(t,e,n,o){if(o){o.toggleElement=e;var i=function(i){i.preventDefault(),e.hasClass("disabled")||n.disabled||t.$apply(function(){o.toggle()})};e.bind("click",i),e.attr({"aria-haspopup":!0,"aria-expanded":!1}),t.$watch(o.isOpen,function(t){e.attr("aria-expanded",!!t)}),t.$on("$destroy",function(){e.unbind("click",i)})}}}}),angular.module("ui.bootstrap.position",[]).factory("$position",["$document","$window",function(t,e){function n(t,n){return t.currentStyle?t.currentStyle[n]:e.getComputedStyle?e.getComputedStyle(t)[n]:t.style[n]}function o(t){return"static"===(n(t,"position")||"static")}var i=function(e){for(var n=t[0],i=e.offsetParent||n;i&&i!==n&&o(i);)i=i.offsetParent;return i||n};return{position:function(e){var n=this.offset(e),o={top:0,left:0},r=i(e[0]);r!=t[0]&&(o=this.offset(angular.element(r)),o.top+=r.clientTop-r.scrollTop,o.left+=r.clientLeft-r.scrollLeft);var l=e[0].getBoundingClientRect();return{width:l.width||e.prop("offsetWidth"),height:l.height||e.prop("offsetHeight"),top:n.top-o.top,left:n.left-o.left}},offset:function(n){var o=n[0].getBoundingClientRect();return{width:o.width||n.prop("offsetWidth"),height:o.height||n.prop("offsetHeight"),top:o.top+(e.pageYOffset||t[0].documentElement.scrollTop),left:o.left+(e.pageXOffset||t[0].documentElement.scrollLeft)}},positionElements:function(t,e,n,o){var i,r,l,u,p=n.split("-"),s=p[0],f=p[1]||"center";i=o?this.offset(t):this.position(t),r=e.prop("offsetWidth"),l=e.prop("offsetHeight");var c={center:function(){return i.left+i.width/2-r/2},left:function(){return i.left},right:function(){return i.left+i.width}},d={center:function(){return i.top+i.height/2-l/2},top:function(){return i.top},bottom:function(){return i.top+i.height}};switch(s){case"right":u={top:d[f](),left:c[s]()};break;case"left":u={top:d[f](),left:i.left-r};break;case"bottom":u={top:d[s](),left:c[f]()};break;default:u={top:i.top-l,left:c[f]()}}return u}}}]);
+app.factory("API", ["$http", function($http) {
+    
+    function API() {}
+    
+    API.nextAvailableID = 99999999;
+    
+    return API;
+    
+}]);
+app.service("Canvas", ["$compile", "$rootScope", "FormatOption", "FormatSection", "LayerProcessing", function($compile, $rootScope, FormatOption, FormatSection, LayerProcessing) {
+    
+    function Canvas(element) {
+        this.element = element;
+        this.width = element.width();
+        this.height = element.height();
+        this.scope = element.scope();
+        this.scope.layers = [];
+        this.currentZIndex = 0;
+        this.currentId = 0;
+        this.widthInches = 4;
+        this.heightInches = 3;
+        this.sizeName = null;
+        this.guidelines = null;
+        this.paperSize = Canvas.paperSizes[0];
+        
+        this.scope.backgroundColor = "#FFFFFF";
+        this.scope.backgroundSize = "100% 100%";
+    
+        this.resizeTimeout = null;
+        var thisCanvas = this;
+        angular.element(window).on("resize.canvas", function() {
+            clearTimeout(thisCanvas.resizeTimeout);
+            thisCanvas.resizeTimeout = setTimeout(function() { thisCanvas.resize() }, 500);
+        });
+        $rootScope.$broadcast("resizeCanvas");
+        
+        var _this = this;
+        element.on("mousedown.selectLayer", function(e) {
+            var targetElem = e.target.closest("badge-layer");
+            if (!targetElem) {
+                _this.sendSubscriptionNotification(null);
+            }
+        });
+        
+        this.documentLayer = function() {
+            return {
+                type: "Document",
+                formatOptions: [
+                    new FormatSection("Size", [
+                        new FormatOption(FormatOption.DOCUMENT_SIZE, this),
+                        new FormatOption(FormatOption.PAPER_SIZE, this, "paperSize")
+                    ]),
+                    new FormatSection("Background", [
+                        new FormatOption(FormatOption.COLOR, this.scope, "backgroundColor"),
+                        new FormatOption(FormatOption.IMAGE, this.scope, "backgroundImage"),
+                        new FormatOption(FormatOption.IMAGE_FILL, this.scope, ["backgroundSize", "backgroundPosition", "backgroundRepeat"])
+                    ])
+                ]
+            };
+        }
+        this.scope.selectedLayer = this.documentLayer();
+    }
+    
+    Canvas.defaultSizes = [
+        ["4", "3"],
+        ["3.9","2.4"],
+        ["3.5","2.25"],
+        ["3.4","2.3"],
+        ["3.4","2.1"],
+        ["8.5", "11", [["H", "5.5"]], "Letter - Folded"]
+    ];
+    
+    Canvas.paperSizes = [
+        '8.5" x 11"',
+        '8.5" x 5.5"',
+        '4.0" x 3.0"',
+        '3.5" x 2.25"',
+        '3.9" x 2.4"(Brother DK1202)',
+        
+        '3.4" x 2.3"(Brother DK1234)',
+        '3.4" x 2.1"(Brother DKN5224)',
+    ];
+    
+    Canvas.prototype.resize = function() {
+        this.width = this.element.width();
+        this.height = this.element.height();
+        
+        for (var i = 0, j = this.scope.layers.length; i < j; i++) {
+            this.scope.layers[i].parentWidth = this.width;
+            this.scope.layers[i].parentHeight = this.height;
+        }
+        
+        $rootScope.$broadcast("resizeCanvas");
+    }
+    
+    Canvas.prototype.add = function(layer) {
+        layer.parentWidth = this.width;
+        layer.parentHeight = this.height;
+        layer.canvas = this;
+        layer.zIndex = layer.zIndex || this.currentZIndex;
+        this.currentZIndex = Math.max(this.currentZIndex+1, layer.zIndex+1);
+        layer.id = this.currentId;
+        this.currentId++;
+        this.scope.layers.push(layer);
+        
+        var child = angular.element("<badge-layer />");
+        child.attr(layer.directive, "");
+        child.attr("model", "layers["+(this.scope.layers.length-1)+"]");
+        $compile(child)(this.scope);
+        this.element.append(child);
+    }
+    
+    Canvas.prototype.sendSubscriptionNotification = function(layer) {
+        if (!layer && this.scope.selectedLayer.type == "Document") return;
+        this.scope.selectedLayer = layer || this.documentLayer();
+    }
+    
+    Canvas.prototype.bringForward = function(id) {
+        var currentZIndex = this.scope.layers[id].zIndex;
+        var swappable = false;
+        for (var i = 0, j = this.scope.layers.length; i < j; i++) {
+            if (this.scope.layers[i].zIndex == currentZIndex + 1) {
+                this.scope.layers[i].zIndex = currentZIndex;
+                swappable = true;
+                break;
+            }
+        }
+        if (swappable) {
+            this.scope.layers[id].zIndex++;
+        }
+    }
+    
+    Canvas.prototype.sendBackward = function(id) {
+        var currentZIndex = this.scope.layers[id].zIndex;
+        var swappable = false;
+        for (var i = 0, j = this.scope.layers.length; i < j; i++) {
+            if (this.scope.layers[i].zIndex == currentZIndex - 1) {
+                this.scope.layers[i].zIndex = currentZIndex;
+                swappable = true;
+                break;
+            }
+        }
+        if (swappable) {
+            this.scope.layers[id].zIndex--;
+        }
+    }
+    
+    Canvas.prototype.delete = function(id, removeFromScope) {
+        for (var i = 0, j = this.scope.layers.length; i < j; i++) {
+            if (this.scope.layers[i].id == id) {
+                if (removeFromScope) {
+                    this.scope.layers.splice(i, 1);
+                } else {
+                    this.scope.layers[i].toDelete = true;
+                }
+                this.sendSubscriptionNotification(null);
+                break;
+            }
+        }
+    }
+    
+    Canvas.prototype.loadStyle = function(style, selectedProperty, ignoreConfirmation) {
+    
+        //console.log(style);
+        
+  //  console.log('hi uday');
+  //  console.log(style);
+        if (this.scope.layers.length && !ignoreConfirmation && !confirm("Are you sure you wish to load the "+style.name+" style? Any unsaved changes will be deleted.")) {
+            return false;
+        }
+        else{
+        $('#defaultattregis').prop('checked',true);
+    $('#QR').prop('checked',false);
+    $('#SA').prop('checked',false);
+        }
+        for (var i = 0, j = this.scope.layers.length; i < j; i++) {
+            this.scope.layers[0].delete(true);
+        }
+        this.sendSubscriptionNotification(null);
+        
+        this.scope[selectedProperty] = style.id;
+        angular.element(".guideline").remove();
+        this.changeSize(style.canvasWidth, style.canvasHeight, style.guidelines);
+        this.sizeName = style.sizeName;
+        this.scope.backgroundColor = style.backgroundColor;
+        this.scope.backgroundImage = style.backgroundImage;
+        this.scope.backgroundSize = style.backgroundSize;
+        this.scope.backgroundPosition = style.backgroundPosition;
+        this.scope.backgroundRepeat = style.backgroundRepeat;
+        this.paperSize = style.paperSize;
+        this.currentId = 0;
+        var layers = LayerProcessing.processLayersForSaving(style.layers);
+        for (var i = 0, j = layers.length; i < j; i++) {
+        
+            this.add(layers[i]);
+        }
+        
+        this.scope.selectedLayer = this.documentLayer();
+    }
+    
+    Canvas.prototype.saveStyle = function(style) {
+    //console.log('Canvas.prototype.saveStyle');
+  //  console.log(style);
+        style.layers = LayerProcessing.processLayersForSaving(this.scope.layers);
+        style.canvasWidth = this.widthInches;
+        style.canvasHeight = this.heightInches;
+        style.guidelines = this.guidelines;
+        style.sizeName = this.sizeName;
+        style.backgroundColor = this.scope.backgroundColor;
+        style.backgroundImage = this.scope.backgroundImage;
+        style.backgroundSize = this.scope.backgroundSize;
+        style.backgroundPosition = this.scope.backgroundPosition;
+        style.backgroundRepeat = this.scope.backgroundRepeat;
+        style.paperSize = this.paperSize;
+        style.save();
+    }
+    
+    Canvas.prototype.changeSize = function(width, height, guidelines) {
+        this.widthInches = width;
+        this.heightInches = height;
+        this.guidelines = guidelines;
+        
+        var ratio = height / width;
+        angular.element("#canvas-size").remove();
+        var stylesheet = angular.element("<style id='canvas-size'>.workspace-table .badge .working-area:before { padding-top: "+(ratio*100)+"%; }</style>");
+        stylesheet.appendTo("head");
+        
+        // taken from .sketch document
+        var newBadgeWidthFullsize = 584;
+        var newBadgeHeightFullsize = 534 * height / width + 68 + 25;        
+        stylesheet.text(stylesheet.text() + ".workspace-table .badge:before { padding-top: "+((newBadgeHeightFullsize / newBadgeWidthFullsize)*100)+"% }");
+        
+        var newCutoutTop = 22 / newBadgeHeightFullsize;
+        var newCutoutHeight = 19 / newBadgeHeightFullsize;
+        stylesheet.text(stylesheet.text() + ".workspace-table .badge::after { top: "+(newCutoutTop*100)+"%; height: "+(newCutoutHeight*100)+"% }");
+        
+        this.resize();
+        
+        addOptionalGuidelines(width, height, guidelines);
+    }
+    
+    function addOptionalGuidelines(width, height, guidelines) {
+        if (!guidelines || !guidelines.length) return;
+        for (var i = 0, j = guidelines.length; i < j; i++) {
+            var guideline = angular.element("<div class='guideline' />");
+            guideline.css({
+                borderTop: "2px dashed #ccc",
+                position: "absolute",
+                zIndex: "0"
+            });
+            if (guidelines[i][0] == "H") {
+                guideline.css({
+                    height: "1px",
+                    width: "100%",
+                    left: 0,
+                    top:  guidelines[i][1] / height * 100 + "%"
+                });
+            } else {
+                guideline.css({
+                    width: "1px",
+                    height: "100%",
+                    top: 0,
+                    left: guidelines[i][1] / width * 100 + "%"
+                });
+            }
+            angular.element("#canvas").append(guideline);
+        }
+    }
+    
+    return Canvas;
+    
+}]);
+app.factory("DefaultStyles", ["Style", "LayerText", "LayerBarCode", "LayerShape", "LayerImage", "LayerAttendeeData",
+function(Style, LayerText, LayerBarCode, LayerShape, LayerImage, LayerAttendeeData) {
+    
+    function DefaultStyles() {}
+    
+    DefaultStyles.styles = [];
+    
+    DefaultStyles.styles.push(function() {
+        return new Style({
+            layers: [
+                new LayerShape({color: "#2fc495", height: 0.15084745762711865, width: 0.9983050847457627, x: 0, y: 0.5983050847457627, shape: 0}),
+                new LayerAttendeeData({color: "#a0ebd8", content: "My Company", height: 0.06779661016949151, width: 0.5372881355932204, x: 0.0423728813559322, y: 0.6423728813559322}),
+                new LayerAttendeeData({color: "#ffffff", content: "Attendee", height: 0.0847457627118644, align: "right", width: 0.35423728813559324, x: 0.6135593220338982, y: 0.6338983050847458}),
+                new LayerAttendeeData({content: "John", height: 0.19661016949152543, width: 0.9033898305084747, x: 0.04745762711864407, y: 0.22542372881355932}),
+                new LayerAttendeeData({content: "Smith", height: 0.08305084745762713, width: 0.9033898305084747, x: 0.05084745762711864, y: 0.39322033898305087}),
+                new LayerImage({height: 0.15, width: 0.3, x: 0.05423728813559322, y: 0.05423728813559322}),
+                new LayerBarCode({height: 0.15847457627118644, width: 0.15847457627118644, x: 0.8016949152542373, y: 0.04067796610169491})
+            ]
+        })
+    });
+    
+    DefaultStyles.styles.push(function() {
+        return new Style({
+            layers: [
+                new LayerImage({height: 0.15, width: 0.3, x: 0.04923599320882852, y: 0.050933786078098474}),
+                new LayerBarCode({height: 0.20585738539898132, width: 0.20585738539898132, x: 0.767402376910017, y: 0.025466893039049237}),
+                new LayerAttendeeData({align: "center", content: "John Smith", height: 0.12003395585738538, width: 0.8118845500848897, x: 0.09405772495755516, y: 0.34125636672325976}),
+                new LayerAttendeeData({color: "#828282", align: "center", content: "My Company", height: 0.07079796264855687, width: 0.8967741935483872, x: 0.05161290322580642, y: 0.4724957555178268}),
+                new LayerShape({color: "#eba438", shape: 0, height: 0.1303904923599321, width: 0.999241298811545, x: 0, y: 0.6200339558573854}),
+                new LayerAttendeeData({align: "center", color: "#ffffff", content: "Attendee", height: 0.08098471986417655, width: 0.9528013582342955, x: 0.02359932088285227, y: 0.6473684210526316})
+            ]
+        });
+    });
+    
+    DefaultStyles.styles.push(function() {
+        return new Style({
+            layers: [
+                new LayerImage({height: 0.15, width: 0.3, x: 0.04923599320882852, y: 0.04923599320882852}),
+                new LayerAttendeeData({content: "Attendee", color: "#9436d1", align: "right", fontWeight: "700", height: 0.05721561969439727, width: 0.5283531409168082, x: 0.41595925297113756, y: 0.0899830220713073}),
+                new LayerAttendeeData({content: "John Smith", color: "#000000", fontWeight: "700", align: "center", height: 0.19134125636672325, width: 0.8916808149405773, x: 0.054159592529711365, y: 0.2461799660441426}),
+                new LayerBarCode({height: 0.23811544991511036, width: 0.23811544991511036, x: 0.7079796264855688, y: 0.4567062818336163}),
+                new LayerAttendeeData({align: "left", color: "#AAAAAA", content: "President", height: 0.058913412563667236, width: 0.5826825127334465, x: 0.06281833616298811, y: 0.4572156196943973}),
+                new LayerAttendeeData({align: "left", color: "#AAAAAA", content: "My Company", height: 0.06061120543293716, width: 0.5826825127334466, x: 0.06112054329371817, y: 0.531918505942275}),
+               // new LayerAttendeeData({align: "left", color: "#AAAAAA", content: "Kansas ", height: 0.06400679117147706, width: 0.5843803056027165, x: 0.06112054329371817, y: 0.6083191850594228})
+            ]
+        });
+    });
+    
+    DefaultStyles.styles.push(function() {
+        return new Style({
+            layers: [
+                new LayerImage({height: 0.11943972835314091, width: 0.2524617996604414, x: 0.37376910016977927, y: 0.04923599320882853}),
+                new LayerShape({color: "#bd2424", shape: 0, height: 0.34770797962648564, width: 1.0059528862478777, x: -0.0029764431239388545, y: 0.2156196943972835}),
+                new LayerAttendeeData({align: "center", color: "#ffffff", content: "John Smith", fontWeight: "700", height: 0.16078098471986418, width: 0.7915110356536503, x: 0.10424448217317484, y: 0.26825127334465193}),
+                new LayerAttendeeData({align: "center", color: "#f29b9b", content: "Attendee", height: 0.06910016977928692, width: 0.7813242784380307, x: 0.10933786078098467, y: 0.4397283531409168}),
+                new LayerBarCode({height: 0.1532258064516129, width: 0.1532258064516129, x: 0.833616298811545, y: 0.5806451612903226}),
+                new LayerAttendeeData({content: "President", height: 0.06570458404074701, width: 0.7864176570458404, x: 0.023769100169779286, y: 0.5879456706281834}),
+             //   new LayerAttendeeData({content: "Kansas City", height: 0.06570458404074703, width: 0.7949066213921901, x: 0.015280135823429542, y: 0.66383701188455})
+            ]
+        })
+    });
+    
+    return DefaultStyles;
+    
+}]);
+/**
+    FormatOption is both an instantiable object, and an enum class for the directive names of the option types
+**/
+
+app.factory("FormatOption", [function() {
+    
+    function FormatOption(type, optionFor, model) {
+        this.type = type;
+        this.details = {
+            optionFor: optionFor,
+            model: model
+        };
+    }
+    
+    FormatOption.TEXT = "format-option-text";
+    FormatOption.TEXT_ALIGN = "format-option-text-align";
+    FormatOption.TEXT_TRANSFORM = "format-option-text-transform";
+    FormatOption.ALIGN = "format-option-align";
+    FormatOption.ARRANGE = "format-option-arrange";
+    FormatOption.DELETE = "format-option-delete";
+    FormatOption.FONT_STYLE = "format-option-font-style";
+    FormatOption.FONT_FAMILY = "format-option-font-family";
+    FormatOption.COLOR = "format-option-color";
+    FormatOption.ATTENDEE_CONTENT = "format-option-attendee-content";
+    FormatOption.SHAPES = "format-option-shapes";
+    FormatOption.IMAGE = "format-option-image";
+    FormatOption.IMAGE_FILL = "format-option-image-fill";
+    FormatOption.BAR_CODE = "format-option-bar-code";
+    FormatOption.DOCUMENT_SIZE = "format-option-document-size";
+    FormatOption.PAPER_SIZE = "format-option-paper-size";
+    FormatOption.ROTATION = "format-option-rotation";
+    
+    return FormatOption;
+    
+}]);
+app.factory("FormatSection", [function() {
+    
+    function FormatSection(name, options) {
+        this.name = name;
+        this.options = options;
+    }
+    
+    return FormatSection;
+    
+}]);
+app.factory("Layer", [function() {
+    
+    function Layer(data) {
+        if (typeof data != "object") {
+            data = {};
+        }
+     //   console.log('uday');
+     //   console.log(data);
+        this.id = -1;
+        this.type = "Unknown";
+        this.formatOptions = [];
+        this.content = data.content || "Hello World";
+        this.directive = null;
+        this.width = data.width || 0;
+        this.height = data.height || 0;
+        this.x = data.x || 0;
+        this.y = data.y || 0;
+        this.parentWidth = 0;
+        this.parentHeight = 0;
+        this.canvas = null;
+        this.selected = false;
+        this.zIndex = 0 || data.zIndex;
+        this.elem = null;
+        this.scope = null;
+    }
+    
+    Layer.prototype.normalize = function(number, inYDirection) {
+        return (!inYDirection ? number * this.parentWidth : number * this.parentHeight);
+    }
+    
+    Layer.prototype.ratio = function(number, inYDirection) {
+        return (!inYDirection ? number / this.parentWidth : number / this.parentHeight);
+    }
+    
+    Layer.prototype.delete = function(removeFromScope) {
+        var canvas = angular.element("#canvas");
+        if (this.selected) {
+            canvas.trigger("mousedown.selectLayer"+this.id);
+        }
+        this.elem.remove();
+        this.canvas.delete(this.id, removeFromScope);
+        canvas.off("mousedown.selectLayer"+this.id);
+    }
+    
+    Layer.prototype.registerForDeletion = function(elem) {
+        this.elem = elem;
+    }
+    
+    Layer.prototype.registerForLayerSelection = function(elem, scope) {
+        var body = angular.element("body"), thisLayer = this, canvas = angular.element("#canvas");
+        
+        canvas.on("mousedown.selectLayer"+this.id, function(e) {
+            var targetElem = e.target.closest("badge-layer");
+            if (thisLayer.selected && targetElem != elem[0]) {
+                thisLayer.selected = false;
+                scope.$apply();
+                elem.removeClass("-selected");
+            }
+        });
+        
+        elem.on("mousedown.selectLayer", function(e) {
+            if (!thisLayer.selected) {
+                thisLayer.selected = true;
+                scope.$apply();
+                elem.addClass("-selected");
+                thisLayer.canvas.sendSubscriptionNotification(thisLayer);
+            }
+        })
+    }
+    
+    Layer.prototype.registerForAutomaticResizing = function(elem, scope, callback) {
+        var resizeLayer = function() {
+            if (!scope.model) return;
+            elem.width(scope.model.normalize(scope.model.width));
+            elem.height(scope.model.normalize(scope.model.height));
+            elem.css("left", scope.model.normalize(scope.model.x) + "px");
+            elem.css("top", scope.model.normalize(scope.model.y) + "px");
+            if (callback) callback();
+        }
+        resizeLayer();
+        
+        scope.$on("resizeCanvas", resizeLayer);
+    }
+    
+    Layer.prototype.registerForZIndexManagement = function(elem, scope) {
+        scope.$watch("model.zIndex", function(newValue, oldValue) {
+            elem.css("z-index", newValue);
+        });
+    }
+    
+    Layer.prototype.bringForward = function(scope) {
+        this.canvas.bringForward(this.id);
+    }
+    
+    Layer.prototype.sendBackward = function(scope) {
+        this.canvas.sendBackward(this.id);
+    }
+    
+    Layer.prototype.registerForSmartAlignment = function(elem) {
+        var thisLayer = this;
+        thisLayer.alignHorizontally = function() {
+            thisLayer.x = .5 - this.width / 2;
+            elem.css("left", thisLayer.normalize(thisLayer.x) + "px");
+        }
+        thisLayer.alignVertically = function() {
+            thisLayer.y = thisLayer.ratio(thisLayer.parentHeight) / 2 - this.height / 2;
+            elem.css("top", thisLayer.normalize(thisLayer.y) + "px");
+        }
+    }
+    
+    Layer.prototype.registerNodesForResizing = function(elem, $scope, constrainedResizing, proportionateResizing) {
+        var body = angular.element("body"), thisLayer = this, canvas = angular.element("#canvas");
+        
+        if (constrainedResizing && thisLayer.width != thisLayer.height) {
+            thisLayer.width = Math.min(thisLayer.width, thisLayer.height);
+            thisLayer.height = thisLayer.width;
+            elem.width(thisLayer.normalize(thisLayer.width));
+            elem.height(thisLayer.normalize(thisLayer.height));
+        }
+        
+        var endDrag = function() {
+            body.off("mousemove.canvas mouseup.canvas");
+            $scope.$apply();
+        }
+        
+        elem.children(".node").off("mousedown");
+        
+        elem.children(".node.-bottom-right").on("mousedown", function(e) {
+            e.stopPropagation();
+            var offset = canvas.offset();
+            var x_min = offset.left, x_max = offset.left + thisLayer.parentWidth,
+                y_min = offset.top, y_max = offset.top + thisLayer.parentHeight;
+            var x_init = e.clientX, y_init = e.clientY, width_init = thisLayer.width, height_init = thisLayer.height;
+            body.on("mousemove.canvas", function(e) {
+                e.preventDefault();
+                var deltaX = Math.min(e.clientX, x_max) - x_init, deltaY = Math.min(e.clientY, y_max) - y_init;
+                if (!constrainedResizing && !proportionateResizing) {
+                    thisLayer.width = width_init + thisLayer.ratio(deltaX);
+                    thisLayer.height = height_init + thisLayer.ratio(deltaY);
+                } else if (constrainedResizing) {
+                    var tempWidth = width_init + thisLayer.ratio(deltaX),
+                        tempHeight = thisLayer.height = height_init + thisLayer.ratio(deltaY);
+                    thisLayer.width = Math.min(tempWidth, tempHeight);
+                    thisLayer.height = Math.min(tempWidth, tempHeight);
+                } else {
+                    thisLayer.width = width_init + thisLayer.ratio(deltaX);
+                    thisLayer.height = height_init + thisLayer.ratio(deltaX) * height_init / width_init;
+                }
+                elem.width(thisLayer.normalize(thisLayer.width));
+                elem.height(thisLayer.normalize(thisLayer.height));
+            });
+            body.on("mouseup.canvas", endDrag);
+        });
+        
+        elem.children(".node.-top-right").on("mousedown", function(e) {
+            e.stopPropagation();
+            var offset = canvas.offset();
+            var x_min = offset.left, x_max = offset.left + thisLayer.parentWidth,
+                y_min = offset.top, y_max = offset.top + thisLayer.parentHeight;
+            var x_init = e.clientX, y_init = e.clientY, width_init = thisLayer.width, height_init = thisLayer.height;
+            var yLayer_init = thisLayer.y;
+            body.on("mousemove.canvas", function(e) {
+                e.preventDefault();
+                var deltaX = Math.min(e.clientX, x_max) - x_init, deltaY = Math.max(e.clientY, y_min) - y_init;
+                if (!constrainedResizing && !proportionateResizing) {
+                    thisLayer.width = width_init + thisLayer.ratio(deltaX);
+                    thisLayer.height = height_init - thisLayer.ratio(deltaY);
+                    thisLayer.y = yLayer_init + thisLayer.ratio(deltaY);
+                } else if (constrainedResizing) {
+                    var sideDelta = Math.min(Math.abs(thisLayer.ratio(deltaX)), Math.abs(thisLayer.ratio(deltaY)));
+                    if (deltaY > 0 || deltaX < 0) sideDelta = sideDelta * -1;
+                    thisLayer.width = width_init + sideDelta;
+                    thisLayer.height = thisLayer.width;
+                    thisLayer.y = yLayer_init - sideDelta;
+                } else {
+                    thisLayer.width = width_init + thisLayer.ratio(deltaX);
+                    thisLayer.height = height_init + thisLayer.ratio(deltaX) * height_init / width_init;
+                    thisLayer.y = yLayer_init - thisLayer.ratio(deltaX) * height_init / width_init;
+                }
+                elem.width(thisLayer.normalize(thisLayer.width));
+                elem.height(thisLayer.normalize(thisLayer.height));
+                elem.css("top", thisLayer.normalize(thisLayer.y) + "px");
+            });
+            body.on("mouseup.canvas", endDrag);
+        });
+        
+        elem.children(".node.-bottom-left").on("mousedown", function(e) {
+            e.stopPropagation();
+            var offset = canvas.offset();
+            var x_min = offset.left, x_max = offset.left + thisLayer.parentWidth,
+                y_min = offset.top, y_max = offset.top + thisLayer.parentHeight;
+            var x_init = e.clientX, y_init = e.clientY, width_init = thisLayer.width, height_init = thisLayer.height;
+            var xLayer_init = thisLayer.x;
+            body.on("mousemove.canvas", function(e) {
+                e.preventDefault();
+                var deltaX = Math.max(e.clientX, x_min) - x_init, deltaY = Math.min(e.clientY, y_max) - y_init;
+                if (!constrainedResizing && !proportionateResizing) {
+                    thisLayer.width = width_init - thisLayer.ratio(deltaX);
+                    thisLayer.height = height_init + thisLayer.ratio(deltaY);
+                    thisLayer.x = xLayer_init + thisLayer.ratio(deltaX);
+                } else if (constrainedResizing) {
+                    var sideDelta = Math.min(Math.abs(thisLayer.ratio(deltaX)), Math.abs(thisLayer.ratio(deltaY)));
+                    if (deltaY < 0 || deltaX > 0) sideDelta = sideDelta * -1;
+                    thisLayer.width = width_init + sideDelta;
+                    thisLayer.height = thisLayer.width;
+                    thisLayer.x = xLayer_init - sideDelta;
+                } else {
+                    thisLayer.width = width_init - thisLayer.ratio(deltaX);
+                    thisLayer.height = height_init - thisLayer.ratio(deltaX) * height_init / width_init;
+                    thisLayer.x = xLayer_init + thisLayer.ratio(deltaX);
+                }
+                elem.width(thisLayer.normalize(thisLayer.width));
+                elem.height(thisLayer.normalize(thisLayer.height));
+                elem.css("left", thisLayer.normalize(thisLayer.x) + "px");
+            });
+            body.on("mouseup.canvas", endDrag);
+        });
+        
+        elem.children(".node.-top-left").on("mousedown", function(e) {
+            e.stopPropagation();
+            var offset = canvas.offset();
+            var x_min = offset.left, x_max = offset.left + thisLayer.parentWidth,
+                y_min = offset.top, y_max = offset.top + thisLayer.parentHeight;
+            var x_init = e.clientX, y_init = e.clientY, width_init = thisLayer.width, height_init = thisLayer.height;
+            var xLayer_init = thisLayer.x, yLayer_init = thisLayer.y;
+            body.on("mousemove.canvas", function(e) {
+                e.preventDefault();
+                var deltaX = Math.max(e.clientX, x_min) - x_init, deltaY = Math.max(e.clientY, y_min) - y_init;
+                if (!constrainedResizing && !proportionateResizing) {
+                    thisLayer.width = width_init - thisLayer.ratio(deltaX);
+                    thisLayer.height = height_init - thisLayer.ratio(deltaY);
+                    thisLayer.x = xLayer_init + thisLayer.ratio(deltaX);
+                    thisLayer.y = yLayer_init + thisLayer.ratio(deltaY);
+                } else if (constrainedResizing) {
+                    var sideDelta = Math.min(Math.abs(thisLayer.ratio(deltaX)), Math.abs(thisLayer.ratio(deltaY)));
+                    if (deltaY > 0 || deltaX > 0) sideDelta = sideDelta * -1;
+                    thisLayer.width = width_init + sideDelta;
+                    thisLayer.height = thisLayer.width;
+                    thisLayer.x = xLayer_init - sideDelta;
+                    thisLayer.y = yLayer_init - sideDelta;
+                } else {
+                    thisLayer.width = width_init - thisLayer.ratio(deltaX);
+                    thisLayer.height = height_init - thisLayer.ratio(deltaX) * height_init / width_init;
+                    thisLayer.x = xLayer_init + thisLayer.ratio(deltaX);
+                    thisLayer.y = yLayer_init + thisLayer.ratio(deltaX) * height_init / width_init;
+                }
+                elem.width(thisLayer.normalize(thisLayer.width));
+                elem.height(thisLayer.normalize(thisLayer.height));
+                elem.css("left", thisLayer.normalize(thisLayer.x) + "px");
+                elem.css("top", thisLayer.normalize(thisLayer.y) + "px");
+            });
+            body.on("mouseup.canvas", endDrag);
+        });
+        
+        elem.on("mousedown", function(e) {
+            var offset = canvas.offset();
+            var x_init = e.clientX, y_init = e.clientY;
+            var xLayer_init = thisLayer.x, yLayer_init = thisLayer.y;
+            body.on("mousemove.canvas", function(e) {
+                e.preventDefault();
+                var deltaX = e.clientX - x_init, deltaY = e.clientY - y_init;
+                thisLayer.x = Math.min(1 - thisLayer.width, Math.max(0, xLayer_init + thisLayer.ratio(deltaX)));
+                thisLayer.y = Math.min(thisLayer.ratio(thisLayer.parentHeight)-thisLayer.height, Math.max(0, yLayer_init + thisLayer.ratio(deltaY)));
+                elem.css("left", thisLayer.normalize(thisLayer.x) + "px");
+                elem.css("top", thisLayer.normalize(thisLayer.y) + "px");
+            });
+            body.on("mouseup.canvas", endDrag);
+        });
+        
+        elem.children(".node.-rotate").on("mousedown", function(e) {
+            e.stopPropagation();
+            var x_init = e.clientX, y_init = e.clientY + thisLayer.height / 2;
+            body.on("mousemove.canvas", function(e) {
+                e.preventDefault();
+                var deltaX = e.clientX - x_init, deltaY = e.clientY - y_init;
+                var angleDragged = Math.atan(deltaY / deltaX);
+                var angleDraggedRadians = angleDragged * 180 / Math.PI;
+                elem.css("-webkit-transform", "rotate("+angleDraggedRadians+"deg)");
+                elem.css("-ms-transform", "rotate("+angleDraggedRadians+"deg)");
+                elem.css("transform", "rotate("+angleDraggedRadians+"deg)");
+            });
+            body.on("mouseup.canvas", endDrag);
+        });
+    }
+        
+    return Layer;
+    
+}]);
+app.factory("LayerAttendeeData", ["LayerText", "FormatSection", "FormatOption", function(LayerText, FormatSection, FormatOption) {
+    
+    // Extends Layer
+    function LayerAttendeeData(data) {
+        LayerText.apply(this, [data]);
+        if (typeof data != "object") {
+            data = {};
+        }
+        
+        if(data.content=="John Smith"){
+        this.dummyLabel="Full Name";}
+        else 
+        if(data.content=="John"){
+        this.dummyLabel="First name";}
+        else 
+        if(data.content=="Smith"){
+        this.dummyLabel="Last name";}
+        else 
+        if(data.content=="My Company"){
+        this.dummyLabel="Company";}
+        else 
+        if(data.content=="President"){
+        this.dummyLabel="Title";}
+        else 
+        if(data.content=="Kansas City"){
+        this.dummyLabel="City";}
+        else 
+        if(data.content== "Attendee"){
+        this.dummyLabel="Ticket type";}
+        else 
+        if(data.content== "Label"){
+        this.dummyLabel="Badge Label";}
+        else 
+        if(data.content== "Printed"){
+        this.dummyLabel="Badge Status";}
+        else 
+        if(data.content== "012"){
+        this.dummyLabel="Seat No";}
+        else 
+        if(data.content== "Fully Paid"){
+        this.dummyLabel="Payment Status";}
+        else 
+        if(data.content== "Buyer Name"){
+        this.dummyLabel="Buyer Name";}
+        else 
+        if(data.content== "O-00062251"){
+        this.dummyLabel="Order Id";}
+        else 
+        if(data.content== "TKT-1265433"){
+        this.dummyLabel="Ticket Id";}
+        else 
+        if(data.content== "0723"){
+        this.dummyLabel="Unique Id";}
+        else
+        this.dummyLabel="un known";
+        
+        
+        
+        this.directive = "layer-text";
+        
+        this.type = "Attendee data layer";
+        this.content = data.content || "John Smith";
+        
+        this.formatOptions[0] = new FormatSection(
+            "Data Layer Content", [
+                new FormatOption(FormatOption.ATTENDEE_CONTENT, this, "content")
+            ]
+        );
+    }
+    
+    LayerAttendeeData.prototype = new LayerText();
+    
+    return LayerAttendeeData;
+    
+}]);
+app.factory("LayerBarCode", ["Layer", "FormatSection", "FormatOption", function(Layer, FormatSection, FormatOption) {
+    
+    // Extends Layer
+    function LayerBarCode(data) {
+        Layer.apply(this, [data]);
+        if (typeof data != "object") {
+            data = {};
+        }
+        
+        this.directive = "layer-bar-code";
+        
+        this.type = "Bar code layer";
+        this.width = data.width || 0.25;
+        this.height = data.height || 0.25;
+      //  this.barCode = 0 || data.barCode;
+          this.barCode = 0 ;
+        this.rotation = data.rotation || 90;
+        
+        this.formatOptions = [
+            new FormatSection(
+                "Content", [
+                   // new FormatOption(FormatOption.BAR_CODE, this, "barCode")
+                ]
+            ),
+            new FormatSection(
+                "Arrange", [
+                    new FormatOption(FormatOption.ARRANGE, this),
+                    new FormatOption(FormatOption.ALIGN, this)
+                ]
+            ),
+           // new FormatSection(
+           //     "Rotation", [
+           //         new FormatOption(FormatOption.ROTATION, this, "rotation")
+          //      ]
+           // ),
+            new FormatSection(
+                "", [
+                    new FormatOption(FormatOption.DELETE, this)
+                ]
+            )
+        ];
+    }
+    
+    LayerBarCode.barCodes = [
+        ["QR Code (Square)", function(layer) {
+            layer.registerNodesForResizing(layer.elem, layer.scope, true);
+            layer.content = "QR-Code";
+        }]
+      //  ,
+       // ["Bar Code (Rectangle)", function(layer) {
+       //     layer.registerNodesForResizing(layer.elem, layer.scope, false);
+      //      layer.content = "Bar-Code";
+      //  }]
+    ];
+    
+    LayerBarCode.prototype = new Layer();
+    
+    return LayerBarCode;
+    
+}]);
+app.factory("LayerImage", ["Layer", "FormatSection", "FormatOption", function(Layer, FormatSection, FormatOption) {
+    
+    // Extends Layer
+    function LayerImage(data) {
+        Layer.apply(this, [data]);
+        if (typeof data != "object") {
+            data = {};
+        }
+        
+        this.directive = "layer-image";
+        
+        this.type = "Image layer";
+        this.width = data.width || 0.3;
+        this.height = data.height || 0.15;
+        this.image = data.image || window.resourcePath+"/images/build/example-image.png";
+        
+        this.formatOptions = [
+            new FormatSection(
+                "Content", [
+                    new FormatOption(FormatOption.IMAGE, this, "image")
+                ]
+            ),
+            new FormatSection(
+                "Arrange", [
+                    new FormatOption(FormatOption.ARRANGE, this),
+                    new FormatOption(FormatOption.ALIGN, this)
+                ]
+            ),
+            new FormatSection(
+                "", [
+                    new FormatOption(FormatOption.DELETE, this)
+                ]
+            )
+        ];
+    }
+    
+    LayerImage.prototype = new Layer();
+    
+    return LayerImage;
+    
+}]);
+app.factory("LayerProcessing", ["LayerTypes", function(LayerTypes) {
+    
+    function LayerProcessing() {}
+    
+    LayerProcessing.processLayersForSaving = function(layers) {
+    
+        var layersToSave = [];
+        for (var i = 0, j = layers.length; i < j; i++) {
+            if (!layers[i].toDelete) layersToSave.push(layers[i]);
+        }
+        return layersToSave.map(function(layer) {
+            for (layerType in LayerTypes.all) {
+                if (layer instanceof LayerTypes.all[layerType]) {
+                    return new LayerTypes.all[layerType](layer);
+                }
+            }
+        });
+    }
+    
+    LayerProcessing.toServer = function(layers) {
+  //  console.log('LayerProcessing.toServer');
+  //  console.log(layers);
+        return layers.map(function(layer) {
+            for (layerType in LayerTypes.all) {
+                if (layer instanceof LayerTypes.all[layerType]) {
+                    var serverLayer = {};
+                    serverLayer.Data__c = layer;
+                //    alert(layerType);
+                    if(layerType=='BAR_CODE'){
+                    layerType='QR_CODE';
+                    }
+                  //   alert(layerType);
+                    serverLayer.Data__c.layerType = layerType;
+                    /*for (var i = 0, j = serverLayer.Data__c.formatOptions.length; i < j; i++) {
+                        // in a section
+                        for (var k = 0, l = serverLayer.Data__c.formatOptions[i].options.length; k < l; k++) {
+                            serverLayer.Data__c.formatOptions[i].options[k].details.optionFor = undefined;
+                        }
+                    }*/
+                    serverLayer.Data__c.formatOptions = undefined;
+                    serverLayer.Data__c = JSON.stringify(serverLayer.Data__c);
+                    serverLayer.BLN_Badge_Style_ID__c = "-1";
+                    serverLayer.Name = layer.id+"";
+                    return serverLayer;
+                }
+            }
+        });
+    }
+    
+    LayerProcessing.fromServer = function(layers) {
+        return layers.map(function(layer) {
+            var layerData = JSON.parse(layer.Data__c);
+          //  alert(layerData.layerType);
+            if(layerData.layerType=='QR_CODE')
+            {
+            layerData.layerType='BAR_CODE';
+            }
+         //   alert(layerData.layerType);
+            var newLayer = new LayerTypes.all[layerData.layerType](layerData);
+            for (var i = 0, j = newLayer.formatOptions.length; i < j; i++) {
+                for (var k = 0, l = newLayer.formatOptions[i].options.length; k < l; k++) {
+                    newLayer.formatOptions[i].options[k].details.optionFor = newLayer;
+                }
+            }
+            return newLayer;
+        });
+    }
+    
+    return LayerProcessing;
+    
+}]);
+app.factory("LayerShape", ["Layer", "FormatSection", "FormatOption", function(Layer, FormatSection, FormatOption) {
+    
+    // Extends Layer
+    function LayerShape(data) {
+        Layer.apply(this, [data]);
+        if (typeof data != "object") {
+            data = {};
+        }
+        
+        this.directive = "layer-shape";
+        
+        this.type = "Shape layer";
+        this.width = data.width || 0.4;
+        this.height = data.height || 0.2;
+        this.color = data.color || "#894873";
+        this.shape = data.shape || 0;
+        if(data.shape == 1){
+        this.dummyLabel="Circle";
+        }
+        else{
+        this.dummyLabel="Rectangle";
+        
+        }
+        
+        this.formatOptions = [
+            new FormatSection(
+                "Content", [
+                    new FormatOption(FormatOption.SHAPES, this, "shape")
+                ]
+            ),
+            new FormatSection(
+                "Style", [
+                    new FormatOption(FormatOption.COLOR, this, "color"),
+                ]
+            ),
+            new FormatSection(
+                "Arrange", [
+                    new FormatOption(FormatOption.ARRANGE, this),
+                    new FormatOption(FormatOption.ALIGN, this)
+                ]
+            ),
+            new FormatSection(
+                "", [
+                    new FormatOption(FormatOption.DELETE, this)
+                ]
+            )
+        ];
+    }
+    
+    LayerShape.shapes = [
+        ["Rectangle", function(layer) {
+            layer.registerNodesForResizing(layer.elem, layer.scope, false);
+            layer.borderRadius = 0;
+        }],
+        ["Circle", function(layer) {
+            layer.registerNodesForResizing(layer.elem, layer.scope, true);
+            layer.borderRadius = "50%";
+        }]
+    ];
+    
+    LayerShape.prototype = new Layer();
+    
+    return LayerShape;
+    
+}]);
+app.factory("LayerText", ["Layer", "FormatSection", "FormatOption", function(Layer, FormatSection, FormatOption) {
+    
+    // Extends Layer
+    function LayerText(data) {
+        Layer.apply(this, [data]);
+        if (typeof data != "object") {
+            data = {};
+        }
+      //  console.log('uuu');
+      //  console.log(data);
+        this.directive = "layer-text";
+        
+        this.type = "Static text layer";
+        this.content = data.content || "Hello World";
+        this.align = data.align || "left";
+        this.transform = data.transform || "none";
+        this.fontStyle = data.fontStyle || "normal";
+        this.fontWeight = data.fontWeight || "400";
+        this.fontFamily = data.fontFamily || "'Arial', sans-serif";
+       // this.fontFamily = data.fontFamily || "Arial";
+        this.width = data.width || 0.8;
+        this.height = data.height || 0.3;
+        this.color = data.color || "#000000";
+        this.rotation = data.rotation || 0;
+        this.fsize = this.normalize(data.height) ;
+        
+        this.formatOptions = [
+            new FormatSection(
+                "Content", [
+                    new FormatOption(FormatOption.TEXT, this, "content")
+                ]
+            ),
+            new FormatSection(
+                "Style", [
+                    new FormatOption(FormatOption.FONT_FAMILY, this, "fontFamily"),
+                    new FormatOption(FormatOption.FONT_STYLE, this, ["fontStyle", "fontWeight"]),
+                    new FormatOption(FormatOption.COLOR, this, "color"),
+                    new FormatOption(FormatOption.TEXT_ALIGN, this, "align"),
+                    new FormatOption(FormatOption.TEXT_TRANSFORM, this, "transform")
+                ]
+            ),
+            new FormatSection(
+                "Arrange", [
+                    new FormatOption(FormatOption.ARRANGE, this),
+                    new FormatOption(FormatOption.ALIGN, this)
+                ]
+            ),
+            new FormatSection(
+                "Rotation", [
+                    new FormatOption(FormatOption.ROTATION, this, "rotation")
+                ]
+            ),
+            new FormatSection(
+                "", [
+                    new FormatOption(FormatOption.DELETE, this)
+                ]
+            )
+        ];
+    }
+    
+    LayerText.prototype = new Layer();
+    
+    return LayerText;
+    
+}]);
+app.factory("LayerTypes", ["LayerText", "LayerAttendeeData", "LayerShape", "LayerImage", "LayerBarCode", function(LayerText, LayerAttendeeData, LayerShape, LayerImage, LayerBarCode) {
+    
+    function LayerTypes() {
+        
+    }
+    
+    LayerTypes.all = {
+        ATTENDEE_DATA: LayerAttendeeData,
+        TEXT: LayerText,
+        SHAPE: LayerShape,
+        IMAGE: LayerImage,
+        BAR_CODE: LayerBarCode
+    };
+    
+    LayerTypes.iterable = [
+        {obj: LayerTypes.all.ATTENDEE_DATA, label: "Attendee data", iconClass: "-layer-attendee"},
+        {obj: LayerTypes.all.TEXT, label: "Text", iconClass: "-layer-text"},
+        {obj: LayerTypes.all.IMAGE, label: "Image", iconClass: "-layer-image"},
+        {obj: LayerTypes.all.BAR_CODE, label: "QR Code", iconClass: "-layer-qr"},
+        {obj: LayerTypes.all.SHAPE, label: "Shape", iconClass: "-layer-shape"},
+    ];
+    
+    return LayerTypes;
+    
+}]);
+app.factory("Style", ["API", "LayerProcessing", function(API, LayerProcessing) {
+    
+    function Style(data) {
+    //console.log(data);
+        if (typeof data != "object") {
+            data = {};
+        }
+        
+        if (!isNaN(data.id)) {
+            this.id = data.id;
+        } else {
+            this.id = API.nextAvailableID;
+        }
+        API.nextAvailableID++;
+        
+        this.name = data.name || "Untitled";
+        this.layers = data.layers || [];
+        this.canvasWidth = data.canvasWidth || 4;
+        this.canvasHeight = data.canvasHeight || 3;
+        this.guidelines = data.guidelines;
+        this.sizeName = data.sizeName;
+        this.paperSize = data.paperSize;
+        this.backgroundColor = data.backgroundColor || "#FFFFFF";
+        this.backgroundImage = data.backgroundImage || "";
+        this.backgroundSize = data.backgroundSize || "100% 100%";
+        this.backgroundPosition = data.backgroundPosition || "center center";
+        this.backgroundRepeat = data.backgroundRepeat || "none";
+        this.module = data.module || 'none';
+        this.onsitedefault = data.onsitedefault;
+        
+    }
+    
+    Style.getAll = function(cb) {
+        Visualforce.remoting.Manager.invokeAction('BLN_CustomBagdeConNew.getStyles',{!Evid}, function(result, event) {
+       // console.log(result);
+            var allStyles = result.map(Style.fromServer);
+            for (var i = 0, j = allStyles.length; i < j; i++) {
+                if (allStyles[i].id == "0") {
+                    allStyles.splice(i, 1);
+                    break;
+                }
+            }
+            cb(allStyles, event);
+        },
+        {escape: false});
+    }
+    <!------getAllStyles----->
+      Style.getAllStyles = function(cb) {
+        Visualforce.remoting.Manager.invokeAction('BLN_CustomBagdeConNew.getAllStyles',{!Evid},  function(result, event) {
+            var allStyles = result.map(Style.fromServer);
+            for (var i = 0, j = allStyles.length; i < j; i++) {
+                if (allStyles[i].id == "0") {
+                    allStyles.splice(i, 1);
+                    break;
+                }
+            }
+            cb(allStyles, event);
+        },
+        {escape: false});
+    }
+    <!------ends of getAllStyles----->
+    Style.fromServer = function(style) {
+        var data = {};
+        try {
+            data = JSON.parse(style.badge.Data__c);
+            data1= JSON.parse(style.badge.Module__c);
+            data2 = JSON.parse(style.badge.DefaultOnsiteBadge__c);
+            console.log('>>>>> '+data2);
+        } catch(err) {}
+        var newStyle = new Style({
+            layers: LayerProcessing.fromServer(style.layers),
+            id: parseInt(style.badge.Name),
+            canvasWidth: data.canvasWidth,
+            canvasHeight: data.canvasHeight,
+            guidelines: data.guidelines,
+            sizeName: data.sizeName,
+            paperSize: data.paperSize,
+            backgroundColor: data.backgroundColor,
+            backgroundImage: data.backgroundImage,
+            backgroundSize: data.backgroundSize,
+            backgroundPosition: data.backgroundPosition,
+            backgroundRepeat: data.backgroundRepeat,
+            name: style.badge.Description__c,
+            module:data1,
+            onsitedefault:data2
+        });
+        return newStyle;
+    }
+    
+    Style.prototype.save = function() {
+    
+    //alert('i am in  Style.prototype.save');
+        var data = JSON.stringify({
+            canvasWidth: this.canvasWidth,
+            canvasHeight: this.canvasHeight,
+            guidelines: this.guidelines,
+            sizeName: this.sizeName,
+            paperSize: this.paperSize,
+            backgroundColor: this.backgroundColor,
+            backgroundImage: this.backgroundImage,
+            backgroundSize: this.backgroundSize,
+            backgroundPosition: this.backgroundPosition,
+            backgroundRepeat: this.backgroundRepeat,
+        });
+        //var da="abcdefg";
+        var self = this;
+        var checkboxes = document.getElementsByName('module');
+        var defaultonsite = document.getElementsByName('DefaultMobileBadge'); 
+       var vals = "";
+       var defaultbage = false;
+  
+      for (var i=0, n=checkboxes.length;i<n;i++) {
+         if (checkboxes[i].checked) 
+          {
+              vals += checkboxes[i].value+";";
+           }
+          }
+          
+          for (var i=0, n=defaultonsite.length;i<n;i++) {
+         if (defaultonsite [i].checked) 
+          {
+              defaultbage = true;
+           }
+          }
+       var vals1=JSON.stringify(vals);
+      
+      var Printer = '';
+      if(this.paperSize == '8.5\" x 11\"' || this.paperSize == '8.5\" x 5.5\"' || this.paperSize == '4.0\" x 3.0\"'){
+      Printer ='Un Known';
+      }
+      else{
+      Printer='Brother';
+      }
+      var badgename=this.name;
+        Visualforce.remoting.Manager.invokeAction(
+        'BLN_CustomBagdeConNew.saveStyle',
+        this.id+"", this.name, data, LayerProcessing.toServer(this.layers),{!Evid},vals1,Printer,defaultbage,
+        function(result, event) {
+        
+            self.id = result;
+            if(result)
+ alert(' Badge '+  badgename +' is Created');
+        });
+    }
+    
+    Style.prototype.delete = function() {
+    var badgename = this.name;
+        Visualforce.remoting.Manager.invokeAction(
+        'BLN_CustomBagdeConNew.deleteStyle',
+        this.id+"",
+        function(result, event) {
+          //  console.log('look down');
+           // console.log(result);
+            if(result){
+            alert('Badge ' +badgename +' is deleted');
+            }
+            //alert('Badge is deleted");
+        });
+    }
+    
+    Style.prototype.saveName = function() {
+        Visualforce.remoting.Manager.invokeAction(
+        'BLN_CustomBagdeConNew.renameStyle',
+        this.id+"", this.name,
+        function(result, event) {
+        if(result)
+        alert('Badge is renamed');
+            
+        });
+    }
+    
+    return Style;
+    
+}]);
+ 
+         
+         </script>   
+   <!----<script src="{!URLFOR($Resource.badgeToolAssets, '/scripts/build/main.js')}"></script>--->
+   <apex:stylesheet value="{!URLFOR($Resource.badgeToolAssets, 'styles/build/main.css')}" />
+   <body ng-app="app" ng-controller="MainController">
+      <div class="page-container">
+         <header>
+            <div class="branding">
+               <div class="logo">Eventdex</div>
+             Badge Creator
+            </div>
+            <div class="info"><span class="event-name">
+               <span class="label">Event:</span><apex:outputText value="{!Evname}" ></apex:outputText></span> <a href="/Eventdex/apex/BLN_Dashboard" class="action">Return to Event Manager</a>
+              
+   <!----            <apex:outputText value="{!EventName.Name}" ></apex:outputText>--->
+               
+            </div>
+         </header>
+         <!----------All Templates---->
+             <div ng-show="AllTemplates" ng-class="{'-visible':AllTemplatesVisible}" ng-cloak="true" class="overlay"></div>
+         <div ng-show="AllTemplates" ng-class="{'-visible':AllTemplatesVisible}" ng-cloak="true" class="template-chooser">
+            <div class="content">
+           
+               <h1>Templates From All Events</h1>
+               <div class="templates">
+                 
+                  <div class="ui-table">
+            <div class="faux-header">
+               <div class="faux-header-cell"></div>
+            </div>
+            <div class="styles-list-sidebar sidebar">
+               <div class="padded">
+                  <h2>Badge styles  </h2>
+                  <p>You can add different badge styles for your Event.</p>
+               </div>
+               
+               <div class="template">
+                <div class="template-row">
+                  <div class="template" ng-repeat="style in Allstyles" >
+                     <a href="" ng-click="switchStyle($index)" class="image"><div>{{style.name}}</div></a>
+                     <ul class="actions">
+                        <li><a href="" ng-click="duplicateStyle($index)">Use This</a></li>
+                  
+                     </ul>
+                  </div>
+                </div>
+               </div>
+             
+            </div> 
+        </div> 
+                <div class="add-style">
+                     <a href="" ng-click="openTemplateChooser()">
+                        <div class="add-icon"></div>
+                        <span class="text">Add a new design </span>
+                     </a>
+                  </div>
+                
+                     
+                  </div>
+               </div>
+            </div>
+  
+         
+         
+         
+        
+         <!---End Of All Templates------>
+         
+         <div ng-show="templateChooserOpen" ng-class="{'-visible':templateChooserVisible}" ng-cloak="true" class="overlay"></div>
+         <div ng-show="templateChooserOpen" ng-class="{'-visible':templateChooserVisible}" ng-cloak="true" class="template-chooser">
+            <div class="content">
+           
+               <h1>Add a new badge design</h1>
+               <div class="templates">
+                  <div class="template-row">
+                     <div class="template">
+                        <a href="" ng-click="createNewStyle(0)" class="image"></a>
+                     </div>
+                     <div class="template">
+                        <a href="" ng-click="createNewStyle(1)" class="image"></a></div>
+                     <div class="template">
+                        <a href="" ng-click="createNewStyle(2)" class="image"></a></div>
+                     <div class="template">
+                        <a href="" ng-click="createNewStyle(3)" class="image"></a></div>
+                  </div>
+                  <div class="template-row">
+                     <div class="template"></div>
+                  <!--   <div class="template">-->
+                     <!--  <h2>Import from another event</h2>-->
+                     <!---   <div class="image"></div>--->
+                   <!-- <div>   <a href="" ng-click="openOtherEventTemplates()" class="image"></a></div>-->
+                    <!-- </div>-->
+                     <div class="template">
+                        <h2>Start from scratch</h2>
+                        <a href="" ng-click="createNewStyle(-1)" class="image"></a>
+                     </div>
+                     <div class="template"></div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="ui-table">
+            <div class="faux-header">
+               <div class="faux-header-cell"></div>
+            </div>
+            <div class="styles-list-sidebar sidebar">
+               <div class="padded">
+                  <h2>Badge styles  </h2>
+                  <p>You can add different badge styles for your Event.</p>
+               </div>
+               <ul class="styles-list" style="height:500px; overflow:auto;">
+                  <li  ng-repeat="style in styles" ng-class="{'-active':selectedStyle==style.id}">
+                     <a href="" ng-click="switchStyle($index)" class="name">{{style.name}}</a>
+                     <ul class="actions">
+                        <li><a href="" ng-click="duplicateStyle($index)">Duplicate</a></li>
+                        <li><a href="" ng-click="deleteStyle($index)">Delete</a></li>
+                        <li><a href="" ng-click="renameLayer($index)">Rename</a></li>
+                     </ul>
+                  </li>
+                 
+               </ul>
+               <ul class="styles-list">
+               
+                <li class="add-style">
+                     <a href="" ng-click="openTemplateChooser()">
+                        <div class="add-icon"></div>
+                        <span class="text">Add a new design </span>
+                     </a>
+                  </li>
+               </ul>
+            </div>
+            <div class="canvas">
+               <div class="workspace-table">
+                  <div class="row">
+                     <div class="top-padding"></div>
+                  </div>
+                  <div class="row">
+                     <div class="badge-cell">
+                        <div class="badge">
+                           <div class="content">
+                              <div ng-style="{'background-color':backgroundColor, 'background-image':'url('+backgroundImage+')','background-size':backgroundSize,'background-position':backgroundPosition,'background-repeat':backgroundRepeat}" class="working-area">
+                                 <div id="canvas" class="content"></div>
+                              </div>
+                           </div>
+                        </div>
+                        <div ng-show="selectedStyle != null && selectedStyle != undefined" ng-cloak="true" class="save-controls"><button ng-click="saveStyle()" class="btn -primary">Save</button><button ng-click="saveAsNewStyle()" class="btn">Save as...</button></div>
+                     </div>
+                  </div>
+                  <div ng-show="selectedStyle != null && selectedStyle != undefined" ng-cloak="true" class="row">
+                     <div class="controls">
+                        <h2>Add a new layer</h2>
+                        <div class="controls--buttons">
+                           <div ng-repeat="control in layerTypes" ng-click="addLayer(control.obj)" class="controls--button">
+                              <div ng-class="control.iconClass" class="icon"></div>
+                              <div class="label">{{control.label}}</div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="format-sidebar sidebar">
+               <div ng-show="selectedStyle != null && selectedStyle != undefined" ng-cloak="true" class="padded">
+                  <h2>Format</h2>
+                  <div class="format-section"><strong class="format-header">Selected</strong><br />{{selectedLayer.type}}</div>
+                  <div ng-repeat="section in selectedLayer.formatOptions" class="format-section">
+                     <div class="format-header">{{section.name}}</div>
+                     <div ng-repeat="option in section.options" ng-class="option.type" class="format-option">
+                        <div dynamic-directive="option.type" details="option.details"></div>
+                     </div>
+                     
+                  </div>
+                      <div>
+<h2 style="font-size: 20px;">Select Module</h2>
+<input type="checkbox" name="module" value="Scan Attendee" id="SA"/><b>Scan Attendee</b><br/>
+<input type="checkbox" name="module" value="Quick Registration" id="QR"/><b>Quick Registration</b> ( <input type="checkbox" name="DefaultMobileBadge" value="DefaultMobileBadge" id="DefaultOnsiteBadge"/><b>Default</b>)<br/>
+<input type="checkbox" name="module" value="Attendee Registration" id="defaultattregis"/><b>Attendee Registration</b><br/>
+</div>
+               </div>
+            </div>
+         </div>
+      </div>
+      
+  <style>
+  .scrollbar-dynamic {
+    max-height: 300px;
+    overflow: auto;
+}
+ 
+  
+  </style>
+      <script type="text/javascript">
+       $('#defaultattregis').prop('checked',true); 
+         WebFontConfig = {
+           google: { families: [ 'Droid+Serif:400,700,400italic,700italic:latin', 'Raleway:400,700:latin' ] }
+         };
+         (function() {
+           var wf = document.createElement('script');
+           wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +'://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+           wf.type = 'text/javascript';
+           wf.async = 'true';
+           var s = document.getElementsByTagName('script')[0];
+           s.parentNode.insertBefore(wf, s);
+         })(); 
+      </script>
+      
+      <script>
+function getCookie(w){
+    cName = "";
+    pCOOKIES = new Array();
+    pCOOKIES = document.cookie.split('; ');
+    for(bb = 0; bb < pCOOKIES.length; bb++){
+        NmeVal  = new Array();
+        NmeVal  = pCOOKIES[bb].split('=');
+        if(NmeVal[0] == w){
+            cName = unescape(NmeVal[1]);
+        }
+    }
+    return cName;
+}
+
+var x = getCookie("apex__counter");
+if(x == ''){
+window.location.href="{!$Site.BaseUrl}/";
+}
+</script>
+
+   </body>
+</apex:page>

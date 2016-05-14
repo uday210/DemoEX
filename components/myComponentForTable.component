@@ -1,0 +1,646 @@
+<apex:component id="commoncomponent" >
+
+ <apex:attribute name="BLN_UtillDisplayLinks" description="This is the value for the component."
+                    type="BLN_UtillDisplayLinks" required="true"/>
+
+ <head><title>Eventdex</title></head>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!-- --------------------------- Basic Style sheets ---------------------------------- -->
+   <!--<apex:stylesheet value="{!URLFOR($Resource.MyTickets, 'css/style.css')}"/>
+     <apex:stylesheet value="{!URLFOR($Resource.MyTickets, 'style-button.css')}"/>--->
+     
+      <script type="text/javascript" src="{!URLFOR($Resource.nwdatatable, 'nwdatatable/js/jquery.js')}"></script>  
+       <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/jquery-ui-1.8.16.custom.min.js')}"></script>
+       
+ <!--<style>
+    
+input.styled {
+    display: none;
+}
+select.styled {
+    position: relative;
+    width: 190px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: 5;
+}
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+
+.button-a.blue {
+background-image: url({!URLFOR($Resource.MyTickets, 'images/button.png')});
+background-position: 0px -60px;
+border: 1px solid #438ac2;
+}
+     
+.selected { background-color: #E0EFF7; } 
+        
+        </style>-->
+
+
+
+<script>  
+    var x ="{!CASE($User.UserType,'guest','true','false')}";
+    if(x=='true'){
+     window.location.href="{!$Site.BaseUrl}"; 
+    }  
+</script>
+
+<script>
+
+function getCookie(w){
+    cName = "";
+    pCOOKIES = new Array();
+    pCOOKIES = document.cookie.split('; ');
+    for(bb = 0; bb < pCOOKIES.length; bb++){
+        NmeVal  = new Array();
+        NmeVal  = pCOOKIES[bb].split('=');
+        if(NmeVal[0] == w){
+            cName = unescape(NmeVal[1]);
+        }
+    }
+    return cName;
+}
+
+function destroy()
+{
+  try{
+           sessionStorage.removeItem("event");
+           sessionStorage.removeItem("ticket");
+           sessionStorage.removeItem("blproduct");}catch(e){}
+           
+                      
+var x = getCookie("sid");
+if(x == ''){
+ window.location.replace("{!$Site.BaseUrl}/");
+ return false;
+}
+else{
+    return true;
+}
+}
+</script>
+<!-- -------------------------------------------------------- apex end------------------------------------------ -->
+  <!--------------header component---------------> 
+<!------------------top layer----------------->
+<div id="header">
+  <div id="logo"> </div>
+  <!--close of #logo--> 
+</div>
+<!--close of #header---> 
+<!----------------------//top layer------------------------------> 
+<!---------------------second layer(black)--------------------->
+   
+<header>
+<div id="centered-head"> 
+  <!-- Navigation -->
+  <nav>
+    <ul>
+      <li id="login"> <span id="login-trigger"> <span id="login-triggers"> <i class="fa fa-angle-down fa-1x">&nbsp;&nbsp;</i> <span id="user-panel-title ">My Account</span> </span> </span>
+        <div id="login-content">
+          <ul>
+            <li><apex:form ><apex:outputLink value="/apex/BLN_profile"><i class="fa fa-cog fa-1x">&nbsp;&nbsp;</i><span>Settings</span></apex:outputLink></apex:form></li>
+            <li><apex:form ><apex:outputLink value="/apex/bln_Changepassword"><i class="fa fa-cog fa-1x">&nbsp;&nbsp;</i><span>Change Password</span></apex:outputLink></apex:form></li>
+            <!-- <li><a href="#"><i class="fa fa-cog fa-1x">&nbsp;&nbsp;</i><span>Change Password</span></a></li> --> 
+            <li> <apex:form ><apex:commandLink onclick="return destroy();" action="{!$Site.Prefix}/secur/logout.jsp"><i class="fa fa-reply fa-1x">&nbsp;&nbsp;</i><span>{!$Label.site.logout}</span></apex:commandLink></apex:form></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+  <!-- Navigation end-->
+  <!----Component for User Name------------------>
+<c:UserNameComponent ></c:UserNameComponent>
+  <!----->
+  <div class="account-name"></div>
+  <div class="quickbuttons">
+    <div> <a href="{!$Site.BaseUrl}/apex/BLN_userEvents" style="color:#FFF;"><i class="fa fa-calendar fa-1x">&nbsp;&nbsp;</i>My Events</a> <a href="{!$Site.BaseUrl}/apex/BLN_Mytickets" style="color:#FFF;"><i class="fa fa-ticket fa-1x">&nbsp;&nbsp;</i>My Tickets</a> </div>
+  </div>
+  <!--close of quickbuttons--> 
+  
+</div>
+<!-----#centered-head--> 
+
+</header>
+<!--------------------------//second layer--------------------->
+<!--------------------------//second layer--------------------->
+<section id="middle">
+  <div id="container-main">
+    <div id="container"> 
+         <!------------Start content section component------------>
+      <div id="content">
+        <div class="speedbar">
+          <div class="speedbar-nav">Eventdex ›› {!BLN_UtillDisplayLinks.tablabel}
+          </div><!--close of speedbar-nav-->
+          <div class="right margin-ryt-5px">Selected Event: {!BLN_UtillDisplayLinks.eventName}</div>
+          <div class='clear'></div>
+          </div><!---close of speedbar-->
+                <!--Statistic-->
+                <div class="grid-1" style=" width:97%;margin-top:10px; margin-left:.8%"  > 
+                  
+             <!-- ----------------------------------------Your Table------------------------------------------------ --> 
+       
+             <apex:componentBody id="compobody">
+             
+             
+             
+             
+             
+             
+  
+             
+             
+             </apex:componentBody>
+             
+               <!-- ---------------------------------------- Your Table End------------------------------------------------ -->
+      
+                   <div class="clear"></div>
+                 </div>
+                 <!-- ----------------- Statistic --------------------------- -->
+              </div>
+           <!-- #content--> 
+         </div>
+              
+     <div id="cssmenu">
+<aside class="sideLeft">
+          <ul class="menu">
+          <!----------------------------------EVENT ADMIN SETTINGS------------------>
+          <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsEventAdmin}">
+           
+            <li class="expand"> <a href="#" class="heading"><i class="fa fa-calendar fa-1x"></i> Events<i class="exp-padding fa fa-angle-down right"></i></a>
+               <ul class="acitem content" style="display: block;">
+              <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsDashboardTabAvailable}">
+               <!-----> 
+                <li>
+                <a href="{!$Site.BaseUrl}/apex/BLN_Dashboard" class="{!BLN_UtillDisplayLinks.isDashboardPage}">
+                <i class="fa fa-dashboard fa-1x"></i> Dashboard</a>
+                </li>
+                </apex:outputPanel> 
+               <!----> 
+          <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.isproductbuyer==false,true,false)}">
+               <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IstickettabAvailable }">
+                <li class="{!BLN_UtillDisplayLinks.isTicketsPageExpand}"> 
+                <a href="{!$Site.BaseUrl}/apex/BLN_TicketsNew" style="background-color:{!if(BLN_UtillDisplayLinks.isTicketsPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isTicketsPage}" >
+                <i class="fa fa-ticket"></i> Tickets<i class="exp-padding fa fa-angle-down right"></i>
+                </a>
+<ul class="acitem content">
+<li><a href="{!$Site.BaseUrl}/apex/BLN_Promo_Code" class="{!BLN_UtillDisplayLinks.ispromocodesPage}"  style="padding-left:30px;"><i class="fa fa-tags fa-1x"></i>  Promo Codes</a></li>
+
+<li><ahref="{!$Site.BaseUrl}/apex/BLN_SurveyQuestions" class="{!BLN_UtillDisplayLinks.issurveyPage}"  style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Survey Questions</a></li>
+
+<li><a href="{!$Site.BaseUrl}/apex/BLN_orders" style="padding-left:30px;" class="{!BLN_UtillDisplayLinks.isOrdersPage}" ><i class="fa fa-edit fa-1x"></i> Orders</a></li>
+<li><a href="{!$Site.BaseUrl}/apex/BLN_booths" style="padding-left:30px;" class="{!BLN_UtillDisplayLinks.isBoothsPage}" ><i class="fa fa-cube fa-1x"></i>  Exhibitors/Sponsors</a></li>
+
+</ul>
+</li>
+ </apex:outputPanel>
+<!------------------->  
+       <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsAttendeeTabAvailable}">
+   <li class="{!BLN_UtillDisplayLinks.isAttendeesPageExpand}">
+ <a href="{!$Site.BaseUrl}/apex/BLN_Attendees" style="background-color:{!if(BLN_UtillDisplayLinks.isAttendeesPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isAttendeesPage}" >
+ <i class="fa fa-user fa-1x"></i> Attendees<i class="exp-padding fa fa-angle-down right"></i>
+ </a>
+ </li>
+    </apex:outputPanel>
+<!------------------------->
+            <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsRegistrationTabAvailable}">               
+               
+                <li class="{!BLN_UtillDisplayLinks.isregistrationPageExpand}">
+                <a href="{!$Site.BaseUrl}/apex/BLN_RegistrationLinks"  style="background-color:{!if(BLN_UtillDisplayLinks.isregistrationPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isregistrationPage}">
+   <i class="fa fa-link fa-1x"></i> Registration<i class="exp-padding fa fa-angle-down right"></i></a>
+                
+<ul class="acitem content">
+<li> <a href="{!$Site.BaseUrl}/apex/BLN_QUICKREGISTRATION?id={!BLN_UtillDisplayLinks.EventId}"  style="padding-left:30px;" class="{!BLN_UtillDisplayLinks.isonsiteRegistrationPage}"><i class="fa fa-globe fa-1x"></i> Onsite Registration</a></li>
+
+<li><a href="{!$Site.BaseUrl}/apex/BLN_Email_Dashboards" class="{!BLN_UtillDisplayLinks.isemailsPage}"  style="padding-left:30px;"><i class="fa fa-envelope fa-1x"></i> Emails</a></li>
+
+<li><a href="{!$Site.BaseUrl}/apex/BLN_PushNotifications" class="{!BLN_UtillDisplayLinks.ispushnotificationPage}"  style="padding-left:30px;"><i class="fa fa-envelope fa-1x"></i>Push Notifications</a></li>
+
+<!---<li><a href="{!$Site.BaseUrl}/apex/BLN_Email_Campaigns" class="{!BLN_UtillDisplayLinks.isemailcampaignpage}" style="padding-left:30px;"><i class="fa fa-paper-plane fa-1x"></i> Email Campaigns</a></li>---->
+
+<!----<li><a href="printstatus.htm#" style="padding-left:30px;"><i class="fa fa-print fa-1x"></i> Print Status</a></li>--->
+</ul>   
+
+                
+                </li>
+                 </apex:outputPanel>
+             <!---------------------> 
+             
+              <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsReportsTabAvailable}">
+               <li class="{!BLN_UtillDisplayLinks.isReportsPageExpand}">
+               <a href="#" class="subheading" id="reports_subheading" style="background-color:#7f8c8d;">
+               <i class="fa fa-pie-chart fa-1x"></i> Reports<i class="exp-padding fa fa-angle-down right"></i></a>
+               
+               
+<ul class="acitem content">
+<li><a href="{!$Site.BaseUrl}/BLN_Reports" class="{!BLN_UtillDisplayLinks.isOrderReportPage}"  style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Orders Report</a></li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_AbandonedReports" class="{!BLN_UtillDisplayLinks.isAbandonedOrderReportPage }"  style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Abandoned Order Report</a></li>
+
+
+<li><a href="{!$Site.BaseUrl}/BLN_TicketSalesReport" class="{!BLN_UtillDisplayLinks.isTicketReportPage}" style="padding-left:30px;"><i class="fa fa-ticket fa-1x"></i> Tickets Report</a></li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_AttendeeReport" class="{!BLN_UtillDisplayLinks.isAttendeeReportPage}"   style="padding-left:30px;"><i class="fa fa-user fa-1x"></i> Attendee Report</a></li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_AttendeeDetailReport" class="{!BLN_UtillDisplayLinks.isAttendeeDetailReportPage}"   style="padding-left:30px;"><i class="fa fa-bar-chart fa-1x"></i> Attendee Detail Report</a></li>
+
+<li><a  href="{!$Site.BaseUrl}/BLN_PromoCodeReport" class="{!BLN_UtillDisplayLinks.isPromocodeReportPage}" style="padding-left:30px;"><i class="fa fa-tags fa-1x"></i> Promocode Report</a></li>
+
+<!--<li><a href="{!$Site.BaseUrl}/BLN_SurveyQuestionsReport" class="{!BLN_UtillDisplayLinks.isSurveyQuestionReportPage}"  style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Survey Question Report</a>
+</li>-->
+
+<li><a href="{!$Site.BaseUrl}/BLN_CheckinHistoryReport" class="{!BLN_UtillDisplayLinks.isCheckinHistoryReportPage}" style="padding-left:30px;"><i class="fa fa-check-square-o fa-1x"></i> Check-In History Report</a>
+</li>
+
+<apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsSurveyQuestionReportsTabAvailable}">
+<li class="{!BLN_UtillDisplayLinks.isSurveyQuestionReportsPageExpand}">
+<a href="#" class="subheading" id="surveyQuestion_reports">
+<i class="fa fa-pie-chart fa-1x"  style="padding-left:20px;"></i> Survey Question Report<i class="exp-padding fa fa-angle-down right"></i></a> 
+<ul class="acitem content">
+<li><a href="{!$Site.BaseUrl}/BLN_surveyByQuestionTab" class="{!BLN_UtillDisplayLinks.isSurveyByQuestionReportPage}"  style="padding-left:30px;"><i class="fa fa-pie-chart fa-1x" style="padding-left: 20px;"></i> Survey By Question Report</a>
+</li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_surveyByTicketTab" class="{!BLN_UtillDisplayLinks.isSurveyByTicketReportPage}"  style="padding-left:30px;"><i class="fa fa-pie-chart fa-1x" style="padding-left: 20px;"></i> Survey By Ticket Report</a>
+</li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_surveyByAttendeeTab" class="{!BLN_UtillDisplayLinks.isSurveyByAttendeeReportPage}"  style="padding-left:30px;"><i class="fa fa-pie-chart fa-1x" style="padding-left: 20px;"></i> Survey By Attendee Report</a>
+</li>
+</ul>
+</li>
+</apex:outputPanel> 
+
+
+</ul>
+</li>
+  </apex:outputPanel>
+<!------------>
+     <!--------------------------------->
+   <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsSeminarTabAvailable}">
+               <li class="{!BLN_UtillDisplayLinks.isSeminorsPageExpand}">
+                <a href="{!$Site.BaseUrl}/BLN_EventSchedule"  style="background-color:{!if(BLN_UtillDisplayLinks.iseventschedulePage !='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isSeminorsPage}" >
+<i class="fa fa-clock-o"></i> Event Agenda<i class="exp-padding fa fa-angle-down right"></i>
+</a>
+
+<ul class="acitem content">
+<!--- <li><a href="{!$Site.BaseUrl}/BLN_Tracks" class="{!BLN_UtillDisplayLinks.isTracksPage}"  style="padding-left:30px;"><i class="fa fa-road"></i> Tracks</a>
+</li> ---->
+
+<!--- <li><a href="{!$Site.BaseUrl}/BLN_Rooms" class="{!BLN_UtillDisplayLinks.isroomsPage}"  style="padding-left:30px;"><i class="fa fa-building"></i> Rooms</a></li> ---->
+
+<li><a href="{!$Site.BaseUrl}/BLN_Agenda" class="{!BLN_UtillDisplayLinks.isSeminorsPage}" style="padding-left:30px;"><i class="fa fa-microphone"></i> Seminar</a>
+
+<li><a href="{!$Site.BaseUrl}/BLN_Speakers" class="{!BLN_UtillDisplayLinks.isSpeackersPage}" style="padding-left:30px;"><i class="fa fa-user fa-1x"></i> Speakers</a></li>
+
+
+
+</li>
+</ul>    
+
+ </li>
+ </apex:outputPanel>
+<!----->                
+
+ <li class="{!BLN_UtillDisplayLinks.isEventsettingsExpand}">
+<a href="{!$Site.BaseUrl}/BLN_Tracks" class="subheading" style="background-color:#7f8c8d;"  id="settings1_subheading">
+<i class="fa fa-cog"></i> Event Settings<i class="exp-padding fa fa-angle-down right"></i>
+</a>
+              
+ <ul class="acitem content">
+   <li><a href="{!$Site.BaseUrl}/apex/BLN_attendee_settings" class="{!BLN_UtillDisplayLinks.isAttendeeSettingsPage}"  style="padding-left:30px;">
+   <i class="fa fa-user"></i> Attendee Settings</a>
+   </li>
+                <li>
+                <a href="{!$Site.BaseUrl}/apex/BLN_Display_settings" class="{!BLN_UtillDisplayLinks.isdisplaySettingsPage}" style="padding-left:30px;">
+                <i class="fa fa-desktop"></i> Display Settings</a>
+                </li> 
+                
+                <li><a href="{!$Site.BaseUrl}/apex/BLN_PaymentNewSettings?tab=Online" class="{!BLN_UtillDisplayLinks.ispaymentSettingsPage}" style="padding-left:30px;"><i class="fa fa-money"></i> Payment Settings</a></li>
+                
+                <li><a href="{!$Site.BaseUrl}/apex/BLN_ticketfeesettings" class="{!BLN_UtillDisplayLinks.isTicketFeeSettingsPage}"   style="padding-left:30px;"><i class="fa fa-ticket"></i> Ticket Fee Settings</a></li>
+                
+                <li><a href="{!$Site.BaseUrl}/apex/BLN_BadgeToolNew" target="_blank" style="padding-left:30px;"><i class="fa fa-gear fa-1x"></i> Badge Settings</a></li>
+                
+                <li><a  href="{!$Site.BaseUrl}/apex/BLN_EventStaff" class="{!BLN_UtillDisplayLinks.isEventstaffPage}" style="padding-left:30px;"><i class="fa fa-user"></i>  Event Staff</a></li>
+                
+                <li><a  href="{!$Site.BaseUrl}/apex/BLN_EventStaffsettings" class="{!BLN_UtillDisplayLinks.isEventstaffsettingsPage}" style="padding-left:30px;"><i class="fa fa-users"></i> Event Staff Settings</a></li>
+            </ul>
+                    
+                    
+                    
+                    
+                </li>
+                
+               </apex:outputPanel>  
+              </ul>
+            
+            </li>
+            </apex:outputPanel> 
+        <!-------------------------->   
+          <!--<apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.isEventAdmin || BLN_UtillDisplayLinks.isEventstaff ,false,true)}">-->
+          <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsLeadTabAvailable}">
+              
+            <li  class="{!BLN_UtillDisplayLinks.isLeadExpand}"> 
+             <a href="#" class="subheading leadret_acc" id="lead_subheading" style="background-color: ;">
+               <img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/bl-logo.png')}" style="margin-top:-5px;"/>
+               <span>Lead Retrieval</span><i class="exp-padding fa fa-angle-down right"></i></a>
+                  <ul class="acitem content">
+                    <li><a href="{!$Site.BaseUrl}/BLN_BLDashboard" class="{!BLN_UtillDisplayLinks.isBLDashboardPage}"><i class="fa fa-dashboard fa-1x"></i> Lead Retrieval Dashboard</a></li>
+                    <!--<li><a href="#"><span class="">Leads</span></a></li>-->
+                    <li><a href="{!$Site.BaseUrl}/BLN_LeadRetrieval" class="{!BLN_UtillDisplayLinks.isLeadRetrieval}"  > <i class="fa fa-group fa-1x"></i> My Leads</a></li>
+                    <!--<li><a href="#"><span class="">Booth Staff</span></a></li>-->
+                    <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.iseveOganizer,true,false)}">
+                    <li><a href="{!$Site.BaseUrl}/BLN_ScansforAttendees" class="{!BLN_UtillDisplayLinks.isLeadReport}" ><i class="fa fa-pie-chart fa-1x"></i> Attendees Scan Report</a></li>
+                    
+                    <li><a href="{!$Site.BaseUrl}/BLN_ExhibitorScanReport" class="{!BLN_UtillDisplayLinks.isLeadExbReport}" ><i class="fa fa-pie-chart fa-1x"></i> Exhibitors Scan Report</a></li>
+                    </apex:outputPanel>
+                    <!--<li><a href="#"><span class="">Settings</span></a></li>-->
+                  </ul>
+            </li>
+           </apex:outputPanel>      
+           
+          <!------scan attendee----->
+      <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsSATabAvailable && BLN_UtillDisplayLinks.iseveOganizer}">   
+      <li class="{!BLN_UtillDisplayLinks.isSAExpand}">
+        <a href="#" class="heading scanatt_acc">
+        <img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/scanatt.png')}" style="margin-top:-5px;"/>
+        <span>Scan Attendee</span>
+        <i class="exp-padding fa fa-angle-down right"></i></a>
+      <ul class="acitem content" style="display: block;">
+      <li><a href="{!$Site.BaseUrl}/BLN_SADashboard" class="{!BLN_UtillDisplayLinks.isSADashboardPage}"><i class="fa fa-dashboard fa-1x"></i> Scan Attendee Dashboard</a></li>
+       <!------>
+       <li class="{!BLN_UtillDisplayLinks.isSAreportExpand}">
+        <a> 
+        <i class="fa fa-pie-chart  fa-1x"></i> Reports<i class="exp-padding fa fa-angle-down right"></i>
+        </a>
+         <ul class="acitem content">
+            <li><a href="{!$Site.BaseUrl}/BLN_CheckinHistoryReport" class="{!BLN_UtillDisplayLinks.isCheckinHistoryReportPage}" style="padding-left:30px;"><i class="fa fa-check-square-o fa-1x"></i> Check-In History Report</a></li>
+            <li><a href="{!$Site.BaseUrl}/BLN_notCheckedinParticipantsReport" class="{!BLN_UtillDisplayLinks.isnotCheckinReportPage}" style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Not Checked In Report</a></li>
+            <li><a href="{!$Site.BaseUrl}/BLN_ParticipantRevisitReport" class="{!BLN_UtillDisplayLinks.isrevisitReportPage}" style="padding-left:30px;"><i class="fa fa-pie-chart fa-1x"></i> Revisit Report</a></li>
+            <li><a href="{!$Site.BaseUrl}/BLN_ParticipantFirstVisitReport" class="{!BLN_UtillDisplayLinks.isFirstVisitReportPage}" style="padding-left:30px;"><i class="fa  fa-list-ol fa-1x"></i> First Visit Report</a></li>
+          </ul> 
+       </li>
+      <!------>  
+      </ul>
+      </li>
+    </apex:outputPanel>  
+    <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsSATabAvailable && BLN_UtillDisplayLinks.IsScanAttendeeSessionAvailable && !BLN_UtillDisplayLinks.iseveOganizer}">   
+     <li class="{!BLN_UtillDisplayLinks.isSAExpand}">
+        <a href="#" class="heading scanatt_acc">
+        <img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/scanatt.png')}" style="margin-top:-5px;"/>
+        <span>Scan Attendee</span>
+        <i class="exp-padding fa fa-angle-down right"></i></a>
+      <ul class="acitem content" style="display: block;">
+        <li><a href="{!$Site.BaseUrl}/BLN_SADashboard" class="{!BLN_UtillDisplayLinks.isSADashboardPage}"><i class="fa fa-dashboard fa-1x"></i> Scan Attendee Dashboard</a></li>
+       <!------>
+       <li class="{!BLN_UtillDisplayLinks.isSAreportExpand}">
+        <a> 
+        <i class="fa fa-pie-chart  fa-1x"></i> Reports<i class="exp-padding fa fa-angle-down right"></i>
+        </a>
+         <ul class="acitem content">
+            <li><a href="{!$Site.BaseUrl}/BLN_CheckinHistoryReport" class="{!BLN_UtillDisplayLinks.isCheckinHistoryReportPage}" style="padding-left:30px;"><i class="fa fa-check-square-o fa-1x"></i> Check-In History Report</a></li>
+          </ul> 
+       </li>
+      <!------>  
+      </ul>
+      </li>
+       </apex:outputPanel>   
+         <!----------->    
+         <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.isMMavailable}">
+       <li class="{!BLN_UtillDisplayLinks.isMatchLeadsTab}">
+             <!------------------->
+             <a href="#" class="heading matchleads_acc active">
+      <img src="{!URLFOR($Resource.edsr_master, 'edsr_root/images/ml_logo.png')}" style="margin-top:-5px;" />
+      
+    <span>Matchleads</span>
+    <i class="exp-padding fa fa-angle-down right"></i></a>
+             <!------------------->
+              <ul class="acitem content">
+                    <li><a href="{!$Site.BaseUrl}/BLN_MatchMakingEvent" class="{!BLN_UtillDisplayLinks.isMatchMakingEvent}"  > <i class="fa fa-dashboard fa-1x"></i> Match Making Event</a></li>
+                    <li><a href="{!$Site.BaseUrl}/BLN_MatchLeadsDashboard" class="{!BLN_UtillDisplayLinks.isMatchDshbrd}"  > <i class="fa fa-dashboard fa-1x"></i> Dashboard</a></li>
+                    
+
+                    <!-- <apex:outputPanel rendered="{!IF(BLN_UtillDisplayLinks.iseveOganizer,true,false)}"> -->
+                    <li><a href="{!$Site.BaseUrl}/BLN_MatchLeadsCalendar" class="{!BLN_UtillDisplayLinks.isMatchLdsClndr}" ><i class="fa fa-calendar fa-1x"></i> Calendar</a></li>
+                    
+                    <li class="{!BLN_UtillDisplayLinks.IsMatchSchedule}"><!-- {!BLN_UtillDisplayLinks.isLeadExpand} -->
+               <a href="#" class="subheading" id="matschdulset" style="background-color: ;">
+               <i class="fa fa-cog fa-1x"></i> Schedule Settings <i class="exp-padding fa fa-angle-down right"></i></a>
+                  <ul class="acitem content">
+                    
+                    <li><a href="{!$Site.BaseUrl}/BLN_MatchLeadsCalendarSetup" class="{!BLN_UtillDisplayLinks.isMatchCalndrSetup}"  > <i class="fa fa-cog fa-1x"></i> Calendar Setup</a></li>
+                    <li><a href="{!$Site.BaseUrl}/BLN_MatchLeadsBuyerSetup" class="{!BLN_UtillDisplayLinks.isMatchLdsByrSetup}" ><i class="fa fa-cog fa-1x"></i> Buyer Settings</a></li>
+                    
+                    <li><a href="{!$Site.BaseUrl}/BLN_MatchLeadsSellerSetup" class="{!BLN_UtillDisplayLinks.isMatchLdsSllr}" ><i class="fa fa-cog fa-1x"></i> Seller Settings</a></li>
+                    <li><a href="{!$Site.BaseUrl}/BLN_MatchLeadsFilterSetup" class="{!BLN_UtillDisplayLinks.isMatchLdsFilterSetup}" ><i class="fa fa-cog fa-1x"></i> Filter Settings</a></li>
+                    
+                    
+                    
+                  </ul>
+            </li>
+                    
+                    <li><a href="{!$Site.BaseUrl}/BLN_MatchLeadsAppointment" class="{!BLN_UtillDisplayLinks.isMatchLeadsApoint}" ><i class="fa fa-calendar fa-1x"></i> Appointments</a></li>
+                  </ul>
+            </li>
+         </apex:outputPanel>    
+     <!----------------------------------------STAFF SETTINGS------------------>
+          <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsEventstaff}">
+    <!------------------->        
+          <li class="expand"> <a href="#" class="heading"><i class="fa fa-calendar fa-1x"></i> Events<i class="exp-padding fa fa-angle-down right"></i></a>
+               <ul class="acitem content" style="display: block;">
+              <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsDashboardTabAvailable}">
+              
+               <!-----> 
+                <li>
+                <a href="{!$Site.BaseUrl}/apex/BLN_Dashboard" class="{!BLN_UtillDisplayLinks.isDashboardPage}">
+                <i class="fa fa-dashboard fa-1x"></i> Dashboard</a>
+                </li>
+                </apex:outputPanel> 
+               <!----> 
+               <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IstickettabAvailable }">
+                <li class="{!BLN_UtillDisplayLinks.isTicketsPageExpand}"> 
+                <a href="{!$Site.BaseUrl}/apex/BLN_TicketsNew" style="background-color:{!if(BLN_UtillDisplayLinks.isTicketsPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isTicketsPage}" >
+                <i class="fa fa-ticket"></i> Tickets<i class="exp-padding fa fa-angle-down right"></i>
+                </a>
+<ul class="acitem content">
+<li><a href="{!$Site.BaseUrl}/apex/BLN_Promo_Code" class="{!BLN_UtillDisplayLinks.ispromocodesPage}"  style="padding-left:30px;"><i class="fa fa-tags fa-1x"></i>  Promo Codes</a></li>
+
+<li><ahref="{!$Site.BaseUrl}/apex/BLN_SurveyQuestions" class="{!BLN_UtillDisplayLinks.issurveyPage}"  style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Survey Questions</a></li>
+
+<li><a href="{!$Site.BaseUrl}/apex/BLN_orders" style="padding-left:30px;" class="{!BLN_UtillDisplayLinks.isOrdersPage}" ><i class="fa fa-edit fa-1x"></i> Orders</a></li>
+<li><a href="{!$Site.BaseUrl}/apex/BLN_booths" style="padding-left:30px;" class="{!BLN_UtillDisplayLinks.isBoothsPage}" ><i class="fa fa-cube fa-1x"></i>  Booths</a></li>
+</ul>
+</li>
+ </apex:outputPanel>
+<!------------------->  
+       <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsAttendeeTabAvailable}">
+   <li class="{!BLN_UtillDisplayLinks.isAttendeesPageExpand}">
+ <a href="{!$Site.BaseUrl}/apex/BLN_Attendees" style="background-color:{!if(BLN_UtillDisplayLinks.isAttendeesPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isAttendeesPage}" >
+ <i class="fa fa-user fa-1x"></i> Attendees<i class="exp-padding fa fa-angle-down right"></i>
+ </a>
+ </li>
+    </apex:outputPanel>
+<!------------------------->
+            <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsRegistrationTabAvailable}">               
+               
+                <li class="{!BLN_UtillDisplayLinks.isregistrationPageExpand}">
+                <a href="{!$Site.BaseUrl}/apex/BLN_RegistrationLinks"  style="background-color:{!if(BLN_UtillDisplayLinks.isregistrationPage!='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isregistrationPage}">
+   <i class="fa fa-link fa-1x"></i> Registration<i class="exp-padding fa fa-angle-down right"></i></a>
+                
+<ul class="acitem content">
+<li> <a href="{!$Site.BaseUrl}/apex/BLN_QUICKREGISTRATION?id={!BLN_UtillDisplayLinks.EventId}"  style="padding-left:30px;" class="{!BLN_UtillDisplayLinks.isonsiteRegistrationPage}"><i class="fa fa-globe fa-1x"></i> Onsite Registration</a></li>
+
+<li><a href="{!$Site.BaseUrl}/apex/BLN_Email_Dashboards" class="{!BLN_UtillDisplayLinks.isemailsPage}"  style="padding-left:30px;"><i class="fa fa-envelope fa-1x"></i> Emails</a></li>
+
+<li><a href="{!$Site.BaseUrl}/apex/BLN_PushNotifications" class="{!BLN_UtillDisplayLinks.ispushnotificationPage}"  style="padding-left:30px;"><i class="fa fa-envelope fa-1x"></i>Push Notifications</a></li>
+
+<!---<li><a href="{!$Site.BaseUrl}/apex/BLN_Email_Campaigns" class="{!BLN_UtillDisplayLinks.isemailcampaignpage}" style="padding-left:30px;"><i class="fa fa-paper-plane fa-1x"></i> Email Campaigns</a></li>---->
+
+<!----<li><a href="printstatus.htm#" style="padding-left:30px;"><i class="fa fa-print fa-1x"></i> Print Status</a></li>--->
+</ul>   
+
+                
+                </li>
+                 </apex:outputPanel>
+             <!---------------------> 
+             
+              <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsReportsTabAvailable}">
+               <li class="{!BLN_UtillDisplayLinks.isReportsPageExpand}">
+               <a href="#" class="subheading" id="reports_subheading" style="background-color:#7f8c8d;">
+               <i class="fa fa-pie-chart fa-1x"></i> Reports<i class="exp-padding fa fa-angle-down right"></i></a>
+               
+               
+<ul class="acitem content">
+<li><a href="{!$Site.BaseUrl}/BLN_Reports" class="{!BLN_UtillDisplayLinks.isOrderReportPage}"  style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Orders Report</a></li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_AbandonedReports" class="{!BLN_UtillDisplayLinks.isAbandonedOrderReportPage }"  style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Abandoned Order Report </a></li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_TicketSalesReport" class="{!BLN_UtillDisplayLinks.isTicketReportPage}" style="padding-left:30px;"><i class="fa fa-ticket fa-1x"></i> Tickets Report</a></li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_AttendeeReport" class="{!BLN_UtillDisplayLinks.isAttendeeReportPage}"   style="padding-left:30px;"><i class="fa fa-user fa-1x"></i> Attendee Report</a></li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_AttendeeDetailReport" class="{!BLN_UtillDisplayLinks.isAttendeeDetailReportPage}"   style="padding-left:30px;"><i class="fa fa-bar-chart fa-1x"></i> Attendee Detail Report</a></li>
+
+<li><a  href="{!$Site.BaseUrl}/BLN_PromoCodeReport" class="{!BLN_UtillDisplayLinks.isPromocodeReportPage}" style="padding-left:30px;"><i class="fa fa-tags fa-1x"></i> Promocode Report</a></li>
+
+<!--<li><a href="{!$Site.BaseUrl}/BLN_SurveyQuestionsReport" class="{!BLN_UtillDisplayLinks.isSurveyQuestionReportPage}"  style="padding-left:30px;"><i class="fa fa-list-ol fa-1x"></i> Survey Question Report</a>
+</li>-->
+ 
+<li><a href="{!$Site.BaseUrl}/BLN_CheckinHistoryReport" class="{!BLN_UtillDisplayLinks.isCheckinHistoryReportPage}" style="padding-left:30px;"><i class="fa fa-check-square-o fa-1x"></i> Check-In History Report</a>
+</li>
+
+<apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsSurveyQuestionReportsTabAvailable}">
+<li class="{!BLN_UtillDisplayLinks.isSurveyQuestionReportsPageExpand}">
+<a href="#" class="subheading" id="surveyQuestion_reports">
+<i class="fa fa-pie-chart fa-1x"  style="padding-left:20px;"></i> Survey Question Report<i class="exp-padding fa fa-angle-down right"></i></a> 
+<ul class="acitem content">
+<li><a href="{!$Site.BaseUrl}/BLN_surveyByQuestionTab" class="{!BLN_UtillDisplayLinks.isSurveyByQuestionReportPage}"  style="padding-left:30px;"><i class="fa fa-pie-chart fa-1x" style="padding-left: 20px;"></i> Survey By Question Report</a>
+</li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_surveyByTicketTab" class="{!BLN_UtillDisplayLinks.isSurveyByTicketReportPage}"  style="padding-left:30px;"><i class="fa fa-pie-chart fa-1x" style="padding-left: 20px;"></i> Survey By Ticket Report</a>
+</li>
+
+<li><a href="{!$Site.BaseUrl}/BLN_surveyByAttendeeTab" class="{!BLN_UtillDisplayLinks.isSurveyByAttendeeReportPage}"  style="padding-left:30px;"><i class="fa fa-pie-chart fa-1x" style="padding-left: 20px;"></i> Survey By Attendee Report</a>
+</li>
+</ul>
+</li>
+</apex:outputPanel> 
+
+</ul>
+</li>
+  </apex:outputPanel>
+<!------------>
+     <!--------------------------------->
+          <apex:outputPanel rendered="{!BLN_UtillDisplayLinks.IsSeminarTabAvailable}">
+               <li class="{!BLN_UtillDisplayLinks.isSeminorsPageExpand}">
+                <a href="{!$Site.BaseUrl}/BLN_EventSchedule"  style="background-color:{!if(BLN_UtillDisplayLinks.iseventschedulePage !='active','#7f8c8d','')}" class="subheading {!BLN_UtillDisplayLinks.isSeminorsPage}" >
+<i class="fa fa-clock-o"></i> Event Agenda<i class="exp-padding fa fa-angle-down right"></i>
+</a>
+
+<ul class="acitem content">
+<!--- <li><a href="{!$Site.BaseUrl}/BLN_Tracks" class="{!BLN_UtillDisplayLinks.isTracksPage}"  style="padding-left:30px;"><i class="fa fa-road"></i> Tracks</a>
+</li> ---->
+
+<!--- <li><a href="{!$Site.BaseUrl}/BLN_Rooms" class="{!BLN_UtillDisplayLinks.isroomsPage}"  style="padding-left:30px;"><i class="fa fa-building"></i> Rooms</a></li> ---->
+
+<li><a href="{!$Site.BaseUrl}/BLN_Agenda" class="{!BLN_UtillDisplayLinks.isSeminorsPage}" style="padding-left:30px;"><i class="fa fa-microphone"></i> Seminar</a>
+
+<li><a href="{!$Site.BaseUrl}/BLN_Speakers" class="{!BLN_UtillDisplayLinks.isSpeackersPage}" style="padding-left:30px;"><i class="fa fa-user fa-1x"></i> Speakers</a></li>
+
+
+
+</li>
+</ul>    
+
+ </li>
+ </apex:outputPanel>
+<!----->                
+
+ <li class="{!BLN_UtillDisplayLinks.isEventsettingsExpand}">
+<a href="{!$Site.BaseUrl}/BLN_Tracks" class="subheading" style="background-color:#7f8c8d;" id="settings1_subheading">
+<i class="fa fa-cog"></i> Event Settings<i class="exp-padding fa fa-angle-down right"></i>
+</a>
+              
+ <ul class="acitem content">
+   <li><a href="{!$Site.BaseUrl}/apex/BLN_attendee_settings" class="{!BLN_UtillDisplayLinks.isAttendeeSettingsPage}"  style="padding-left:30px;">
+   <i class="fa fa-user"></i> Attendee Settings</a>
+   </li>
+                <li>
+                <a href="{!$Site.BaseUrl}/apex/BLN_Display_settings" class="{!BLN_UtillDisplayLinks.isdisplaySettingsPage}" style="padding-left:30px;">
+                <i class="fa fa-desktop"></i> Display Settings</a>
+                </li> 
+                
+                <li><a href="{!$Site.BaseUrl}/apex/BLN_PaymentNewSettings?tab=Online" class="{!BLN_UtillDisplayLinks.ispaymentSettingsPage}" style="padding-left:30px;"><i class="fa fa-money"></i> Payment Settings</a></li>
+                
+                <li><a href="{!$Site.BaseUrl}/apex/BLN_ticketfeesettings" class="{!BLN_UtillDisplayLinks.isTicketFeeSettingsPage}"   style="padding-left:30px;"><i class="fa fa-ticket"></i> Ticket Fee Settings</a></li>
+                
+                <li> <a href="{!$Site.BaseUrl}/apex/BLN_BadgeToolNew" target="_blank" style="padding-left:30px;"><i class="fa fa-gear fa-1x"></i> Badge Settings</a></li>
+                
+                <li><a  href="{!$Site.BaseUrl}/apex/BLN_EventStaff" class="{!BLN_UtillDisplayLinks.isEventstaffPage}" style="padding-left:30px;"><i class="fa fa-user"></i>  Event Staff</a></li>
+                
+                <li><a  href="{!$Site.BaseUrl}/apex/BLN_EventStaffsettings" class="{!BLN_UtillDisplayLinks.isEventstaffsettingsPage}" style="padding-left:30px;"><i class="fa fa-users"></i> Event Staff Settings</a></li>
+            </ul>
+                    
+                    
+                    
+                    
+                </li>
+                
+                
+              </ul>
+            
+            </li>
+        
+          
+    <!------------------->    
+          </apex:outputPanel> 
+      
+      
+      
+      
+      
+      
+      <!--------------------------------------------------------------------------->       
+        </ul>
+        </aside>
+     </div>
+  </div>
+    
+  <!-- -------------------------------------------- Footer Start ---------------------------------------------------- -->  
+    
+  <footer>
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Eventdex </p>
+      </div>
+    </div>
+  </footer>
+     </section>
+<!-- #middle-->
+     <script type="text/javascript" src="{!URLFOR($Resource.MyTickets, 'js/functions.js')}"></script> 
+
+</apex:component>

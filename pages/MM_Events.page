@@ -1,0 +1,532 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false"  controller="MM_eventsCon" action="{!CheckEvents}"> 
+
+  <apex:stylesheet value="{!URLFOR($Resource.MM_BA_Styles,"css/stylesheet.css")}"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+  <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/reveal.css")}"/>
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+<!-------------------------------------FOR MAP----------------------------------------->
+<style>
+     .myButton {
+        
+        -moz-box-shadow:inset 0px -3px 7px 0px #29bbff;
+        -webkit-box-shadow:inset 0px -3px 7px 0px #29bbff;
+        box-shadow:inset 0px -3px 7px 0px #29bbff;
+      
+        background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #2dabf9), color-stop(1, #0688fa));
+        background:-moz-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+        background:-webkit-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+        background:-o-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+        background:-ms-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+        background:linear-gradient(to bottom, #2dabf9 5%, #0688fa 100%);
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#2dabf9', endColorstr='#0688fa',GradientType=0);
+        
+        background-color:#2dabf9;
+        
+        -moz-border-radius:42px;
+        -webkit-border-radius:42px;
+        border-radius:42px;
+        
+        border:0px solid #0b0e07;
+        
+        display:inline-block;
+        color:#ffffff;
+        font-family:arial;
+        font-size:15px;
+        font-weight:normal;
+        padding:10px 21px;
+        text-decoration:none;
+         
+        text-shadow:0px 1px 0px #263666;
+        cursor:pointer;
+        
+    }
+    .myButton:hover {
+        color:#FFFFFF;
+        text-decoration:none;
+        background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #0688fa), color-stop(1, #2dabf9));
+        background:-moz-linear-gradient(top, #0688fa 5%, #2dabf9 100%);
+        background:-webkit-linear-gradient(top, #0688fa 5%, #2dabf9 100%);
+        background:-o-linear-gradient(top, #0688fa 5%, #2dabf9 100%);
+        background:-ms-linear-gradient(top, #0688fa 5%, #2dabf9 100%);
+        background:linear-gradient(to bottom, #0688fa 5%, #2dabf9 100%);
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0688fa', endColorstr='#2dabf9',GradientType=0);
+        
+        background-color:#0688fa;
+    }
+    .myButton:active {
+    color:#FFFFFF;
+        text-decoration:none;
+        position:relative;
+        top:1px;
+    }
+</style>
+
+    <apex:form id="mapForm"> 
+ <head>
+
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3.5&sensor=true"></script>
+
+<script type="text/javascript"> 
+     
+$(document).ready(
+        eventMap()
+           
+   );
+   
+   
+    function eventMap() {
+
+  var myOptions = {
+    zoom: 10,    
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    mapTypeControl: false
+  }
+
+  var map;
+  var marker;
+ 
+  var geocoder = new google.maps.Geocoder();
+  var address = "{!EventDetail.EV_HistingAddr1__c}, " + "{!EventDetail.AS_HostingAddr2__c}, " + "{!EventDetail.AS_HostingCity__c}, " + "{!EventDetail.EV_HostingCountryNew__c}";
+
+  var infowindow = new google.maps.InfoWindow({
+    content: "<b>{!EventDetail.EV_HistingAddr1__c}</b><br>{!EventDetail.EV_HistingAddr1__c}<br>{!EventDetail.AS_HostingAddr2__c}, {!EventDetail.AS_HostingCity__c}<br>{!EventDetail.EV_HostingCountryNew__c}"
+  });
+
+  geocoder.geocode( { address: address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK && results.length) {
+      if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+
+        //create map
+        map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+        //center map
+        map.setCenter(results[0].geometry.location);
+
+        //create marker
+        marker = new google.maps.Marker({
+            position: results[0].geometry.location,
+            map: map,
+            title: "{!EventDetail.EV_HistingAddr1__c}"
+        });
+
+        //add listeners
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(map,marker);
+        });
+        google.maps.event.addListener(infowindow, 'closeclick', function() {
+          map.setCenter(marker.getPosition()); 
+        });
+
+      }
+
+    } else {
+      $('#map').css({'height' : '15px'});
+      $('#map').html("");
+      resizeIframe();
+    }
+  });
+
+  function resizeIframe() {
+    var me = window.name;
+    if (me) {
+      var iframes = parent.document.getElementsByName(me);
+      if (iframes && iframes.length == 1) {
+        height = document.body.offsetHeight;
+        iframes[0].style.height = height + "px";
+      }
+    }
+  }
+
+}
+   
+</script>
+
+
+<script>
+$(document).ready(function(){
+$(".menu_body").hide();
+//toggle the componenet with class menu_body
+$(".menu_head").click(function(){
+$(this).next(".menu_body").slideToggle(200);
+var plusmin;
+plusmin = $(this).children(".plusminus").text();
+
+if( plusmin == '+')
+$(this).children(".plusminus").text('-');
+else
+$(this).children(".plusminus").text('+');
+});
+});
+</script>
+
+
+  <script type="text/javascript" >
+$(document).ready(function()
+{
+$(".account").click(function()
+{
+var X=$(this).attr('id');
+
+if(X==1)
+{
+$(".submenu").hide();
+$(this).attr('id', '0');    
+}
+else
+{
+
+$(".submenu").show();
+$(this).attr('id', '1');
+}
+    
+});
+
+//Mouseup textarea false
+$(".submenu").mouseup(function()
+{
+return false
+});
+$(".account").mouseup(function()
+{
+return false
+});
+
+
+//Textarea without editing.
+$(document).mouseup(function()
+{
+$(".submenu").hide();
+$(".account").attr('id', '');
+});
+    
+});
+    
+    </script>  
+    
+  <style>
+  
+  
+  .eventselect{border-right:0px solid #cccccc;text-align:left;background-color:#b4dff9;height:10px;width:100%;padding-left:25px;border-bottom:3px solid #FFFFFF;padding-left:10px;}
+
+  
+.eventtable{border-right:0px solid #cccccc;text-align:left;background-color:#f3f3f3;height:10px;width:100%;padding-left:25px;border-bottom:3px solid #FFFFFF;padding-left:10px;}
+
+.table2{ border:1px solid #eaeaea; margin:2px; height:auto; height:50px;}
+
+.table2 td{height:25px;}
+.pophead{
+background-color:#54b5f1;
+height:35px;
+width:100%;
+color:#FFFFFF;
+font-size:18px;
+text-align:center;
+}
+</style>  
+
+
+<style>
+#map {
+  font-family: Arial;
+  font-size:12px;
+  line-height:normal !important;
+  height:150px;
+  background:transparent;
+  
+}
+
+
+</style>
+
+</head>     
+ 
+   </apex:form>
+
+
+<!--------------------------------------------------------------------------------------->
+  <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+ <!--topblock start-->
+      <div id="topblock"> 
+            <div id="logo"></div>
+            
+               <apex:form >        
+                    <div id="topblockright"  style="position:absolute; top:0px;right:0px;">
+                         <table width="98%" border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td align="right"><div style="padding-right:20px;"> <span class="username"> {!$User.Firstname}&nbsp;{!$User.Lastname} 
+                            <br /> <apex:outputPanel rendered="{!AttendeeBoolean}"> (MBE)</apex:outputPanel>
+                            <apex:outputPanel rendered="{!boothAdminBool}"> (Corporate)</apex:outputPanel>
+                               </span></div></td>
+                            
+                            <td style="width:195px;">
+                              <div class="dropdown">
+                                 <a class="account" ><span>Settings</span></a>
+                                     <div class="submenu" style="display: none; ">
+                                      <ul class="root">
+                                        <li> <apex:outputLink value="/MM_Profile" style="text-style:bold; color:#000000; padding:10px 15px 0 0;"><span>  View / Edit Profile</span> </apex:outputLink> </li>
+                                 
+                                        <li ><apex:outputLink value="/MM_Changepassword?urlreturn=MM_Events" style="text-style:bold; color:#000000; padding:10px 15px 0 0;">Change Password</apex:outputLink></li>
+                                        <li>  <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#000000; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink></li>
+                                     </ul>
+                                  </div>
+                              </div>
+                            </td>
+                          </tr>
+                    </table>
+                 </div>
+                    
+             </apex:form>       
+                    
+            
+             </div>   
+    <!--topblock end-->
+<!--menublock start-->
+<apex:outputPanel rendered="{!AttendeeBoolean}"> 
+        <div id="menublock">
+        
+      
+            <div id='cssmenu'>
+                  <ul>
+   <!-- <li >
+   <apex:outputLink value="MM_DashBoard"><b>Dashboard</b> </apex:outputLink>
+
+</li> -->
+<li class="active"><apex:outputLink value="MM_events"><b>Events</b> </apex:outputLink></li>
+
+<li><apex:outputLink value="MM_Matches"><b>Matches</b> </apex:outputLink></li>
+<li>
+<apex:outputLink value="MM_Schedule"><b>Schedule</b> </apex:outputLink>
+</li>
+<!--<li>
+<apex:outputLink value="MM_ExhibitorDirectory"><b>Exhibitor Directory</b> </apex:outputLink>
+</li>-->
+
+                     
+                  </ul>
+            </div>  
+        </div> 
+   </apex:outputPanel>    
+   <apex:outputPanel rendered="{!boothAdminBool}"> 
+       <div id="menublock">
+            <div id='cssmenu'>
+                  <ul>
+                      
+                       <!--<li ><apex:outputLink value="/apex/MM_BA_Dashboard" ><span>Dashboard</span> </apex:outputLink></li>-->
+                        <li class="active"><apex:outputLink value="/apex/MM_Events" ><span>Events</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_BA_Matches" ><span>Matches</span> </apex:outputLink></li>
+                         <li ><apex:outputLink value="/apex/MM_BA_Schedule" ><span>Schedule</span> </apex:outputLink></li>
+                    <!--     <li> <apex:outputLink value="/apex/MM_BA_AttendeesDirectory" ><span>Attendees Directory</span> </apex:outputLink></li>  -->
+                       <!--  <li><apex:outputLink value="/apex/MM_BA_Reports" ><span>Reports</span> </apex:outputLink></li>  -->
+                    </ul>
+            </div>
+        </div>
+   </apex:outputPanel>    
+   
+   
+    
+    <!--menublock end-->     
+  
+  <!--container start-->
+        <div id="container"> 
+              <div id="smallleftcontainer">
+              <h3>Events</h3>
+                 <apex:form id="eventsForm" >
+                 
+                  <div id="eventsidemenu" >
+                   <apex:dataTable value="{!listOfEvents}" var="ev" style="width:100%; border:0px; border:0px solid #FF0000;">
+                     <apex:column styleClass="{! IF( ev.EV_id__r.EV_Title__c == EventDetail.EV_Title__c , 'eventselect', 'eventtable' )}"  
+                      onclick="callingChangeEventFunction('{!ev.EV_id__c}');" style="line-height:40px;">
+                     <apex:commandLink value="{!ev.EV_id__r.EV_Title__c}" action="{!changeEvent}" style="text-decoration:none;color:#000000"
+                     reRender="eventdetail,mapForm,downdetailForm,eventHead,eventsForm,map" 
+                   
+                       onComplete="eventMap();">
+                  
+                      <apex:param value="{!ev.EV_id__c}" name="eventName"/>
+                  </apex:commandLink>    
+              </apex:column>
+                   </apex:dataTable>                             
+                         
+                   </div></apex:form> 
+             </div>
+             
+                  <div id="smallrightcontainer">
+                  
+                  <apex:form id="eventdetail">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:0px;">   
+              <tr>
+                <td align="left" valign="top" bgcolor="#EAEAEA"><h3>Event Details</h3></td>
+                 <td width="75%" align="right" valign="middle" bgcolor="#EAEAEA">  
+                  </td>
+               </tr> 
+              <tr>
+                <td width="72%" colspan="2" align="center" valign="top">   
+                     <div id="map">  </div> 
+             </td>
+                </tr>
+              <tr>
+                <td colspan="2" align="left" valign="top">&nbsp;</td>
+                </tr>
+              <tr>
+                <td colspan="2"><table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:0px;">
+                  <tr>
+                    <td width="72%" colspan="2" align="center" valign="top"> 
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="21%" align="center" valign="top">
+                        <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td width="50%" height="150" align="center" valign="top">
+                            <table width="98%" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                <td height="150" align="center" bgcolor="#FFFFFF">
+                                                                          
+                                           <apex:commandButton image="/servlet/servlet.ImageServer?id={!EventDetail.EV_EventLogo__c}&oid={!$Organization.Id}" rendered="{! IF(EventDetail.EV_EventLogo__c !=null, 'TRUE' ,'FALSE')}" title="Event Logo"  style="height:80px; width:80px;"/>
+                                 
+                                </td>
+                              </tr>
+                            </table></td>
+                          </tr>
+                        </table></td>
+                        <td width="79%" align="left" valign="top">
+                        <table width="98%" border="0" align="center" cellpadding="7px" cellspacing="0" style="font-size:12px;">
+                         <tr>
+                            <td width="20%" align="left" valign="middle" bgcolor="#f3f3f3">Date</td>
+                            <td width="80%" align="left" valign="middle" bgcolor="#f3f3f3">
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!EventDetail.EV_StartDate__c}"/></apex:outputText></td>
+                          </tr>
+                          <tr>
+                            <td align="left" valign="middle">Location</td>
+                            <td align="left" valign="middle">{!EventDetail.EV_HostingLocation__c}</td>
+                          </tr>
+                          <tr>
+                            <td align="left" valign="middle" bgcolor="#F3F3F3">City</td>
+                            <td align="left" valign="middle" bgcolor="#F3F3F3">{!EventDetail.AS_HostingCity__c}</td>
+                          </tr>
+                          <tr>
+                            <td align="left" valign="middle" bgcolor="#FFFFFF">State</td>
+                            <td align="left" valign="middle" bgcolor="#FFFFFF">{!EventDetail.EV_HostingStateNew__c}</td>
+                          </tr>
+                          <tr>
+                            <td align="left" valign="middle" bgcolor="#F3F3F3">Country</td>
+                            <td align="left" valign="middle" bgcolor="#F3F3F3">{!Eventdetail.EV_HostingCountryNew__c}</td>
+                          </tr>
+                        </table></td>
+                      </tr>
+                    </table></td>
+                  </tr>  
+                  
+                  
+                   <tr>
+        <td colspan="2" align="left" valign="top"><table border="0" align="right" cellpadding="0" cellspacing="5">
+          <tr>
+            <td height="30" align="center" valign="middle">&nbsp;
+            <apex:outputLink value="MM_Profile" rendered="{!boothAdminBool}" style="color:#ffffff" styleClass="myButton"> Procurement Needs </apex:outputLink>
+            <apex:outputLink value="MM_Profile" rendered="{!AttendeeBoolean}"  styleClass="myButton" style="color:#ffffff">   Update Profile</apex:outputLink>
+            
+            
+            </td>
+            <td height="30" align="left" valign="middle"><a href="#" style="text-decoration:none;">
+            <!--<apex:commandButton image="{!$Resource.View_Schedule}" action="{!viewSchedule}" /> -->
+           
+           <!-- <apex:commandLink value="Event Schedule" styleClass="myButton" action="{!viewSchedule}" style="color:#ffffff"/>  -->
+            
+            </a></td>
+          
+          </tr>
+        </table></td>
+        </tr>
+
+                  
+                  
+                   
+                  <tr>
+                    <td colspan="2"><h3 style="border-bottom:1px dashed #cccccc; margin-bottom:10px; padding:8px;">
+                   Event Description
+                   </h3>
+                   <p> {!Eventdetail.EV_Description__c}</p>
+                    
+                     </td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td width="72%">&nbsp;</td>
+                  </tr>
+                </table></td>
+                </tr>
+                        </table>
+              </apex:form>   </div>
+            
+        </div>
+       
+   
+  <!-- ----------------------------------------- View Profile Page ------------------------------------------------------- -->
+  <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewscheduleBool}"/>
+<apex:outputPanel styleClass="custPopup" layout="block" style="width:85%;" rendered="{!viewscheduleBool}">
+<apex:form > <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+     <td class="pophead">
+    Event Schedule
+     </td>
+     <td align="right" width="35px" class="pophead">
+     <div style="float:right;">
+     <apex:commandButton action="{!CancelSchedule}" value="Close" title="Close" image="{!$Resource.Close1}"/>
+     </div>
+     </td>
+    </tr>
+   </table>
+   
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" >
+ <!--<div style="width:100%; height:23px; background-color:#d6e3f2; text-align:center; height:30px;" class="glossy">
+      <div style="font-weight:bold; float:left; color:#04408c; padding:3px 3px 0 8px;">Event Schedule</div>     
+  </div>   --> 
+ <tr style="background-color:#d6e3f2;" >      
+  
+    <th style="width:20%;text-align:left;padding-left:10px;">Program Name</th>
+    <th style="width:15%;text-align:left;">Program Date</th>
+    <th style="width:15%;text-align:left;">Start Time</th>
+    <th style="width:15%;text-align:left;">End Time</th> 
+    <th style="width:20%;text-align:left;">Presenter</th>      
+    <th style="width:15%;text-align:left;"> Location</th>
+ </tr>
+ 
+  <tr >
+ <td colspan="9" class="trwhite" style="border-right:1px solid #91b5db;border-left:1px solid #91b5db;">
+ <div style="overflow:auto;width:100%;height:280px;">
+
+ <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:11px;" >
+  <apex:repeat value="{!eventscheduleDB}" var="row">
+  <tr style="border-bottom:1px solid red;">
+    
+   <td style="width:20%;border-bottom:1px solid #cccccc;padding-left:10px;"><apex:outputText value="{!row.ES_ProgramName__c}"/></td>
+   <td style="width:15%;border-bottom:1px solid #cccccc;"><apex:outputText value="{0,date,MM/dd/yyyy }"><apex:param value="{!row.ES_StartDate__c}"/></apex:outputText></td>
+   <td style="width:15%;border-bottom:1px solid #cccccc;"><apex:outputText value="{!row.ES_StartTime__c}"/></td>
+   <td style="width:15%;border-bottom:1px solid #cccccc;"><apex:outputText value="{!row.ES_EndTime__c}"/></td>
+   <td style="width:20%;border-bottom:1px solid #cccccc;"><apex:outputText value="{!row.ES_Presenter__c}"/></td>
+   <td style="width:15%;border-bottom:1px solid #cccccc;"><apex:outputText value="{!row.ES_Location__c}"/></td>
+  </tr>
+  </apex:repeat>
+ </table>
+ </div>
+ </td>
+ </tr> 
+</table>
+</apex:form>
+
+</apex:outputPanel>
+<!---------------------------------------------- END OF POPUP FOR VIEW PROFILES ----------------------------->
+   
+   
+   
+   
+   
+  
+    
+  <!--footer start-->
+        <div id="footer">
+             © GlobalNest LLC. All Rights Reserved 
+         </div>
+    <!--footer end-->
+</apex:page>

@@ -1,0 +1,299 @@
+<apex:page controller="BLN_ticketfeesettingsCon" showHeader="false"
+	standardStylesheets="false">
+	<!------------common styles component------------>
+	<c:ed_commonstyles ></c:ed_commonstyles>
+	<!------------//common styles component---------->
+    <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!------------//common styles component---------->
+    <c:ed_popupbox ></c:ed_popupbox>
+	<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+	<style>
+	.stripe-light fieldset{padding:5px;}
+.stripe-light .display tr td {
+	height: 20px;
+	color: #333;
+}
+</style>
+	<!-------------basic template html component------------------------------------->
+	<c:ed_basictemplate BLN_UtillDisplayLinks="{!mytickets}" id="comp">
+		<apex:form id="myfrm">
+			<apex:actionFunction name="changevaluetics"
+                action="{!savetickchange}" reRender="myfrm" oncomplete="location.reload();"/>
+                
+                <apex:actionFunction name="changeinvensetting" action="{!saveinventsetting}" reRender="myfrm"/>
+                
+			<apex:actionFunction name="sendvals" action="{!saveItemfeesettings}"
+                reRender="myfrm"  status="AjaxLoader" oncomplete="Alert.render('Ticket Fee settings saved successfully.','Alert','OK')">
+				<apex:param value="" assignTo="{!addstring}" name="addstring" />
+				<apex:param value="" assignTo="{!includestring}"
+					name="includestring" />
+			</apex:actionFunction>
+			<!---------------------template code------------------>
+			<div id="TabbedPanels1" class="TabbedPanels"
+				style="width: 97.7%; margin-left: 1%; margin-top: 10px;">
+				<ul class="TabbedPanelsTabGroup">
+					<li class="TabbedPanelsTab">Ticket Level Settings</li>
+					<li class="TabbedPanelsTab">Event Level Settings</li>
+				</ul>
+				<div class="TabbedPanelsContentGroup">
+
+					<!--------------------start of ist tab------------------>
+					<div class="TabbedPanelsContent">
+						<!------->
+						<div class="shadow-div">
+							<p class="padding-5px bg-font">Apply Fee Settings</p>
+							<!--close of black-title-->
+							<div class="form-embed-div" style="width: 95%; margin-top: 20px;">
+								<!----------->
+								<div class="form-content-div" style="padding: 0px;">
+									<!--------->
+
+									<table id="tktlevel-tbl" class="display"
+										style="width: 100.1%; border: none;">
+										<thead>
+											<tr>
+												<th>Tickets</th>
+												<th style="width: 38%; text-align: center;">Add
+													Eventdex fee on top of the total ticket price</th>
+												<th style="width: 41%; text-align: center;">Include the
+													Eventdex fee in to the total ticket price</th>
+
+											</tr>
+										</thead>
+										<tbody>
+											<apex:variable var="call" value="{!0}" />
+
+											<apex:repeat value="{!innerlist}" var="x">
+
+												<apex:variable var="call" value="{!call+1}" />
+												<!------Main Record Repeat Row--->
+												<tr>
+													<td><apex:outputText value="{!x.Itemvals.item_name__c}" /></td>
+													<apex:outputText rendered="{!IF(x.adds == 'checked',TRUE,FALSE)}"
+														id="addchk">
+														<!-------->
+														<td class="textcenter"><input type="radio"
+															id="{!x.Itemvals.id}" onchange="addprice(this);"
+															value="{!x.Itemvals.id}" name="{!call}"
+															checked="{!x.adds}" /></td>
+
+														<td class="textcenter"><input type="Radio"
+															id="{!x.Itemvals.id}" onchange="includeprice(this);"
+															value="{!x.Itemvals.id}" name="{!call}" /></td>
+														<!-------->
+													</apex:outputText>
+													<apex:outputText rendered="{!IF(x.inserts == 'checked',TRUE,FALSE)}"
+														id="inchk">
+														<td class="textcenter"><input type="Radio"
+															id="{!x.Itemvals.id}" onchange="addprice(this);"
+															value="{!x.Itemvals.id}" name="{!call}" /></td>
+														<td class="textcenter"><input type="Radio"
+															id="{!x.Itemvals.id}" onchange="includeprice(this);"
+															value="{!x.Itemvals.id}" name="{!call}"
+															checked="{!x.inserts}" /></td>
+													</apex:outputText>
+												</tr>
+												<!------//Main Record Repeat Row--->
+											</apex:repeat>
+										</tbody>
+									</table>
+									<!-------->
+
+									<!-------->
+								</div>
+								<!--close of form-content-div-->
+
+								<!------------>
+							</div>
+							<!--close of form-embed-div-->
+							<!------------------->
+							<div style="margin-top: 20px; text-align: center;">
+								<apex:commandButton styleClass="button-a blue" value="Save"
+									action="{!saveItemfeesettings}"
+                                    onclick="return SaveTobackend();" reRender="myfrm" oncomplete="window.opener.location.reload();"/>
+								&nbsp;&nbsp;
+								<apex:commandButton value="Cancel"
+									styleClass="button-a dark-blue" action="{!Itemvals}" />
+							</div>
+							<!------------------->
+						</div>
+						<!---->
+					</div>
+					<!--close of tab1 tabbedpanelscontent-->
+					<!---------------------------------------------->
+					<!--------------------start of 2nd content------------------>
+					<div class="TabbedPanelsContent">
+						<!----->
+						<div class="shadow-div">
+							<p class="padding-5px bg-font">Set Default Setting Mode</p>
+							<!--close of black-title-->
+							<div class="form-embed-div" style="width: 40%;">
+								<!----------->
+								<div class="form-content-div">
+									<div class="stripe-light corner-rd3px">
+										<!---->
+
+										<apex:selectRadio value="{!selectedoption}"
+											layout="pageDirection" styleClass="display eventlevel-tbl">
+											<apex:selectOptions value="{!options}">
+												</apex:selectoptions>
+										</apex:selectRadio>
+
+										<!---->
+									</div>
+									<!---close of corner-rd3px----->
+								</div>
+								<!--close of form-content-div-->
+
+								<!------------>
+							</div>
+							<!--close of form-embed-div-->
+							<!------------------->
+							<div style="margin-top: 20px; text-align: center;">
+                                <apex:commandButton value="Save" oncomplete=" conformchange('setDefaultSettingModeSaveButton');" styleClass="button-a blue" />
+
+							</div>
+							<!------------------->
+						</div>
+						<!----->
+
+					</div>
+					<!--close of tab2 tabbedpanelscontent-->
+					<!---------------------------------------------->
+				</div>
+				<!--close of TabbedPanelsContentGroup-->
+			</div>
+			<!--close of tabbedpanelsgroup1-->
+			<!---------------------->
+			<!-----------------//template code----------------------->
+	<!------------common js libraries component------------>
+	<c:ed_commonjs ></c:ed_commonjs>
+	<script>	
+	/**************Intializing  tab function************/
+		var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+		/**************End of Intializing  tab function************/</script>
+	<!------------//common js libraries component------------>
+		</apex:form>
+	</c:ed_basictemplate>
+	<!-------------//end of basic template component------------------------>
+
+	<!--/*********************Java Script Section*******************/-->
+
+	<!--Intializing  tab function---->
+	<script type="text/javascript">
+		
+		/**************custom confirmation script************/
+		var myString;
+       /* function conformchange() {
+
+			myString = confirm("Do you want to apply the change to every Ticket");
+            //alert(myString);
+			if (myString == true) {
+				changeval();
+            } else {
+               window.location.href = window.location.href;
+                return false;
+			}
+            
+        }*/
+         function conformchange(clkbtn) {
+
+           Alertconfirm.render('Do you want to apply the change to every Ticket?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+        }
+        
+        function callback(clkbtn , okbtnn){ 
+            if(clkbtn = 'setDefaultSettingModeSaveButton')
+            {
+                changeval();
+		}
+        } 
+             
+        function callbackcancel(clkbtn,cnclbtnn){
+            if(clkbtn = 'setDefaultSettingModeSaveButton')
+            {
+                window.location.href = window.location.href;
+                return false;
+            }
+        }   
+        
+		function changeval() {
+			//alert('hhhhhhhhhh');
+			changevaluetics();
+            changeinvensetting();
+		}
+
+		var arrayadd = [];
+		var arrayinclude = [];
+		function addprice(e) {
+
+			if (e.checked) {
+				arrayadd.push(e.id);
+			}
+			for (var i = arrayinclude.length; i--;) {
+				if (arrayinclude[i] === e.id) {
+					// delete arrayinclude[i];
+					arrayinclude.splice(i, 1);
+				}
+			}
+			//alert('array Exclude '+arrayadd);     
+			//alert('arrayinclude '+arrayinclude);
+		}
+
+		function includeprice(e) {
+
+			if (e.checked) {
+				arrayinclude.push(e.id);
+			}
+			for (var i = arrayadd.length; i--;) {
+				if (arrayadd[i] === e.id) {
+					//  delete arrayadd[i];
+					arrayadd.splice(i, 1);
+				}
+			}
+
+			//alert('array Exclude '+arrayadd);     
+			//alert('arrayinclude '+arrayinclude);
+		}
+
+		function SaveTobackend() {
+
+			var addvar1 = '';
+			var includevar = '';
+			var val = true;
+
+			if (arrayadd.length > 0) {
+				for (var i = 0; i < arrayadd.length; i++) {
+					addvar1 += arrayadd[i] + ',';
+				}
+			}
+
+			// alert(arrayinclude.length);
+			if (arrayinclude.length > 0) {
+				for (var z = 0; z < arrayinclude.length; z++) {
+					includevar += arrayinclude[z] + ',';
+				}
+			}
+
+			sendvals(addvar1, includevar);
+			return false;
+		}
+		/**************end custom confirmation script************/
+
+
+
+		/*****toggle tr click fn for radio btn checked********/
+		$("#tktlevel-tbl tbody tr  td").click(function() {
+			$(this).find('input:radio').attr('checked', true);
+		});
+
+		$(".eventlevel-tbl tbody tr  td").click(function() {
+
+			$(this).find('input:radio').attr('checked', true);
+		});
+		/*****toggle tr click fn for radio btn checked********/
+	</script>
+	<!-----/*********************//Java Script Section*******************/-->
+
+	<!----->
+
+</apex:page>

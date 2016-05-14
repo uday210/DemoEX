@@ -1,0 +1,682 @@
+<apex:page controller="BLN_UserEvents" standardStylesheets="false" showHeader="false" sidebar="false" id="pageId">
+<!---- common styles ----->
+<c:ed_commonstyles ></c:ed_commonstyles>
+<style>
+.event_img_inner{ height:140px; width:150px;}
+.auto_resp{max-height:100%; max-width:100%;}
+.link{ background-color:#CCC; width:50%;text-decoration:none; color:#414141; line-height:35px; padding:10px; }
+.link:hover{ background-color:#093;padding:10px; color:#FFF !important; text-decoration:none !important;}
+ .eventtitle_txt {
+    font-weight: bold;
+    font-size: 16px;
+    border-bottom: 1px solid #CCC !important;
+    padding: 5px;
+    min-height: 5px;
+    margin-bottom: 10px !important;
+    vertical-align: middle;
+        min-height: 30px;
+}
+.btn-sm:hover{ margin-top:0px; padding:5px 10px;}   
+.viewblock_listct{ display:none; margin-top:10px;}
+.event_img_inner{height:135px; width:100%; text-align:center;}
+.eventdate{height: 46px;}
+
+.eventlist_actions{padding-left:10px; height:30px !important; font-weight:normal; font-size:13px;}
+
+.eventlist_box{  min-height:50px; border:1px solid #e7eaec;margin-bottom:15px; margin-top:15px; margin-left:0px;    border: 1px solid #D2D2D2;}
+.eventdescrption_txt{min-height:75px;}
+.event_img{ padding:5px !important; min-height:90px;}
+ @media (max-width: 580px)
+.speedbar-nav {
+    /* width: 150px; */
+     height: 0px !important; 
+    overflow: hidden;
+    padding-bottom: 15px;
+}
+.fixedimg_div {
+    width: 120px !important; 
+    box-shadow: 0 1px 3px rgba(213, 213, 213, 0.4) inset, 0 1px 0 rgba(255,255,255,.2);
+    padding: 5px;
+    border: 1px solid #ddd;
+    padding-bottom: 2px;
+    border-radius: 3px;
+    margin:0px auto;
+}
+.fixedimg_div1 {
+    width: 55px !important; 
+    box-shadow: 0 1px 3px rgba(213, 213, 213, 0.4) inset, 0 1px 0 rgba(255,255,255,.2);
+    padding: 5px;
+    border: 1px solid #ddd;
+    padding-bottom: 2px;
+    border-radius: 3px;
+    margin: 0px auto;
+}
+.autoimg{ width:100% !important;  }
+
+#middle {
+    
+    width:100%;
+}
+
+
+.grid-list{height:35px; width:150px; text-align:center; margin-right:30px; padding-top:11px;}
+ 
+ 
+ .eventtitle_txt {
+    
+    margin-top: 6px !important;
+   
+}
+ 
+ .shadow{-webkit-box-shadow: -1px 0px 5px 1px rgba(0,0,0,0.2);
+-moz-box-shadow: -1px 0px 5px 1px rgba(0,0,0,0.2);
+box-shadow: -1px 0px 5px 1px rgba(0,0,0,0.2);}
+     
+</style>
+
+
+<!-- popup css -->
+<c:ed_commonjs ></c:ed_commonjs>
+
+
+<!----- //common styles---->
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/responsive.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/bootstrap.min.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-myevent.css')}"/> 
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<body style="background-color:#f8f8f8;">
+<!------------------->
+<!--------------header component---------------> 
+<!------------------top layer----------------->
+<div id="header">
+  <div id="logo" class="textright"><span class="account-name-nw"> <span class="welcome" style=" width:100%;">Welcome,</span> <strong>{!gnuserinfo.First_Name__c} {!gnuserinfo.Last_Name__c }</strong> </span> </div>
+  <!--close of #logo--> 
+</div>
+<!----------------------//top layer------------------------------> 
+<!---------------------second layer(black)---------------------> 
+<!-- header start -->
+<header>
+<div id="centered-head"> 
+  <!-- Navigation -->
+  <nav>
+    <ul>
+      <li id="login"> <span id="login-trigger"> <span id="login-triggers"> <i class="fa fa-angle-down fa-1x">&nbsp;&nbsp;</i> <span id="user-panel-title ">My Account</span> </span> </span>
+        <div id="login-content">
+          <ul>
+            <li><apex:form ><apex:outputLink value="/apex/BLN_profile"><i class="fa fa-cog fa-1x">&nbsp;&nbsp;</i><span>Settings</span></apex:outputLink></apex:form></li>
+            <li><apex:form ><apex:outputLink value="/apex/bln_Changepassword"><i class="fa fa-cog fa-1x">&nbsp;&nbsp;</i><span>Change Password</span></apex:outputLink></apex:form></li>
+            <li><apex:form ><apex:commandLink onclick="destroy();" id="linkId" action="{!$Site.Prefix}/secur/logout.jsp"> <i class="fa fa-reply fa-1x">&nbsp;&nbsp;</i><span>Log Out</span> </apex:commandLink></apex:form></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+  <!-- Navigation end--> 
+  
+  <!-- quick buttons start--->
+  <div class="account-name"></div>
+  <div class="quickbuttons">
+    <div> <a href="{!$Site.BaseUrl}/apex/BLN_Mytickets"><i class="fa fa-ticket fa-1x">&nbsp;&nbsp;</i><span class="menulable">My Tickets</span></a> </div>
+  </div>
+  <!--close of quickbuttons--> 
+</div>
+<!-----#centered-head--> 
+</header>
+<!-- header start -->
+<!--------------------------//second layer--------------------->
+  <section id="middle">
+  <div id="container" class="full_container"> 
+         <!------------Start content section component------------>
+      <!------------Start content section component------------>
+          <div id="content" class="padding-0px">
+          <!--close of speedbar-nav start-->
+          <div class="speedbar_full" >
+          <div class="speedbar-nav" style="float:none">Eventdex ›› My Events
+          <div class="right margin-ryt-5px" >
+            
+          <a href="{!fullUrl}/apex/BLN_EventNew" style="color:#FFF; margin-top:-5px; font-family:Arial, Helvetica, sans-serif; cursor:pointer" class="btn btn-primary btn-info" onclick="destroy();">
+          Create New Event  
+          </a> 
+          
+          </div>
+          </div>
+          
+          </div>
+          
+          <!---close of speedbar-->     
+ <!-------------------Template Body Code ------------->          
+     <!--------------------------section start--------------------->
+     
+       <!--------->  
+       <div class="right grid-list">
+           <a id="gridct" title="grid" style="margin-right:15px;" class="viewtoggle margin-ryt-5px"><i class="fa fa-th" style="font-size:22px;"></i></a> 
+           <a id="listct" title="list" class="viewtoggle margin-ryt-5px"><i class="fa fa-th-list" style="font-size:22px;"></i></a> 
+            </div>
+          <!--------->
+<div class="sample_id"> <!----------- toggele clicked -->
+        
+     <!----- filter start ------>
+         <section class="filter_section">
+        <div><!-- class="container"-->
+        
+        <div><!-- class="row"-->
+
+<div class="col-lg-12 col-md-12 col-sm-12">
+
+    <div class="form-embed-div">
+    <!-- srearch box start here -->
+    <div class="form-content-div filter_expcolp" style=" padding:5px;">
+  
+    <div class="row">
+    <div class="col-lg-12">
+     <!---------->
+      <span class="bg-font" style="color:#969696;">Search</span>
+      <span class="right" style="color:#969696;margin: 8px;cursor:pointer;"><i class="fa fa-chevron-down"></i></span> 
+     <!---------->       
+        </div><!--close of form-content-div--->
+        </div><!--close of row --->
+</div><!---close of form-content-div--->    
+         
+<!-- search box end here -->
+    <div class="form-content-div" style=" width:100%;display:none;" id="contentshow">
+        <!-- filter container start -->
+        <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12 padding-0px">
+        <!-- filter 1st col start -->
+         <div class="col-lg-3 col-md-6 col-xs-12 col-sm-12">
+               <!--<label class="control-label">Event Name</label>-->
+               <input type="text" class="form-control" placeholder="Event Name" id="eventNameId" onkeyUp="searchEvents();"/>
+          </div>
+         <!-- filter 1st col end -->                           
+                                    
+          <!-- filter 2nd eventdate col start -->
+         <div class="col-lg-3 col-md-6 col-xs-12 col-sm-12">
+               <!--<label class="control-label">Start Date</label>-->
+                <input class="jqdatepicker" type="text" placeholder="Start Date" id="sdtId" onChange="searchEvents();"/>
+          </div>
+         <!-- filter 2nd eventdate col end -->   
+         
+          <!-- filter 3rd eventend date col start -->
+         <div class="col-lg-3 col-md-6 col-xs-12 col-sm-12">
+             <!--  <label class="control-label">End Date</label>-->
+               <input class="jqdatepicker" type="text" placeholder="End Date" id="endtId" onChange="searchEvents();"/>
+          </div>
+         <!-- filter 3rd eventend date col end -->   
+         
+         <!-- filter 4th location col start -->
+         <div class="col-lg-2 col-md-6 col-xs-12 col-sm-12">
+               <!--<label class="control-label">Location</label><br />-->
+               <input type="text" class="form-control" placeholder="Location" id="locationId" onkeyUp="searchEvents();"/>
+               
+          </div>
+         </div>
+       <!-- filter container end -->
+         <div class="clearfix"></div>
+       </div>   
+    </div>
+    
+    
+    
+    
+    </div>
+ </div>
+ </div>
+ </section>
+ 
+     <!----- filter end -------->  
+    
+<apex:form id="gridFrom">
+<apex:actionFunction action="{!listOfEvents}" name="evelistfilter" reRender="gridFrom,listForm" > 
+    <apex:param name="eName" value="" />
+    <apex:param name="sDate" value="" />
+    <apex:param name="eDate" value="" />
+    <apex:param name="varLocal" value="" />
+</apex:actionFunction>
+ 
+     <!----------event list block ------>  
+     <div class="viewblock_gridct">  
+      <div class="row">
+  <div class="col-lg-12">
+                <!-- repeat start -->
+<apex:repeat value="{!wrapperEventList}" var="Event">
+                 <div class="col-lg-4 eventlist_block">
+                         <div class="col-lg-12 col-md-6 col-xs-12 eventlist_box shadow" >
+                        <!-- row start --> 
+                        <div class="row inside-toprow"> 
+                                <!-- event logo block start -->
+                                    <div class="col-lg-5 col-sm-5 col-xs-5 text-center event_img">
+                                    
+                                   
+                                    
+                                    <div class="col-lg-12 event_img_inner text-center">
+                                   <div class="fixedimg_div">  
+                                   <apex:commandLink onclick="destroy();" styleClass="marginryt-5px pointer" action="{!manageEvent}">
+                                           
+                <apex:image rendered="{!Event.eventwrap.Logo_URL__c!=null}" styleClass="auto_resp"  style="max-height:100%; max-width:100%;"   value="/servlet/servlet.ImageServer?id={!Event.eventwrap.Logo_URL__c}&oid={!$Organization.Id}" />
+              
+                <apex:image rendered="{!Event.eventwrap.Logo_URL__c==null}" styleClass="auto_resp" style="max-height:100%; max-width:100%;"  value="{!URLFOR($Resource.edsr_master, 'edsr_root/images/nogallery.png')}"  />
+                                     <apex:param value="{!Event.eventwrap.id}" name="EventName"/> 
+                                     </apex:commandLink> 
+                                     </div>
+                                     </div>
+                                     
+                                     
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 eventdate">
+                                        
+                                         <div class="col-lg-2 col-md-2 col-sm-1 col-xs-12 text-center padding-0px">
+                                         <i class="fa fa-calendar  fa-3x" style="font-size:20px;"></i> 
+                                         </div>
+                                         
+                                         <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 eventdate_op">
+                                         <apex:outputText rendered="{!If(Event.eventwrap.Start_Date__c!=null,true,false)}"> 
+                                        <apex:outputText value=" {0,date,EEE MMM d, yyyy}">
+                                            <apex:param value="{!Event.eventwrap.Start_Date__c}"/>
+                                        </apex:outputText>
+                                             <!--<c:EV_FormatDt date_Timevalue="{!Event.eventwrap.Start_Date__c}" t_zone="{!Event.eventwrap.Time_Zone__c}" />
+                                             &nbsp; - &nbsp; -->
+                                            </apex:outputText>
+                                            <br/>  
+                                            <!--<apex:outputText rendered="{!If(Event.eventwrap.End_Date__c!=null,true,false)}">
+                                            <c:EV_FormatDt date_Timevalue="{!Event.eventwrap.End_Date__c}" t_zone="{!Event.eventwrap.Time_Zone__c}"/>
+                                            </apex:outputText>-->
+                                            <apex:outputText value=" {0,date,EEE MMM d, yyyy}">
+                                            <apex:param value="{!Event.eventwrap.End_Date__c}"/>
+                                        </apex:outputText> 
+                                          </div>
+                                         </div>
+                                         
+                                          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 eventlist_actions editdelete eventlist_actions"> 
+                                           <apex:commandLink onclick="destroy();" styleClass="marginryt-5px pointer" action="{!Editevent}" rendered="{!IF(Event.eventwrap.Organizer_Email__c==$User.Email||Event.eventwrap.ownerid==uid,TRUE,FALSE)}">
+                                           <i class="fa fa-edit" style="font-size: 20px;"></i>
+                                            <apex:param value="{!Event.eventwrap.id}" name="EventName"/>    
+                                            </apex:commandLink>
+                                            
+                                            <apex:commandLink rerender="deleterender" onclick="alertbox('{!Event.eventwrap.id}','Are you sure you want to delete {!Event.eventwrap.Name} event.All your event data will be removed and will not  be available for you.','{!Event.eventwrap.name}')"  styleClass="marginryt-5px pointer" rendered="{!IF(Event.eventwrap.ownerid==uid,TRUE,FALSE)}">
+                                           <i class="fa fa-trash-o" style="font-size: 20px; margin-left:15px;"></i>
+                                             </apex:commandLink>  
+                                         </div>   
+                                        
+                                </div><!-- event img end -->
+                                    <!-- date block start -->
+                                        
+                                    <!-- date block end -->
+                                <!-- event logo block end -->
+                                <!-- event name and description block start -->
+                                    <div class="col-lg-7 col-sm-7 col-xs-7">
+                                     
+                                    <!-- event eventtitle_txt start -->
+                                   
+                                    <div class="row eventtitle_txt autoreduce"> 
+                                   <p class="ptext"> <apex:commandLink onclick="destroy();" styleClass="marginryt-5px pointer" action="{!manageEvent}">
+                                  {!Event.eventwrap.Name}
+                                    <apex:param value="{!Event.eventwrap.id}" name="EventName"/> 
+                                    </apex:commandLink></p>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <div style="position:absolute; top:0px; right:0px; margin:0px; padding:10px; background-color:#eaeaea;" id="info_Id">
+                                        <a href="#" data-toggle="modal" data-target="#myModal" onclick="openpopup('{!Event.eventwrap.id}');"><i class="fa fa-info-circle" style="font-size:18px; color:#666;"></i>  </a>
+                                    </div>
+                                    </div>
+                                    
+                                    <!-- event eventtitle_txt end -->
+                                    
+                                    <!-- event location start -->
+                                 
+                                    <apex:outputText rendered="{!If(Event.eventwrap.Venue_Name__c!=null,true,false)}">
+                                    <div class="row event_location" id="local_id"><i class="fa fa-map-marker" style="font-size:20px;"></i> {!Event.eventwrap.Venue_Name__c} </div>
+                                    </apex:outputText> 
+                                    <!-- event location end -->
+                                    
+                                    <!-- event description start -->
+                                    <!--<div class="row eventdescrption_txt" style=" word-break:break-all; min-height:95px; max-height:85px; padding-right:15px;" id="desc_Id">
+                                         
+                                        <apex:outputText escape="false" value="{!Event.eventwrap.Description__c}"/>
+                                    </div>-->
+                                    <!-- event description end -->
+                                    
+                                    <!-- manage and rol start -->
+                                        <div class="row" style="padding:5px 0px; margin-top:15px;">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 padding-0px">
+                                            <!-- manage start -->
+                                            <div class="col-lg-6 col-md-6  col-sm-6  col-xs-1 padding-0px">
+                                                <span class="flatgraybg_btn"><i class="fa fa-cog"></i> 
+                                                 <apex:commandLink onclick="destroy();" styleClass="marginryt-5px pointer" action="{!manageEvent}">
+                                                <span class="m-lable">Manage Event</span>
+                                                <apex:param value="{!Event.eventwrap.id}" name="EventName"/>
+                                                </apex:commandLink>
+                                                </span> 
+                                            </div>
+                                            <!-- manage end -->
+                                            <!-- rol start -->
+                                           
+                                           </div>
+                                            <!-- rol end -->
+                                        </div>
+                                    <!-- manage and rol end -->
+                                     <!-- close eventdescrption_txt --> 
+                                        <!-- -->
+                                        </div>
+                                        <!-- event name and description block start -->
+                                     </div><!-- inside-toprow end -->
+<!-- inside-bottomrow end -->
+<!-- -------------------------------- -->
+</div>
+<!-- end of eventlist_box -->
+</div>
+
+<!-- popup start here-->
+
+   <!-- Modal box start here -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog"> 
+      
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"> </h4>
+        </div>
+        <div class="modal-body">
+          <div id="childmodalbody"> 
+            
+            <!-- box start here -------------------------------- -->
+            <div class="col-lg-12 col-md-12 col-sm-12" style="height:400px;text-align:justify; line-height:35px;">
+             <div class="row"> 
+              
+              <div style="text-align:center; margin:0px auto;">
+              
+            <div class="fixedimg_div"> 
+                <div id="logo_Id"></div><!---close of event_img_inner--->
+            </div> 
+            
+             </div>
+             <div class="col-lg-12 event_img_inner text-center" > 
+             <span id="sdate_Id"></span>&nbsp;-&nbsp;<span id="edate_Id"></span>
+             </div>
+             <p id="descId"> </p> 
+             
+             </div><!---close of row---->
+             
+            </div>
+               <div class="clearfix"></div>   
+            <!-- box end here -------------------------------- -->
+            
+          
+            
+          </div>
+        </div>
+        <!-- popupbox footer start here -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+        <!-- popupbox footer end here -->
+      </div>
+    </div>
+  </div>
+<!-- Modal box end here --> 
+    
+<!-- popup end here -->
+ </apex:repeat>
+ 
+                 
+                 <!--- //repeat end---->
+      </div><!--close of row ---->
+      </div><!--close of col-lg-12 ---> 
+      </div> 
+  
+      </apex:form> 
+    </div>
+<!------------------------------------------section end--------------------------------> 
+<apex:form id="listForm">
+<div class="viewblock_listct">
+<div class="row">
+<div class="col-lg-12">
+<table  class="table table-bordered display" style="width:98%; margin:0px auto" id="listTable_Id">  
+  <thead>
+  <tr>
+    <th>Image</th>
+    <th>Name</th>
+    <th>Start Date</th>
+    <th>End Date</th> 
+    <th>Location</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <apex:repeat value="{!wrapperEventList}" var="eve">
+  <tr>
+    <td style="vertical-align: middle;"><div class="fixedimg_div1">
+        <apex:commandLink onclick="destroy();" styleClass="marginryt-5px pointer" action="{!manageEvent}"> 
+        <apex:param value="{!eve.eventwrap.id}" name="EventName"/>  
+        <apex:image rendered="{!eve.eventwrap.Logo_URL__c!=null}" style="width:auto;height:auto;max-height:100px;max-width:200px;" styleClass="autoimg" value="/servlet/servlet.ImageServer?id={!eve.eventwrap.Logo_URL__c}&oid={!$Organization.Id}" />
+        <apex:image rendered="{!eve.eventwrap.Logo_URL__c==null}" style="width:auto;height:auto;max-height:100px;max-width:200px;" styleClass="autoimg" value="{!URLFOR($Resource.edsr_master, 'edsr_root/images/nogallery.png')}"  />
+        </apex:commandLink>
+        </div>
+    </td>
+    <td style="vertical-align: middle;">
+        <apex:commandLink onclick="destroy();" styleClass="marginryt-5px pointer" action="{!manageEvent}"> 
+        <apex:param value="{!eve.eventwrap.id}" name="EventName"/>  
+            {!eve.eventwrap.Name}
+        </apex:commandLink>
+    </td>
+    <td style="vertical-align: middle;">
+        <apex:outputText rendered="{!If(eve.eventwrap.Start_Date__c!=null,true,false)}">
+         <c:EV_FormatDt date_Timevalue="{!eve.eventwrap.Start_Date__c}" t_zone="{!eve.eventwrap.Time_Zone__c}" /> 
+        </apex:outputText>
+    </td>
+    <td style="vertical-align: middle;">
+        <apex:outputText rendered="{!If(eve.eventwrap.End_Date__c!=null,true,false)}">
+         <c:EV_FormatDt date_Timevalue="{!eve.eventwrap.End_Date__c}" t_zone="{!eve.eventwrap.Time_Zone__c}" /> 
+        </apex:outputText>
+    </td> 
+    <td style="vertical-align: middle;">{!eve.eventwrap.Venue_Name__c} </td>
+    <td style="vertical-align: middle;"> 
+    <apex:commandLink onclick="destroy();" styleClass="marginryt-5px pointer" action="{!Editevent}" rendered="{!IF(eve.eventwrap.Organizer_Email__c==$User.Email||eve.eventwrap.ownerid==uid,TRUE,FALSE)}">
+    <i class="fa fa-edit  fa-18x fa-blue" title="Edit"></i>
+      <apex:param value="{!eve.eventwrap.id}" name="EventName"/>
+     </apex:commandLink>
+     &nbsp; &nbsp;
+     <apex:commandLink rerender="deleterender" onclick="alertbox('{!eve.eventwrap.id}','Are you sure you want to delete {!eve.eventwrap.Name} event.All your event data will be removed and will not  be available for you.','{!eve.eventwrap.name}')"  styleClass="marginryt-5px pointer" rendered="{!IF(eve.eventwrap.ownerid==uid,TRUE,FALSE)}">
+    <i class="fa fa-trash  fa-18x fa-red" title="Delete"></i>
+    </apex:commandLink>
+    </td>
+  </tr>
+  </apex:repeat>
+  </tbody>
+</table>
+</div>
+</div>
+</div><!--close of viewblock_list-->
+ 
+
+<!------------------------------------------------------------------------------------->
+
+<apex:actionFunction name="delRecAction" action="{!deleteparamval}" rerender="deleterender">
+<apex:param value="" name="EventName"/>
+</apex:actionfunction>
+<apex:outputpanel id="deleterender">
+                 <script>
+                 if('{!notdeletestatus}'=='true')
+                 {
+                 //alert('There are sold tickets and event date is in the future.  You are not allowed to delete this event');
+                 Alert.render('There are sold tickets and event date is in the future.  You are not allowed to delete this event','Alert','OK');
+                 }
+                 else if('{!notdeletestatus}'=='false')
+                 {
+                   window.location.href = "{!$Site.BaseUrl}/apex/BLN_UserEvents_new";
+                 }
+                 </script>
+</apex:outputpanel> 
+</apex:form>
+
+
+ <!---close of viewblock_grid---> 
+    <!---------//event list block ------>    
+          
+  <!------------------//Template Body Code ------------>        
+           </div><!--close of content--->
+          <!------------------->
+</div><!---close of full_container--->
+
+<!-- footer start --> 
+  <footer id="full_footer">
+    <div class="info-footer">
+      <div id="left">
+        <p>Copyright © 2014  Global Nest.</p>
+      </div>
+      <div id="right">
+        <p>Eventdex </p>
+      </div>
+    </div>
+  </footer>
+  <!-- footer end -->
+</section><!---close  of section---->
+<!------------------->
+</body>
+<!--------------->
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery-1.9.1.js')}"> </script>
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/bootstrap.min.js')}"> </script>
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+<script>
+var dt = jQuery.noConflict();        
+dt('.jqdatepicker').datetimepicker({
+   timepicker:false,
+       format:'m/d/Y',
+       formatDate: 'm/d/Y',
+
+});
+</script> 
+<!--- common js ---->
+
+<!--- //common js--->
+<!---customize js function ---->
+<script type="text/javascript">
+/* ********* Searching event list function *************** */
+function searchEvents(){ 
+    var eName=document.getElementById("eventNameId").value;
+    var sDate=document.getElementById("sdtId").value;
+    var eDate=document.getElementById("endtId").value;
+    var varLocation=document.getElementById("locationId").value;
+    //alert('Event Name--> '+eName+' start date---> '+sDate+' End Date---> '+eDate+' Location---> '+varLocation); 
+    evelistfilter(eName,sDate,eDate,varLocation); 
+}
+ 
+
+function destroy()
+{
+  try{
+           sessionStorage.removeItem("event");
+           sessionStorage.removeItem("ticket");
+           sessionStorage.removeItem("blproduct");}catch(e){}
+}
+var x ="{!CASE($User.UserType,'guest','true','false')}";
+if(x=='true'){
+window.location.href="{!$Site.BaseUrl}/";
+}
+
+
+var eventname;
+var eventid;
+function confirmMessage(evename,msg,eventid)
+       {
+       //alert(evename);
+       eventname=evename;
+       var eventid=eventid;
+var hit=confirm(msg);
+//alert(hit);
+if(hit==true){
+delRecAction(evename);
+//alert(evename); 
+}
+}
+
+/**********Character restriction for event description on page load****************/
+$(function(){
+  $(".eventdescrption_txt").each(function(i){
+    len=$(this).text().trim();
+     len=$(this).text().length;
+    if(len>130)
+    {
+      $(this).text($(this).text().substr(0,130)+'...');
+    }
+  });
+});
+// ]]>
+/**********expand collapse for filter box************/
+$(".filter_expcolp").click(function(e) {
+   $("#contentshow").toggle();
+   $(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
+   /*if($(this).find('i').hasClass('fa-chevron-up')){
+       $(this).css("border-bottom",0);
+       }*/
+});
+
+</script>
+
+<script>
+
+var eventNames={};
+var eventDesc={};
+var eventlogos={};
+var eventStartDates={};
+var eventEndDates={};
+var tzone={};
+<apex:repeat value="{!wrapperEventList}" var="e">
+eventNames['{!e.eventwrap.id}'] = '{!e.eventwrap.name}' 
+eventDesc['{!e.eventwrap.id}'] = '{!e.eventwrap.Description__c}' 
+eventlogos['{!e.eventwrap.id}'] = '{!e.eventwrap.Logo_URL__c}'
+eventStartDates['{!e.eventwrap.id}'] = '{!e.eventwrap.Start_Date__c}'  
+eventEndDates['{!e.eventwrap.id}'] = '{!e.eventwrap.End_Date__c}' 
+tzone['{!e.eventwrap.id}'] = '{!e.eventwrap.Time_Zone__c}' 
+</apex:repeat>
+
+function openpopup(evetid){  
+
+var imm = '';
+if(eventlogos[evetid] != ''){
+imm = "/servlet/servlet.ImageServer?id="+eventlogos[evetid]+"&oid={!$Organization.Id}";
+}else{
+imm = "{!URLFOR($Resource.edsr_master, 'edsr_root/images/nogallery.png')}";
+} 
+var stl="width:130px;height:130px";
+//alert('<img src='+imm+'></img>');
+
+
+$('.modal-title').html(eventNames[evetid]);
+$('#descId').html(eventDesc[evetid]); 
+$('#logo_Id').html('<img class="fixedimg" src='+imm+' ></img>');
+$('#sdate_Id').html(eventStartDates[evetid]); 
+$('#edate_Id').html(eventEndDates[evetid]); 
+}
+
+/******************/
+$(".viewtoggle").click(function(e) {
+    var clickid=$(this).attr("id"); 
+    $(".viewblock_listct").hide();
+    $(".viewblock_gridct").hide();
+    $(".viewblock_"+clickid+"").show();
+ 
+});
+
+function alertbox(clkbtn ,err, okbtnn)
+         {
+             Alertconfirm.render(err,'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+         }
+         
+         function callback(clkbtn ,err, okbtnn){
+              
+                 confirmMessage(clkbtn ,err, okbtnn); 
+             
+        }
+        function callbackcancel(clkbtn ,err, okbtnn)
+        { 
+             
+        }
+ 
+
+</script>
+<c:ed_popupbox >
+     </c:ed_popupbox>         
+           
+    
+
+<!----// customize js function---->
+</apex:page>

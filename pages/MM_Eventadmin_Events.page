@@ -1,0 +1,1097 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="true"  controller="MM_Eventadmin_EventssampleCon" action="{!checkEvents}" id="Thepage"> 
+
+  
+  <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/reveal.css")}"/>
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+  
+<script type="text/javascript" >
+$(document).ready(function()
+{
+$(".account").click(function()
+{
+var X=$(this).attr('id');
+
+if(X==1)
+{
+$(".submenu").hide();
+$(this).attr('id', '0');    
+}
+else
+{
+
+$(".submenu").show();
+$(this).attr('id', '1');
+}
+    
+});
+
+//Mouseup textarea false
+$(".submenu").mouseup(function()
+{
+return false
+});
+$(".account").mouseup(function()
+{
+return false
+});
+
+
+//Textarea without editing.
+$(document).mouseup(function()
+{
+$(".submenu").hide();
+$(".account").attr('id', '');
+});
+    
+});
+</script>       
+  <script type="text/javascript">
+        $(document).ready(function () {
+            $('#buttons').akordeon();
+            $('#button-less').akordeon({ buttons: false, toggle: true, itemsOrder: [2, 0, 1] });
+        });
+        $(document).ready(function() {
+
+    //Default Action
+    $(".tab_content").hide(); //Hide all content
+    $("ul.tabs li:first").addClass("active").show(); //Activate first tab
+    $(".tab_content:first").show(); //Show first tab content
+    
+    //On Click Event
+    $("ul.tabs li").click(function() {
+        $("ul.tabs li").removeClass("active"); //Remove any "active" class
+        $(this).addClass("active"); //Add "active" class to selected tab
+        $(".tab_content").hide(); //Hide all tab content
+        var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
+        $(activeTab).fadeIn(); //Fade in the active content
+        return false;
+    });
+
+});
+    </script>  
+   
+
+  <apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+  
+  
+  
+  
+    <style>
+         #myevent{width:100%; background-color:FF0000; height:50px;}
+
+
+select, option{min-width:90px; max-width:170px}
+
+.eventtable{border-right:0px solid #cccccc;text-align:left;background-color:#f3f3f3;height:10px;width:100%;padding-left:25px;border-bottom:3px solid #FFFFFF;padding-left:10px;}
+
+.eventselect{border-right:0px solid #cccccc;text-align:left;background-color:#b4dff9;height:10px;width:100%;padding-left:25px;border-bottom:3px solid #FFFFFF;padding-left:10px;}
+
+.eventhover{ background-color:#cccccc;}
+
+
+         .datePicker{
+    z-index:10000;
+}
+</style>
+
+ 
+<script>
+    
+    function validatedelete(){
+          
+            var reval = confirm("Are you sure want to delete Ticket Type");
+
+            if(reval == true){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    function ValidateRollback(dt){
+      var today = new Date(); 
+       
+       
+          var todayDate = '<apex:outputText value="{0,date,MM/dd/yyyy}"><apex:param value="{!todaysDate}" /></apex:outputText>';
+        if(todayDate >= dt){
+            alert("Sorry Rollback Attendees is not possible after Event Start");
+            return false;
+            
+        }else {
+         var r= confirm('Are you sure want to Rollback Import');
+         if (r==true){
+              return true;
+          }else{
+             return false;
+          }
+       } 
+    }
+    
+   
+    function ValidateForm(){
+         
+         
+         var lvTnId = document.getElementById('{!$Component.Thepage:myaddeve:Title}');
+         
+         var lvPnId = document.getElementById('{!$Component.Thepage:myaddeve:Pick}');
+         
+         
+         
+
+          
+         var lvMnId = document.getElementById('{!$Component.Thepage:myaddeve:SD:Link:Text6}');
+         
+         var lvAgId = document.getElementById('{!$Component.Thepage:myaddeve:ED:Link:Text7}');
+         
+         var lvStId = document.getElementById('{!$Component.Thepage:myaddeve:ASTime}');
+       
+         var lvEtId = document.getElementById('{!$Component.Thepage:myaddeve:AETime}');
+         
+         var PhoneId = document.getElementById('{!$Component.Thepage:myaddeve:phone}');
+         
+         var logoImgN = document.getElementById('{!$Component.Thepage:myaddeve:EventLogo}'); 
+         var zip = document.getElementById('{!$Component.Thepage:myaddeve:Zipcode}');
+         var zipcheck=parseFloat((document.getElementById('{!$Component.Thepage:myaddeve:Zipcode}').value).replace (/,/g, ""));
+        var todayDate = '<apex:outputText value="{0,date,MM/dd/yyyy}">
+        <apex:param value="{!todaysDate}" />
+        </apex:outputText>';
+        
+        
+         
+          
+         
+        
+         
+         if(lvTnId.value == ""){
+              alert("Please enter Event Title");
+              lvTnId.focus();
+              return false;
+                 }
+         
+         if(lvPnId.value == ""){
+              alert("Please Select Event Hosting TimeZone");
+              lvPnId.focus();
+              return false;
+      }
+            
+      if(lvMnId.value == ""){
+              alert("Please enter Event Start Date");
+              lvMnId.focus();
+              return false;
+      }
+       else{
+          if(lvMnId.value <= todayDate ){
+             
+              alert("Event Start Date should not be greater than Today's Date");
+              lvMnId.focus(); 
+              return false;
+          }
+      }
+                       
+      if(lvStId.value == ""){
+              alert("Please Enter Event Start Time ");
+              lvStId.focus();
+              return false;
+      }
+      if( lvAgId.value == ""){
+              alert("Please Enter Event End Date");
+              lvAgId.focus();
+              return false;
+      }else{
+          if(lvAgId.value < lvMnId.value){
+             
+            alert("Event Start Date should not be less than Today");
+              lvAgId.focus()
+              return false;
+          } 
+      }      
+      if(lvEtId.value == ""){
+              alert("Please Enter Event End Time");
+              lvEtId.focus();
+              return false;
+      }        
+      
+      var startdate = Date.parse(lvMnId.value);
+      var enddate = Date.parse(lvAgId.value); 
+         
+        if(startdate>enddate){
+            alert("Event End Date must be greater than Event Start Date");
+            lvAgId.focus();
+            return false;
+        }
+       /**if(zip.value != "")
+         {
+                              
+           if(zip.value.length!=5 || zip.value.length!=9)
+            {
+            alert("Please enter zip code of 6 digit.");
+            zip.focus();
+            return false;
+            }
+            else if(isNaN(zip.value))
+            {
+            alert("Please enter valid digits 0-9.");
+            zip.focus();
+            return false;
+            }
+          }*/  
+      
+          
+      if(PhoneId.value != ""){     
+      if( validatePhoneNumber(PhoneId.value)==false){
+           alert('Please Provide valid 10 digit phone number');
+           PhoneId.focus();
+           return false;
+         }
+        }             
+        // alert('---------------'+logoImgN.src);
+        if(logoImgN.src != ""){ 
+          return checkImageSize(logoImgN.id);             
+       }  
+ }   
+     function callingChangeEventFunction(x){
+        ChangeEventFunction(x);
+    }
+ 
+     function is_valid_url(url){
+         return url.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
+    }
+    
+
+ </script>
+
+ 
+ 
+  
+
+                   
+
+
+<!-------------------------------------FOR MAP----------------------------------------->
+
+    <apex:form id="mapForm"> 
+ <head>
+
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3.5&sensor=true"></script>
+
+<!--
+<apex:includeScript value="{!$Resource.GoogleMapsJS}/GoogleMapsApi.js"/>
+<apex:includeScript value="{!$Resource.GoogleMapsJS}/JQueryMaps.js"/> -->
+<!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
+<script type="text/javascript"> 
+    
+    
+    
+$(document).ready(
+        eventMap()
+      
+   );
+   
+   
+    function eventMap() {
+     
+  var myOptions = {
+    zoom: 15,    
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    mapTypeControl: false
+  }
+
+  var map;
+  var marker;
+
+  var geocoder = new google.maps.Geocoder();
+  var address = "{!EventDetail.EV_HistingAddr1__c}, " + "{!EventDetail.AS_HostingAddr2__c}, " + "{!EventDetail.AS_HostingCity__c}, " + "{!EventDetail.EV_HostingCountryNew__c}";
+
+  var infowindow = new google.maps.InfoWindow({
+    content: "<b>{!EventDetail.EV_HistingAddr1__c}</b><br>{!EventDetail.EV_HistingAddr1__c}<br>{!EventDetail.AS_HostingAddr2__c}, {!EventDetail.AS_HostingCity__c}<br>{!EventDetail.EV_HostingCountryNew__c}"
+  });
+
+  geocoder.geocode( { address: address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK && results.length) {
+      if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+
+        //create map
+        map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+        //center map
+        map.setCenter(results[0].geometry.location);
+
+        //create marker
+        marker = new google.maps.Marker({
+            position: results[0].geometry.location,
+            map: map,
+            title: "{!EventDetail.EV_HistingAddr1__c}"
+        });
+
+        //add listeners
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(map,marker);
+        });
+        google.maps.event.addListener(infowindow, 'closeclick', function() {
+          map.setCenter(marker.getPosition()); 
+        });
+
+      }
+
+    } else {
+      $('#map').css({'height' : '15px'});
+      $('#map').html("");
+      resizeIframe();
+    }
+  });
+
+  function resizeIframe() {
+    var me = window.name;
+    if (me) {
+      var iframes = parent.document.getElementsByName(me);
+      if (iframes && iframes.length == 1) {
+        height = document.body.offsetHeight;
+        iframes[0].style.height = height + "px";
+      }
+    }
+  }
+
+}
+   
+</script>
+
+<style>
+#map {
+  font-family: Arial;
+  font-size:12px;
+  line-height:normal !important;
+  height:150px;
+  background:transparent;
+  
+}
+
+
+
+ul.tabs {
+    margin: 0;
+    padding: 0;
+    float: left;
+    list-style: none;
+    height: 32px;
+    border-bottom: 1px solid #CCCCCC;
+    
+    border-left: 1px solid #CCCCCC;
+    width: 100%;
+    
+    
+}
+ul.tabs li {
+    float: left;
+    margin: 0;
+    padding: 0;
+    height: 31px;
+    line-height: 31px;
+    border: 0px solid #999;
+    border-left: none;
+    margin-bottom: -1px;
+   background: #FF0000;
+   
+    overflow: hidden;
+    position: relative;
+    border-top: 1px solid #CCCCCC;
+    border-bottom: 1px solid #CCCCCC;
+    border-left: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    
+    
+   
+
+   
+}
+ul.tabs li a {
+    text-decoration: none;
+    color: #414141;
+    display: block;
+   
+    padding: 0 20px;
+    border: 1px solid #fff;
+    outline: none;
+    
+}
+ul.tabs li a:hover {
+   background: #ca371f;
+    text-decoration: none;
+    color: #FFFFFF;
+    display: block;
+    padding: 0 20px;
+    border: 1px solid #fff;
+
+    outline: none;
+}   
+html ul.tabs li.active a:hover  {
+    background: #eaeaea;
+    border-bottom: 1px solid #fff;
+    color: #414141;
+    
+}
+ ul.tabs li.active{
+    background: #ca371f;
+    border-bottom: 1px solid #fff;
+    color: #FFFFFF;
+    
+}
+
+
+.tab_container {
+    border: 1px solid #CCCCCC;
+     border-top: 1px solid #CCCCCC;
+    clear: both;
+    float: left; 
+    width: 100%;
+    background: #fff;
+    -moz-border-radius-bottomright: 5px;
+    -khtml-border-radius-bottomright: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -khtml-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+   
+    
+}
+.tab_content {
+    padding: 20px;
+   
+}
+.tab_content h2 {
+    font-weight: normal;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #ddd;
+  
+}
+.tab_content h3 a{
+    color: #254588;
+}
+.tab_content img {
+    float: left;
+    margin: 0 20px 20px 0;
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+</style>
+
+</head>     
+ 
+   </apex:form>
+
+
+<!--------------------------------------------------------------------------------------->
+
+ <!--topblock start-->
+      <div id="topblock"> 
+            <div id="logo"></div>
+            
+            
+            <div id="topblockright" style="position:absolute; top:0px; right:0px;">
+                     <table width="98%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="right"><div style="padding-right:20px;">Hello {!$User.Firstname}&nbsp;{!$User.Lastname}</div></td>
+         
+        <td style="width:195px;"><div class="dropdown">
+                    <a class="account" ><span>Settings</span></a>
+                        <div class="submenu" style="display: none; "><apex:form >
+                             <ul class="root">
+                                    <li ><apex:outputLink value="/apex/MM_Profile" ><span>View/Edit Profile</span> </apex:outputLink></li>
+                                    <li ><apex:outputLink value="/apex/MM_Changepassword?urlreturn=MM_Eventadmin_Events" ><span>Change Password</span> </apex:outputLink></li>
+                                    <li>
+                    <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}">{!$Label.site.logout}</apex:commandLink>
+                             </li>
+                              </ul></apex:form>
+                        </div>
+                   </div></td>
+      </tr>
+    </table>
+                 </div>
+            
+            
+            
+             </div>   
+    <!--topblock end-->
+<!--menublock start-->
+        <div id="menublock">
+            <div id='cssmenu'>
+                  <ul>
+                       <!--<li><apex:outputLink value="/apex/MM_Eventadmin_Dashboard" ><span>Dashboard</span></apex:outputLink></li>-->
+                        <li class="active"><apex:outputLink value="/apex/MM_Eventadmin_Events"><span>Events</span></apex:outputLink></li>
+                        <li><apex:outputLink value="/apex/MM_Eventadmin_schedule"><span>Schedule</span></apex:outputLink></li>
+                         <li><apex:outputLink value="/apex/MM_Eventadmin_ExhibitorsDirectory"><span>Corporate Directory</span></apex:outputLink></li>
+                         <li><apex:outputLink value="/apex/MM_Eventadmin_AttendeesDirectory" ><span>MBE Directory</span></apex:outputLink></li>
+                         <li><apex:outputLink value="/apex/MM_EventAdmin_Reports"><span>Reports</span></apex:outputLink></li>                    
+                 
+                     
+                  </ul>
+            </div>
+        </div>
+    <!--menublock end-->     
+  <div id="headdingbar">
+              <apex:form >
+             <table width="98%" border="0" cellspacing="0" cellpadding="0">
+                 <tr>
+                        <td width="15%"><font style="font-size:15px;letter-spacing:0.7px" face="Calibri" color="#00a2b1">Signedup Corporates :&nbsp;<apex:outputText value="{!signedupcorporates}"/></font></td>
+                        <td width="15%"><font style="font-size:15px;letter-spacing:0.7px" face="Calibri" color="#00a2b1">Signedup MBEs :&nbsp;<apex:outputText value="{!signedupmbes}"/></font></td>
+                        <td width="22%"><font style="font-size:15px;letter-spacing:0.7px" face="Calibri" color="#00a2b1"><apex:outputLink value="/BL_matchmakingApprove?id={!SelectedEventId}" target="_blank">Matchmaking Approvals waiting :&nbsp;{!corporateswaiting}</apex:outputLink></font></td>
+                        <td width="15%"><font style="font-size:15px;letter-spacing:0.7px" face="Calibri" color="#00a2b1">Total Appointments  :&nbsp;<apex:outputText value="{!totalmatchesmade}"/></font></td>
+                        <td width="15%"><font style="font-size:15px;letter-spacing:0.7px" face="Calibri" color="#00a2b1">Pending Appointments  :&nbsp;<apex:outputText value="{!pendingmatches}"/></font></td> 
+                        <td width="17%" style="text-align:right;">                       
+                            <apex:commandButton title="Create Event" value="Create Event"  action="{!AddEvent}" />                         
+                        </td>
+                  </tr>
+            </table>
+            </apex:form>
+        </div>
+  <!--container start-->
+        <div id="container"> 
+              <div id="smallleftcontainer">
+              <h3 style="display:block;">Events</h3>
+                 <apex:form id="eventsForm" > 
+                 
+                 <div>
+                 
+                        <div style="border:0px solid #FF0000; text-align:left;">
+                            
+         <apex:dataTable value="{!listOfEvents}" var="ev" style="width:100%;height:100px; border-bottom:1px solid #CCCCCC;">
+               
+              <apex:column styleClass="{! IF( ev.EV_id__r.EV_Title__c == EventDetail.EV_Title__c , 'eventselect', 'eventtable' )  }"  
+              onclick="callingChangeEventFunction('{!ev.EV_id__c}');" style="height:45px;">
+              
+                  <apex:commandLink value="{!ev.EV_id__r.EV_Title__c}" action="{!changeEvent}" 
+                  reRender="eventdetail,mapForm,downdetailForm,eventHead,eventsForm,map" 
+                   
+                  onComplete="eventMap();" style="height:35px; text-decoration:none; color:#414141; padding-left:15px;
+                   width:100%; margin-top:15px; display:block;">
+                  
+                      <apex:param value="{!ev.EV_id__c}" name="eventName"/>
+                  </apex:commandLink>    
+              </apex:column>
+              
+              <apex:column styleClass="{! IF( ev.EV_id__r.EV_Title__c == EventDetail.EV_Title__c , 'eventselect', 'eventtable' )  }"  style="text-align:right;">
+                   <apex:outputPanel rendered="{!IF( ($User.Id == ev.EV_id__r.Owner.ID),'true','false' )}">
+                     <apex:commandLink action="{!editEvent}" title="Edit">
+                          <apex:image url="{!$Resource.MM_edit_icon}" style="padding-right:10px;"/>
+                          <apex:param value="{!ev.EV_id__c}" name="eventName"/>
+                      </apex:commandLink>     
+                   </apex:outputPanel> 
+              </apex:column>
+               
+          </apex:dataTable>
+        
+                    </div>      
+                   </div></apex:form> 
+             </div>
+             
+                  <div id="smallrightcontainer"><apex:form id="eventdetail">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:0px;">   
+              <tr style="background-color:#eaeaea;">
+                <td align="left" valign="top"><h3>Event Details Of {!EventDetail.EV_Title__c}</h3></td>
+                   
+                  
+               </tr> 
+              <tr>
+                <td width="72%" colspan="2" align="center" valign="top">   
+    <div id="map">  </div> 
+             </td>
+                </tr>
+              <tr>
+                <td colspan="2" align="left" valign="top">&nbsp;</td>
+                </tr>
+              <tr>
+                <td colspan="2"><table width="98%" border="0" cellspacing="0" cellpadding="0" style="border:0px;">
+                  <tr>
+                    <td width="72%" colspan="2" align="center" valign="top"> 
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="21%" align="center" valign="top">
+                        <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                          <tr>
+                            <td width="50%" height="150" align="center" valign="top">
+                            <table width="98%" border="0" cellspacing="0" cellpadding="0">
+                              <tr>
+                                <td height="150" align="center" bgcolor="#FFFFFF">  
+                                  <apex:outputPanel > 
+                                          <apex:commandButton image="{!$Resource.DummyEventLogo}" rendered="{! IF(EventDetail.EV_EventLogo__c==null, 'TRUE' ,'FALSE')}" title="Update Event Logo" action="{!changeEventLogo}"/>
+                                          
+                                        
+                                           <apex:commandButton image="/servlet/servlet.ImageServer?id={!EventDetail.EV_EventLogo__c}&oid={!$Organization.Id}" rendered="{! IF(EventDetail.EV_EventLogo__c !=null, 'TRUE' ,'FALSE')}" title="Update Event Logo" action="{!changeEventLogo}" style="height:80px; width:80px;"/>
+                                               
+                                   </apex:outputPanel>
+                                <!--  <apex:outputPanel rendered="{!NOT(recordPermissions)}" rendered="{!recordPermissions}"> 
+                                       <apex:image url="/servlet/servlet.ImageServer?id={!EventDetail.EV_EventLogo__c}&oid={!$Organization.Id}" height="80px" width="80px" rendered="{! IF(EventDetail.EV_EventLogo__c !=null, 'TRUE' ,'FALSE')}"  />
+                                       
+                                       <apex:image url="{!$Resource.DummyEventLogo}" height="80px" width="80px" rendered="{! IF(EventDetail.EV_EventLogo__c==null, 'TRUE' ,'FALSE')}"/>
+                                  </apex:outputPanel>   --->
+                               
+                                </td>
+                              </tr>
+                            </table></td>
+                          </tr>
+                        </table></td>
+                        <td width="79%" align="left" valign="top">
+                        <table width="98%" border="0" align="center" cellpadding="7px" cellspacing="0" style="font-size:12px;">
+                         <tr>
+                            <td width="20%" align="left" valign="middle" bgcolor="#f3f3f3">Date</td>
+                            <td width="80%" align="left" valign="middle" bgcolor="#f3f3f3">
+                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                            <apex:param value="{!EventDetail.EV_StartDate__c}"/></apex:outputText></td>
+                          </tr>
+                          <tr>
+                            <td align="left" valign="middle">Location</td>
+                            <td align="left" valign="middle">{!EventDetail.EV_HostingLocation__c}</td>
+                          </tr>
+                          <tr>
+                            <td align="left" valign="middle" bgcolor="#F3F3F3">City</td>
+                            <td align="left" valign="middle" bgcolor="#F3F3F3">{!EventDetail.AS_HostingCity__c}</td>
+                          </tr>
+                          <tr>
+                            <td align="left" valign="middle" bgcolor="#FFFFFF">State</td>
+                            <td align="left" valign="middle" bgcolor="#FFFFFF">{!EventDetail.EV_HostingStateNew__c}</td>
+                          </tr>
+                          <tr>
+                            <td align="left" valign="middle" bgcolor="#F3F3F3">Country</td>
+                            <td align="left" valign="middle" bgcolor="#F3F3F3">{!Eventdetail.EV_HostingCountryNew__c}</td>
+                          </tr>
+                        </table></td>
+                      </tr>
+                    </table></td>
+                  </tr>   
+                  <tr>
+                    <td colspan="2"><h3 style="border-bottom:1px dashed #cccccc; margin-bottom:10px; padding:8px;">
+                   Event Description
+                   </h3>
+                   <p> {!Eventdetail.EV_Description__c}</p>
+                    
+                     </td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td width="72%">&nbsp;</td>
+                  </tr>
+                </table></td>
+                </tr>
+                        </table>
+              </apex:form>   </div>
+            
+        </div>
+       
+   
+   
+    <!--container end--> 
+  
+  <!------------------------------------------------------Change event Logo---------------------->
+
+  <apex:outputPanel rendered="{!changeEventLogoBool}" styleClass="popupBackground" />
+     <apex:outputPanel rendered="{!changeEventLogoBool}" styleClass="custPopup" >
+        <apex:form > 
+         <table border="0" align="center" cellpadding="0" cellspacing="0" style="margin:0px auto; width:100%">
+<tr>
+<td align="center" class="pophead" colspan="2">Change Event Logo
+<div style="float:right;"><apex:commandButton action="{!Cancel}" value="Close" title="Close" image="{!$Resource.Close1}"/> </div>
+</td>
+</tr>
+<tr>
+<td width="50%" height="120" align="center" valign="middle">
+<apex:image url="{!$Resource.DummyEventLogo}" height="80px" width="80px" rendered="{! IF(EventDetail.EV_EventLogo__c==null, 'TRUE' ,'FALSE')}"/>
+<apex:image url="/servlet/servlet.ImageServer?id={!EventDetail.EV_EventLogo__c}&oid={!$Organization.Id}" height="80px" width="80px" rendered="{! IF(EventDetail.EV_EventLogo__c !=null, 'TRUE' ,'FALSE')}" onclick="ChangeLogo();"/>
+</td>
+<td width="50" height="120" align="left" valign="top" style="padding-top:20px; ">
+<apex:inputFile value="{!Logo}" filename="{!LogoName}" style="width:215px;" /><br />
+<font color="red">*</font><b> Please make sure the logo size is not <br />more than 100KB Dimensions applicable 193w x 96h</b>
+<br/>
+<font color="red">{!eventLogoErrorString}</font>
+</td>
+</tr>
+<tr>
+<td colspan="2" align="center">
+<apex:commandButton value="Update Logo" action="{!updateLogo}"  style="margin:2px;"/>
+<apex:commandButton value="Cancel" action="{!cancel}"/>
+</td>
+</tr>
+
+</table></apex:form>
+     </apex:outputPanel> 
+  
+
+    
+ 
+<!--------------------------- END OF Event Schedule PopUp -------------------------------------------------------------->
+
+<!--------------------------------------------------------END OF EVENT TYPE-------------------------------------------->   
+  
+    <!-------------------------- ADD Schedule POP-UP  --------------------->
+         
+           <!----------------------------------End Of ADD Schedule POP-UP----------------------------------->
+<!------------------------------------------------------- END OF ADDING -----------------------------------------------> 
+  
+  
+      
+      
+      
+
+      
+    <apex:outputPanel >
+   
+    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!AddEventBtn}"/> 
+    <apex:outputPanel styleClass="custPopup" layout="block" style="width:92%;"  rendered="{!AddEventBtn}">  
+    
+    <font background-color="black">
+    
+    </font >
+    <table style="border:0px solid #CCCCCC;" width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr height="35px">
+    <td  class="pophead" style="border:0px solid #CCCCCC;" width="100%">
+       {!eventheading }
+    </td>
+    <td class="pophead" align="right"><div style="float:right;"><apex:form >
+    <apex:commandButton action="{!cancel}" value="Close" image="{!$Resource.Close1}" immediate="true"/>
+    </apex:form>
+     </div></td>
+    </tr></table>
+    
+    
+    <div class="container" >
+   
+
+ <apex:tabPanel switchType="client" id="maintab"  selectedTab="{!selectedTab}" activeTabClass="activeTab" tabClass="tabs" inactiveTabClass="inactiveTab" 
+ width="100%"  style="border:0px solid red;margin:0px auto; font-size:13px;">
+
+<apex:tab label="Event Type" name="Event Type" id="eduinfo3" disabled="{!istab0disabled}"  
+style="padding-left:-40px;border:0px solid #FF0000;background-color:#FFFFFF; font-size:13px;" >
+
+ <apex:form >
+  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0"
+   style="font-family:arial, helvetica, sans-serif; font-size:12px; line-height:25px;; font-size:13px;">
+   
+       <tr>
+           <td> 
+         
+           <apex:selectRadio id="gender" value="{!selectedType}" required="true" > 
+                <apex:selectOptions value="{!open}" />
+            <apex:actionSupport event="onchange"  action="{!customeventtype}" />         
+          </apex:selectRadio>
+         <b><font color="red"> <apex:outputText value="*{!errortype}" rendered="{!errortypebool}"/></font></b>
+           
+            <apex:outputPanel rendered="{!openbool}">
+    <apex:image value="{!$Resource.openimage}"/>
+     </apex:outputPanel>
+     <apex:outputPanel rendered="{!semiopenbool}">
+    <apex:image value="{!$Resource.Semiopenimage}"/>
+     </apex:outputPanel>
+     <apex:outputPanel rendered="{!closedbool}">
+    <apex:image value="{!$Resource.closedimage}"/>
+     </apex:outputPanel>
+  
+  <apex:outputPanel rendered="{!Custombool}">
+    <apex:inputField value="{!Event.Attendee_can_send_request__c}"><apex:outputText value="Attendee can send Request"/></apex:inputField>
+   <apex:inputField value="{!Event.Exhibitor_can_send_request__c}"><apex:outputText value="Exhibitor can send Request"/></apex:inputField>
+ <apex:inputField value="{!Event.Is_Approval_Required__c}"><apex:outputText value="Approval Required"/></apex:inputField>
+  </apex:outputPanel>
+           </td>
+       </tr>
+       
+       <tr>
+           <td>
+           Open:- Attendees will pick who ever they want to meet based on their interest from the list of exhibitors and time availability.
+           <br/>
+           Semi Open :- Attendees can pick who they want but it is up to the exhibitors to Accept or Reject 
+         <br/>
+           Closed :-  Exhibitors pick who ever they want to meet based on their needs by looking at the profiles of attendees and assign to a time slot
+          <br/>
+          Custom :- The event admin can pick any of the check boxes to make custom scenario instead of Open , Semi Open and Closed Types.
+          </td>
+      </tr>
+      
+  </table>
+  <apex:commandButton value="Next"  action="{!enabletab1}" rerender="maintab,linksbool" style="padding:8px;float:right; margin-right:120px; margin-top:20px;"/>
+ </apex:form>
+ </apex:tab> 
+ 
+ 
+ 
+       
+ 
+ <!-------------------------------------------------- TAB 2--------------------------------------------------------------------->
+ 
+ <apex:tab label="Event Details" id="eduinf2" disabled="{!istab1disabled}" style="padding-left:-40px;border:0px solid #FF0000;" >
+     <apex:form >
+     <table width="100%" border="" align="center" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF" 
+     style="font-family:arial, helvetica, sans-serif; font-size:12px; line-height:25px;; font-size:13px;">
+
+<tr >
+    <td align="center" valign="top" width="50%">
+   
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="5">
+<tr class="even">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Title<font size="4" color="red">*</font></td>                   
+    <td width="2%" height="25" align="right" valign="top">&nbsp;</td>
+    <td width="60%" height="25" align="left" valign="middle">
+    <apex:inputtext value="{!Event.EV_Title__c}" Id="Title" style="width:215px;"/>
+    </td>
+    <b><font color="red"><apex:outputText value="*{!errortype}" rendered="{!errorTitle}"/></font></b>
+</tr>
+<tr class="odd">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px" >Hosting Time Zone<font size="4" color="red">*</font></td>                   
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td  width="60%"  align="left" valign="middle">
+    <apex:inputfield value="{!Event.EV_HostingTimeZone__c}" style="width:215px;" id="Pick"/>
+     <apex:outputText value="{!errortype}" rendered="{!errorHosZone}" style="Text-color:#ff0000"/>
+    </td>
+</tr>
+<tr class="even">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Start Date<font size="4" color="red">*</font></td>                
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle">
+    <table cellpadding="0" cellspacing="0" ><tr><td>
+   <c:RemoveLink id="SD">
+    <apex:inputField value="{!Event.EV_StartDate__c}" id="Text6"  style="width:95px;"/></c:RemoveLink></td>
+    <td style="padding-left:2px;"><apex:inputField value="{!Event.StartTime__c}" id="ASTime" style="width:120px;"/>   
+</td>
+<apex:outputText value="{!errortype}" rendered="{!errorstartdate}" style="Text-color:#ff0000"/>
+<apex:outputText value="{!errortype}" rendered="{!errorstartTime}" style="Text-color:#ff0000"/>
+</tr></table>
+</td>
+</tr>
+<tr class="odd">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">End Date<font size="4" color="red">*</font></td>                    
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"><table cellpadding="0" cellspacing="0" ><tr><td>
+    <c:RemoveLink id="ED">
+    <apex:inputField value="{!Event.EV_EndDate__c}"  id="Text7" style="width:95px;"/></c:RemoveLink></td>
+   <td style="padding-left:2px;"> <apex:inputField value="{!Event.EV_EndTime__c}" id="AETime" style="width:120px;"/>
+     
+   
+       
+</td>
+<apex:outputText value="{!errortype}" rendered="{!errorendtdate}" style="Text-color:#ff0000"/>
+<apex:outputText value="{!errortype}" rendered="{!errorendtTime}" style="Text-color:#ff0000"/></tr></table>
+</td>
+</tr>
+<tr class="even">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Phone Number</td>                  
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <!--<td align="left" valign="middle"><apex:inputfield value="{!Event.Event_PhoneNumber__c}" id="phone" style="width:215px;"/></td>-->                                     
+        <td align="left" valign="middle"><apex:inputtext value="{!Event.EV_HostingPhone__c}" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"  id="phone" style="width:215px;"/></td>                                     
+</tr>
+<tr class="odd">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Fax Number</td>                  
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"><apex:inputtext value="{!Event.EV_HostingFax__c}" id="AFax" style="width:215px;" onkeyup="javascript:keyUP(this,event);" onblur="javascript:validatePhone(this);"/></td>                                     
+</tr>
+<tr class="even">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Website URL</td>                   
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"> <apex:inputfield value="{!Event.EV_WebsiteURL__c}" style="width:215px;"/></td>
+</tr>
+<tr class="odd">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Primary Category</td>                  
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"><apex:inputfield value="{!Event.Primary__c}" style="width:220px;"/></td>
+</tr>
+<tr class="even">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Secondary Category</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"> <apex:inputfield value="{!Event.SecondaryCategory__c}" style="width:220px;"/></td>
+</tr>
+<tr class="odd">
+    <td align="left" valign="top" style="Padding-left:25px">Event Status
+    <apex:image value="{!$Resource.BL_HelpIcon}" width="16px" height="20px" title="This field provides the status of the event.The behavior or the application is not enforced based on these values"/>
+    </td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="top">
+    <apex:inputfield value="{!Event.Status__c}" style="width:220px;"/>
+        </td>                                        
+</tr> <!-- 
+<tr class="even" height="92px;">
+    <td width="42%" height="30px" align="left" valign="top" style="Padding-left:25px">Event Logo
+        <apex:image value="{!$Resource.BL_HelpIcon}" width="16px" height="20px" title="This logo is printed on the badges of the event"/>
+    </td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+  <td align="left" valign="middle">
+      
+    <table style="margin:15px 0px 0px 31px;"><tr><td border="2" align="center">
+     <div style="border:3px solid #CCCCCC; height:100px; width:100px;">
+     <apex:image url="{!$Resource.DummyEventLogo}" height="80px" width="80px" rendered="{! IF(Event.EV_EventLogo__c==null, 'TRUE' ,'FALSE')}"/>
+
+    <apex:image url="/servlet/servlet.ImageServer?id={!Event.EV_EventLogo__c}&oid=00DO000000097JW" height="80px" width="80px" rendered="{! IF(Event.EV_EventLogo__c !=null, 'TRUE' ,'FALSE')}" onclick="ChangeLogo();"/>
+
+      </div>
+         </td></tr><tr><td>&nbsp;</td></tr>
+         <tr><td  colspan="2">
+      <apex:inputFile value="{!Logo}"  filename="{!LogoName}" style="width:215px;" /><br />
+              </td></tr>              
+              </table>
+              
+    
+    <font color="red">*</font><b> Please make sure the logo  size is not <br />more than 100KB Dimensions applicable 193w x 96h</b> 
+    </td>
+   
+</tr> -->
+<tr class="odd" height="60px;">
+    <td height="30px" colspan="3" align="left" style="Padding-left:50px;color:#FF0000">
+           {!eventErrorString} 
+            {!eventLogoErrorString}
+    </td>
+    
+</tr>
+
+</table></td>
+<td width="51%" align="center" valign="top">
+
+<table width="100%" border="0" align="left" cellpadding="0" cellspacing="5">
+<tr class="even">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Hosting Organization Name</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"> <apex:inputfield value="{!Event.EV_HostingOrgName__c}" style="width:215px;"/></td>
+</tr>
+
+<tr class="odd">
+    <td width="38%" height="30px" align="left" style="Padding-left:25px">Hosting Location</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"> <apex:inputtext value="{!Event.EV_HostingLocation__c}" style="width:215px;"/></td>
+</tr>
+<tr class="even">
+    <td width="39%" height="30px" align="left" style="Padding-left:25px">Hosting Address1</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"><apex:inputfield value="{!Event.EV_HistingAddr1__c}" style="width:215px;"/></td>
+</tr>
+<tr class="odd">
+    <td width="42%" height="30px" align="left" style="Padding-left:25px">Hosting Address2</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"><apex:inputfield value="{!Event.AS_HostingAddr2__c}" style="width:215px;"/></td>
+</tr>
+<tr class="even">
+    <td width="42%" height="30px" align="left" style="Padding-left:25px"> Hosting City</td>
+    <td width="3%" height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle">
+    <apex:inputfield value="{!Event.AS_HostingCity__c}" style="width:215px;"/></td>
+</tr>
+<tr class="odd">
+    <td width="42%" height="30px" align="left" style="Padding-left:25px"> Hosting Country</td>
+    <td width="3%" height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle">
+        <apex:inputField value="{!Event.EV_HostingCountryNew__c}"/>
+    </td>
+</tr>
+<tr class="even">
+    <td width="42%" height="30px" align="left" style="Padding-left:25px">Hosting state</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td width="60%" align="left" valign="middle">
+         <apex:inputField value="{!Event.EV_HostingStateNew__c}"/>
+    </td>                                       
+</tr>
+
+<tr class="odd">
+    <td width="42%" height="30px" align="left" style="Padding-left:25px">ZIP Code</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"><apex:inputField value="{!Event.EV_HostingZipcode__c}" id="Zipcode" style="width:215px;" /></td>                 
+</tr>
+
+<tr class="even">
+    <td width="42%" height="30px" align="left" style="Padding-left:25px">PO Box</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"><apex:inputfield value="{!Event.EV_HostingPostalCode__c}" style="width:215px;"/></td>
+</tr>
+
+<tr class="odd" height="60px;">
+    <td align="left" style="Padding-left:25px">Event Description</td>
+    <td height="25" align="right" valign="top">&nbsp;</td>
+    <td align="left" valign="middle"><apex:inputTextarea value="{!Event.EV_Description__c}" style="width:215px;"  rows="10"/></td>
+</tr>
+<tr>
+    <td align="left" style="Padding-left:25px" colspan="3"><apex:pageMessages /></td>
+   
+</tr>
+
+</table></td>
+</tr>
+
+</table>
+ 
+  <div style="text-align:right; float:right"> 
+  <apex:commandButton value="Previous"   action="{!previous2}" rerender="maintab,linksbool" 
+  style="padding:8px; margin-top:20px;"/>
+  
+  <apex:commandButton value="Next"  action="{!enabletab2}" onclick="return ValidateForm();"  
+  style="padding:8px; margin-top:20px;" />
+  
+  </div>
+  
+ </apex:form>
+  </apex:tab>    
+ <!--------------------------------------------------------Tab 3---------------------------------------------------------------->
+
+ 
+  <!------------------------------------------------------------Tab 4------------------------------------------------------------->
+
+  <apex:tab label="Match Leads Schedule" id="eduinf3" disabled="{!istab3disabled}" style="padding-left:-40px;border:0px solid #FF0000;" >
+   <apex:form >
+   
+  <table width="50%" border="0" align="center" cellpadding="5" cellspacing="0" style=" font-family:Arial, Helvetica, sans-serif; font-size:12px; margin:0px auto;">
+   
+   <tr>
+       <td width="37%" align="left" valign="middle">
+           Match Leads Start Date
+       </td>
+       <td align="left" valign="middle" width="63%">
+           <apex:selectList value="{!EventStartDate}"  size="1" onchange="changeEventTime();" id="eventStDate">
+           <apex:selectOptions value="{!EventDate}" />
+            </apex:selectList>
+        </td>
+   </tr>
+   <tr><td width="37%" align="left" valign="middle">Match Leads End date</td>
+   <td width="63%" align="left" valign="middle"><apex:selectList value="{!EventEndDate}" id="eventendDate" onchange="changeEventEndTime();"  size="1" >
+                              <apex:selectOptions value="{!EventDate}" />
+                        </apex:selectList></td></tr>
+   
+   <tr align="left" valign="middle"><td text-color="red" colspan="2"><b>Match Leads Timings :</b></td></tr>
+   <tr>
+   <td width="37%" align="left" valign="middle"> Day one Timings</td>
+    
+    <td width="63%" align="left" valign="middle"><apex:inputField value="{!event.MM_Firstaday_startTime__c}"/>
+    TO &nbsp; <apex:inputField value="{!event.MM_Firstaday_EndTime__c}"/></td>
+   </tr>
+ <tr>
+   <td width="37%"> Day Two Timings</td>
+   <td>  <apex:inputField value="{!event.MM_Secondaday_startTime__c}"/>
+    TO &nbsp; <apex:inputField value="{!event.MM_Secondaday_EndTime__c}"/></td>
+   </tr>
+   
+  
+   <tr><td width="37%" align="left" valign="middle">Each Appointment Time</td>
+  <td width="63%" align="left" valign="middle"><apex:inputField value="{!event.MM_Slot_Timeperiod__c}"/>&nbsp;  Min</td> </tr>
+   <tr><td width="37%" align="left" valign="middle">Break Time Between Appointments</td>
+  <td width="63%" align="left" valign="middle"><apex:inputField value="{!event.BreakTime_Between_Appointments__c}"/>&nbsp;  Min</td> </tr>
+   <tr><td width="37%" align="left" valign="middle">Appointments per Attendee</td>
+  <td width="63%" align="left" valign="middle"><apex:inputField value="{!event.No_Appointments_Per_Attendee__c}"/></td></tr>
+   <!--<tr><td width="50%">Appointments per Exhibitor</td>
+   <td></td></tr>
+   <tr><td width="50%">Event Break Time</td>
+   <td></td></tr>-->
+   
+   </table>
+  <div style="width:100%; text-align:right; float:right; border:0px solid #FF0000;">
+  
+  
+  <apex:commandButton value="Save" action="{!savemmevent}" style="padding:8px;float:right;"/>
+  <apex:commandButton value="Previous"  action="{!previous3}" rerender="maintab,linksbool" style="padding:8px;float:right;"/>
+  
+  
+  
+  </div>
+ </apex:form>
+  </apex:tab>
+ 
+ </apex:tabPanel>
+ 
+    </div>
+    </apex:outputpanel>
+    </apex:outputpanel>
+    <!--footer start-->
+        <div id="footer">
+           © GlobalNest LLC. All Rights Reserved 
+         </div>
+    <!--footer end-->
+    
+</apex:page>

@@ -1,0 +1,1032 @@
+<apex:page controller="attendeedetail" action="{!checkUserId}" showHeader="false" sidebar="false">
+<!--
+<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/screen.css")}"/>
+<apex:stylesheet value="{!URLFOR($Resource.QRCode_CSS,"css/pro_dropline_ie.css")}"/>
+-->
+
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+<script>
+function printPage(id)
+{
+var html="<html>";
+   html+= document.getElementById(id).innerHTML;
+   html+="</html>";
+
+   var printWin = window.open('','','left=0,top=0,width=0,height=0,toolbar=0,scrollbars=0,status  =0');
+   printWin.document.write(html);
+   printWin.document.close();
+   printWin.focus();
+   printWin.print();
+   printWin.close();
+}
+</script>
+
+<apex:form >
+<html>
+<div id="page-top-outer">    
+
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    <div id="logo">
+    
+    </div>
+    <!-- end logo -->
+         
+    <!--  start top-search -->
+    <div id="top-search">
+     
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            
+        
+        <td Class="welcome">
+        
+        <b><font>Welcome  :</font>
+                   <font size="2" color="Sky Blue">{!$User.Firstname}&nbsp;{!$User.Lastname}</font></b>
+        
+        </td>
+        
+        
+        <td>
+        
+       
+       <!--<apex:commandButton action="{!search}" value="search" image="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/top_search_btn.gif")}"/>-->
+       
+        </td>
+        </tr>
+        </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+        <div id="nav-right">
+        
+            <!--<div class="nav-divider">&nbsp;</div>
+            <div class="showhide-account"><img src="images/shared/nav/nav_myaccount.gif" width="93" height="14" alt="" /></div>-->
+            <!--<div class="nav-divider">&nbsp;</div>
+            <a id="logout">
+            
+            <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/nav/nav_logout.gif")}"    value="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}">{!$Label.site.logout}</img>
+            
+           </a>-->
+           
+           
+           <!----LOGOUT ACTION -->
+           <div class="nav">
+        <div class="table">
+            <div class="nav-divider">&nbsp;</div>
+       <apex:commandLink action="{!ProfileSettings}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" value="Profile"/>
+        <div class="nav-divider">&nbsp;</div>
+       
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" title="Logout" style="text-style:bold; color:#FFFFFF; padding:10px 25px 0 0;">{!$Label.site.logout}</apex:commandLink>
+        
+            </div></div>
+           
+           <!----LOGOUT ACTION END--->
+           
+           
+            <div class="clear">&nbsp;</div>
+        
+            <!--  start account-content --> 
+            <div class="account-content">
+            <div class="account-drop-inner">
+                <a href="" id="acc-settings">Settings</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-details">Personal details </a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-project">Project details</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-inbox">Inbox</a>
+                <div class="clear">&nbsp;</div>
+                <div class="acc-line">&nbsp;</div>
+                <a href="" id="acc-stats">Statistics</a> 
+            </div>
+            </div>
+            <!--  end account-content -->
+        
+        </div>
+        <!-- end nav-right -->
+
+
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">
+  
+         <!--<div class="nav-divider">&nbsp;</div>-->
+          <ul class="select"><li><apex:outputLink value="/apex/BL_EA_Dashboard?id={!selectedEvent}"><b>Dashboard</b> </apex:outputLink></li></ul>
+          <div class="nav-divider">&nbsp;</div>                    
+          <ul class="select"><li>
+          <apex:outputLink value="/apex/BL_EventAdmin_Events?id={!selectedEvent}"><b>Events</b></apex:outputLink></li></ul>
+         
+         <ul class="select"><li>
+         <div class="nav-divider">&nbsp;</div>
+         <apex:outputLink value="/apex/BL_Eventadmin_BoothAdmins?id={!selectedEvent}"><b>Booths</b></apex:outputLink></li></ul>
+          <div class="nav-divider">&nbsp;</div>
+         <ul class="current"><li><apex:outputLink value="/apex/BL_Eventadmin_Attendees?id={!selectedEvent}" ><b>Attendees</b> </apex:outputLink></li></ul>
+         <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li><apex:outputLink value="/apex/BL_EA_Reports?id={!selectedEvent}"><b>Reports</b> </apex:outputLink>
+        
+        
+        
+        </li>
+        </ul>
+        
+      
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <!--  start nav -->
+        
+ 
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................................................... END -->
+
+ <div class="clear"></div>
+ 
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+<!-- start content -->
+<div id="content">
+
+    <!--  start page-heading -->
+    <div id="page-heading">
+    
+      <table aligh="right"  width="98%" align="center">
+          <tr>
+    <td>
+    <h1 style="font-size:20px;">Event Attendees Info</h1>&nbsp;&nbsp; 
+      
+      
+      <H2  style="font-size:15px;"> <apex:commandLink value="Attendees" action="{!Attendees}" /> </H2>&nbsp;&nbsp;
+     <apex:outputText value=">" />&nbsp;&nbsp;
+          <H3>   <apex:OutputText value="Attendees Detail" /> </H3>
+      
+      </td>
+      <td >
+          
+        </td></tr></table>      
+       
+    </div>
+    <!-- end page-heading -->
+
+    <table width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">
+        
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt="" /></th>
+        <th class="topleft"></th>
+        <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        <!--  start content-table-inner ...................................................................... START -->
+        <div id="content-table-inner">
+        
+            <!--  start table-content  -->
+            <div id="table-content" >
+            
+           <!-- <a href="#" onclick=" return false;">Print</a>  --> 
+            <apex:commandbutton action="/apex/BL_Eventadmin_Attendees" value="Back" styleclass="awesome"  title="Back"/>&nbsp;&nbsp; 
+            <apex:commandbutton onclick="printPage('areaToPrint');" value="Print" styleclass="awesome"  title="Print"/><p align="center">   </p><br/> 
+
+       
+     
+                 <apex:outputPanel style="color:#000000;"  rendered="{!IF(evm.EV_id__r.Is_Webank_event__c == false,true,false)}">
+                 
+                 <!-- table start-->
+                 
+                 <div id="areaToPrint">
+                 <table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="50%" height="25" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <!--<tr>
+        <td width="50%" height="25" align="right" style="padding-right:15px" valign="middle">Barcode # :</td>
+        <td width="50%" height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.Attendee_Barcode3__c}"/></td>
+      </tr>-->
+      <tr>
+      <apex:outputText rendered="{!Prefix}">
+        <td height="25" width="50%" align="right" style="padding-right:15px"  valign="middle">Prefix :</td>
+        <td height="25" width="50%" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_prefixNew__c}"/>
+        </td></apex:outputText>
+      </tr>
+      <tr> 
+          <apex:outputText rendered="{!sufix}">
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Suffix :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_SuffixNew__c}"/>
+        </td> </apex:outputText>
+      </tr>
+      <tr> <apex:outputText rendered="{!ReqFields}">
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">First Name :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_FirstName__c}"/>
+        </td></apex:outputText>
+      </tr>
+      <tr> <apex:outputText rendered="{!ReqFields}">
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Last Name :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_LastName__c}"/>
+        </td></apex:outputText>
+      </tr>
+      <tr> <apex:outputText rendered="{!ReqFields}">
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Email ID :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_Email__c}"/>
+        </td></apex:outputText>
+      </tr>
+      <tr>  <apex:outputText rendered="{!ReqFields}">
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Company :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_Company__c}"/>
+        </td> </apex:outputText>
+      </tr>
+       <apex:outputText rendered="{!Degi}">
+          <tr>
+            <td height="25" align="right" style="padding-right:15px"  valign="middle">Designation :</td>
+            <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_Title__c}"/>
+            </td>
+          </tr>
+      </apex:outputText>
+       <apex:outputText rendered="{!mobile}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Mobile Number :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:Outputtext value="{!Ticketfordetail.AS_id__r.AS_CellPhone__c}"/>        
+        </td>
+      </tr>
+      </apex:outputText>
+        <apex:outputText rendered="{!dob}">
+          <tr>
+            <td height="25"  align="right" style="padding-right:15px"  valign="middle">Date Of Birth :</td>
+            <td height="25" align="left" valign="middle">&nbsp;<apex:outputtext value="{0,date,MM/dd/yyyy}">
+            <apex:Param value="{!Ticketfordetail.AS_id__r.AS_BirthDate__c}"/>
+            </apex:outputtext>
+            </td>
+          </tr>
+      </apex:outputText>
+       <apex:outputText rendered="{!age}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Age :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_Age__c}"/></apex:outputtext>
+        </td>
+      </tr></apex:outputText>
+       <apex:outputText rendered="{!gen}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Gender :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_Gender__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!TicType}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Registration Type :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.TicketTypes__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!homeinfo}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Home Phone Number :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomePhone__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Home Address 1 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomeAddress1__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Home Address 2 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomeAddress2__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Home Country :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Homecountry}" />
+        </td>
+      </tr>
+      
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Home State :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Homestates}" />
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Home City :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomeCity__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Home Zip code :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomeZip__c }"/>
+        </td>
+      </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!Shippinginfo}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Shipping Address 1 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_ShippingAddress1__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Shipping Address 2 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_ShippingAddress2__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Shipping City :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_ShippingCity__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Shipping Country:</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!ShippingCountry}"/>
+        </td>
+      </tr>
+      
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Shipping State :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Shippingstates}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Shipping Zip code :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_shippingzip__c}"/>
+        </td>
+      </tr>
+      </apex:outputText>
+    </table></td>
+    <td width="50%" height="25" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      
+      <apex:outputText rendered="{!PBC}">
+      <tr>
+        <td width="57%" height="25" align="right" style="padding-right:15px"  valign="middle">Primary Business Category :</td>
+        <td width="43%" height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_PrimaryBusinessCategory1__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!SBC}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Secondary Business Category :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_SecondaryBusinessCategory1__c  }"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!NOEmp}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">No. of Employees :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_NumberOfEmployees__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!BEDate}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Business Established Date :</td>
+        <td height="25" align="left" valign="middle">&nbsp; <apex:outputText value="{0,date,MM/dd/yyyy}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_BusinessEstablishedDate__c}"/>
+        </apex:outputText>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!BRev}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Business Revenue :</td>
+        <td height="25" align="left" valign="middle">&nbsp;
+        <apex:outputText rendered="{!dolor}">$</apex:outputText>
+        <apex:outputText value="{0,number,#,##,##0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_BusinessRevenue__c}"/>
+       </apex:outputtext>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!BTaxID}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Business Tax ID :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_BusinessTaxId__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!BDN}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Business Duns Number :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_BusinessDunsNumber__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!webUrl}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Website URL :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WebsiteUrl__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!blogURL}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Blog URL :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_BlogUrl__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!DT}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Diversity Type :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.DiversityType__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!workinfo}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work Phone :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkPhone__c}"/>
+        </td>
+      </tr>
+      
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work Address 1 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkAddress1__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work Address 2 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkAddress2__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work Country :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Workcountry}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work State :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Workstates}" />
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work City :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkCity__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Work Zip code : </td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkZip__c}"/>
+        </td>
+      </tr>
+
+      <tr>
+      <td height="25" align="right" style="padding-right:15px" valign="middle">NAICS 1:</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_1__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">NAICS 2: </td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_2__c}"/>
+        </td>
+      </tr>
+      <tr>
+       <td height="25" align="right" style="padding-right:15px" valign="middle">NAICS 3:</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_3__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">NAICS 4: </td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_4__c}"/>
+        </td>
+      </tr>
+       <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">NAICS 5: </td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_5__c}"/>
+        </td>
+      </tr>
+     </apex:outputText>
+   <!--- <apex:outputText rendered="{!NAICSCode1}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px;"  valign="middle">NAICS 1 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_NAICSCode1__c}"/>
+        </apex:outputtext>
+
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!NAICSCode2}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">NAICS 2 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_NAICSCode2__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!NAICSCode3}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">NAICS 3 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_NAICSCode3__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr>
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">NAICS 4 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_NAICSCode4__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr>
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">NAICS 5 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_NAICSCode5__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr>
+      </apex:outputText>--->
+      <apex:outputText rendered="{!BDesc}">
+       <tr>
+        <td height="25" align="right" valign="middle" style="padding-right:15px;">Business Description :</td>
+        <td height="25" align="left" valign="middle" style="padding-right:15px;">&nbsp;
+        <apex:outputText value="{!Ticketfordetail.AS_id__r.AS_BusinessDescription__c}"/></td>
+      </tr>
+      </apex:outputText>
+    </table></td>
+  </tr>
+ 
+</table><br /> <br />
+
+
+
+      <style>
+          .newtableclass{ border:1px solid #CCCCCC; bordercollapse:collapse;}
+          .newtableclass th{ padding-left:10px; border:1px solid #CCCCCC; }
+          .newtableclass tr{ height:30px;  border:1px solid #CCCCCC;}
+          .newtableclass td{ border:1px solid #CCCCCC; padding-left:10px; color:#414141;}
+          
+      </style>   
+         
+         
+          <apex:outputPanel rendered="{!IF(listOfSurveys.size>0,true,false)}" >
+           <table  width="80%" cellspacing="0" cellpadding="0"  style="margin:0px auto;" class="newtableclass">
+           
+           
+            <tr style="height:40px;"><th style="width:50%;background-color:#f3f3f3;"> Survey Questions </th>
+              <th style="width:50%;background-color:#f3f3f3;"> Survey Answer</th></tr>
+           
+            <apex:repeat value="{!listOfSurveys}" var="sur">    
+             <tr>
+             <td style="width:50%">  {!sur.Survey_Questions__r.Question__c}</td>
+              <td style="width:50%">  {!sur.Answers__c}</td>
+              </tr>
+              </apex:repeat></table>
+         
+         
+          </apex:outputPanel>
+         
+                 
+                 
+               
+                 
+                 
+            </div>     
+                 
+                 
+                 </apex:outputPanel>
+    
+     
+            <!--custom event view attendee-->
+            
+             <apex:outputPanel style="color:#000000;" rendered="{!IF(evm.EV_id__r.Is_Webank_event__c == true,true,false)}">
+                 
+                 <!-- table start-->
+                 
+                 <div id="areaToPrint">
+                 <table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="50%" height="25" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <!--<tr>
+        <td width="50%" height="25" align="right" style="padding-right:15px" valign="middle">Barcode # :</td>
+        <td width="50%" height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.Attendee_Barcode3__c}"/></td>
+      </tr>-->
+      <tr>
+      <apex:outputText rendered="{!Prefix}">
+        <td height="25" width="50%" align="right" style="padding-right:15px"  valign="middle">Prefix :</td>
+        <td height="25" width="50%" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_prefixNew__c}"/>
+        </td></apex:outputText>
+      </tr>
+      <tr> 
+          <apex:outputText rendered="{!sufix}">
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Suffix :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_SuffixNew__c}"/>
+        </td> </apex:outputText>
+      </tr>
+      <tr> <apex:outputText rendered="{!ReqFields}">
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">First Name :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_FirstName__c}"/>
+        </td></apex:outputText>
+      </tr>
+      <tr> <apex:outputText rendered="{!ReqFields}">
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Last Name :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_LastName__c}"/>
+        </td></apex:outputText>
+      </tr>
+      <tr> <apex:outputText rendered="{!ReqFields}">
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Email ID :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_Email__c}"/>
+        </td></apex:outputText>
+      </tr>
+      <tr>  <apex:outputText rendered="{!ReqFields}">
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Company :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_Company__c}"/>
+        </td> </apex:outputText>
+      </tr>
+       <apex:outputText rendered="{!Degi}">
+          <tr>
+            <td height="25" align="right" style="padding-right:15px"  valign="middle">Designation :</td>
+            <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_Title__c}"/>
+            </td>
+          </tr>
+      </apex:outputText>
+       <apex:outputText rendered="{!mobile}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Mobile Number :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:Outputtext value="{!Ticketfordetail.AS_id__r.AS_CellPhone__c}"/>        
+        </td>
+      </tr>
+      </apex:outputText>
+        <apex:outputText rendered="{!dob}">
+          <tr>
+            <td height="25"  align="right" style="padding-right:15px"  valign="middle">Date Of Birth :</td>
+            <td height="25" align="left" valign="middle">&nbsp;<apex:outputtext value="{0,date,MM/dd/yyyy}">
+            <apex:Param value="{!Ticketfordetail.AS_id__r.AS_BirthDate__c}"/>
+            </apex:outputtext>
+            </td>
+          </tr>
+      </apex:outputText>
+       <apex:outputText rendered="{!age}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Age :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_Age__c}"/></apex:outputtext>
+        </td>
+      </tr></apex:outputText>
+       <apex:outputText rendered="{!gen}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Gender :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_Gender__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!TicType}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Registration Type :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.TicketTypes__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!homeinfo}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Home Phone Number :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomePhone__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Home Address 1 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomeAddress1__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Home Address 2 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomeAddress2__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Home Country :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Homecountry}" />
+        </td>
+      </tr>
+      
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Home State :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Homestates}" />
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Home City :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomeCity__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Home Zip code :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_HomeZip__c }"/>
+        </td>
+      </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!Shippinginfo}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Shipping Address 1 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_ShippingAddress1__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Shipping Address 2 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_ShippingAddress2__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Shipping City :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_ShippingCity__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Shipping Country:</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!ShippingCountry}"/>
+        </td>
+      </tr>
+      
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Shipping State :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Shippingstates}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Shipping Zip code :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_shippingzip__c}"/>
+        </td>
+      </tr>
+      </apex:outputText>
+    </table></td>
+    <td width="50%" height="25" align="center" valign="top"><table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+      
+      <apex:outputText rendered="{!PBC}">
+      <tr>
+        <td width="57%" height="25" align="right" style="padding-right:15px"  valign="middle">Primary Business Category :</td>
+        <td width="43%" height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_PrimaryBusinessCategory1__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!SBC}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Secondary Business Category :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_SecondaryBusinessCategory1__c  }"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!NOEmp}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">No. of Employees :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_NumberOfEmployees__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr>
+      </apex:outputText>
+      <apex:outputText rendered="{!BEDate}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Business Established Date :</td>
+        <td height="25" align="left" valign="middle">&nbsp; <apex:outputText value="{0,date,MM/dd/yyyy}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_BusinessEstablishedDate__c}"/>
+        </apex:outputText>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!BRev}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Business Revenue :</td>
+        <td height="25" align="left" valign="middle">&nbsp;
+        <apex:outputText rendered="{!dolor}">$</apex:outputText>
+        <apex:outputText value="{0,number,#,##,##0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.AS_BusinessRevenue__c}"/>
+       </apex:outputtext>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!BTaxID}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Business Tax ID :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_BusinessTaxId__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!BDN}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Business Duns Number :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_BusinessDunsNumber__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!webUrl}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Website URL :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WebsiteUrl__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!blogURL}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">Blog URL :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_BlogUrl__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!DT}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Diversity Type :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.DiversityType__c}"/>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!workinfo}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work Phone :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkPhone__c}"/>
+        </td>
+      </tr>
+      
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work Address 1 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkAddress1__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work Address 2 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkAddress2__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work Country :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Workcountry}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work State :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Workstates}" />
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px" valign="middle">Work City :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkCity__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">Work Zip code : </td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.AS_WorkZip__c}"/>
+        </td>
+      </tr>
+      <tr>
+       <td height="25" align="right" style="padding-right:15px" valign="middle">NAICS 1:</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_1__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">NAICS 2: </td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_2__c}"/>
+        </td>
+      </tr>
+      <tr>
+       <td height="25" align="right" style="padding-right:15px" valign="middle">NAICS 3:</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_3__c}"/>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">NAICS 4: </td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_4__c}"/>
+        </td>
+      </tr>
+       <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">NAICS 5: </td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{!Ticketfordetail.AS_id__r.As_NAICSCode_5__c}"/>
+        </td>
+      </tr>
+     </apex:outputText>
+     
+     
+     
+     
+   <!------  <apex:outputText rendered="{!NAICSCode1}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px;"  valign="middle">NAICS 1 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.As_NAICSCode_1__c}"/>
+       </apex:outputtext> 
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!NAICSCode2}">
+      <tr>
+        <td height="25" align="right" style="padding-right:15px"  valign="middle">NAICS 2 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.As_NAICSCode_2__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr></apex:outputText>
+      <apex:outputText rendered="{!NAICSCode3}">
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">NAICS 3 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.As_NAICSCode_3__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr>
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">NAICS 4 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.As_NAICSCode_4__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr>
+      <tr>
+        <td height="25"  align="right" style="padding-right:15px"  valign="middle">NAICS 5 :</td>
+        <td height="25" align="left" valign="middle">&nbsp;<apex:outputText value="{0,number,0}">
+        <apex:param value="{!Ticketfordetail.AS_id__r.As_NAICSCode_5__c}"/>
+        </apex:outputtext>
+        </td>
+      </tr>
+      </apex:outputText> ---->
+      <apex:outputText rendered="{!BDesc}">
+       <tr>
+        <td height="25" align="right" valign="middle" style="padding-right:15px;">Business Description :</td>
+        <td height="25" align="left" valign="middle" style="padding-right:15px;">&nbsp;
+        <apex:outputText value="{!Ticketfordetail.AS_id__r.AS_BusinessDescription__c}"/></td>
+      </tr>
+      </apex:outputText>
+    </table></td>
+  </tr>
+ 
+</table> <br /> <br />
+      <style>
+          .newtableclass{ border:1px solid #CCCCCC; bordercollapse:collapse;}
+          .newtableclass th{ padding-left:10px; border:1px solid #CCCCCC; }
+          .newtableclass tr{ height:30px;  border:1px solid #CCCCCC;}
+          .newtableclass td{ border:1px solid #CCCCCC; padding-left:10px; color:#414141;}
+          
+      </style>   
+         
+         
+         <!-- <apex:outputPanel rendered="{!IF(listOfSurveys.size>0,true,false)}" >
+           <table  width="80%" cellspacing="0" cellpadding="0"  style="margin:0px auto;" class="newtableclass">
+           
+           
+            <tr style="height:40px;"><th style="width:50%;background-color:#f3f3f3;"> Survey Questions </th>
+              <th style="width:50%;background-color:#f3f3f3;"> Survey Answer</th></tr>
+           
+            <apex:repeat value="{!listOfSurveys}" var="sur">    
+             <tr>
+             <td style="width:50%">  {!sur.Survey_Questions__r.Question__c}</td>
+              <td style="width:50%">  {!sur.Answers__c}</td>
+              </tr>
+              </apex:repeat></table>
+         
+         
+          </apex:outputPanel>-->
+         
+         
+                 
+   </div>     
+                 
+                 
+                 </apex:outputPanel>        
+      
+      
+      
+       
+       
+                       
+          </div>
+            <!--  end content-table  -->
+        
+            <!--  start actions-box ............................................... -->
+            <!-- end actions-box........... -->
+            
+            
+            <div class="clear"></div>
+         
+        </div>
+        <!--  end content-table-inner ............................................END  -->
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+
+</div>
+<!--  end content -->
+<div class="clear">&nbsp;</div>
+</div>
+<!--  end content-outer........................................................END -->
+</html>
+<div class="clear">&nbsp;</div>
+    
+<!-- start footer -->         
+<apex:include pageName="QRCode_Footertemplate"/>
+<!-- end footer -->
+ 
+</apex:form>
+
+           
+
+</apex:page>

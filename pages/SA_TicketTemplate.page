@@ -1,0 +1,425 @@
+<apex:page controller="SA_TicketTemplateController" showHeader="false" renderAs="pdf">
+ <head>
+
+<apex:stylesheet value="{!URLFOR($Resource.emailreceipt, 'emailreceipt/tablestyle.css')}"/>
+ </head>
+<table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #CCC;margin-left:20px;">
+  <tr>
+        <td align="center" valign="middle" bgcolor="#55707f" style="color:#fff;font-family:Verdana, Geneva, sans-serif; font-size:12px; padding-left: 10px;line-height:20px; padding-top: 10px; padding-bottom: 10px;text-align:center;">
+            <b><span style="font-family:Verdana, Geneva, sans-serif; font-size:16px;">
+            <apex:outputText rendered="{!IF(OR(eam.EV_id__r.EV_Title__c != NULL, eam.EV_id__r.EV_Title__c != ''), TRUE, FALSE)}"> {!eam.EV_id__r.EV_Title__c}<br/> </apex:outputText>
+            </span>
+               <span style="font-family:Verdana, Geneva, sans-serif; font-size:14px;">
+                <apex:outputText rendered="{!IF(OR(eam.EV_id__r.EV_HostingLocation__c != NULL, eam.EV_id__r.EV_HostingLocation__c != ''), TRUE, FALSE)}"> {!eam.EV_id__r.EV_HostingLocation__c}<br/> </apex:outputText>
+                <apex:outputText rendered="{!IF(OR(eam.EV_id__r.EV_HistingAddr1__c != NULL, eam.EV_id__r.EV_HistingAddr1__c != ''), TRUE, FALSE)}"> {!eam.EV_id__r.EV_HistingAddr1__c}<br/> </apex:outputText>
+                <apex:outputText rendered="{!IF(OR(eam.EV_id__r.AS_HostingCity__c != NULL, eam.EV_id__r.AS_HostingCity__c != ''), TRUE, FALSE)}"> {!eam.EV_id__r.AS_HostingCity__c}, </apex:outputText>                
+                <apex:outputText rendered="{!IF(OR(eam.EV_id__r.EV_HostingStateNew__c != NULL, eam.EV_id__r.EV_HostingStateNew__c != ''), TRUE, FALSE)}"> {!eam.EV_id__r.EV_HostingStateNew__c} </apex:outputText>                
+                <apex:outputText rendered="{!IF(OR(eam.EV_id__r.EV_HostingZipcode__c != NULL, eam.EV_id__r.EV_HostingZipcode__c != ''), TRUE, FALSE)}"> {!eam.EV_id__r.EV_HostingZipcode__c}</apex:outputText>                
+                </span>
+                                <apex:outputText rendered="{!IF(OR(eam.EV_id__r.AS_HostingCity__c != NULL, eam.EV_id__r.AS_HostingCity__c != '',eam.EV_id__r.EV_HostingStateNew__c != NULL, eam.EV_id__r.EV_HostingStateNew__c != '',eam.EV_id__r.EV_HostingZipcode__c != NULL, eam.EV_id__r.EV_HostingZipcode__c != ''), TRUE, FALSE)}"> <br/> </apex:outputText>
+                <span style="font-family:Verdana, Geneva, sans-serif; font-size:12px;">
+                        <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                            <apex:param value="{!eam.EV_id__r.EV_StartDate__c}" />
+                        </apex:outputText> {!eam.EV_id__r.StartTime__c} - 
+                        <apex:outputText value="{0, date, MMMM d','  yyyy}" rendered="{!NOT(isOneDayEvent)}">
+                            <apex:param value="{!eam.EV_id__r.EV_EndDate__c}" />
+                        </apex:outputText> {!eam.EV_id__r.EV_EndTime__c}
+                   
+                </span> <br />
+                </b>
+        </td>
+    </tr>
+  <tr>
+    <td valign="top" style="font-family:Verdana, Geneva, sans-serif; font-size:12px; font-weight:normal; padding-left:15px; line-height:20px;">
+        <table>
+            <tr>
+                <td width="84%"><p>Hi {!eam.AS_id__r.AS_FirstName__c} {!eam.AS_id__r.AS_LastName__c},<br/>
+                    <apex:outputText rendered="{!CheckBoolean}">
+                        This is your order confirmation for {!eam.EV_id__r.EV_Title__c}.<br/>
+                        <!--Please print and bring this ticket to the event. If you cant bring this dont worry - Our Onsite team will be able to help you with the badge.-->
+                    </apex:outputtext>
+                    <apex:outputText rendered="{!NOT(CheckBoolean)}">
+                        This is your detailed Item order receipt purchased at {!eam.EV_id__r.EV_Title__c}.<br/>
+                    </apex:outputtext>  </p>
+                </td>
+
+                <td width="16%" align="right">
+                
+                    <apex:outputText style="text-align:right;margin-right:5%;" rendered="{!ShowQrCode}">
+                        <apex:image value="https://chart.googleapis.com/chart?chs=120x120&cht=qr&chl={!BarCodeForCustomer[0].Barcode__c}"/>
+                    </apex:outputtext>
+                </td>
+            </tr>        
+        </table>       
+    
+   
+    
+    
+    </td>
+          
+  </tr>
+  <!--
+  <tr>
+    <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" style=" margin-top:2px;">
+      <tr>
+        <td width="185" height="30" bgcolor="#EAEAEA" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:bold; padding-left:15px;">About this Event</td>
+        </tr>
+      </table>
+      
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse; border-color:#CCCCCC; margin-top:2px;">
+      <tr>
+        <td width="169" height="25" align="left" bgcolor="#FFFFFF" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">Event Name:</td>
+        <td width="425" height="25" align="left" bgcolor="#FFFFFF" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">{!eam.EV_id__r.EV_Title__c}</td>
+      </tr>
+      <tr>
+        <td height="25" bgcolor="#FFFFFF" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">Event Date:</td>
+        <td height="25" bgcolor="#FFFFFF" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">
+            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+            <apex:param value="{!eam.EV_id__r.EV_StartDate__c}" />
+            </apex:outputText> - <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                <apex:param value="{!eam.EV_id__r.EV_EndDate__c}" />
+            </apex:outputText>
+        </td>
+      </tr>
+      <tr>
+        <td height="25" bgcolor="#FFFFFF" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">Location:</td>
+        <td height="25" bgcolor="#FFFFFF" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">{!eam.EV_id__r.EV_HostingLocation__c}</td>
+      </tr>
+    </table></td>
+  </tr>
+
+  <tr>
+    <td align="center" valign="middle"><table width="100%" border="0" cellspacing="0" cellpadding="0" style=" margin-top:2px;">
+      <tr>
+        <td width="186" height="30" bgcolor="#eaeaea" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:bold; padding-left:15px;">Contact Info</td>
+        <td width="414" height="30" bgcolor="#eaeaea" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">&nbsp;</td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td align="center" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse; border-color:#CCCCCC; margin-top:2px;">
+      <tr>
+        <td width="173" height="25" align="left" bgcolor="#FFFFFF" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">Name:</td>
+        <td width="425" height="25" align="left" bgcolor="#FFFFFF" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">{!eam.AS_id__r.AS_FirstName__c} {!eam.AS_id__r.AS_LastName__c}</td>
+      </tr>
+      <tr>
+        <td height="25" bgcolor="#FFFFFF" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">Email:</td>
+        <td height="25" bgcolor="#FFFFFF" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">{!eam.AS_id__r.AS_Email__c}</td>
+      </tr>
+      <tr>
+        <td height="25" bgcolor="#FFFFFF" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;">Payment:</td>
+        <td height="25" bgcolor="#FFFFFF" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal; padding-left:20px;"></td>
+      </tr>
+    </table></td>
+  </tr> -->
+  <tr>
+    <td><table width="100%" border="0" cellspacing="0" cellpadding="0" style=" margin-top:0px;">
+      <tr>
+         <td width="25%" height="30" bgcolor="#eaeaea" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:bold; padding-left:15px;border-bottom:1px SOLID #FFFFFF;">Order Summary</td>
+          <td width="75%" height="30" bgcolor="#eaeaea" align="right" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:bold; padding-left:15px;border-bottom:1px SOLID #FFFFFF;">
+        <!--<apex:outputText value=" Confirmation No: {!ConfirmationNumber}" rendered="{!IF(OR(ConfirmationNumber!= '', ConfirmationNumber != ''), TRUE, FALSE)}"/>
+         --></td>
+      </tr>
+      <tr>
+         <td width="50%" height="30" bgcolor="#eaeaea" align="left" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:bold; padding-left:15px;">Order No: {!dum.customer_key__r.Name}</td>
+         <td width="50%" height="30" bgcolor="#eaeaea" align="right" style="font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:bold; padding-right:15px;">Order Date: <apex:outputText value="{0, date, MMMM d',' yyyy hh:mm a}">
+                <apex:param value="{!dum.createddate - 0.16666666666}"/>
+            </apex:outputText></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td>
+       
+       <apex:outputText rendered="{!AND(isCustomerPayFee,PaymentType == 'Credit Card')}"> 
+  
+        <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse; border-color:#CCCCCC; border:1px solid #FF0000;" class="pdftablestyle">
+          <tr>
+                <th width="55%" align="left" valign="left" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold; padding-right:5px;">Tickets/Items</th>
+                <th width="15%" height="30" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;padding-right:5px;">Price</th> 
+                <th width="7%" height="30" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;padding-right:5px;">Fee</th>  
+                <th width="7%" align="left" valign="left" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;padding-right:5px;">Quantity</th>
+                <th width="15%" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;padding-right:5px;">Total</th>
+         </tr>
+
+          <apex:repeat value="{!RegInfoInnerList}" var="d">
+          <tr>
+                  <td width="60%" height="30" align="left" bgcolor="#FFFFFF" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+                      <apex:outputText value="{!d.RegInfoData.TicketTypes__r.TT_Name__c}" rendered="{!IF(d.RegInfoData.TicketTypes__c != NULL,true,false)}"/>
+                      <apex:outputText value="{!d.RegInfoData.Item__r.Item_name__c}" rendered="{!IF(d.RegInfoData.Item__c != NULL,true,false)}"/>
+                  </td>
+                  <td width="15%" height="30" align="right" bgcolor="#FFFFFF" style="padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+                      <apex:outputText rendered="{!IF(PaymentType != 'Free', TRUE, FALSE)}">                     
+
+                          <apex:outputText value="{0,number,$ ###,##0.00}" rendered="{!IF(d.RegInfoData.Item__c != NULL,true,false)}">
+                              <apex:param value="{!d.RegInfoData.Item__r.Cost__c}"/>
+                          </apex:outputText>
+                          
+                          <apex:outputPanel rendered="{!IF(d.RegInfoData.TicketTypes__r.TT_TicketType__c != NULL, TRUE, FALSE)}">
+                              <apex:outputText value="{0,number,$ ###,##0.00}" rendered="{!IF(d.RegInfoData.TicketTypes__r.TT_TicketType__c != 'Donation',true,false)}">
+                                  <apex:param value="{!d.RegInfoData.TicketTypes__r.TT_Amount__c}"/>
+                              </apex:outputText>
+                              <apex:outputText value="{0,number,$ ###,##0.00}" rendered="{!IF(d.RegInfoData.TicketTypes__r.TT_TicketType__c == 'Donation',true,false)}">
+                                  <apex:param value="{!d.RegInfoData.Amount__c}"/>
+                              </apex:outputText>
+    
+                          </apex:outputPanel>                     
+                           
+                      </apex:outputText>                      
+                      <apex:outputText value="0.00" rendered="{!IF(PaymentType == 'Free', TRUE, FALSE)}"/>  
+                      </td> 
+                      <td width="7%"  height="30"  align="right" bgcolor="#FFFFFF" style="padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+                        <apex:outputText value="{0,number,$ ###,##0.00}">
+                            <apex:param value="{!d.RegInfoData.ScanAttendee_Fee__c}"/>
+                        </apex:outputText>
+                      </td>
+               
+                <td width="7%"  height="30"  align="right" bgcolor="#FFFFFF" style="padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+                    <apex:outputText value="{!d.RegInfoData.Available_Quantity__c}"/>    
+                </td>
+                <td width="15%" height="30" align="right" bgcolor="#FFFFFF" style="padding-right:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+                    <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!d.AmountData}"/>
+                    </apex:outputText>
+                </td>
+                        
+          </tr>
+          </apex:repeat> 
+          
+         <tr height="15">
+                <td width="85%" colspan="4" height="10" align="center" valign="middle" bgcolor="#f3f3f3" style="font-family:Verdana, Geneva, sans-serif; font-size:0px; font-weight:bold;"></td>
+              <!--  <td width="15%" height="10" align="center" valign="middle" bgcolor="#f3f3f3" style="font-family:Verdana, Geneva, sans-serif; font-size:0px; font-weight:bold;"></td>     
+                <td width="10%" height="10" align="right" valign="middle" bgcolor="#f3f3f3" style="font-family:Verdana, Geneva, sans-serif; font-size:0px; font-weight:bold;"></td>
+               -->
+                <td width="15%" height="10" align="right" valign="middle" bgcolor="#f3f3f3" style="font-family:Verdana, Geneva, sans-serif; font-size:0px; font-weight:bold;"></td>
+           
+         </tr>  
+         
+          <tr>
+                <td width="85%"  height="30" colspan="4" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">Total Amount </td>
+                <td width="15%"  height="30" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!TotalAmountWithoutTax}"/>
+                    </apex:outputText>
+                 </td>
+         </tr> 
+         
+         <apex:outputText rendered="{!IF(ItemTaxValue != 0, TRUE, FALSE)}">
+             <tr>
+                    <td width="85%"  height="30" colspan="4" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                    Tax @  <apex:outputText value="{0,number, ###,##0.00}">
+                          <apex:param value="{!ItemTaxValue}"/>
+                    </apex:outputText><!--{!ItemTaxValue} -->%</td>
+                    <td width="15%"  height="30" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                     <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!TaxAmount}"/>
+                    </apex:outputText>
+                    </td>
+             </tr> 
+             
+              <tr>
+                <td width="85%"  height="30" colspan="4" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">Total Amount Due </td>
+                <td width="15%" height="30" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!TotalAmount}"/>
+                    </apex:outputText>
+                 </td>
+         </tr> 
+         </apex:outputText>          
+        
+        
+         
+         <tr>
+                <td width="85%"  height="30" colspan="4" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">Amount Paid By ({!PaymentType} <apex:outputText value=" : {!CheckNumber}" rendered="{!IF(OR(PaymentType == 'Check', PaymentType == 'Credit Card'), TRUE, FALSE)}"/> ) </td>
+                <td width="15%"  height="30" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!TotalAmount}"/>
+                    </apex:outputText>
+                 </td>
+         </tr>  
+        </table>
+        </apex:outputText>  
+        
+         <apex:outputText rendered="{!NOT(AND(isCustomerPayFee,PaymentType == 'Credit Card'))}"> 
+  
+        <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse; border-color:#CCCCCC; border:1px solid #FF0000;" class="pdftablestyle">
+          <tr>
+                <th width="60%" align="left" valign="left" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold; padding-right:5px;">Tickets/Items</th>
+                <th width="15%" height="30" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;padding-right:5px;">Price</th> 
+                <th width="10%" height="30" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;padding-right:5px;">Quantity</th>  
+                <th width="15%" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;padding-right:5px;">Total</th>
+         </tr>
+
+          <apex:repeat value="{!RegInfoInnerList}" var="d">
+          <tr>
+                  <td width="60%" height="30" align="left" bgcolor="#FFFFFF" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+                      <apex:outputText value="{!d.RegInfoData.TicketTypes__r.TT_Name__c}" rendered="{!IF(d.RegInfoData.TicketTypes__c != NULL,true,false)}"/>
+                      <apex:outputText value="{!d.RegInfoData.Item__r.Item_name__c}" rendered="{!IF(d.RegInfoData.Item__c != NULL,true,false)}"/>
+                  </td>
+                  <td width="15%" height="30" align="right" bgcolor="#FFFFFF" style="padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+               
+                      <apex:outputText rendered="{!IF(PaymentType != 'Free', TRUE, FALSE)}">                     
+
+                          <apex:outputText value="{0,number,$ ###,##0.00}" rendered="{!IF(d.RegInfoData.Item__c != NULL,true,false)}">
+                              <apex:param value="{!d.RegInfoData.Item__r.Cost__c}"/>
+                          </apex:outputText>
+                          
+                          <apex:outputPanel rendered="{!IF(d.RegInfoData.TicketTypes__r.TT_TicketType__c != NULL, TRUE, FALSE)}">
+                              <apex:outputText value="{0,number,$ ###,##0.00}" rendered="{!IF(d.RegInfoData.TicketTypes__r.TT_TicketType__c != 'Donation',true,false)}">
+                                  <apex:param value="{!d.RegInfoData.TicketTypes__r.TT_Amount__c}"/>
+                              </apex:outputText>
+                              <apex:outputText value="{0,number,$ ###,##0.00}" rendered="{!IF(d.RegInfoData.TicketTypes__r.TT_TicketType__c == 'Donation',true,false)}">
+                                  <apex:param value="{!d.RegInfoData.Amount__c}"/>
+                              </apex:outputText>
+    
+                          </apex:outputPanel>                     
+                           
+                      </apex:outputText>                      
+                      <apex:outputText value="0.00" rendered="{!IF(PaymentType == 'Free', TRUE, FALSE)}"/>  
+                  </td> 
+                     
+               
+                <td width="7%"  height="30"  align="right" bgcolor="#FFFFFF" style="padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+                    <apex:outputText value="{!d.RegInfoData.Available_Quantity__c}"/>    
+                </td>
+                <td width="15%" height="30" align="right" bgcolor="#FFFFFF" style="padding-right:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:14px; font-weight:normal;">
+                    <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!d.AmountData}"/>
+                    </apex:outputText>
+                </td>
+                        
+          </tr>
+          </apex:repeat> 
+          
+         <tr height="15">
+                <td width="85%" colspan="3" height="10" align="center" valign="middle" bgcolor="#f3f3f3" style="font-family:Verdana, Geneva, sans-serif; font-size:0px; font-weight:bold;"></td>
+              <!--  <td width="15%" height="10" align="center" valign="middle" bgcolor="#f3f3f3" style="font-family:Verdana, Geneva, sans-serif; font-size:0px; font-weight:bold;"></td>     
+                <td width="10%" height="10" align="right" valign="middle" bgcolor="#f3f3f3" style="font-family:Verdana, Geneva, sans-serif; font-size:0px; font-weight:bold;"></td>
+               -->
+                <td width="15%" height="10" align="right" valign="middle" bgcolor="#f3f3f3" style="font-family:Verdana, Geneva, sans-serif; font-size:0px; font-weight:bold;"></td>
+           
+         </tr>  
+         
+          <tr>
+                <td width="85%"  height="30" colspan="3" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">Total Amount </td>
+                <td width="15%"  height="30" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!TotalAmountWithoutTax}"/>
+                    </apex:outputText>
+                 </td>
+         </tr> 
+         
+         <apex:outputText rendered="{!IF(ItemTaxValue != 0, TRUE, FALSE)}">
+             <tr>
+                    <td width="85%"  height="30" colspan="3" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">Tax @ {!ItemTaxValue}%</td>
+                    <td width="15%"  height="30" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                     <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!TaxAmount}"/>
+                    </apex:outputText>
+                    </td>
+             </tr> 
+             
+              <tr>
+                <td width="85%"  height="30" colspan="3" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">Total Amount Due </td>
+                <td width="15%" height="30" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!TotalAmount}"/>
+                    </apex:outputText>
+                 </td>
+         </tr> 
+         </apex:outputText>          
+        
+        
+         
+         <tr>
+                <td width="85%"  height="30" colspan="3" align="left" valign="middle" bgcolor="#f3f3f3" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">Amount Paid By ({!PaymentType} <apex:outputText value=" : {!CheckNumber}" rendered="{!IF(OR(PaymentType == 'Check', PaymentType == 'Credit Card'), TRUE, FALSE)}"/> ) </td>
+                <td width="15%"  height="30" align="right" valign="right" bgcolor="#f3f3f3" style="padding-left:10px;padding-right:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:bold;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                          <apex:param value="{!TotalAmount}"/>
+                    </apex:outputText>
+                 </td>
+         </tr>  
+        </table>
+        </apex:outputText> 
+    </td>
+  </tr> 
+    <tr>
+    <td align="center" valign="top" style="padding-left:10px;font-family:Verdana, Geneva, sans-serif; font-size:15px; font-weight:normal; padding-left:20px;padding-right:10px;">&nbsp;</td>
+  </tr>
+  <tr>
+    <td align="right" bgcolor="#55707f" colspan="2" height="35" style="color:#FFF;" valign="top">
+        <table align="right" border="0" cellpadding="0" cellspacing="3" style="position:relative; top:0px; right:0px; width: 100%;" width="100%">
+            <tbody>
+                <tr>
+                    <td align="left" height="35" style="color:#FFF;font-family:Verdana, Geneva, sans-serif; font-size:11px; font-weight:normal; padding-left:20px;" valign="middle" width="72%">
+                        Technical Problems? Contact <a href="mailto:support@boothleads.com" style="color:#FFFFFF; text-decoration:underline;">support@boothleads.com</a> , 1-(800)-492-1289</td>
+                    <td align="right" height="35" style="color:#FFF;font-family:Verdana, Geneva, sans-serif; font-size:11px; font-weight:normal; padding-left:20px;" valign="middle" width="14%">
+                        Powered by</td>
+                    <td align="left" height="35" valign="center" width="14%">
+                        <a href="http://www.boothleads.com" style="color:#FFFFFF; text-decoration:none;" target="_blank"><img src="https://c.na10.content.force.com/servlet/servlet.ImageServer?id=015F0000003J5Dt&oid=00DF0000000BpyH&lastMod=1408611235000" style="border:0px; margin-top:5px;" width="100" height="25"/> </a></td>
+                </tr>
+            </tbody>
+        </table>
+    </td>
+    </tr>
+</table>
+<table>
+<tr>
+   <td height="20px">&nbsp;</td>
+  </tr>  
+</table>
+ <!--
+    <apex:outputPanel id="BadgePanel" rendered="{!CheckBoolean}">
+    <table width="4in" cellspacing="0" cellpadding="0" style="border-style:dotted;page-break-inside:avoid;"> 
+        <tr>
+        <td width="4in" style="border-right-style:dotted;">
+        <table  cellspacing="0" cellpadding="0" width="4in"  height="3.5in" >
+            
+            <tr style="height:2cm;">
+                <td  align="left" width="50%">
+                    <apex:outputpanel >
+                        <div style="height:1.7cm;z-index:9999;">
+                            <apex:image url="/servlet/servlet.FileDownload?file={!eam.EV_id__r.EV_EventLogo__c}" width="2cm" height="2cm" style="padding-left:3px;"/>
+                        </div> 
+                    </apex:outputpanel> 
+                </td>
+            </tr>        
+            <tr>
+                <td align="center" colspan="2">
+                    <font style="font-size:30pt;font-face:TimesNewRoman;">
+                        <b>{!eam.AS_id__r.AS_FirstName__c}</b>
+                    </font>  
+                </td>
+            </tr>
+            <tr>
+                <td align="center"  colspan="2">
+                    <font style="font-size:24pt;font-face:TimesNewRoman;">
+                        {!eam.AS_id__r.AS_LastName__c}
+                    </font>
+                </td>
+            </tr>
+            <tr>
+                <td align="left" valign="top" width="20%">
+                    <apex:image value="https://chart.googleapis.com/chart?chs=120x120&cht=qr&chl={!eam.EA_AttendeeBarcode__c}"/>
+                </td>
+                <td align="left" valign="middle" width="80%" style="padding-right:10px;">
+                    <font  style="font-size:18pt;font-face:TimesNewRoman;">{!eam.AS_id__r.AS_Company__c}</font>
+                </td> 
+            </tr>
+            <tr height="5px">
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>         
+        </table>
+        </td>
+        </tr>
+    </table>
+    
+    
+    </apex:outputPanel>
+    
+  -->  
+    
+        
+        
+</apex:page>

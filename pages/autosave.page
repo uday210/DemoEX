@@ -1,0 +1,183 @@
+<apex:page sidebar="false" showHeader="false">
+ 
+<script>
+// get the state of the form
+function getFormState() {
+    var fields = document.getElementsByTagName('form')[0].elements;
+    if (fields.length == 0){return};
+    for (var i = 1; i <= fields.length-1; i++) {
+        var name = fields[i].getAttribute('name');
+        if (name in sessionStorage && sessionStorage[name] !== null) {
+            fields[i].value = sessionStorage[name];
+        }
+    }
+}
+
+// save the state of the form
+function saveFormState() {
+    var fields = document.getElementsByTagName('form')[0].elements;
+    if (fields.length == 0){return};
+    var populated = false;
+    for (var i = 1; i <= fields.length-1; i++) {
+        var name = fields[i].getAttribute('name');
+        if (fields[i].value != '' && fields[i].getAttribute('type') != 'submit') {
+           sessionStorage[name] = fields[i].value;
+           populated = true;
+        }
+    }
+    // display the time form data was saved (optional)
+    if (populated) {
+        var date = new Date();
+        var hours = date.getHours();
+        var mins = date.getMinutes();
+        var secs = date.getSeconds();
+        hours = (hours < 10) ? '0' + hours : hours;
+        mins = (mins < 10) ? '0' + mins : mins;
+        secs = (secs < 10) ? '0' + secs : secs;
+        var msg = '[Form data was saved at ' + hours + ':' + mins + ':' + secs + ']';
+        var timecont = document.getElementById('time_container');
+        if (timecont !== null) {
+            timecont.innerHTML = msg;
+        }
+        else {
+            timecont = document.createElement('span');
+            timecont.setAttribute('id', 'time_container');
+            timecont.appendChild(document.createTextNode(msg));
+            document.getElementsByTagName('fieldset')[0].appendChild(timecont);
+        }
+    }
+}
+
+// run the above functions when the web page is loaded
+window.onload = function () {
+    // check if HTML5 sessionStorage is supported by the browser
+    if ('sessionStorage' in window && window['sessionStorage'] !== null) {
+        // get the form state
+        getFormState();
+        // save the state of the form each 15 seconds (customizable)
+        setInterval('saveFormState()', 15 * 1000);
+    }
+}
+
+
+
+</script>
+<style>
+/* layout styles */
+body {
+    padding: 0;
+    margin: 0;
+    background: #0C2478;
+    font: 0.8em Arial, Helvetica, sans-serif;
+    color: #000;
+}
+#wrapper {
+    width: 960px;
+    margin: 0 auto;
+    background: #fff;
+}
+header {
+    display: block;
+    padding: 20px;
+}
+nav {
+    display: block;
+    width: 920px;
+    height: 30px;
+    margin: 0 auto;
+    padding-top: 10px;
+    background: #eee;
+}
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+nav ul li {
+    float: left;
+    width: 120px;
+    text-align: center;
+}
+nav ul li a {
+    display: block;
+    width: 120px;
+    text-decoration: none;
+    color: #000;
+    border-right: 1px solid #ccc;
+}
+section {
+    display: block;
+    padding: 20px;
+}
+footer {
+    display: block;
+    padding: 20px;
+}
+/* form styles */
+form {
+    width: 280px;
+    padding: 30px;
+    background: #dfefff;
+}
+form fieldset {
+    border: none;
+}
+form fieldset ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+form fieldset ol li {
+    margin-bottom: 10px;
+}
+form fieldset ol label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+form fieldset ol label em {
+    font-style: normal;
+    font-weight: normal;
+    color: #00f;
+}
+form fieldset ol input.text {
+    width: 250px;
+}
+form fieldset ol textarea {
+    width: 250px;
+}
+/* time container */
+#time_container {
+    color: #00f;
+}
+</style>
+
+<div id="wrapper">
+       
+   
+    <section>
+        <form action="" method="post">
+            <fieldset>
+                <ol>
+                    <li>
+                        <label for="subject">Event Name: <em>[required]</em></label>
+                        <input type="text" name="subject" id="subject" class="text" />
+                    </li>
+                    <li>
+                        <label for="email">Event Date: <em>[required]</em></label>
+                        <input type="email" name="email" id="email" class="text" />
+                    </li>
+                    <li>
+                        <label for="comments">Location:</label>
+                        <input type="text" name="comments"></input>
+                    </li>
+                    <li>
+                        <input type="submit" name="send" value="Submit" />
+                    </li>
+                </ol>
+            </fieldset>
+        </form>
+    </section>
+    
+</div>
+</apex:page>

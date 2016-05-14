@@ -1,0 +1,612 @@
+<apex:page sidebar="false" showHeader="false"  controller="BL_Eventadmin_EventsCon" >
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+    <style>
+    .newbutton, .newbutton:visited {
+    background: #6495ED; 
+    display: inline-block; 
+    padding: 5px 10px 6px; 
+    color: #287ba5; 
+    text-decoration: none;
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    position: relative;
+    cursor: pointer;
+}
+
+    
+    .orange.newbutton, .orange.newbutton:visited        { background-color: #ff5c00; }
+    .orange.newbutton:hover                         { background-color: #d45500; }
+    
+    .grid{ 
+    width:100%; 
+    border-collapse: collapse; 
+    font-size:12px;
+    }
+    /* Zebra striping */
+    .grid tr:nth-of-type(odd) { 
+    background: #eee; 
+    }
+    .grid tr:hover{ 
+    background: #f3f3f3; 
+    }
+    .grid th { 
+    background: #CCCCCC;
+    color: #414141; 
+    font-weight: bold; 
+    background: #eaeaea; /* Old browsers */
+    background: -moz-linear-gradient(top,  #eaeaea 0%, #f3f3f3 39%, #f3f3f3 58%, #eaeaea 99%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eaeaea), color-stop(39%,#f3f3f3), color-stop(58%,#f3f3f3), color-stop(99%,#eaeaea)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* IE10+ */
+    background: linear-gradient(to bottom,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#eaeaea',GradientType=0 ); /* IE6-9 */
+    }
+    .grid td{ 
+    padding:5px; 
+    border-bottom:1px solid #eaeaea; 
+    text-align: left;
+    border-right:0px;; 
+    }
+    .grid th { 
+    padding:4px; 
+    border: 1px solid #D3D3D3; 
+    font-size:12px;
+    text-align: left; 
+    height:20px;
+    }
+    .grid1 td{
+    border-right:0px solid #F00; 
+    font-size:12px;
+    }
+    .grid tr:nth-child(odd)     { background-color:#fafafa; }
+    .grid tr:nth-child(even)      { background-color:#fff; }
+    
+    .grid tr:hover{background-color:#eaeaea;} 
+    
+    .glossy{background: #d8e5f5; /* Old browsers */
+    background: -moz-linear-gradient(top,  #d8e5f5 0%, #cfdff3 45%, #c6d9f1 48%, #b6ceee 48%, #aec9ed 48%, #bed4f0 73%, #caddf3 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8e5f5), color-stop(45%,#cfdff3), color-stop(48%,#c6d9f1), color-stop(48%,#b6ceee), color-stop(48%,#aec9ed), color-stop(73%,#bed4f0), color-stop(100%,#caddf3)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e5f5', endColorstr='#caddf3',GradientType=0 ); /* IE6-9 */
+    border-top:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db; 
+    }
+    .gridbottom{border-bottom:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;
+    background-color:#d6e3f2; padding:3px; border-top:1px solid #91b5db; width:98%; margin:0px auto;}
+    .trwhite{ background-color: #FFFFFF; }
+    .trwhite:hover { background-color: #FFFFFF; }
+    </style>
+     <script type="text/javascript">
+    function checkAll(cb,cbid)
+    {
+    var inputElem = document.getElementsByTagName("input");                    
+    for(var i=0; i<inputElem.length; i++)
+    {            
+    if(inputElem[i].id.indexOf(cbid)!=-1)
+    {                                       
+    inputElem[i].checked = cb.checked;
+    }
+    }
+    }
+
+    function checkallrecs(blnchecked,divid)
+    {
+     
+    if({!pgno} > 1){
+    if(blnchecked){
+    
+    document.getElementById('hideshow').style.display = 'block';
+    }else{
+    document.getElementById('hideshow').style.display = 'none';
+    }
+    }
+    
+    }
+  
+    </script>
+<!----------------------------------------------------------------Header------------------------------------------->
+     <div id="page-top-outer">    
+    
+    <!-- Start: page-top -->
+    <div id="page-top">
+    
+    <!-- start logo -->
+    <div id="logo">
+    
+    </div>
+    <!-- end logo -->
+    
+    <!--  start top-search -->
+    <div id="top-search">
+    
+    <table  cellpadding="0" cellspacing="0">
+    <tr>
+    
+    
+    <td Class="welcome">
+    
+    <b><font>Welcome  :</font>
+    <font size="2" color="Sky Blue">{!$User.Firstname}&nbsp;{!$User.Lastname}</font></b>
+    
+    </td>
+    
+    
+    
+    
+    
+    <!--<apex:commandButton action="{!search}" value="search" image="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/top_search_btn.gif")}"/>-->
+    
+    
+    </tr>
+    </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+    
+    </div>
+    <!-- End: page-top -->
+    
+    </div>
+    <!-- End: page-top-outer -->
+    
+    <div class="clear">&nbsp;</div>
+    
+    <!--  start nav-outer-repeat................................................................................................. START -->
+    <div class="nav-outer-repeat"> 
+    <!--  start nav-outer -->
+    <div class="nav-outer"> 
+    
+    <!-- Start Nav Right-->
+    <div id="nav-right">
+    
+    <!--<div class="nav-divider">&nbsp;</div>
+    <div class="showhide-account"><img src="images/shared/nav/nav_myaccount.gif" width="93" height="14" alt="" /></div>-->
+    <!--<div class="nav-divider">&nbsp;</div>
+    <a id="logout">
+    
+    <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/nav/nav_logout.gif")}"    value="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}">{!$Label.site.logout}</img>
+    
+    </a>-->
+    
+    
+    <!----LOGOUT ACTION -->
+    <div class="nav">
+    <div class="table">
+    
+    
+    <apex:form accept=""><div class="nav-divider">&nbsp;</div>
+    <!-- <apex:commandLink action="{!ProfileSettings}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" value="Profile"/>-->
+    <apex:outputLink value="/apex/BL_Eventadmin_Profile?id={!Eventdetail.Id}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:outputLink>
+    <div class="nav-divider">&nbsp;</div>    
+    <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+    <!-- <div class="nav-divider">&nbsp;</div>
+    <apex:outputLink target="_new" value="/apex/HelpLineforAttendees" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;" >Help</apex:outputLink>-->
+    </apex:form>     
+    </div></div>
+    
+    
+    
+    </div>
+    <!-- end nav-right -->
+    
+    <!-- Start nav -->
+    <div class="nav">
+    <div class="table">
+    <apex:form >    
+    <!--<div class="nav-divider">&nbsp;</div>-->
+    <ul class="select"><li><apex:outputLink value="/apex/BL_EA_Dashboard?id={!Eventdetail.Id}"><b>Dashboard</b> </apex:outputLink></li></ul>
+    <div class="nav-divider">&nbsp;</div>                    
+    <ul class="current"><li>
+    <apex:outputLink value="/apex/BL_EventAdmin_Events?id={!Eventdetail.Id}"><b>Events</b></apex:outputLink></li></ul>        
+    <ul class="select"><li>
+    <div class="nav-divider">&nbsp;</div>
+    <apex:outputLink value="/apex/BL_Eventadmin_BoothAdmins?id={!Eventdetail.Id}"><b>Booths</b></apex:outputLink></li></ul>
+    <div class="nav-divider">&nbsp;</div>
+    <ul class="select"><li><apex:outputLink value="/apex/BL_Eventadmin_Attendees?id={!Eventdetail.Id}"><b>Attendees</b></apex:outputLink></li></ul>
+    <div class="nav-divider">&nbsp;</div>   
+    <ul class="select"><li><apex:outputLink value="/apex/BL_EA_Reports?id={!Eventdetail.Id}"><b>Reports</b> </apex:outputLink></li></ul>       
+    </apex:form>
+    
+    <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+    </div>
+    <!-- End nav -->
+    
+    
+    </div>
+    <div class="clear"></div>
+    <!--  start nav-outer -->
+    </div>
+    <!--  start nav-outer-repeat................................................... END -->
+    
+    <div class="clear"></div>
+    
+<!-----------------------------------------------------------------------------------------------------> 
+
+
+
+
+
+
+<apex:form > 
+</apex:form>
+
+
+
+
+<apex:form id="temp">
+<div style="width:30%; float:left;">
+<div >
+ <apex:commandLink action="{!createTemplate}" rendered="{!Existingtemp}" style="padding-left:150px;">
+     <apex:image url="{!URLFOR($Resource.new_button,"new_button/new_button.png")}" style="width:120px;height:27px;margin-top:15px;"/>
+ </apex:commandLink>   
+ </div> 
+ <div style=" background-color:#eaeaea; color:#FFFFFF;font-size:14px; margin:0px auto; text-align:center; float:left;">
+                <table cellpadding="0" cellspacing="0" border="1" width="100%" align="center">
+                <tr>
+                
+                </tr>
+                
+                
+                <tr><td colspan="2" align="left" style="padding-left:15px; color:#FFFFFF; height:10px; background-color:#FFFFFF;"></td></tr>
+                
+                
+                
+                
+                
+                
+                <tr>
+                <td align="left" style="line-height:35px; width:30%; margin-top:5px; min-height:350px;" valign="top">
+                
+                <apex:pageBlock rendered="{!Existingtemp}" ><div style="min-height:400px;  overflow:auto;">
+                  <apex:selectRadio value="{!selectedtemp}" layout="pagedirection">
+                  
+                   <apex:selectOptions value="{!templist}"/>
+                  <apex:actionSupport action="{!desiredemailTemplate}"  event="onchange" />
+                 
+                  </apex:selectradio>
+                  
+                  </div>
+                  
+                  
+                    </apex:pageBlock>
+                    
+                 </td>
+                 
+                 
+                  </tr>
+                  </table>
+                  </div>
+    </div>
+                  
+                  
+                  <div style="position:relative;  float:left; width:60%">
+                         <table cellpadding="0" cellspacing="0" border="0" width="100%" style="float:right; text-align:center;margin-top:20px">
+                         <tr>
+                          <td style="width:70%;background-color:#FFFFFF; margin-top:5px;" valign="top">
+                          
+                              <apex:outputPanel rendered="{!Clonebuttonbool}">
+                                  <apex:commandButton value="Clone" action="{!Clonetemplate}" styleClass="awesome" />
+                              </apex:outputPanel> 
+                          &nbsp;
+                              <apex:outputPanel rendered="{!editbuttonbool}">
+                                  <apex:commandButton value="Edit" action="{!edittemplate}" styleClass="awesome" /> 
+                              </apex:outputPanel>  
+                          
+                             
+                          
+                          </td>
+                          </tr>
+                          </table>
+                  </div>
+                  <br />
+                  <apex:outputPanel rendered="{!displaybool}" id="template">
+                  
+                  
+
+                  
+                    <div style="width:65%;float:right;height:350px; margin-top:15px;">   
+                  
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <apex:outputPanel rendered="{!Clonebuttonbool}"><td width="25%" style="border-bottom:1px solid #CCCCCC;padding:15px 0px 5px 0px"><strong>Subject :</strong></td>
+        <td width="75%" style="padding:15px 0px 5px 0px;border-bottom:1px solid #CCCCCC"><apex:outputText value="{!Subjectval}"/></td></apex:outputPanel>
+      </tr>
+      <tr>
+        <td colspan="2"  style="border-bottom:1px solid #CCCCCC;padding:15px 0px 5px 0px"><strong>Email Body :</strong></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+           <div style="height:350px; overflow:auto; margin-top:15px;">                              
+            <apex:outputText value="{!htmlbodyvalue}" escape="false"/>                             
+           </div>
+        </td>
+      </tr>
+    </table>                            
+                                 <!--  <apex:outputText value="{!htmlbodyvalue}" escape="false"/>      -->                        
+                            </div>  
+                   </apex:outputPanel>
+                  
+                 
+                  
+                  
+                 
+  <!-------------------------------------------------------------------------------------------------------------->
+  <apex:outputPanel rendered="{!displayeditbool}">
+               <table cellpadding="0" cellspacing="0" border="0" width="100%" style="line-height:35px;">
+      <tr height="35px" style="background-color:#6495ED;">
+      
+   <td style="padding-left:15px; color:#FFFFFF;">
+  <font  style="width:98%;background-color:#6495ED; color:#FFFFFF; padding:8px; font-size:14px; margin-top:15px; font-weight:bold">Select Field :</font> <apex:selectList value="{!selectedfield}" size="1" style="padding:5px; width:200px;">
+  <apex:selectOptions value="{!fieldoptions}"/>
+  <apex:actionSupport action="{!fetchingfieldval}" event="onchange"/>
+  </apex:selectList>
+  
+ </td>
+ <td height="35px" style="background-color:#6495ED; color:#FFFFFF;">
+<font  style="width:98%;background-color:#6495ED; color:#FFFFFF; padding:8px; font-size:14px; margin-top:15px; font-weight:bold"> Copy Field Value :</font> <input type="text" value=" {!showfied}" />
+  
+ </td>
+ 
+ </tr>
+ 
+         <tr>
+              <td>&nbsp;</td>
+               <td>&nbsp;</td>
+          </tr>
+          
+          <tr>
+              <td style="padding-left:15px;"><font style="color:#787878; font-size:16px;"><b>Please Enter Template Name &nbsp; :</b></font></td>
+               <td><apex:inputText value="{!TemplateName}" style="width:550px; padding:5px;"/></td>
+          </tr>
+          <tr>
+              <td style="padding-left:15px;"><font style="color:#787878; font-size:16px;"><b>Please Enter Template Subject &nbsp; :</b></font></td>
+              <td><apex:inputText value="{!Subjectval}" style="width:550px; width:550px; padding:5px;"/></td>
+          </tr>
+      <tr>
+      <td style="padding-left:15px;"><font style="color:#787878; font-size:16px;"><b>View As  :</b></font></td>
+      <td>
+               <apex:selectList value="{!viewopt}"  size="1" style="padding:5px; width:200px;">
+                  
+                  <apex:selectOptions value="{!viewoptionList}" />
+                  <apex:actionSupport action="{!escapevalue}" event="onchange"/>
+                  </apex:selectList>
+  </td>
+      
+      
+      </tr>
+      <tr>
+          <td style="padding-left:15px;" valign="top"><font style="color:#787878; font-size:16px;"><b>Please Enter Content Of the Template :</b></font></td>
+          <td><apex:inputTextarea value="{!htmlbodyvalue}"  richText="{!escapebool}" style="width:450px;height:450px; padding:5px;" rows="20" cols="25"/>
+          </td>
+      </tr>
+        <tr>
+            <td> &nbsp; </td><td>
+             
+            
+               <apex:commandButton value="Save" action="{!updateTemplate}" styleClass="awesome"/>
+                 <!-- <apex:image url="{!URLFOR($Resource.new_button,"new_button/save.png")}" style="width:120px;height:27px;"/>-->
+             
+           
+             
+                 <apex:commandButton action="{!canceltemp}" value="Cancel" styleClass="awesome"/>
+       
+              
+          </td>
+      </tr>
+  </table>                
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  </apex:outputPanel>
+           
+      
+  
+                    
+                    
+                  
+  </apex:form>
+
+ <apex:outputPanel rendered="{!errorboolname}">
+  <script>
+  alert(' please enter Template Name');
+  </script>
+  </apex:outputPanel>
+  <apex:outputPanel rendered="{!errorboolduplicate }">
+  <script>
+  alert(' Template Name already Exists.Please provide another Name');
+  </script>
+  </apex:outputPanel>
+  <apex:outputPanel rendered="{!errorboolsubject }">
+  <script>
+  alert(' please enter Subject');
+  </script>
+  </apex:outputPanel>
+
+  
+<apex:form id="new">
+<!---------------------------------------------------------new Template------------------------------------>
+
+          
+  <apex:outputPanel rendered="{!newtempbool}">
+ 
+  <div style=" width:98%; margin:0px auto;">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="line-height:35px;">
+      <tr height="35px" style="background-color:#6495ED;">
+      <td style="padding-left:15px; color:#FFFFFF;">
+  <font  style="width:98%;background-color:#6495ED; color:#FFFFFF; padding:8px; font-size:14px; margin-top:15px; font-weight:bold">Select Field :</font> <apex:selectList value="{!selectedfield}" size="1" style="padding:5px; width:200px;">
+  <apex:selectOptions value="{!fieldoptions}"/>
+  <apex:actionSupport action="{!fetchingfieldval}" event="onchange"/>
+  </apex:selectList>
+  
+ </td>
+ <td height="35px" style="background-color:#6495ED; color:#FFFFFF;">
+<font  style="width:98%;background-color:#6495ED; color:#FFFFFF; padding:8px; font-size:14px; margin-top:15px; font-weight:bold"> Copy Field Value :</font> <input type="text" value=" {!showfied}" />
+    
+ </td>
+ </tr>
+ 
+         <tr>
+              <td>&nbsp;</td>
+               <td>&nbsp;</td>
+          </tr>
+          
+          <tr>
+              <td style="padding-left:15px;"><font style="color:#787878; font-size:16px;"><b>Please Enter Template Name &nbsp; :</b></font></td>
+               <td><apex:inputText value="{!TemplateName}" style="width:550px; padding:5px;"/></td>
+          </tr>
+         
+          <tr>
+              <td style="padding-left:15px;"><font style="color:#787878; font-size:16px;"><b>Please Enter Subject  :</b></font></td>
+              <td><apex:inputText value="{!Subjectval}" style="width:550px; width:550px; padding:5px;"/></td>
+          </tr>
+      
+      <tr>
+          <td style="padding-left:15px;" valign="top"><font style="color:#787878; font-size:16px;"><b>Please Enter Content Of the Template :</b></font></td>
+          <td><apex:inputTextarea value="{!Tempcontent}" richText="true" style="width:450px; padding:5px;"/></td>
+      </tr>
+        <tr>
+            <td> &nbsp; </td><td>
+             
+              <apex:commandButton action="{!saveTemplate}" value="Save" styleClass="awesome" reRender="new,temp"/>
+                 <!-- <apex:image url="{!URLFOR($Resource.new_button,"new_button/save.png")}" style="width:120px;height:27px;"/>-->
+             
+           
+             
+                 <apex:commandButton action="{!canceltemp}" value="Cancel" styleClass="awesome"/>
+       
+              
+          </td>
+      </tr>
+  </table>
+  </div>
+  </apex:outputPanel>
+
+</apex:form>
+
+<!-------------------------------------------------------------------------------------------------------------->
+ <!-------------------------------------------------------------------------------------------------------------->
+ <apex:form id="clone" >
+  <apex:outputPanel rendered="{!displayclonebool}">
+               <table cellpadding="0" cellspacing="0" border="0" width="100%" style="line-height:35px;">
+      <tr height="35px" style="background-color:#6495ED;">
+      
+   <td style="padding-left:15px; color:#FFFFFF;">
+  <font  style="width:98%;background-color:#6495ED; color:#FFFFFF; padding:8px; font-size:14px; margin-top:15px; font-weight:bold">Select Field :</font> <apex:selectList value="{!selectedfield}" size="1" style="padding:5px; width:200px;">
+  <apex:selectOptions value="{!fieldoptions}"/>
+  <apex:actionSupport action="{!fetchingfieldval}" event="onchange"/>
+  </apex:selectList>
+  
+ </td>
+ <td height="35px" style="background-color:#6495ED; color:#FFFFFF;">
+<font  style="width:98%;background-color:#6495ED; color:#FFFFFF; padding:8px; font-size:14px; margin-top:15px; font-weight:bold"> Copy Field Value :</font> <input type="text" value=" {!showfied}" />
+  
+ </td>
+ 
+ </tr>
+ 
+         <tr>
+              <td>&nbsp;</td>
+               <td>&nbsp;</td>
+          </tr>
+          
+          <tr>
+              <td style="padding-left:15px;"><font style="color:#787878; font-size:16px;"><b>Please Enter Template Name &nbsp; :</b></font></td>
+               <td><apex:inputText value="{!TemplateName}" style="width:550px; padding:5px;"/></td>
+          </tr>
+          <tr>
+              <td style="padding-left:15px;"><font style="color:#787878; font-size:16px;"><b>Please Enter Template Subject &nbsp; :</b></font></td>
+              <td><apex:inputText value="{!Subjectval}" style="width:550px; width:550px; padding:5px;"/></td>
+          </tr>
+      <tr>
+      <td style="padding-left:15px;"><font style="color:#787878; font-size:16px;"><b>View As  :</b></font></td>
+      <td>
+               <apex:selectList value="{!viewopt}"  size="1" style="padding:5px; width:200px;">
+                  
+                  <apex:selectOptions value="{!viewoptionList}" />
+                  <apex:actionSupport action="{!escapevalue}" event="onchange"/>
+                  </apex:selectList>
+  </td>
+      
+      
+      </tr>
+      <tr>
+          <td style="padding-left:15px;" valign="top"><font style="color:#787878; font-size:16px;"><b>Please Enter Content Of the Template :</b></font></td>
+          <td><apex:inputTextarea value="{!htmlbodyvalue}"  richText="{!escapebool}" style="width:450px;height:450px; padding:5px;" rows="20" cols="25"/>
+          </td>
+      </tr>
+        <tr>
+            <td> &nbsp; </td><td>
+             
+            
+               <apex:commandButton value="Save" action="{!saveTemplate}" styleClass="awesome"/>
+                 <!-- <apex:image url="{!URLFOR($Resource.new_button,"new_button/save.png")}" style="width:120px;height:27px;"/>-->
+             
+           
+             
+                 <apex:commandButton action="{!canceltemp}" value="Cancel" styleClass="awesome"/>
+       
+              
+          </td>
+      </tr>
+  </table>                
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  </apex:outputPanel>
+           
+      
+  
+                    
+                    
+                  
+  </apex:form>
+<!--
+ <apex:outputPanel rendered="{!errorboolname}">
+  <script>
+  alert(' please enter Template Name');
+  </script>
+  </apex:outputPanel>
+  <apex:outputPanel rendered="{!errorboolduplicate }">
+  <script>
+  alert(' Template Name already Exists. Please Provide another Name');
+  </script>
+  </apex:outputPanel>
+  <apex:outputPanel rendered="{!errorboolsubject }">
+  <script>
+  alert(' please enter Subject');
+  </script>
+  </apex:outputPanel>
+
+
+-->
+
+
+</apex:page>

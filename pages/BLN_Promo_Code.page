@@ -1,0 +1,2004 @@
+<apex:page controller="BLN_PromoCodecon" standardStylesheets="false" showHeader="false" action="{!displayPermissions}" id="pageid">
+<!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    
+<c:ValidationsCommon />
+<c:ed_popupbox ></c:ed_popupbox>
+    <!------------//common styles component---------->
+    <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/nwbuttons.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables.css')}"/>
+ 
+ <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<c:ed_basictemplate BLN_UtillDisplayLinks="{!promo}" id="compid">
+
+<style>
+ #alert_dialogboxbody{
+    white-space: pre-wrap !important; text-align: center !important;}
+
+    .selectclass{
+    border: 1px solid #e3e3e3;
+    height: 28px;
+    font-family: Helvetica, Arial, sans-serif;
+    padding-left: 10px;
+    padding-right: 10px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    color: #575757;
+    background-color: #FFF;
+    background-image: url(../images/input.png);
+    }
+
+  .popupBackground{
+    opacity:.8;
+    position:fixed;
+    top:0px; 
+    left:0px;
+    background-color: #484848;
+    width:100%; 
+    z-index:9999;
+    height:100%;
+
+  } 
+
+   
+    
+    .custPopup{color:#000000;position: fixed;top:10px;left:0px;right:0px;z-index:99991;height:570px;overflow:auto;
+          padding:5px; margin:0 auto;-moz-border-radius-bottomleft:6px; -webkit-border-bottom-left-radius:6px; 
+          -moz-border-radius-bottomright:6px; -webkit-border-bottom-right-radius:6px; border-radius:0 0 6px 6px; 
+          font: 12px/24px "Lucida Grande",Arial,sans-serif;
+         -moz-border-radius-bottomleft:6px; -webkit-border-bottom-left-radius:6px; -moz-border-radius-bottomright:6px;
+         -webkit-border-bottom-right-radius:6px; border-radius:6px 0 6px 6px;
+        
+    }
+        
+ 
+        
+    .btn{background-image:none;}
+     table{border:0px;} 
+     
+    table td{border:0px;}   
+    .rightcontent{border:0px}
+
+   .close{
+    font-size: 25px;
+    font-weight: bold;
+    text-decoration: none;
+    float: right;
+    margin-right: .2%;
+    margin-top:-9px;
+    }
+    
+    
+    .close:hover{
+    font-size: 25px;
+    text-decoration: underline;
+    font-weight: bold;
+    color: #fff;
+    float: right;
+    margin-right: .2%;
+    margin-top:-9px;
+    } 
+
+
+
+</style>
+ 
+
+ 
+ <script type="text/javascript">
+function  createmultiitemspromotion(){
+ rendermultitmpromotion();
+ }
+ function  createbuygetpromotion(){
+ renderbuygetpromotion();
+ }
+ function  createspendsavepromotion(){
+ renderspendpromotion();
+ }
+ function  createbasicpromotion(){
+ renderbasicpromotion();
+ }
+ function  editpromotion(promoid){
+   rendereditpromotion(promoid);
+ }
+  
+  </script>
+ 
+  <!----------------------End of STYLES FOR DISCOUNTS MENU--------------------------------------->
+  
+
+     
+
+   <div id="promocodetable">  
+        
+      <apex:form id="AS_EventsForm"> 
+           
+      <apex:outputPanel id="PromoCodeTable" rendered="{!displaypromotionbool}">
+   <style>
+  
+  html, body, textarea, input { 
+        font-family: Helvetica, Arial, sans-serif;
+        font-size:13px;
+        -webkit-text-size-adjust:none;
+    }
+   
+    </style> 
+ 
+  <div class="grid-1"  >
+            <div class="title-grid-selectevent" style=""></div>
+      
+            
+           <div class="content-gird-selectevents" style=""> 
+        <apex:outputPanel rendered="{!errormessagebool }" id="errorbboolid">
+           <div style="margin: 10px 10px 2px 20px;">
+               <apex:outputText value="{!failuremessageset}" id="errorMessage" style="color:red;" escape="false" ></apex:outputText>
+           </div> 
+     </apex:outputPanel>
+         <apex:commandButton Action="{!discountmenu}" Styleclass="togglebtn right margin-5px" style=" margin-bottom:5px; float:right;" reRender="AS_EventsForm,PromoCodeTable,formid,menuid" value="Add Promo Code"></apex:commandButton>   
+         
+          
+            </div>
+            <!--close of content-grid--> 
+          </div>
+          <!--title-grid--> 
+          
+         
+          <!--Statistic-->
+          <div class="grid-1" > 
+            <!--Promocode table-->
+            
+            <table class="display" id="promotable">
+              <thead>
+                <tr>
+                  <th width="12%"  >Promotion Name</th>
+                  <th width="10%">Promo Code </th>
+                  <th width="15%">Promo Code Type </th>
+                   <th width="10%">Start Date</th>
+                  <th width="10%" >End Date</th>
+             <!---     <th width="8%">Discount</th>---->
+                  <th width="9%">Used/Total</th>
+                   <th width="7%">Status</th>
+                  <th width="7%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                <apex:outputText rendered="{!(IF(totpromotionslist.SIZE>0,TRUE,FALSE))}">                    
+                            <apex:repeat value="{!totpromotionslist}" var="p" >
+                                <tr class="item">
+                                    <td class="name"><apex:outputText value="{!p.Name}" /></td>
+                                    <td class="name"><apex:outputText value="{!p.Promo_Code__c}"/></td>
+                                    <td class="name"> <apex:outputText value="{!p.Promotion_Type__c}"/></td>
+                                   <td class="name">
+                                    
+                                
+                                   
+                              <!--   <apex:outputText value="{0,date, MMMM d, yyyy h:mm a}">
+                                 <apex:param value="{!p.Eff_TimeStamp__c}"/></apex:outputText> -->
+                                <c:EV_FormatDt date_Timevalue="{!p.Eff_TimeStamp__c}" t_Zone="{!eventslist.Time_Zone__c}"/> 
+                                 <!-- <c:MFSI_FormatDateTime date_Timevalue="{!p.Eff_TimeStamp__c}"/> -->
+                                 
+                                <!--   <apex:outputText value=" {!p.Eff_TimeStamp__c}"></apex:outputText> --->
+                                   </td> 
+                                                                    
+                                   <td class="name">
+                                   <!-- <c:MFSI_FormatDateTime date_Timevalue="{!p.Exp_TimeStamp__c}"/> -->
+                                    <c:EV_FormatDt date_Timevalue="{!p.Exp_TimeStamp__c}" t_Zone="{!eventslist.Time_Zone__c}"/>
+                                   
+                                   <!-- <apex:outputText value="{0,date, MMMM d, yyyy h:mm a}"><apex:param value="{!p.Exp_TimeStamp__c}"/></apex:outputText> --></td>                                  
+                               <!---    <td> 
+                               <apex:outputText value=" $" rendered="{!IF(p.Discount_Type__c != 'Percent',TRUE,FALSE)}" />{!p.Discount_Value__c}  
+                                   <apex:outputText value=" %" rendered="{!IF(p.Discount_Type__c == 'Percent',TRUE,FALSE)}" />
+                                  
+                                   </td>---->
+                                   
+                                   <td class="name">
+                                   
+                                 <apex:outputText rendered="{!(IF(p.T_Max_Count__c != null,TRUE,FALSE))}" value=" {!(p.T_Used_Count__c)}/{!p.T_Max_Count__c}"/>         
+                                 
+                                 <apex:outputText rendered="{!(IF(p.T_Max_Count__c == null && p.T_Used_Count__c !=0,TRUE,FALSE))}" value="{!(p.T_Used_Count__c)}?/-"/>     
+                                 <apex:outputText rendered="{!(IF(p.T_Max_Count__c == null && p.T_Used_Count__c == 0 ,TRUE,FALSE))}" value="-"/>     
+
+                                   </td>
+                                   <td class="name"><apex:outputText value="{!p.Status__c}" rendered="{!IF(p.Status__c != 'Active and Enable for online registrations' , True,False)}" id="inactivepromocode"/>
+                                       <apex:outputText value="Online" rendered="{!IF(p.Status__c == 'Active and Enable for online registrations' , True,False)}"/>
+                                   </td>
+
+
+                                <td class="subject">
+                                 <a href="" onclick="editpromotion('{!p.Promo_Code__c}');"  id="edtancor" style="text-decoration:none;cursor: pointer;" title="Edit"  >
+                             
+                                    <i class=" fa fa-pencil fa-edit20px "></i>
+                                   </a>  
+                                     
+
+                                      
+                                     <!-- <apex:commandLink onclick="Alert.render('This PromoCode is already used by {!p.T_Used_Count__c} Registrants.Please Make the promotion Inactive' ,'Alert','ok');"  action="{!DeletePromotion}" title="Delete"  rendered="{!IF(p.T_Used_Count__c != 0 ,TRUE,FALSE)}" reRender="validatepanelId,AS_EventsForm,createformid,errorbboolid,errorMessage"> -->
+                                      <!-- <apex:param value="{!p.Promo_Code__c}" name="promoid"/>
+                                       <apex:param value="{!p.T_Used_Count__c}" name="promousedcount"/> -->
+                                       <apex:outputPanel rendered="{!IF(p.T_Used_Count__c != 0 ,TRUE,FALSE)}">
+                                       <a onclick="inactprom('{!p.Promo_Code__c}','{!p.T_Used_Count__c}','{!p.Status__c}',this);" title="delete">
+                                  <i class="fa fa-trash-o fa-delete20px  "></i>
+                                  </a>
+                                  </apex:outputPanel>
+                                      <!-- </apex:commandLink> -->  
+                                      <apex:outputPanel rendered="{!IF(p.T_Used_Count__c == 0 || p.T_Used_Count__c == NULL,TRUE,FALSE)}">
+                                     <a id="DEl_nev" onclick="dell('{!p.Promo_Code__c}','{!p.T_Used_Count__c}',this);" title="Delete">
+                                 
+                                    <i class="fa fa-trash-o fa-delete20px "></i>
+                                      </a> 
+                                      
+                                      </apex:outputPanel>   
+                                      
+                                                        
+                                   </td>
+                                 </tr>
+                            </apex:repeat>
+                         </apex:outputText>   
+                        </tbody>
+            </table>
+          </div>
+          <!--close of grid-1--> 
+      <script>
+                 try{
+                    caldt();
+                    }catch(e){}
+                    </script>
+ 
+       
+         </apex:outputPanel>
+         
+       <apex:actionFunction action="{!editpromo}" name="rendereditpromotion" reRender="validatepanelId,AS_EventsForm,formid,createformid" oncomplete="editdefaultval()">
+                  <apex:param value="" name="promoid"/>
+        </apex:actionFunction>
+         <apex:actionFunction action="{!DeletePromotion}" name="deletactionalert" onComplete="location.reload();" status="AjaxLoader" reRender="validatepanelId,AS_EventsForm,errorbboolid,errorMessage">
+                 <apex:param value="" name="promoid"/>
+                <apex:param value="" name="promousedcount"/>
+               
+        </apex:actionFunction>
+        
+         <apex:actionFunction action="{!DeletePromotion}" name="Inactivealert" onComplete="location.reload();" status="AjaxLoader"  reRender="validatepanelId,AS_EventsForm,createformid,errorbboolid,errorMessage">
+                 <apex:param value="" name="promoid"/>
+                <apex:param value="" name="promousedcount"/>
+               
+        </apex:actionFunction>
+        
+        <script>
+        function editdefaultval(){
+        document.getElementById("bastartdateid").value='{!edithosttzonecurrtime}';
+        document.getElementById("baenddateid").value='{!edithosttzoneendtime}';
+        var st=document.getElementById("bastartdateid").value;
+        var et=document.getElementById("baenddateid").value;
+        //alert('stet'+st+et);
+        document.getElementById("pageid:compid:commoncomponent:createformid:sid").value = st;
+        document.getElementById("pageid:compid:commoncomponent:createformid:eid").value =et;
+        }
+        </script>
+          </apex:form>     
+            </div> 
+        <!--close of Promocode table-->
+      
+        
+        <div class="clear"></div>
+        
+        <!-----------------------Start of Add Promo Code---------------------------------------------------------->
+        
+         <apex:form id="formid"  >
+       
+  <!--      <apex:actionFunction action="{!createpromotion}" name="rendermultitmpromotion" reRender="validatepanelId,formid,createformid">
+                  <apex:param value="" name="guestindex"/>
+        </apex:actionFunction>
+        <apex:actionFunction action="{!createbuyxgetypromotion}" name="renderbuygetpromotion" reRender="validatepanelId,formid,createformid">
+                  <apex:param value="" name="guestindex"/>
+        </apex:actionFunction>
+        <apex:actionFunction action="{!createorderpromotion}" name="renderspendpromotion" reRender="validatepanelId,formid,createformid">
+                  <apex:param value="" name="guestindex"/>
+        </apex:actionFunction>-->
+        <apex:actionFunction action="{!createbasicpromotion}" name="renderbasicpromotion" reRender="validatepanelId,formid,createformid" oncomplete="defaultvalues()">
+                  <apex:param value="" name="guestindex"/>
+        </apex:actionFunction>
+        <script>
+        function defaultvalues(){
+        document.getElementById("bastartdateid").value='{!hosttzonecurrtime}';
+document.getElementById("baenddateid").value='{!hosttzoneendtime}';
+        var st=document.getElementById("bastartdateid").value;
+        var et=document.getElementById("baenddateid").value;
+        //alert('stet'+st+et);
+        document.getElementById("pageid:compid:commoncomponent:createformid:sid").value = st;
+        document.getElementById("pageid:compid:commoncomponent:createformid:eid").value =et;    
+}
+
+        </script>
+         <!-----------------------------------------Discounts Menu--------------------------------------------------> 
+  <style>
+  #promocodetype {margin-top:5px;}
+  </style>
+   <apex:outputPanel id="menuid" Rendered="{!menubool}">
+     
+      <div id="addpromo" class="form" style="width:99%; margin-top:5px ; display:block;  border:0px solid #000; margin-left:.5%;"> 
+          <!--previous Promo Code Button-->
+          <div style=" width:100%; height:40px;">
+        <apex:commandButton action="{!promotionslist}" reRender="validatepanelId,AS_EventsForm,formid,createformid"  value="Promo Codes"  styleclass="togglebtn right margin-5px"   style="float:right;  margin-top:5px; " >
+                   </apex:commandButton>
+
+          </div>
+          
+          
+          <div id="promocodes_container" style="margin-top:0px;"> 
+           <!-----------------------Single Item promocode------------------------>
+            
+            <div id="promocodetype" style="" >
+              <table width="100%" border="0" height="100%">
+                <tr>
+                  <td id="promocode-img" style=" padding-left:3px;"><apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/promocodes/basic.png')}" width="70" height="70"   /></td>
+                  <td id="promocode-title" style=" color:#9b59b6;">Basic Promocodes</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding:0px;"><hr width="98%" style="margin:0px auto;">
+                    </hr></td>
+                </tr>
+                <tr>
+                  <td id="promocode_desc" colspan="2" style="">Discount based on the single item</td>
+                </tr>
+                <tr>
+                  <td id="promocode_ex" colspan="2" style="color:#9b59b6;"><span >Ex:</span> Buy one item and avail 25% or $50 discount</td>
+                </tr>
+                <tr valign="bottom">
+                  <td colspan="2" valign="middle">
+        <a href="" onclick="createbasicpromotion()" id="ancor" class="linkbutton basic" style="text-decoration:none;border-radius:5px;">
+                                   <strong> Create </strong></a> 
+         
+         </td>
+                                    
+                
+                
+                </tr>
+              </table>
+            </div>
+            <!--close of promocode type1--> 
+            <!---------------------End of Single promocode------------------------> 
+            
+            <!-----------------------Multiiselect promocode------------------------
+            <div id="promocodetype" style="">
+              <table width="100%" border="0" height="100%">
+                <tr>
+                  <td id="promocode-img" style=" padding-left:3px;"><apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/promocodes/multipc.png')}" width="70" height="70"   /></td>
+                  <td id="promocode-title" style="">Multi-Items Discount</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding:0px;"><hr width="98%" style="margin:0px auto;">
+                    </hr></td>
+                </tr>
+                <tr>
+                  <td id="promocode_desc" colspan="2" style=""> Discount based on multiple items </td>
+                </tr>
+                <tr>
+                  <td id="promocode_ex" colspan="2" style=""><span>Ex:</span> Buy 2 different items and avail $25 discount </td>
+                </tr>
+                <tr valign="bottom">
+                  <td colspan="2" valign="middle">
+                  <a href="" onclick="createmultiitemspromotion()" id="ancor" class="linkbutton darkblue" style="text-decoration:none;border-radius:5px;">
+                                    <strong>Create</strong> </a>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <!--close of promocode type
+            
+            ---------------------End Multiiselect promocode------------------------>
+            
+
+            <!-----------------------Get Something promocode------------------------
+            
+            <div id="promocodetype" style="">
+              <table width="100%" border="0" height="100%">
+                <tr>
+                  <td id="promocode-img" style=" padding-left:3px;">
+                  <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/promocodes/getsomepc.png')}" width="70" height="70"   />
+                  </td>
+                  <td id="promocode-title" style=" color:#e67e22;">Buy Something <br/>
+                    Get Something</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding:0px;"><hr width="98%" style="margin:0px auto;">
+                    </hr></td>
+                </tr>
+                <tr>
+                  <td id="promocode_desc" colspan="2" style="">Buy single or quantity of items, get another item or quantity of items free or discounted price </td>
+                </tr>
+                <tr>
+                  <td id="promocode_ex" colspan="2" style="color:#e67e22;"><span style="color:#f27b12;">Ex:</span> Buy 2 get 1 free</td>
+                </tr>
+                <tr valign="bottom">
+                  <td colspan="2" valign="middle">
+                  <a href="" onclick="createbuygetpromotion()"  id="ancor1" class="linkbutton orange" style="text-decoration:none;border-radius:5px;">
+                                    <strong>Create</strong> </a>
+              
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <!--close of promocode type
+           -----------------------End of getsomething promocode------------------------> 
+            
+            <!-----------------------Spend More promocode---------------------
+            
+            <div id="promocodetype" style=" margin-right:0px;">
+              <table width="100%" border="0" height="100%">
+                <tr>
+                  <td id="promocode-img" style=" padding-left:3px;">
+                  <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/promocodes/spend-pc.png')}" width="70" height="70"   />
+                  </td>
+                  <td id="promocode-title" style=" color:#1abc9c;">Spend More <br/>
+                    Save More </td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding:0px;"><hr width="98%" style="margin:0px auto;">
+                    </hr></td>
+                </tr>
+                <tr>
+                  <td id="promocode_desc" colspan="2" style="">Discount based on the billing amount</td>
+                </tr>
+                <tr>
+                  <td id="promocode_ex" colspan="2" style="color:#1abc9c;"><span style="color:#1fb194;">Ex:</span> If the billing amount is greater than $1000 get discount of 10%</td>
+                </tr>
+                <tr valign="bottom">
+                  <td colspan="2" valign="middle">
+                   <a href="" onclick="createspendsavepromotion()" id="ancor3" class="linkbutton green" style="text-decoration:none;border-radius:5px;">
+                                    <strong>Create</strong> </a>
+                 </td>
+                </tr>
+              </table>
+            </div>
+            <!--close of promocode type1 
+           ---------------------End of Spend More promocode------------------------> 
+           <!-- float:left; margin-left:10.5%;-->
+           
+            
+            
+          </div>
+          <!--close of promocodes_container--> 
+          
+        </div>
+        <!--close of addpromo--> 
+        
+        <!------------------------------------------------------------------------------> 
+     
+      
+   
+    <!---------------------------------------- End of Discounts Menu-------------------------------------------------->  
+    </apex:outputpanel>
+  </apex:form>  
+  
+<apex:form id="createformid"  > 
+
+  
+  <!------------------ PopUpOpen For Basic PromoCodes ---------------------------------------------------------->
+  
+  <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!createbasicpromobool}" id="Popup2"/>
+    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!createbasicpromobool}"  id="guestForm2" >
+       <apex:variable value="{!promotionslist[0].T_Used_Count__c}" var="T_used_count"/>
+
+  <div style="float:right;">
+              <apex:commandLink action="{!cancelmethod}" value="×" Styleclass="close"  title="Close"  reRender="validatepanelId,AS_EventsForm,formid,createformid,menuid"  immediate="true" style="color:#ffffff;" />
+            </div>
+     <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+     <div class="title-grid">{!promotionslist[0].Promotion_Type__c}</div>
+    <div class="content-gird">
+    
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td valign="top" style="padding:10px;"><!---background-color:#A3A8A8---->
+    <div id="titleheading" style="padding:5px 0px; text-align:center; width:300px;color:#FFFFFF; font-family:cuprum; background-color:#1576a3; font-size:18px;">Select Tickets</div>
+    <div id="" style="width:22%; height:auto; background-color:#000; float:left;">
+    
+           <!---background-color:#D7D7D7---->
+      <div style=" width:300px; height:290px; background-color:#e0e9ee;  vertical-align:top;" class="selectticketbox"><!--start of checkbox-->
+        <style>
+#ticketcheck tr { border-bottom:1px dotted #D3D3D3;}
+#ticketcheck label{ font-size:14px; margin-left:2%;}
+.selectticketbox{overflow:auto; white-space:nowrap; }
+   </style>
+        
+      <table id="ticketcheck" width="100%" border="0" cellpadding="0" cellspacing="0" style="line-height:30px;">
+       <apex:repeat value="{!itemnames}" var="inm" > 
+      <apex:outputText rendered="{!IF( T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">
+        <apex:outputText rendered="{!CONTAINS(CheckTicketsforedit,inm.value)}">
+          
+              <tr>
+                <td style="padding-left:10px;">
+                <input type="checkbox" value="{!inm.value}" class="chkticket" checked='true' onclick="getselvalues(this,'{!inm.value}');" > <span><label >{!inm.label}</label></span></input>
+                 </td>
+              </tr>
+           
+          </apex:outputText> 
+        <apex:outputText rendered="{!NOT(CONTAINS(CheckTicketsforedit,inm.value))}">
+             <tr>
+                <td style="padding-left:10px;">
+                     <input type="checkbox" value="{!inm.value}" class="chkticket"  onclick="getselvalues(this,'{!inm.value}');"  > <span><label >{!inm.label}   </label></span></input>
+                </td>
+            </tr>    
+          </apex:outputText>
+          </apex:outputText>  
+          
+           <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}">
+        
+               <apex:outputText rendered="{!CONTAINS(CheckTicketsforedit,inm.value)}">
+               <tr>
+                  <td style="padding-left:10px;">
+                  <input type="checkbox" value="{!inm.value}" class="chkticket" checked='True' disabled="disabled" onclick="getselvalues(this,'{!inm.value}');" > <span><label >{!inm.label}   </label></span></input>
+                  </td>
+               </tr>  </apex:outputText>
+              <apex:outputText rendered="{!NOT(CONTAINS(CheckTicketsforedit,inm.value))}">  
+                <tr>
+                    <td style="padding-left:10px;">
+                    <input type="checkbox" value="{!inm.value}" class="chkticket"  onclick="getselvalues(this,'{!inm.value}');"  > <span><label >{!inm.label}   </label></span></input>
+                     </td>
+                </tr>    
+             </apex:outputText>
+          </apex:outputText>      
+         </apex:repeat>  
+              
+       </table>
+        
+       
+        
+     </div><!--close of ticketcheckbox-->
+      
+   
+   </div></td> 
+    <td valign="top"><div id="singleitem-form" style=" width:100%;">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="line-height:35px;">
+  <tr>
+    <td width="15.5%" style="text-align:right;" ><label>Promotion Name: </label><label id="mandatory">*</label></td>
+    <td width="24%"><apex:inputField value="{!promotionslist[0].Name}" required="true"   styleClass="medium" style=" width:80%;" id="baname"  />
+    </td>
+    <td width="13%" style="text-align:right;"><label>Promo Code: </label><label id="mandatory">*</label></td>
+    <td width="32%" >
+     <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,promotionslist[0].T_Used_Count__c !=0  ),TRUE,FALSE))}" Value="{!promotionslist[0].Promo_Code__c}" style="font-size:14px; color:#424242;">
+            </apex:outputText>
+           
+          <apex:inputField value="{!promotionslist[0].Promo_Code__c}" required="true" styleClass="medium" id="bapromocode"  style=" width:75%;" rendered="{!IF(promotionslist[0].T_Used_Count__c == NULL || promotionslist[0].T_Used_Count__c == 0 ,TRUE,FALSE)}" onkeyup="isspacee(this)"/>
+          <apex:inputHidden value="{!DupPromocodecheck}" id="dupbapromocheckid"/>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:right;"><label>Start Date:</label>
+      <label id="mandatory">*</label></td>
+    <td><c:RemoveLink id="bastremoid">
+        <!-- <apex:inputfield value="{!promotionslist[0].Eff_TimeStamp__c}" style="width:80%;"  id="bastartdateid" styleClass="ED" required="true" /> -->
+        
+         <input class="ED" id="bastartdateid" type="text"  onchange="datevalidation()" style="width:80%;" />
+                   <div style="display:none">
+                   <c:EV_FormatDt date_Timevalue="{!eventslist.End_Date__c}" t_Zone="{!eventslist.Time_Zone__c}"  id="etmcdc"/>
+                     <apex:outputpanel rendered="{!promotionslist[0].Eff_TimeStamp__c!=null}" >
+                       <c:EV_FormatDt date_Timevalue="{!promotionslist[0].Eff_TimeStamp__c}" t_Zone="{!eventslist.Time_Zone__c}"  id="fudap"/>
+                         
+                     </apex:outputpanel>
+                    
+                     
+                   </div>
+        </c:RemoveLink> 
+       <!-- <input type="text" class="ED" id="bastartdateid" value="{!promotionslist[0].Eff_TimeStamp__c}" />--->
+      
+    </td>  
+   
+    <td style="text-align:right;"><label>End Date:</label>
+    
+    
+    </td>
+    <td> 
+   <!---<input type="text" id="baenddateid"  class="ED" value="{!promotionslist[0].Exp_TimeStamp__c}"  />---->
+    <c:RemoveLink id="baedremid">
+      <!-- <apex:inputField value="{!promotionslist[0].Exp_TimeStamp__c}" style="width:75%;" id="baenddateid" styleClass="ED1" required="true" /> -->
+       <input class="ED1" id="baenddateid" type="text"  onchange="datevalidation1()" style="width:75%;"/>
+                   <div style="display:none">
+                     <apex:outputpanel rendered="{!promotionslist[0].Exp_TimeStamp__c!=null}" >
+                       <c:EV_FormatDt date_Timevalue="{!promotionslist[0].Exp_TimeStamp__c}" t_Zone="{!eventslist.Time_Zone__c}"  id="fudap1"/>
+                     </apex:outputpanel>
+                   </div>
+  </c:RemoveLink>
+       </td>
+      
+      </tr>
+    
+
+
+        <!---  <apex:outputText rendered="{!IF(editpromobool!=TRUE,TRUE,FALSE)}"><div style="font-style:italic;color:rgba(62, 101, 72, 1);height:10px;width:100%;">Default:Event End Date</div></apex:outputText>
+  ---> 
+  
+  <tr>
+  
+    <td style="text-align:right;"><label>Max Coupon Uses: </label> <label id="mandatory">*</label></td>
+    <td>  <apex:inputField value="{!promotionslist[0].T_Max_Count__c}" style="width:80%;" required="true"  styleClass="medium" id="batusageid" onkeyup="validatnumeric(this)"/></td>
+   <!-- <td style="text-align:right;"><label>Uses per Customer: </label></td>
+    <td><apex:inputField value="{!promotionslist[0].I_Max_Count__c}"   styleClass="medium" id="baiusageid" style="width:75%;" onkeyup="validatnumeric(this)"/></td> -->
+   
+ 
+ <apex:outputText rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">
+    <td style="text-align:right;"><label>Discount Type:</label></td>
+  
+     <td>
+        
+          <apex:selectList id="setopt" value="{!itempromotionslist[0].Item_Discount_Type__c}" multiselect="false" size="1" style="outline:none;width:25%;" Styleclass="selectclass" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}" >               
+               <apex:selectOptions value="{!discounttypes}"/>
+           </apex:selectList>
+          <label>  Discount Value: </label>
+         <label id="mandatory">*</label> 
+         
+           <apex:inputField id="discoutid" value="{!itempromotionslist[0].Item_Discount_Value__c}" required="true" style="width:15%;margin-left:60%;margin-top:-10%;vertical-align: top;" styleclass="medium" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}" onkeyup="isdecimal(this)"/>
+             </td>
+  </apex:outputText>
+    <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}">
+   <td style="text-align:right;"><label>  Discount Value: </label></td>
+    <td>
+                 <apex:outputText value=" $" rendered="{!IF(AND(itempromotionslist[0].Item_Discount_Type__c != 'Percent',editpromobool == TRUE,T_used_count !=0  ) ,TRUE,FALSE)}" style="font-size:14px; color:#424242;"/>  
+         <apex:outputText Value="{!itempromotionslist[0].Item_Discount_Value__c}" style="font-size:14px; color:#424242;"> 
+           </apex:outputText> 
+
+         <apex:outputText value=" %" rendered="{!IF(AND(itempromotionslist[0].Item_Discount_Type__c == 'Percent',editpromobool == TRUE,T_used_count !=0  ) ,TRUE,FALSE)}" style="font-size:14px; color:#424242;"/>
+           
+     
+   </td>
+   </apex:outputText>
+     
+   
+   
+      </tr>
+     <!-- <td align="left"> 
+  
+     
+     <apex:inputHidden value="{!itempromotionslist[0].Buy_Item__r.item_count__c}" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}"/>
+      </td> -->
+      <tr>
+  
+  <td align="right" valign="middle">Buy Ticket Qty:<label id="mandatory">*</label></td>
+    <td align="left"> 
+    <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}" Value="{!itempromotionslist[0].Buy_Item_Quantity__c}" style="font-size:14px; color:#424242;">
+     </apex:outputText>
+     
+     <apex:inputField id="qtyid" value="{!itempromotionslist[0].Buy_Item_Quantity__c}" style="width:80%;" required="true" styleclass="medium" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}" onkeyup="validatnumeric(this)"/>
+      </td>
+   
+ 
+  <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE),TRUE,FALSE))}">
+  
+    
+    <td style="text-align:right;">Used Coupons :</td>
+    <td><apex:outputText value="{!promotionslist[0].T_Used_Count__c}" style="text-align:left;" id="usdpromo"/></td>
+   
+   </apex:outputText>
+   </tr>
+  <tr>
+    <td colspan="4" align="center" valign="top">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+       <td  align="right" valign="middle" width="7.5%"><label>Type:</label> </td>
+       <td  align="left" width="33%"><span style="line-height:20px;" >
+            <apex:selectRadio value="{!promotionslist[0].Type__c}"  style="margin-left:5px;"  >
+                        <apex:selectoptions value="{!promotypeoptions}" ></apex:selectoptions>
+         </apex:selectRadio> 
+        </span>
+        </td>
+        <td  align="right" width="7.5%"> <span style="text-align:right;">Status:</span></td>
+      <td  align="left">
+
+  <apex:selectRadio value="{!promotionslist[0].Status__c}"  style="margin-left:0px;width:100%;"  > <!---  rendered="{!If(promotionslist[0].Exp_TimeStamp__c < TodaysDate ,True,False)}"> --->
+                    <apex:selectoptions value="{!promostatusoptions }"  ></apex:selectoptions>
+        </apex:selectRadio> 
+      <!---  <apex:repeat value="{!promostatus}" var="ps" > 
+        <apex:variable value="{!ps}" var="ps" />
+           <apex:outputText rendered="{!IF(promotionslist[0].Status__c == ps , TRUE, FALSE )}">
+           <input type="radio"  value="{!ps}" name="2" class="chkstatus" checked="true" /><span style="margin-left:5px;">{!ps}</span>
+           </apex:outputText>
+           <apex:outputText rendered="{!IF(promotionslist[0].Status__c != ps , TRUE, FALSE )}">
+           <input type="radio"  value="{!ps}" name="2" class="chkstatus"  /><span style="margin-left:5px;">{!ps}</span>
+           </apex:outputText>
+           <apex:variable value=" " var="ps" />
+      </apex:repeat>--->
+        </td> 
+      </tr>
+   
+   </table></td>
+    </tr>
+</table>
+
+      </div></td>
+  </tr>
+  <tr>
+    
+    <td colspan="2" valign="middle" style="text-align:right;"><div style="width:99%; text-align:right; margin-top:-3px;">
+       <apex:inputHidden value="{!stdatetimezon}" id="sid"/>
+    <apex:inputHidden value="{!edtimezon}" id="eid"/>
+      <apex:commandButton value="Save" onclick="validatefun('{!promotionslist[0].Promotion_Type__c}');"  styleclass="button-a blue"  rerender="errorbboolid" /> &nbsp;&nbsp; <!----- reRender="errorbboolid,errorMessage,menuid,AS_EventsForm,createformid"-----> 
+         <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" styleclass="button-a dark-blue"  reRender="validatepanelId,AS_EventsForm,formid,createformid,menuid"  />
+       
+     
+           <apex:actionFunction name="Savepromtion" action="{!savepromotion}" reRender="errorbboolid,errorMessage,AS_EventsForm" oncomplete="window.location.reload();" status="AjaxLoader">
+            <apex:param name="chkArray"  value=""/>
+           </apex:actionFunction>          
+       
+  </div></td>
+  </tr>
+</table> 
+    
+  </div></div>
+
+
+   </apex:outputPanel>
+
+  <!------------------ PopUpClose For Basic PromoCodes ---------------------------------------------------------->
+   <apex:outputPanel rendered="{!createbasicpromobool}">
+
+ <script type="text/javascript">
+
+    function getselvalues(a,selvalue){
+    
+                   if(selvalue == 'a089000000Mg123456'){ 
+                       if(a.checked){
+                            $('tr td input[type="checkbox"]').each(function(){
+                                $(this).attr('checked', true);
+                                  
+                           });
+                       
+                     }    
+                      
+                      if(!a.checked){
+                            $('tr td input[type="checkbox"]').each(function(){
+                                $(this).attr('checked', false);
+                            });
+                            
+             
+                                   
+                            
+                          }    
+                      }
+                     
+          } 
+              
+</script> 
+ 
+ </apex:outputPanel>
+  
+   
+   <!------------------ PopUp For other PromoCodes ----------------------------------------------------------> 
+   
+<!--    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!createpromotionbool}" id="Popup1"/>
+    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!createpromotionbool}"  id="guestForm1" >
+ 
+ 
+     <div style="float:right;">
+              <apex:commandLink action="{!cancelmethod}" value="×" Styleclass="close"  title="Close"  reRender="validatepanelId,AS_EventsForm,formid,createformid,menuid"  immediate="true" style="color:#ffffff;" />
+            </div>
+     <div class="grid-1" style=" width:98%;margin-left:1%; padding-right:0px;">
+     <div class="title-grid">{!promotionslist[0].Promotion_Type__c}</div>
+
+    <div class="content-gird" >
+    <style>
+    #multiitem-form table tr td {border:0px solid #000;padding:0.5px;}
+    </style>
+    <!--<div id="multiitem-form">     
+    
+       <table width="100%" border="1" style="margin-left:10px;">       
+        <tr style="height:50px;">
+          <td  style="text-align:right;"><label>Promotion Name: </label><label id="mandatory">*</label></td>
+          <td style="text-indent:1%;width:25%;padding-left:4px;">
+          <apex:inputField value="{!promotionslist[0].Name}" required="true"   styleClass="medium" style=" width:83%;" id="name"  />
+          </td>
+          <td style="text-align:right;"><label>Promo Code: </label><label id="mandatory">*</label></td>
+          <td style="padding-left:4px;">      
+          
+          <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,promotionslist[0].T_Used_Count__c !=0  ),TRUE,FALSE))}" Value="{!promotionslist[0].Promo_Code__c}" style="font-size:14px; color:#424242;">
+            </apex:outputText>
+           
+          <apex:inputField value="{!promotionslist[0].Promo_Code__c}" required="true" styleClass="medium" id="promocode"  style=" width:80%;" rendered="{!IF(promotionslist[0].T_Used_Count__c == NULL || promotionslist[0].T_Used_Count__c == 0 ,TRUE,FALSE)}" />
+          <apex:inputHidden value="{!DupPromocodecheck}" id="duppromocheckid"/>
+          </td>
+          <td style="text-align:right;padding-left:4px;"><label>Max Coupon Uses: </label></td>
+          <td style="padding-left:4px;">
+          <apex:inputField value="{!promotionslist[0].T_Max_Count__c}"   styleClass="medium" id="tusageid" />
+          </td>
+        </tr>
+      <tr style="height:50px;">
+         <td style="text-align:right;"><label>Start Date:</label><label id="mandatory">*</label></td>
+         <td style="padding-left:4px;"> 
+       <c:RemoveLink id="stremid">
+         <apex:inputField value="{!promotionslist[0].Eff_TimeStamp__c}" style="width:85%;"  id="startdateid"  /> </c:RemoveLink>  
+        </td> 
+         <td style="text-align:right;"><label>End Date1111:</label> <label id="mandatory">*</label> </td>
+         <td style="padding-left:4px;">
+       
+           <input type="text" class="ED" />
+       
+          <apex:outputText rendered="{!IF(editpromobool!=TRUE,TRUE,FALSE)}"><div style="font-style:italic;color:rgba(62, 101, 72, 1);height:10px;width:100%;">Default:Event End Date</div></apex:outputText>
+
+  
+         </td>
+         <td style="text-align:right;"><label>Uses per Customer: </label></td>
+         <td style="padding-left:4px;"> 
+          <apex:inputField value="{!promotionslist[0].I_Max_Count__c}"   styleClass="medium" id="iusageid" />
+         </td>
+      </tr></table><table width="100%" border="1" style="margin-left:10px;">
+      <tr style="height:50px;">
+  <td style="padding-left:10%;width:13.4%;"><label >Type: </label></td>
+  <td style="width:25%;" >
+    <apex:selectRadio value="{!promotionslist[0].Type__c}"  style="width:93%;"  >
+                    <apex:selectoptions value="{!promotypeoptions}" ></apex:selectoptions>
+     </apex:selectRadio>  
+  </td>
+  <td style="width:11%;text-align:right;"><label >Status: </label></td> 
+  <td >
+     <apex:selectRadio value="{!promotionslist[0].Status__c}"  style="margin-left:0px;width:80%;">
+                    <apex:selectoptions value="{!promostatusoptions }"></apex:selectoptions>
+     </apex:selectRadio>
+ </td>
+  </tr>
+    </table>
+
+
+     <apex:variable value="{!promotionslist[0].T_Used_Count__c}" var="T_used_count"/>
+
+        </div>-->
+   
+<!-------Div to Display Error Messages------------------>
+  
+  <apex:outputPanel rendered="{!errormessagebool }" id="errorbboolid">
+           <div style="margin: 10px 10px 2px 20px;">
+               <apex:outputText value="{!failuremessageset}" id="errorMessage" style="color:red;" escape="false" ></apex:outputText>
+           </div> 
+     </apex:outputPanel>
+
+
+
+<!-------content for multiselect popup------------------>
+
+     <!--<apex:outputPanel rendered="{!createitembool}" id="multiPanelid"> 
+   <div id="addpc-heading">Add Promo Code &nbsp;&nbsp;
+      <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}" value="This PromoCode has already been used by {!T_used_count} Registrants.Editing of following section is not possible." style="color:rgba(41, 41, 135, 1);" /> 
+
+   </div>
+ 
+ 
+      <div id="dynamic-multiitems">
+        <table class="display dynamic" id="options-table" style="width:99%; margin:0px auto;">
+          <thead>
+            <tr>
+              <th width="20%" style="padding:3px 0px 3px 2px; text-align:center;">Ticket</th>
+              <th width="13%" style="padding:3px 0px 3px 2px;text-align:center;">Ticket Price</th>
+              <th width="12.5%" style="padding:3px 0px 3px 2px;text-align:center;">Ticket Qty</th>
+              <th width="10%" style="padding:3px 0px 3px 2px;text-align:center;">Buy Ticket Qty </th>
+              <th width="13%" style="padding:3px 0px 3px 2px;text-align:center;">Discount Type</th>
+              <th width="11%" style="padding:3px 0px 3px 2px;text-align:center;">Discount Value</th>
+              
+              <th width="5%" style="padding:3px 0px 3px 2px;text-align:center;"></th>
+             <apex:variable var="increment" value="{!0}" id="itemincid"/> 
+            </tr>
+          </thead>
+           <apex:repeat value="{!itempromotionslist}" var="ip1" >
+           <apex:variable var="increment" value="{!increment+ 1}"/>
+          <tr>
+           <td>
+             <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}" Value="{!ItemMAP[ip1.Buy_Item__c].item_name__c}" style="font-size:14px; color:#424242;">
+            </apex:outputText>
+           
+                <apex:selectList value="{!ip1.Buy_Item__c}" multiselect="false" size="1"  id="buymultiitemid"  style="width:80%;outline:none;" Styleclass="selectclass" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">               
+                   <apex:selectOptions value="{!itemnames }" />
+                   
+                   <apex:actionSupport event="onchange" reRender="priceid,qtyid,errorbboolid,errorMessage" status="refreshContent" >
+                       </apex:actionSupport> 
+                       
+                        <apex:actionStatus id="refreshContent" >         
+                     <apex:facet name="start" >         
+                        <apex:image url="{!$Resource.LoaderImage}" />         
+                     </apex:facet>         
+                </apex:actionStatus> 
+                </apex:selectList>
+            </td>
+            <td style="text-align:center;">
+                 <apex:outputText value="{!ItemMAP[ip1.Buy_Item__c].price__c}" id="priceid" style="font-size:14px; color:#424242;"> </apex:outputText> 
+             </td>
+               <td style="text-align:center;">
+                  <apex:outputText value="{!ItemMAP[ip1.Buy_Item__c].Available_Tickets__c}"  id="qtyid" style="font-size:14px; color:#424242;"></apex:outputText> 
+               </td>
+                  
+               <td>
+              
+               
+                  <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label>
+                          <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}" Value="{!ip1.Buy_Item_Quantity__c}" style="font-size:14px; color:#424242;">
+                        </apex:outputText>
+                        <apex:inputField value="{!ip1.Buy_Item_Quantity__c}" styleclass="medium" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}"/>
+                  </div>
+            </td>
+            <td>
+             <apex:outputText value=" $" rendered="{!IF(AND(ip1.Item_Discount_Type__c != 'Percent',editpromobool == TRUE,T_used_count !=0  ) ,TRUE,FALSE)}" style="font-size:14px; color:#424242;"/>  
+           <apex:outputText value=" %" rendered="{!IF(AND(ip1.Item_Discount_Type__c == 'Percent',editpromobool == TRUE,T_used_count !=0  ) ,TRUE,FALSE)}" style="font-size:14px; color:#424242;"/>
+           
+          
+            
+                 <apex:selectList value="{!ip1.Item_Discount_Type__c}" multiselect="false" size="1"   style="width:80%;outline:none;" Styleclass="selectclass" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}" >               
+                   <apex:selectOptions value="{!discounttypes}"/> 
+               </apex:selectList>
+            </td>
+            <td>
+                 <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label>  
+                        
+                         <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}" Value="{!ip1.Item_Discount_Value__c}" style="font-size:14px; color:#424242;">
+                        </apex:outputText>
+                        <apex:inputField value="{!ip1.Item_Discount_Value__c}" style="width:60%;" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}"/>
+                 </div>
+            </td>
+             <td><apex:outputtext rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">  
+               <apex:commandLink onclick="if(!confirm('Are you sure?')){return};"    title="Deleterow" rendered="{!itempromotionslist.size > 1 }"    action="{!deleteitempromoline}"   reRender="createformid,multiPanelid,itemincid,errorbboolid,errorMessage"   > 
+                 <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/removerow.png')}" style="width:23px; height:23px;background-color:#DDD;border-radius:3px; cursor:pointer;"/>
+                 <apex:param value="{!increment-1}" name="deletedId"/>     
+               </apex:commandLink>
+               
+                   
+                   &nbsp;&nbsp; 
+               
+
+
+             <apex:commandButton title="Addrow"  rendered="{!itempromotionslist.size = (increment) }"  onclick=" return checkitemdup();"   reRender="aa"   style="border:0px #FF0000 solid; background-image:url({!URLFOR($Resource.Promocodes, 'promocodes/images/addrow.png')} ); width:23px; height:23px;background-color:#DDD;border-radius:3px; cursor:pointer;  " > 
+              </apex:commandButton>  
+            </apex:outputtext>
+             </td>
+            
+          </tr>
+           </apex:repeat>
+     </table ></div><br/>
+    <div style="width:99%; text-align:right; margin-top:10px;">
+             <apex:commandButton value="Save" onclick="validatefun();" styleclass="button-a blue"  reRender="errorbboolid" />&nbsp;&nbsp;
+             <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" styleclass="button-a dark-blue"  reRender="validatepanelId,AS_EventsForm,formid,createformid,menuid"/>
+        
+         <apex:actionFunction name="Savepromtion" action="{!savepromotion}"  reRender="errorbboolid,errorMessage,menuid,itemincid,createformid,,AS_EventsForm"  >
+            <apex:param name="choose"  value=""/>
+         </apex:actionFunction>
+       
+      <apex:actionFunction name="dupitmchk" action="{!additems}"  reRender="createformid,multiPanelid,itemincid,errorbboolid,errorMessage"  >
+            <apex:param name="dupitmchk"  value=""/>
+         </apex:actionFunction> 
+      </div>
+  </apex:outputPanel>-->
+  
+  <!------------------close of multiselect popup-----------------------------------> 
+
+   <!----------------- Create BuyXGety Discount popup-------------------------------------------------------------------------->           
+     
+   <!--<apex:outputPanel rendered="{!createbuygetbool }"> 
+   
+  <div id="addpc-heading" style="width:99%;">Add Promo Code
+   &nbsp;&nbsp;       
+   <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}" value="This PromoCode has already been used by {!T_used_count} Registrants.Editing of following section is not possible." style="color:rgba(41, 41, 135, 1);"/> 
+   </div>
+    <table width="100%" border="0">
+      <tr>
+        <td width="41%" style="color:#247dba; font-size:18px; text-indent:5px;text-shadow: 0 2px 2px rgba(0, 0, 0, .25); font-family:cuprum; font-weight:300;">BUY THIS:</td>
+        <td width="50%" style="color:#247dba; font-size:18px;text-indent:5px; text-shadow: 0 2px 2px rgba(0, 0, 0, .25); font-family:cuprum; font-weight:300;">GET THIS:</td>
+      </tr>
+    </table>
+  
+ 
+     <div id="dynamicgetsome-left" style="float: left; width:45%;">
+     <table class="display dynamic-getleft" id="options-table" style="width:99%; margin:0px auto;">
+          <thead>
+            <tr>
+              <th width="21%" style="padding:3px 0px 3px 2px; text-align:center;">Ticket</th>
+              <th width="13%" style="padding:3px 0px 3px 2px;text-align:center;">Ticket Price</th>
+              <th width="12%" style="padding:3px 0px 3px 2px;text-align:center;">Ticket Qty</th>
+              <th width="14%" style="padding:3px 0px 3px 2px;text-align:center;">Buy Ticket Qty </th>
+              <th width="10%" style="padding:3px 0px 3px 2px;text-align:center;"></th>
+            </tr>
+        <apex:variable var="increment" value="{!0}" id="varid"/>     
+          </thead>
+          <apex:repeat value="{!itempromotionslist}" var="ip1" id="repaetid">
+              <apex:variable var="increment" value="{!increment+ 1}"/>
+            <tr>
+            <td>
+           <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}" Value="{!ItemMAP[ip1.Buy_Item__c].item_name__c}" style="font-size:14px; color:#424242;">
+            </apex:outputText> 
+            
+          <apex:selectList value="{!ip1.Buy_Item__c}" multiselect="false" size="1" style="width:96%;outline:none;" id="buymultiitemid"  Styleclass="selectclass" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">
+                      <apex:selectOptions value="{!itemnames }"/>
+                      
+                      <apex:actionSupport event="onchange" reRender="priceid,qtyid,errorbboolid,errorMessage" status="refreshContent" >
+                       </apex:actionSupport> 
+                       
+                        <apex:actionStatus id="refreshContent" >         
+                     <apex:facet name="start" >         
+                        <apex:image url="{!$Resource.LoaderImage}" />         
+                     </apex:facet>         
+                </apex:actionStatus>  
+                      
+                      
+              </apex:selectList>
+            </td>
+           
+            
+             <td style="text-align:center;">
+                 <apex:outputText value="{!ItemMAP[ip1.Buy_Item__c].price__c}" id="priceid" style="font-size:14px; color:#424242;"> </apex:outputText> 
+             </td>
+               <td style="text-align:center;">
+                  <apex:outputText value="{!ItemMAP[ip1.Buy_Item__c].Available_Tickets__c}"  id="qtyid" style="font-size:14px; color:#424242;"></apex:outputText> 
+               </td>
+           
+            <td>
+            <apex:outputPanel rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}">
+            <label id="mandatory">*</label>
+              <apex:outputText Value="{!ip1.Buy_Item_Quantity__c}" style="font-size:14px; color:#424242;"/>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">
+                <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label>        
+              <apex:inputField value="{!ip1.Buy_Item_Quantity__c}" style="width:53%;" /></div>
+           </apex:outputPanel>
+           </td>
+           
+           <td >
+           <apex:outputtext rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">  
+                   <apex:commandLink title="Deleterow" rendered="{!itempromotionslist.size > 1 }" onclick="if(!confirm('Are you sure?')){return};" action="{!deleteitempromoline}"  reRender="createformid,varid,createbuyitmboolid,errorbboolid,errorMessage"  > 
+                       <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/removerow.png')}" style="width:23px; height:23px;background-color:#DDD;border-radius:3px; cursor:pointer;"/>
+                      <apex:param value="{!increment-1}" name="deletedId"/>     
+                   </apex:commandLink> 
+                    &nbsp;&nbsp;
+                   <apex:commandButton title="Addrow"    rendered="{!itempromotionslist.size = (increment) }"  onclick=" return checkitemdup();"   reRender="aa"   style="border:0px #FF0000 solid; background-image:url({!URLFOR($Resource.Promocodes, 'promocodes/images/addrow.png')} ); width:23px; height:23px;background-color:#DDD;border-radius:3px; cursor:pointer;"  > 
+                    </apex:commandButton>
+           </apex:outputText>  
+           </td>
+           
+           </tr>
+       </apex:repeat>
+          
+     </table>
+     </div>
+      <div id="dynamicgetsome-right" style="float: right; width:55%">
+     <table class="display dynamic-getright" id="options-table" style="width:99%; margin:0px auto;">
+          <thead>
+            <tr>
+              <th width="14%" style="padding:3px 0px 3px 2px; text-align:center;">Ticket</th>
+              <th width="10%" style="padding:3px 0px 3px 2px;text-align:center;">Ticket Price</th>
+              <th width="8%" style="padding:3px 0px 3px 2px;text-align:center;">Ticket Qty</th>
+              <th width="12%" style="padding:3px 0px 3px 2px;text-align:center;">Get Item Qty </th>
+              <th width="11%" style="padding:3px 0px 3px 2px;text-align:center;">Discount Type</th>
+              <th  width="11%" style="padding:3px 0px 3px 2px; text-indent:4px;"> Discount Value</th>
+              <th  width="10%" style="padding:3px 0px 3px 2px; text-indent:4px;"> </th>
+            </tr>
+       <apex:variable var="incrementVAL" value="{!0}" id="incid"/> 
+           </thead>
+           
+          <apex:repeat value="{!freeitempromotionslist}" var="ip1" >
+            <apex:variable var="incrementVAL" value="{!incrementVAL+ 1}"/>
+            <tr>
+            <td>
+            <apex:outputText rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}" Value="{!ItemMAP[ip1.Free_Item__c].item_name__c}" style="font-size:14px; color:#424242;">
+            </apex:outputText> 
+              <apex:selectList value="{!ip1.Free_Item__c}" multiselect="false" size="1" id="getmitemid" style="outline:none;width:96%;" Styleclass="selectclass" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">
+                      <apex:selectOptions value="{!itemnames }" />
+                       <apex:actionSupport event="onchange" reRender="priceid1,qtyid1,errorbboolid,errorMessage" status="refreshContent"  >
+                       </apex:actionSupport> 
+                       
+                        <apex:actionStatus id="refreshContent" >         
+                     <apex:facet name="start" >         
+                        <apex:image url="{!$Resource.LoaderImage}" />         
+                     </apex:facet>         
+                </apex:actionStatus> 
+             </apex:selectList>
+            </td>
+            <td style="text-align:center;">
+                 <apex:outputText value="{!ItemMAP[ip1.Free_Item__c].price__c}" id="priceid1" style="font-size:14px; color:#424242;"> </apex:outputText> 
+            </td>
+            <td style="text-align:center;">
+                  <apex:outputText value="{!ItemMAP[ip1.Free_Item__c].Available_Tickets__c}"  id="qtyid1" style="font-size:14px; color:#424242;"></apex:outputText> 
+            </td>
+            <td>
+             <apex:outputPanel rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}">  
+              <label id="mandatory">*</label>
+                 <apex:outputText Value="{!ip1.Free_Item_Quantity__c}" style="font-size:14px; color:#424242;"/>
+             </apex:outputPanel>
+             <apex:outputPanel rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">
+              <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label> 
+               <apex:inputField value="{!ip1.Free_Item_Quantity__c}" style="width:56%;" /></div>
+             </apex:outputPanel>
+           </td> 
+           <td > 
+               <apex:outputText value=" $" rendered="{!IF(AND(ip1.Item_Discount_Type__c != 'Percent',editpromobool == TRUE,T_used_count !=0  ) ,TRUE,FALSE)}" style="font-size:14px; color:#424242;"/>  
+               <apex:outputText value=" %" rendered="{!IF(AND(ip1.Item_Discount_Type__c == 'Percent',editpromobool == TRUE,T_used_count !=0  ) ,TRUE,FALSE)}" style="font-size:14px; color:#424242;"/>
+           
+          
+             <apex:selectList value="{!ip1.Item_Discount_Type__c}" multiselect="false" size="1"   style="width:80%;outline:none;" Styleclass="selectclass" rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">               
+                   <apex:selectOptions value="{!discounttypes}"/>
+               </apex:selectList>
+            
+           </td>
+            <td >
+              <apex:outputPanel rendered="{!(IF(AND(editpromobool == TRUE,T_used_count !=0  ),TRUE,FALSE))}">  
+                   <label id="mandatory">*</label>
+                   <apex:outputText Value="{!ip1.Item_Discount_Value__c}" style="font-size:14px; color:#424242;"/>
+              </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">  
+            <div class="requiredInput">
+                        <div class="requiredBlock"></div>
+                        <label id="mandatory">*</label> 
+                   <apex:inputField value="{!ip1.Item_Discount_Value__c}" style="width:51%;" /></div>
+                </apex:outputPanel>
+           </td>
+           
+           <td >
+           <apex:outputtext rendered="{!IF(T_used_count == NULL || T_used_count == 0,TRUE,FALSE)}">  
+           <apex:commandLink title="Deleterow" onclick="if(!confirm('Are you sure?')){return};"  action="{!deletefreeitempromoline}"  rendered="{!freeitempromotionslist.size > 1 }"  reRender="createformid,incid,createbuyitmboolid,errorbboolid,errorMessage" > 
+                 <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/removerow.png')}" style="width:23px; height:23px;background-color:#DDD;border-radius:3px; cursor:pointer;"/>
+                 <apex:param value="{!incrementVAL-1}" name="deletedId"/>           
+            </apex:commandLink> 
+                   &nbsp;&nbsp;
+           <apex:commandButton title="Addrow"  rendered="{!freeitempromotionslist.size = (incrementVAL) }" onclick="return checkfreedup();" style="border:0px #FF0000 solid; background-image:url({!URLFOR($Resource.Promocodes, 'promocodes/images/addrow.png')} ); width:23px; height:23px;background-color:#DDD;border-radius:3px; cursor:pointer;"    reRender="aa"   > 
+                
+                   </apex:commandButton>
+            </apex:outputText> 
+           </td>
+                  
+          </tr>
+             </apex:repeat>
+            
+             
+      </table>
+     </div> 
+         <div style="width:100%;clear:both;"></div>
+     <div style="width:99%; text-align:right; margin-top:10px;">
+          
+              <apex:commandButton value="Save" onclick="validatefun();" styleclass="button-a blue"  reRender="errorbboolid" />&nbsp;&nbsp;
+             <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" styleclass="button-a dark-blue"  reRender="validatepanelId,AS_EventsForm,createformid,menuid"/>
+         
+         
+         <apex:actionFunction name="Savepromtion" action="{!savebuyxgetxpromotion}"  ReRender="errorbboolid,errorMessage,menuid,createformid,incid,varid,AS_EventsForm" >
+            <apex:param name="choose"  value=""/>
+         </apex:actionFunction>
+         
+         <apex:actionFunction name="dupitmchk" action="{!additems}" reRender="createformid,varid,createbuyitmboolid,errorbboolid,errorMessage " >
+            <apex:param name="dupitmchk"  value=""/>
+         </apex:actionFunction> 
+         
+         <apex:actionFunction name="dupfreeitmchk" action="{!addgetitems}" reRender="createformid,incid,createbuyitmboolid,errorbboolid,errorMessage"  >
+            <apex:param name="dupfreeitmchk"  value=""/>
+         </apex:actionFunction> 
+          
+      </div>
+   </apex:outputPanel>-->
+   
+      <!-----------------End of Create BuyXGety Discount popup -------------------------------------------------------------------------->           
+   
+   
+     <!----------------- Create Spend More Save More Discount popup-------------------------------------------------------------------------->                     
+   
+  <!------------------- <apex:outputpanel rendered="{!createorderbool}" id="createorderboolid">
+   <apex:variable var="incrementVAL" value="{!0}" id="incrid"/> 
+    
+     <div id="addpc-heading" style="width:99%;">Add Promo Code</div><!--close of heading-->
+     <!--close of spend more---->
+<!--     <div id="dynamic-spendmore">
+     <apex:repeat value="{!promotionslist}" var="p">
+       <table class="dynamic-spend" width="98%" border="1" style="border-color:black;margin-left:13px;"  >
+         <tr>
+          <apex:variable var="incrementVAL" value="{!incrementVAL+ 1}"/>
+            <td style="text-indent:4px;width:22%;">If the purchase amount is more than $<label id="mandatory">*</label></td>
+            <td style="width:6%;"> <apex:inputField value="{!p.Condition_Min_No__c}" required="true"  styleClass="medium" style="width:68%;" /></td>
+            <td style="width:39%;">&nbsp;and less than or equal to $<apex:inputField value="{!p.Condition_Max_No__c}"  styleClass="medium" style="width:10%;" /> get a discount of
+              &nbsp; <apex:selectList value="{!p.Discount_Type__c}" multiselect="false" size="1"   style="outline:none; width:18%;"  Styleclass="selectclass">               
+                       <apex:selectOptions value="{!discounttypes}"/>
+                </apex:selectList> <label id="mandatory">*</label></td>
+            <td style="width:17px;"> <apex:inputField value="{!p.Discount_Value__c}"  styleClass="medium" style="width:66%;" required="true"/></td>  
+              <td style="width:10px;">on total purchase amount.</td>
+            
+            <td width="10%" style="text-indent:2%;">
+            <apex:commandLink title="Deleterow" action="{!deletespendmoreline}" Immediate="TRUE" rendered="{!promotionslist.size > 1 }"  reRender="incrid,createorderboolid,errorbboolid,errorMessage" onclick="if(!confirm('Are you sure?')){return};" > 
+                <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/removerow.png')}" style="width:23px; height:23px;background-color:#DDD;border-radius:3px; cursor:pointer;"/>
+                <apex:param value="{!incrementVAL-1}" name="deletedId"/>           
+            </apex:commandLink> 
+                   &nbsp;&nbsp;
+         <apex:commandLink title="Addrow" action="{!Addrangemethod}" rendered="{!promotionslist.size = (incrementVAL) }"   reRender="incrid,createorderboolid,errorbboolid,errorMessage"   > 
+                  <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/addrow.png')}"  style="width:23px; height:23px;background-color:#DDD;border-radius:3px; cursor:pointer; "/>
+                   </apex:commandLink>
+            
+            </td>
+        </tr>
+      </table>
+      </apex:repeat>
+    </div>
+     <!--<div style="width:99%; text-align:right; margin-top:10px;">
+             <apex:commandButton value="Save"  onclick="validatefun();"  styleclass="button-a blue"  Rerender="errorbboolid"/>&nbsp;&nbsp;
+             <apex:commandButton value="Cancel" action="{!cancelmethod}" immediate="true" styleclass="button-a dark-blue"  reRender="validatepanelId,AS_EventsForm,formid,createformid,menuid"/>
+
+     <apex:actionFunction name="Savepromtion" action="{!saveorderpromotion}"  reRender="errorbboolid,errorMessage,menuid,createformid,AS_EventsForm,itemincid"  >
+            <apex:param name="choose"  value=""/>
+         </apex:actionFunction>
+        
+
+
+     </div>
+   </apex:outputPanel>-->
+      <!-----------------End of Create Spend More Save More Discount -------------------------------------------------------------------------->                    
+<!----  </div>
+ </div> 
+  </apex:outputPanel>----->  
+    </apex:form>     
+
+ </c:ed_basictemplate>
+ 
+       <!-- multi search on data table -->       
+<c:ed_datatablejs ></c:ed_datatablejs>
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/js/ColumnFilterWidgets.js')}"> </script>
+ <script type="text/javascript" language="javascript" class="init">
+var j = jQuery.noConflict();
+j(document).ready(function() {    
+
+    /*************for  table ***************/  
+    j('#promotable').dataTable( {
+    
+     /**default orderid in asc sorting**/
+         "pagingType": "full_numbers",
+         "aLengthMenu": [[10 ,25,50, 100,-1], [10 ,25,50, 100, "All"]],
+        "iDisplayLength": 10,
+    "bSort": true,
+ "bAutoWidth": true, // Disable the auto width calculation
+/*"sDom": 'W<"clear">lfrtip',
+"oColumnFilterWidgets": {
+"aiExclude": [ 0,1,2,3,4,5,6,7 ]
+
+},*/
+
+   } ); 
+/***************************/   
+
+    
+} );
+    
+    </script> 
+    <script>
+    function caldt(){
+    
+    j('#promotable').dataTable( {
+    
+     /**default orderid in asc sorting**/
+         "pagingType": "full_numbers",
+         "aLengthMenu": [[10 ,25,50, 100,-1], [10 ,25,50, 100, "All"]],
+        "iDisplayLength": 10,
+    "bSort": true,
+ "bAutoWidth": true, // Disable the auto width calculation
+/*"sDom": 'W<"clear">lfrtip',
+"oColumnFilterWidgets": {
+"aiExclude": [ 0,1,2,3,4,5,6,7 ]
+
+},*/
+
+   } ); 
+    }
+ </script>
+<c:ed_popupbox ></c:ed_popupbox>
+ <!------------common js libraries component------------>
+
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!-- VALIDATIONS OF JAVASCRIPT---->
+    <script type="text/javascript">
+ var promoid='';
+ var promousedcount='';
+  function dell(promoname,tused,clkbtn){
+  promoid=promoname;
+  promousedcount=tused;
+
+ 
+  Alertconfirm.render('Are you sure,Do you want to Delete Promo Code ?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+  
+  }
+
+  function inactprom(inpromoname,intused,inactpromostatus,clkbtn1){
+  promoid=inpromoname;
+  promousedcount=intused;
+  Promostatuschk=inactpromostatus;
+  
+ if(Promostatuschk =='Active and Enable for online registrations'){
+  Alertconfirm.render('This PromoCode is already used by'+ promousedcount+ 'Registrants.Please Make the promotion Inactive?' , 'Confirmation',clkbtn1,'Yes','No','Alertconfirm');
+  }else{
+  Alert.render('This PromoCode is already used by'+ promousedcount+ 'Registrants so Cannot be deleted','Alert','OK');
+  }
+  }
+  
+  function callback(clkbtn , okbtnn){
+//alert(clkbtn.id);
+deletactionalert(promoid,promousedcount);
+
+}
+
+function callback(clkbtn1 , okbtnn){
+//alert(clkbtn.id);
+Inactivealert(promoid,promousedcount);
+
+}
+ function checkitemdup(){
+     
+   
+   // Changing all Free Items styles
+   
+    var arraynn = [];
+
+    
+     var inputss = document.getElementsByClassName("selectclass");
+
+        for(var i =0; i < inputss.length; i++)
+        {
+         var aidd =  inputss[i].id;
+        
+          var k = aidd.search('getmitemid');
+          if(k != -1){
+             arraynn.push(document.getElementById(aidd));
+           }
+        }
+    
+      var dupp = '';
+       var empp = '';
+      
+        for (var i=0; i<arraynn.length; i++) {   
+            arraynn[i].style.border = "1 px";
+            arraynn[i].style.borderColor = "#E3E3E3";
+        }    
+   
+   
+      // validating selected buy items.
+   
+   
+   var arrayn = [];
+
+    
+     var inputs = document.getElementsByClassName("selectclass");
+
+        for(var i =0; i < inputs.length; i++)
+        {
+         var aid =  inputs[i].id;
+        
+          var n = aid.search('buymultiitemid');
+          if(n != -1){
+             arrayn.push(document.getElementById(aid));
+           }
+        }
+    
+      var dup = '';
+       var emp = '';
+      
+        for (var i=0; i<arrayn.length; i++) {   
+                
+                 arrayn[i].style.border = "1 px";
+                 arrayn[i].style.borderColor = "#E3E3E3";
+                
+                 if(arrayn[i].value == 'a089000000Mg123456'){
+                
+                  arrayn[i].style.border = "1 px";
+                  arrayn[i].style.borderColor = "#FF0000";
+                  emp = true;
+                 
+                 }
+                
+          }    
+        
+        if(emp == true){
+            //alert('Please Select Buy Ticket from the list.');
+            Alert.render('Please Select Buy Ticket from the list.','Alert','OK');
+            return false;
+          }
+          else{ 
+            for (var i=0; i<arrayn.length; i++) {
+            for (var j=0; j<arrayn.length; j++) {
+            
+               
+              if(j!=i){
+            
+                  if(arrayn[i].value == arrayn[j].value){               
+                  dup = true;
+                  arrayn[i].style.border = "1 px";
+                  arrayn[i].style.borderColor = "#FF0000"; 
+                  arrayn[j].style.border = "1 px";
+                  arrayn[j].style.borderColor = "#FF0000";
+               
+                }
+               
+               
+              }
+            }
+        }
+      }
+
+     if(dup!=true){ 
+        dupitmchk();
+    }
+    else{
+    //alert('Duplicate Ticket found, please change the Ticket.');
+    Alert.render('Duplicate Ticket found, please change the Ticket. ','Alert','OK');
+        return false;
+    }
+      
+  }
+   
+   
+   function checkfreedup(){
+     
+     // Changing all Buy Items styles
+    
+    var arrayn = [];
+
+    
+     var inputs = document.getElementsByClassName("selectclass");
+
+        for(var i =0; i < inputs.length; i++)
+        {
+         var aid =  inputs[i].id;
+        
+          var n = aid.search('buymultiitemid');
+          if(n != -1){
+             arrayn.push(document.getElementById(aid));
+           }
+        }
+    // Validating all Free Items.
+    
+      var dup = '';
+       var emp = '';
+      
+        for (var i=0; i<arrayn.length; i++) {   
+          arrayn[i].style.border = "1 px";
+          arrayn[i].style.borderColor = "#E3E3E3";
+        }    
+        
+    
+    
+     
+   var arraynn = [];
+
+    
+     var inputss = document.getElementsByClassName("selectclass");
+
+        for(var i =0; i < inputss.length; i++)
+        {
+         var aidd =  inputss[i].id;
+        
+          var k = aidd.search('getmitemid');
+          if(k != -1){
+             arraynn.push(document.getElementById(aidd));
+           }
+        }
+    
+      var dupp = '';
+       var empp = '';
+      
+        for (var i=0; i<arraynn.length; i++) {   
+                
+                 arraynn[i].style.border = "1 px";
+                 arraynn[i].style.borderColor = "#E3E3E3";
+                
+                 if(arraynn[i].value == 'a089000000Mg123456'){
+                
+                  arraynn[i].style.border = "1 px";
+                  arraynn[i].style.borderColor = "#FF0000";
+                  empp = true;
+                 
+                 }
+                
+          }    
+        
+        if(empp == true){
+           // alert('Please Select Free Ticket from the list.');
+           Alert.render('Please Select Free Ticket from the list.','Alert','OK');
+            return false;
+          }
+          else{ 
+            for (var i=0; i<arraynn.length; i++) {
+            for (var j=0; j<arraynn.length; j++) {
+            
+               
+              if(j!=i){
+            
+                  if(arraynn[i].value == arraynn[j].value){               
+                  dupp = true;
+                  arraynn[i].style.border = "1 px";
+                  arraynn[i].style.borderColor = "#FF0000"; 
+                  arraynn[j].style.border = "1 px";
+                  arraynn[j].style.borderColor = "#FF0000";
+               
+                }
+               
+               
+              }
+            }
+        }
+      }
+
+     if(dupp!=true){ 
+        dupfreeitmchk();
+    }
+    else{
+    //alert('Duplicate Ticket found, please change the Ticket.');
+    Alert.render('Duplicate Ticket found, please change the Ticket. ','Alert','OK');
+        return false;
+    }
+      
+  }
+ 
+ 
+ </script>
+ 
+ 
+ <apex:outputPanel id="validatepanelId"> 
+ <script type="text/javascript">                              
+   
+   
+   function validatefun(ptype) {  
+           
+         
+        if(ptype == 'Basic Promo codes'){  
+        
+        var eddate= document.getElementById('baenddateid');
+         var s = new Date(document.getElementById('bastartdateid').value);
+         var e = new Date(document.getElementById('baenddateid').value);
+        var entime = new Date(document.getElementById("pageid:compid:commoncomponent:createformid:bastremoid:Link:etmcdc").innerHTML); 
+          
+          var oldpromo = document.getElementById("pageid:compid:commoncomponent:createformid:dupbapromocheckid");
+          var newpromo = document.getElementById("pageid:compid:commoncomponent:createformid:bapromocode"); 
+           var distypper= document.getElementById('{!$Component.pageid:compid:commoncomponent:createformid:setopt}');
+           var discontval= document.getElementById('{!$Component.pageid:compid:commoncomponent:createformid:discoutid}');
+           //alert(entime);
+        }
+       
+       if(ptype != 'Basic Promo codes'){
+           
+           var eddate = document.getElementById('enddateid');
+            var s = new Date(document.getElementById('startdateid').value);  
+            var e = new Date(document.getElementById('enddateid').value);
+             var oldpromo = document.getElementById("pageid:compid:commoncomponent:createformid:duppromocheckid");
+             var newpromo = document.getElementById("pageid:compid:commoncomponent:createformid:promocode");   
+              
+         }   
+        
+         
+         if(e<s){
+         Alert.render('Promo Code end date should not be grater than  Prom Code start date' ,'Alert','ok')
+         return false;
+        
+         }
+        //alert(e);
+         if(entime<e){
+         
+        Alert.render('Promocode End Date Time should not be greater than Event end date Time','Alert','ok')
+         return false;
+        
+         }
+        
+              var selbol = '';
+               var els = $('.requiredInput');
+               els.each(function(index, el) {
+
+                   el = $(el);
+
+                   el = el.find("input,textarea,select");
+                   var fildname = el.attr('id');
+           
+                   
+                  
+                 
+                   if ($.trim(el.val()) == '') {
+                   
+                   
+                       selbol = true;
+                        
+                       el.css('border', '1px solid red');
+                   }
+                      else{
+                        el.css('border', '1px solid #E3E3E3');
+                   }
+          
+                  
+             })
+             
+              
+             
+             if(selbol == true)
+              {
+                 
+                  Alert.render('Required Fields Missing' ,'Alert','ok')
+                  return false;
+                      
+              } 
+              
+         
+              
+             if(newpromo!=null){
+                     var sdd = '';
+                     sdd = '{!stringset}';
+                    
+                     var n = sdd.split('!@#$%');
+                   
+                     var oldpromoval = oldpromo.value.trim() ;
+                     var newpromoval = newpromo.value.trim();
+                     
+                     if(oldpromoval == newpromoval){      
+                                      
+                     }
+                     else{
+
+                       for(var i=0;i<n.length-1;i++){                        
+                           if(n[i] == newpromoval){
+                             
+                                Alert.render('Duplicate PromoCode Found.Please Change the PromoCode' ,'Alert','ok');
+                                newpromo.style.border = "1 px";
+                                newpromo.style.borderColor = "#FF0000";
+                                return false;
+                          }  
+                       }
+                     
+                     }
+                  
+            }
+            
+            
+              
+            if(ptype == 'Basic Promo codes'){
+                var chkArray = '';
+                    $('.chkticket:checked').each(function() {
+                       if($(this).val()!='a089000000Mg123456'){
+                        chkArray += ($(this).val()) + '-';
+                       }
+                  });
+             
+               if(chkArray==''){
+               Alert.render('Please Select Atleast one Ticket' ,'Alert','ok');
+                 
+               }
+               
+               if(chkArray!=''){  
+              
+               if(distypper !==null && discontval!==null){   
+              
+            var rturn =   itemquentyvalidate(chkArray);
+              }
+              
+              else{
+            
+                Savepromtion(chkArray); 
+                
+               }
+             
+               }
+            
+                  
+           }
+             
+           else{
+                 // changing free item styles
+                   var arraynn = [];
+
+    
+                     var inputss = document.getElementsByClassName("selectclass");
+
+                    for(var i =0; i < inputss.length; i++)
+                    {
+                       var aidd =  inputss[i].id;
+                    
+                      var k = aidd.search('getmitemid');
+                      if(k != -1){
+                         arraynn.push(document.getElementById(aidd));
+                       }
+                    }
+    
+                      var dupp = '';
+                       var empp = '';
+                      
+                        for (var i=0; i<arraynn.length; i++) {   
+                            arraynn[i].style.border = "1 px";
+                            arraynn[i].style.borderColor = "#E3E3E3";
+                        }    
+                   
+               // validating selected buy items.
+   
+                   var arryan = [];
+                   var inputs = document.getElementsByClassName("selectclass");
+
+                    for(i =0; i < inputs.length; i++) 
+                    {
+                     var aid =  inputs[i].id;
+                     
+                      var n = aid.search('buymultiitemid');
+                      if(n != -1){
+                         arryan.push(document.getElementById(aid));
+                       }
+                    }
+     
+                  var dup = '';
+                   var emp = '';
+       
+                    for (var i=0; i<arryan.length; i++) {    
+                             
+                             arryan[i].style.border = "1 px";
+                             arryan[i].style.borderColor = "#E3E3E3"; 
+                             
+                             if(arryan[i].value == 'a089000000Mg123456'){
+                             
+                              arryan[i].style.border = "1 px";
+                              arryan[i].style.borderColor = "#FF0000";
+                              emp = true;
+                              
+                             }
+                             
+                      }     
+         
+                    if(emp == true){
+                        //alert('Please Select Buy Ticket from the list.');
+                        Alert.render('Please Select Buy Ticket from the list. ','Alert','OK');
+                        return false; 
+                      } 
+                      else{  
+                        for (var i=0; i<arryan.length; i++) {
+                        for (var j=0; j<arryan.length; j++) {
+                         
+                            
+                          if(j!=i){
+                         
+                              if(arryan[i].value == arryan[j].value){                
+                              dup = true;
+                              arryan[i].style.border = "1 px";
+                              arryan[i].style.borderColor = "#FF0000";  
+                              arryan[j].style.border = "1 px";
+                              arryan[j].style.borderColor = "#FF0000"; 
+                            
+                            }
+                            
+                            
+                          }
+                        }
+                    }
+                  }
+            
+                 if(dup  == true){
+                      //alert('Duplicate Ticket found, please change the Ticket');
+                      Alert.render('Duplicate Ticket found, please change the Ticket ','Alert','OK');
+                      return false;
+                   
+                 }
+                  else{
+                     // Changing all Buy Items styles
+    
+                    var arrayn = [];
+                
+                    
+                     var inputs = document.getElementsByClassName("selectclass");
+                
+                        for(var i =0; i < inputs.length; i++)
+                        {
+                         var aid =  inputs[i].id;
+                        
+                          var n = aid.search('buymultiitemid');
+                          if(n != -1){
+                             arrayn.push(document.getElementById(aid));
+                           }
+                        }
+                    
+                    // Validating all Free Items.
+                    
+                    
+                    
+                        var arraynn = [];
+                        var inputss = document.getElementsByClassName("selectclass");
+
+                        for(var i =0; i < inputss.length; i++)
+                        {
+                            var aidd =  inputss[i].id;
+                            var k = aidd.search('getmitemid');
+                            if(k != -1){
+                             arraynn.push(document.getElementById(aidd));
+                            }
+                        }
+    
+                          var dupp = '';
+                           var empp = '';
+      
+                    for (var i=0; i<arraynn.length; i++) {   
+                            
+                             arraynn[i].style.border = "1 px";
+                             arraynn[i].style.borderColor = "#E3E3E3";
+                            
+                             if(arraynn[i].value == 'a089000000Mg123456'){
+                            
+                              arraynn[i].style.border = "1 px";
+                              arraynn[i].style.borderColor = "#FF0000";
+                              empp = true;
+                             
+                             }
+                            
+                      }    
+        
+                    if(empp == true){
+                        //alert('Please Select Free Ticket from the list.');
+                        Alert.render('Please Select Free Ticket from the list.','Alert','OK');
+                        return false;
+                      }
+                      else{ 
+                        for (var i=0; i<arraynn.length; i++) {
+                        for (var j=0; j<arraynn.length; j++) {
+                        
+                           
+                          if(j!=i){
+                        
+                              if(arraynn[i].value == arraynn[j].value){               
+                              dupp = true;
+                              arraynn[i].style.border = "1 px";
+                              arraynn[i].style.borderColor = "#FF0000"; 
+                              arraynn[j].style.border = "1 px";
+                              arraynn[j].style.borderColor = "#FF0000";
+                           
+                            }
+                           
+                           
+                          }
+                        }
+                    }
+                  }
+
+                 if(dupp!=true){ 
+                    
+                      Savepromtion();
+                      
+                }
+                else{
+                //alert('Duplicate Ticket found, please change the Ticket.');
+                Alert.render('Duplicate Ticket found, please change the Ticket.','Alert','OK');
+                    return false;
+                }
+      
+                       
+           }
+                
+        }
+                          
+      
+              
+       }   
+        
+     
+  </script>
+  <script>
+ window.onload=function() {      
+    var table = document.getElementById('promotable');
+    
+    
+    
+    
+    }
+    </script>
+    
+      <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery-1.9.1.js')}"> </script>
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+     <script>
+var dt = jQuery.noConflict();
+    dt(document).ready(function(){       
+    dt('.ED').datetimepicker({
+    formatDate: 'Y/m/d',
+    step:15,
+    minDate:'{!YEAR(dt)}/{!MONTH(dt)}/{!DAY(dt)}',
+    maxDate:'{!YEAR(edte)}/{!MONTH(edte)}/{!DAY(edte)}',
+    defaultDate:'{!YEAR(dt)}/{!MONTH(dt)}/{!DAY(dt)}'
+
+    });
+
+dt('.ED1').datetimepicker({
+formatDate: 'Y/m/d',
+step:15,
+ minDate:'{!YEAR(dt)}/{!MONTH(dt)}/{!DAY(dt)}',
+ maxDate:'{!YEAR(edte)}/{!MONTH(edte)}/{!DAY(edte)}',
+ defaultDate:'{!YEAR(dt)}/{!MONTH(dt)}/{!DAY(dt)}'
+});
+
+
+  })
+  
+       function datevalidation(){
+       
+       var stm=document.getElementById("bastartdateid").value;
+       document.getElementById("pageid:compid:commoncomponent:createformid:sid").value = stm;
+      
+        
+       
+       
+       }
+       function datevalidation1(){
+       var etm=document.getElementById("baenddateid").value;
+        document.getElementById("pageid:compid:commoncomponent:createformid:eid").value =etm;
+       
+       
+       }
+</script> 
+    
+ </apex:outputPanel>
+ 
+    <script>
+  
+  
+  function itemquentyvalidate(chkArray){
+   
+  var qt= document.getElementById('{!$Component.pageid:compid:commoncomponent:createformid:qtyid}').value;
+  var discont= document.getElementById('{!$Component.pageid:compid:commoncomponent:createformid:discoutid}').value;
+  var distyp= document.getElementById('{!$Component.pageid:compid:commoncomponent:createformid:setopt}').value;
+ 
+  if(distyp==='Percent' && discont > 100){
+    Alert.render('Discount value is morethan ticket price' ,'Alert','ok');
+           
+             return false;
+             
+             }
+
+ Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_PromoCodecon.getvalidationmethod}',
+           chkArray,qt,discont,distyp,
+            function(result, event){
+            
+            if (event.status){
+           
+            
+               if(result[0].trim().length !==0 ){
+            
+             var rc=result[0];
+             var ry= rc.split('-')
+            var dumped_text = 'Buy Ticket Qty is morethan ticket Qty'+"\n" ;
+             var j = 1;
+             for(i=0;i<(ry.length);i++){
+             if(ry[i] !==""){
+           dumped_text += ry[i] + "\n";
+                 j++; 
+                 }
+         }
+          return Alert.render(dumped_text ,'Alert','ok');
+          
+           }
+           
+           
+           else if(result[1] !==""){
+           
+            
+             var rcq=result[1];
+             var ryq= rcq.split('-')
+            var dumped_textqty = 'Discount value is morethan ticket price'+"\n" ;
+             var z = 1;
+             
+             for(y=0;y<(ryq.length);y++){
+             if(ryq[y] !==""){
+           dumped_textqty += ryq[y] + "\n";
+                 z++; 
+                 }
+                
+         }
+          
+          return Alert.render(dumped_textqty ,'Alert','ok');
+          
+           }
+          
+           
+           else{
+           Savepromtion(chkArray);
+          
+           }
+           }
+             else if (event.type === 'exception') {
+                  
+                } else {
+                  
+                }  
+                
+                     
+            }, 
+           { buffer: false, escape: true, timeout: 120000}
+        ); 
+   }
+  
+  </script>
+    <!------------//common js libraries component------------>
+    </apex:page>

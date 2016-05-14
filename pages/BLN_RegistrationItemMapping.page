@@ -1,0 +1,69 @@
+<apex:page sidebar="false" showheader="false" controller="BLN_RegistrationItemMappingController" id="mappingpage">
+  <script type="text/javascript" src="{!URLFOR($Resource.createevents, 'createevents/js/jquery-1.9.1.js')}"></script> 
+   <apex:outputtext escape="false" id="htmldiv" style="display:none"/>
+ 
+ <script>
+ var s="{!JSENCODE(bt.HTML__c)}";
+var fieldnames=[];
+   
+document.getElementById('{!$Component.htmldiv}').innerHTML = s;
+ 
+function loadmapping() { 
+
+$('#mappingpage\\:htmldiv').find('input, textarea, select').each(function(i, field) {
+  
+    if(field.name!=''&&field.name!=undefined&&field.type!='button')
+    fieldnames.push(field.name);
+    
+});
+
+GetMapping(fieldnames.toString(),document.getElementById('mappingpage:mapform:selectitem').value);
+}
+</script>
+<apex:form id="mapform">
+<font color="red"><apex:pagemessages /></font>
+Mapping For:<apex:selectList value="{!selecteditemid}" multiselect="false" size="1"  onchange="loadmapping();" id="selectitem">
+          <apex:selectOptions value="{!itemoptions}"/>
+          </apex:selectList>
+         <apex:inputCheckbox value="{!allitem}"/>Copy the same mapping for all items(check only if all the tickets should have the same fields included in attendee setting)
+
+<apex:actionfunction name="GetMapping" action="{!GetMapping}" rerender="mapform">
+<apex:param name="fieldnames" value=""/>
+<apex:param name="selecteditem" value=""/>
+</apex:actionfunction>
+<apex:outputpanel id="none">
+<div style="padding:3px;"><br/>
+         <table width="100%"  style=" border:3px solid #F7F7F7;  border-collapse:collapse; margin:0px auto;" border="1">
+         <thead>
+         
+        <tr>
+            <td style="padding:3px; text-align:left; background-color:#f7f7f7;" colspan="2"><h2 style="color:#414141; padding:0px; margin:0px;">Create/Edit Mapping </h2></td>
+        </tr> 
+         <tr>
+         <td style="padding:8px; text-align:left;" >Registration Setting Included Field</td>
+         <td style="padding:8px; text-align:left;" >Map To Html Field</td>
+         </tr>
+     
+          </thead>
+          
+          <tbody>
+          <apex:repeat value="{!gridrows}" var="r" >
+             <tr>
+    <td style="padding:8px;"><apex:outputText value="{!r.regfield}"/></td>
+    <td style="padding:8px;"><apex:selectList value="{!r.htmlfield}" multiselect="false" size="1"  >
+          <apex:selectOptions value="{!fieldsoptions}"/>
+          </apex:selectList></td>
+     </tr>     
+          </apex:repeat>
+          </tbody>
+</table>
+
+</div>
+<div style="width:95%; padding:8px; margin:0px auto; text-align:right"><apex:commandButton value="Save Mapping" action="{!SaveMapping}"  styleclass="button-a blue"/>
+ 
+ 
+ </div> 
+</apex:outputpanel>
+
+</apex:form>
+</apex:page>

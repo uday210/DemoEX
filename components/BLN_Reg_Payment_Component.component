@@ -1,0 +1,159 @@
+<apex:component controller="BLN_RegComponentController">
+ <apex:attribute name="ThePageControler" type="BLN_RegistrationnewCon3" description="The main page controller" assignTo="{!ThePageController}"/>  
+      
+            <apex:outputPanel rendered="{!IF(ThePageControler.TotalAmount-ThePageControler.DiscountedAmount > 0.00 , TRUE, FALSE)}" id="payPanel">
+            <div class="panel panel-default">
+                  <div class="panel-heading">
+                  <h3 class="panel-title">  Payment Information </h3>
+                  
+                  </div>
+                  <div class="panel-body">
+               <table id="field box" class="fields" width="80%" border="0" style="margin:0px auto; border-collapse:collapse;">
+                
+                
+                <tr>
+                    <td width="28%" style=" padding:5px; text-align:right;  font-weight:bold; font-size:13px; font-family:Arial, Helvetica, sans-serif;">Payment Type:</td>
+                    <td style=" padding:5px; " width="70%">
+                        <apex:selectRadio value="{!ThePageControler.SelectedPaymentGateway}"  onclick="toggle_visibility(this.value);" >
+                            <apex:selectOptions value="{!ThePageControler.PaymentGateways}"/>
+                        </apex:selectRadio>
+                    </td>
+                </tr>
+                </table>
+             
+               
+               
+               <div style="display:none;width:100%; margin-left:1%;" id="PayPal">
+                    <table id="field box" class="fields" width="80%" border="0" style="margin:0px auto; border-collapse:collapse;">
+                         <tr>
+                            <td style=" padding:5px; text-align:left; font-size:13px; font-family:Arial, Helvetica, sans-serif;" valign="top">
+                                <span style=" color:#F00">Note: </span><span style="color:#000; text-align:justify;">You will be taken to PayPal page for payment. Please do not close or refresh the page until you are redirected to the success message after payment.</span>
+                            </td>
+                        </tr>
+                    </table><!--close of field box-->
+                </div>
+                
+                <div style="display:none;width:100%; margin-left:1%;" id="TrustCommerce">
+                    <table id="field box" class="fields" width="80%" border="0" style="margin:0px auto; border-collapse:collapse;">
+                         <tr>
+                            <td style=" padding:5px; text-align:left; font-size:13px; font-family:Arial, Helvetica, sans-serif;" valign="top">
+                                <span style=" color:#F00">Note: </span><span style="color:#000; text-align:justify;">You will be taken to TrustCommerce page for payment. Please do not close or refresh the page until you are redirected to the success message after payment.</span>
+                            </td>
+                        </tr>
+                    </table><!--close of field box-->
+                </div>
+           
+                <div style="display:none;width:100%; margin-left:1%;" id="CreditCard">
+              <table id="field box" class="fieldspayment" width="80%" border="0" style="margin:0px auto; border-collapse:collapse;">
+                   <!--   <tr>
+                        <td width="38%" style=" padding:5px; text-align:right; font-size:13px; font-family:Arial, Helvetica, sans-serif;">Credit Card Type:<span id="mandatory">*</span></td>
+                        <td style=" padding:5px; ">
+                             <apex:selectList value="{!SelectedCardType}" size="1" multiselect="false" style="width:91%; border: 1px solid #CCCCCC;border-collapse: collapse;-webkit-border-radius: 4px;border-radius: 4px 4px 4px 4px;-moz-border-radius: 4px;height: auto;padding-top: 3px;position: relative;color: #727373;height: 35px;">
+                                <apex:selectOptions value="{!CreditCardType}"/>
+                            </apex:selectList>
+                        </td>
+                    </tr>-->
+                    <tr>
+                        <td width="38%" style=" padding:5px; text-align:right;  font-size:13px; font-family:Arial, Helvetica, sans-serif;">Credit Card Number:<span id="mandatory" style="color:#F00; font-size:20px;">*</span></td>
+                        <td style=" padding:5px; "><apex:inputText value="{!ThePageControler.CreditCardNumber}" id="CreditCardId" style="margin-left:0px;width:86%;"/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;padding:5px; font-size:13px; font-family:Arial, Helvetica, sans-serif;">Expiry Date:<span id="mandatory" style="color:#F00; font-size:20px;">*</span></td>
+                        <td style=" padding:5px; ">
+                            <apex:selectList value="{!ThePageControler.SelectedMonth}" size="1" multiselect="false" style="width:20%; border: 1px solid #CCCCCC;border-collapse: collapse;-webkit-border-radius: 4px;border-radius: 4px 4px 4px 4px;-moz-border-radius: 4px;height: auto;padding-top: 3px;position: relative;color: #727373;height: 35px;">
+                                <apex:selectOptions value="{!ThePageControler.MonthsList}" />
+                            </apex:selectList>
+                          
+                           <apex:selectList value="{!ThePageControler.SelectedYear}"  size="1" multiselect="false" style="margin-left:4px;width:28.90%;border: 1px solid #CCCCCC;border-collapse: collapse;-webkit-border-radius: 4px;border-radius: 4px 4px 4px 4px;-moz-border-radius: 4px;height: auto;padding-top: 3px;position: relative;color: #727373;height: 35px;">
+                                <apex:selectOptions value="{!ThePageControler.YearsList}" />
+                            </apex:selectList>
+                            
+                            <apex:outputText value="CVV:" style="width:30%;padding-left:15px;text-align:right;"></apex:outputText><span id="mandatory" style="color:#F00; font-size:20px;">*</span>&nbsp;&nbsp;
+                            <apex:inputText value="{!ThePageControler.CVVNumber}" id="CVVNumberId" style="padding-left:5px; margin-left:0px;width:20%" onkeyup="cvv_numchk(this)"/>
+                        </td>
+                    </tr>
+                </table>
+                </div> 
+
+                <div style="display:none;width:100%; margin-left:1%;" id="Check">
+                    <table id="field box" class="fieldspayment" width="100%" border="0" style="margin:0px auto; border-collapse:collapse;">
+                         <tr>
+                            <td width="50%" style=" padding:5px; text-align:right; font-size:13px; font-family:Arial, Helvetica, sans-serif;">Please enter your check number here :<span id="mandatory" style="color:#F00; font-size:20px;">*</span></td>
+                            <td style="padding:5px;"><apex:inputText value="{!ThePageControler.CheckNumber}" id="CheckId" style="width:80%; " styleClass="col-sm-8 form-control"/></td>
+                        </tr>
+                        <tr>
+                            <td width="38%" style=" padding:5px; text-align:right;  font-size:13px; font-family:Arial, Helvetica, sans-serif;">Please send your check to the following address:</td>
+                            <td style="padding:5px;" valign="top">
+                                <div class="event-info" id="locationDetails1" style="display: block; border:0px solid #000;">
+                                                                             <apex:outputText value="{!ThePageControler.CheckAddress.Business_Address1__c}"></apex:outputText>
+                                             <apex:outputText rendered="{!IF(ThePageControler.CheckAddress.Business_Address2__c!=null && ThePageControler.CheckAddress.Business_Address2__c!='',true,false)}">
+                                               <apex:outputPanel rendered="{!If(ThePageControler.CheckAddress.Business_Address1__c!=null && ThePageControler.CheckAddress.Business_Address1__c!='',true,false)}">, </apex:outputPanel>
+                                               {!ThePageControler.CheckAddress.Business_Address2__c}</apex:outputText> 
+                                               <apex:outputText rendered="{!IF(ThePageControler.CheckAddress.Business_City__c!=null && ThePageControler.CheckAddress.Business_City__c!='',true,false)}"><br />{!ThePageControler.CheckAddress.Business_City__c}</apex:outputText>
+                                               <apex:outputText rendered="{!IF(ThePageControler.CheckAddress.BLN_Business_State__r.Short_Name__c!=null ,true,false )}">
+                                               <apex:outputPanel rendered="{!If(ThePageControler.CheckAddress.Business_City__c!=null && ThePageControler.CheckAddress.Business_City__c!='',true,false)}">, </apex:outputPanel>
+                                               <apex:outputPanel rendered="{!If(ThePageControler.CheckAddress.Business_City__c!=null && ThePageControler.CheckAddress.Business_City__c!='',false,true)}"><br /> </apex:outputPanel>
+                                                {!ThePageControler.CheckAddress.BLN_Business_State__r.Short_Name__c}</apex:outputText>
+                                              &nbsp; <apex:outputText value="{!ThePageControler.CheckAddress.Business_Zipcode__c}"></apex:outputText>
+                                </div>
+                            </td>
+                        </tr>
+                    </table><!--close of field box-->
+                </div>
+                
+                
+                
+                
+            </div>
+            </div>
+            </apex:outputPanel> 
+         
+             
+             
+    
+<script type="text/javascript">
+
+    function toggle_visibility(id){
+    if(id == 'CreditCardPayPalDirect'||id == 'CreditCardTrustCommerceDirect' ||id == 'Credit Card')
+    id='CreditCard';
+       var e = document.getElementById(id);
+       if(id == 'PayPal'){
+            document.getElementById('CreditCard').style.display = 'none';
+            document.getElementById('Check').style.display = 'none';
+            e.style.display = 'block';
+       }else if(id == 'CreditCard'){
+           document.getElementById('PayPal').style.display = 'none';
+            document.getElementById('Check').style.display = 'none';
+            e.style.display = 'block';
+       }else if(id == 'Check'){
+           document.getElementById('PayPal').style.display = 'none';
+            document.getElementById('CreditCard').style.display = 'none';
+            e.style.display = 'block';
+       }else if(id == 'Cash'){
+           document.getElementById('PayPal').style.display = 'none';
+           document.getElementById('CreditCard').style.display = 'none';
+           document.getElementById('Check').style.display = 'none';
+       }
+       else if(id=='TrustCommerce')
+       {
+       document.getElementById('CreditCard').style.display = 'none';
+            document.getElementById('Check').style.display = 'none';
+            e.style.display = 'block';
+       }
+    }
+    
+    function toggle_visibility1(id) {
+       var e = document.getElementById(id);
+       if(e.style.display == 'block')
+          e.style.display = 'none';
+       else
+          e.style.display = 'block';
+    }
+
+</script>
+<script>
+    try{
+    toggle_visibility('{!ThePageControler.SelectedPaymentGateway}');
+    }catch(e){}
+    </script>
+    </apex:component>

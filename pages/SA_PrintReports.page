@@ -1,0 +1,870 @@
+<apex:page controller="SA_ReportsController" standardStylesheets="false" showHeader="false" renderAs="PDF">
+
+<apex:stylesheet value="{!URLFOR($Resource.pdfstyles, 'pdfstyles.css')}"/>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+</head>
+<!--header-->
+<apex:outputtext rendered="{!AND(ShowTicketSales,selectedFiltertype == 'Company')}">
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>{!ReportName}</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>{!SelectedFiltertype}</b></th>
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Email</b></th>      
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Name</b></th>
+            <th class="tableHeader" style="width:6%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Type</b></th>
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Order No</b></th>
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Date</b></th> 
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Type</b></th>          
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Status</b></th>                
+            <th class="tableHeader" style="width:6%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Quantity</b></th>                
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Amount</b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>  
+        <apex:repeat var="a" value="{!ticketsSalesInnerList}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!a.FilterData}"/></b></td>
+            </tr>   
+        <apex:repeat var="c" value="{!a.regData}"> 
+            <tr style="page-break-after:auto;">                                                                                                                                     
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!c.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}"/></td>
+              <td class="tableContent" style="text-align:left;;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.TicketTypes__r.TT_Name__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:6%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.TicketTypes__r.TT_TicketType__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.customer_key__r.Name}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Registered_Date__c}"/></apex:outputText></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Type__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Status__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:6%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Available_Quantity__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!c.Amount__c}"/>
+                  </apex:outputText>
+              </td>              
+
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+          <div style="float:left;">
+            Tickets Revenue Through: &nbsp;
+            <apex:repeat value="{!paymentTypeInnerList}" var="paymenttype">      
+                {!paymenttype.typeData} : &nbsp;
+                <apex:outputText value="{0,number,$ ###,##0.00}">
+                    <apex:param value="{!paymenttype.typeCount}"/>
+                </apex:outputText> /
+            </apex:repeat>
+            </div>
+          <div style="float:right;">
+            Tickets Revenue :&nbsp;
+            <apex:outputText value="{0,number,$ ###,##0.00}">
+                <apex:param value="{!TotalRevenue}"/>
+            </apex:outputText>                            
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+</apex:outputtext>
+
+
+
+<apex:outputtext rendered="{!AND(ShowTicketSales,selectedFiltertype == 'Ticket')}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>{!ReportName}</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>   
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>{!SelectedFiltertype}</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Email</b></th>      
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Type</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Order No</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Date</b></th> 
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Type</b></th>          
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Status</b></th>                
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Quantity</b></th>                
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Amount</b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>  
+        <apex:repeat var="a" value="{!ticketsSalesInnerList}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!a.FilterData}"/></b></td>
+            </tr>   
+        <apex:repeat var="c" value="{!a.regData}"> 
+            <tr style="page-break-after:auto;">                                                                                                                               
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!c.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.TicketTypes__r.TT_TicketType__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.customer_key__r.Name}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Registered_Date__c}"/></apex:outputText></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Type__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Status__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Available_Quantity__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!c.Amount__c}"/>
+                  </apex:outputText>  
+              </td>              
+
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+          <div style="float:left;">
+            Tickets Revenue Through: &nbsp;
+            <apex:repeat value="{!paymentTypeInnerList}" var="paymenttype">      
+                {!paymenttype.typeData} :&nbsp; 
+                <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!paymenttype.typeCount}"/>
+                </apex:outputText>/
+            </apex:repeat>
+            </div>
+          <div style="float:right;">
+            Tickets Revenue : &nbsp;
+            <apex:outputText value="{0,number,$ ###,##0.00}">
+                <apex:param value="{!TotalRevenue}"/>
+            </apex:outputText>                           
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+
+
+</apex:outputtext>
+
+
+
+<apex:outputtext rendered="{!AND(ShowTicketSales,selectedFiltertype == 'Payment Type')}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>{!ReportName}</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr> 
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>{!SelectedFiltertype}</b></th>
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Email</b></th>
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Name</b></th>      
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Type</b></th>
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Order No</b></th>
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Date</b></th> 
+            <th class="tableHeader" style="width:7%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Type</b></th>          
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Status</b></th>                
+            <th class="tableHeader" style="width:6%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Quantity</b></th>                
+            <th class="tableHeader" style="width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Amount</b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>  
+        <apex:repeat var="a" value="{!ticketsSalesInnerList}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!a.FilterData}"/></b></td>
+            </tr>   
+        <apex:repeat var="c" value="{!a.regData}"> 
+            <tr style="page-break-after:auto;">
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!c.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.TicketTypes__r.TT_Name__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!c.TicketTypes__r.TT_TicketType__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!c.customer_key__r.Name}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Registered_Date__c}"/></apex:outputText></td>
+              <td class="tableContent" style="text-align:left;width:7%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Type__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Status__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:6%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Available_Quantity__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!c.Amount__c}"/>
+                  </apex:outputText>
+              </td>              
+
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+          <div style="float:left;">
+            Tickets Revenue Through: &nbsp;
+            <apex:repeat value="{!paymentTypeInnerList}" var="paymenttype">      
+                {!paymenttype.typeData} : &nbsp;
+                <apex:outputText value="{0,number,$ ###,##0.00}">
+                    <apex:param value="{!paymenttype.typeCount}"/>
+                </apex:outputText> /
+            </apex:repeat>
+            </div>
+          <div style="float:right;">
+            Tickets Revenue : &nbsp;
+            <apex:outputText value="{0,number,$ ###,##0.00}">
+                <apex:param value="{!TotalRevenue}"/>
+            </apex:outputText>                           
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+
+</apex:outputtext>
+
+
+<apex:outputtext rendered="{!AND(ShowItemSales,selectedFiltertype == 'Company')}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>{!ReportName}</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>                                                                                                    
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>{!SelectedFiltertype}</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Email</b></th>
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Item Name</b></th>      
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Order No</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Date</b></th> 
+            <th class="tableHeader" style="width:8%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Type</b></th>          
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Status</b></th>                
+            <th class="tableHeader" style="width:7%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Quantity</b></th>                
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Amount</b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>  
+        <apex:repeat var="a" value="{!ticketsSalesInnerList}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!a.FilterData}"/></b></td>
+            </tr>   
+        <apex:repeat var="c" value="{!a.regData}"> 
+            <tr style="page-break-after:auto;">
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!c.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Item__r.Item_name__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.customer_key__r.Name}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Registered_Date__c}"/></apex:outputText></td>
+              <td class="tableContent" style="text-align:left;width:8%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Type__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Status__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:7%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Available_Quantity__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!c.Amount__c}"/>
+                  </apex:outputText>
+              </td>              
+
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+          <div style="float:left;">
+            Items Revenue Through: &nbsp;
+            <apex:repeat value="{!paymentTypeInnerList}" var="paymenttype">      
+                {!paymenttype.typeData} : &nbsp;
+                <apex:outputText value="{0,number,$ ###,##0.00}">
+                    <apex:param value="{!paymenttype.typeCount}"/>
+                </apex:outputText> /
+            </apex:repeat>
+            </div>
+          <div style="float:right;">
+            Items Revenue : &nbsp;
+            <apex:outputText value="{0,number,$ ###,##0.00}">
+                <apex:param value="{!TotalRevenue}"/>
+            </apex:outputText>                           
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+
+</apex:outputtext>
+
+
+<apex:outputtext rendered="{!AND(ShowItemSales,selectedFiltertype == 'Item')}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>{!ReportName}</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>                                                                                                                                                                                                 
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>{!SelectedFiltertype}</b></th>
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Name</b></th>
+            <th class="tableHeader" style="width:13%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Email</b></th>
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Order No</b></th>
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Date</b></th> 
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Type</b></th>          
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Status</b></th>                
+            <th class="tableHeader" style="width:8%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Quantity</b></th>                
+            <th class="tableHeader" style="width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Amount</b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>  
+        <apex:repeat var="a" value="{!ticketsSalesInnerList}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!a.FilterData}"/></b></td>
+            </tr>   
+        <apex:repeat var="c" value="{!a.regData}"> 
+            <tr style="page-break-after:auto;">   
+              <td class="tableContent" style="text-align:left;width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>
+              <td class="tableContent" style="text-align:left;width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!c.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:13%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.customer_key__r.Name}"/></td>
+              <td class="tableContent" style="text-align:left;width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Registered_Date__c}"/></apex:outputText></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Type__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Status__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:9%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Available_Quantity__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:11%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!c.Amount__c}"/>
+                  </apex:outputText>
+              </td>              
+
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+          <div style="float:left;">
+            Items Revenue Through: &nbsp;
+            <apex:repeat value="{!paymentTypeInnerList}" var="paymenttype">      
+                {!paymenttype.typeData} : &nbsp;
+                <apex:outputText value="{0,number,$ ###,##0.00}">
+                    <apex:param value="{!paymenttype.typeCount}"/>
+                </apex:outputText> /
+            </apex:repeat>
+            </div>
+          <div style="float:right;">
+            Items Revenue : &nbsp;
+            <apex:outputText value="{0,number,$ ###,##0.00}">
+                <apex:param value="{!TotalRevenue}"/>
+            </apex:outputText>                           
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+
+
+</apex:outputtext>
+
+
+
+<apex:outputtext rendered="{!AND(ShowItemSales,selectedFiltertype == 'Payment Type')}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>{!ReportName}</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>                                                                                                                                                                
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>{!SelectedFiltertype}</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Email</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Item Name</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Order No</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Date</b></th> 
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Type</b></th>          
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Status</b></th>                
+            <th class="tableHeader" style="width:8%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Quantity</b></th>                
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Amount</b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>  
+        <apex:repeat var="a" value="{!ticketsSalesInnerList}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!a.FilterData}"/></b></td>
+            </tr>   
+        <apex:repeat var="c" value="{!a.regData}"> 
+            <tr style="page-break-after:auto;">   
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!c.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Item__r.Item_name__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.customer_key__r.Name}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Registered_Date__c}"/></apex:outputText></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Type__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Payment_Status__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:8%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Available_Quantity__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!c.Amount__c}"/>
+                  </apex:outputText>                  
+              </td>              
+
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+          <div style="float:left;">
+            Items Revenue Through: &nbsp;
+            <apex:repeat value="{!paymentTypeInnerList}" var="paymenttype">      
+                {!paymenttype.typeData} : &nbsp;
+                <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!paymenttype.typeCount}"/>
+                </apex:outputText> /
+            </apex:repeat>
+            </div>
+          <div style="float:right;">
+            Items Revenue : &nbsp;
+            <apex:outputText value="{0,number,$ ###,##0.00}">
+                <apex:param value="{!TotalRevenue}"/>
+            </apex:outputText> 
+                                           
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+
+
+
+</apex:outputtext>
+
+
+<apex:outputtext rendered="{!ShowOrderSales}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>Report On Order Sales</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>                                                                                                                                                                                                                                                                                                                                 
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Order No</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket/Item Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Date</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Type</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Payment Status</b></th> 
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Quantity</b></th>                
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Amount</b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>                                                                                                                                                   
+          <apex:repeat var="Orders" value="{!orderSalesInnerList}">
+              <apex:repeat var="Order" value="{!Orders}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="8" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!Order.OrderInfo.Name}"/></b></td>
+            </tr>   
+          <apex:repeat var="reg" value="{!Order.regList}">
+            <tr style="page-break-after:auto;">   
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:left;"></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:left;"><apex:outputText value="{!reg.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!reg.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:left;"><apex:outputText value="{!reg.TicketTypes__r.TT_Name__c}" rendered="{!IF(reg.TicketTypes__c != NULL, TRUE, FALSE)}"/> <apex:outputText value="{!reg.Item__r.Item_name__c}" rendered="{!IF(reg.Item__c != NULL, TRUE, FALSE)}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!reg.Registered_Date__c}"/></apex:outputText></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!reg.Payment_Type__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!reg.Payment_Status__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!reg.Available_Quantity__c}" rendered="{!IF(reg.TicketTypes__c != NULL, TRUE, FALSE)}"/> <apex:outputText value="{!reg.Available_Quantity__c}" rendered="{!IF(reg.Item__c != NULL, TRUE, FALSE)}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!reg.Amount__c}"/>
+                  </apex:outputText>
+              </td>              
+
+           </tr>
+        </apex:repeat>
+        </apex:repeat> </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+          <div style="float:left;">
+            Total Revenue Through: &nbsp;
+            <apex:repeat value="{!paymentTypeInnerList}" var="paymenttype">      
+                {!paymenttype.typeData} :  &nbsp; 
+                <apex:outputText value="{0,number,$ ###,##0.00}">
+                    <apex:param value="{!paymenttype.typeCount}"/>
+                </apex:outputText> /
+            </apex:repeat>
+            </div>
+          <div style="float:right;">
+            Total Revenue : &nbsp;
+            <apex:outputText value="{0,number,$ ###,##0.00}">
+                <apex:param value="{!TotalRevenue}"/>
+            </apex:outputText>                           
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+
+</apex:outputtext>
+
+
+
+<apex:outputtext rendered="{!ShowCheckInStatus}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>Report On CheckIn Status</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>                                                                                                                                                                                                                                                                                                                                                                                      
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Name</b></th>
+            <th class="tableHeader" style="width:14%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Email</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Company</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Seat Number</b></th> 
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>CheckIn Date</b></th>          
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>CheckIn Status</b></th>                
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Scanned By </b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>  
+  <apex:repeat value="{!CheckInStatusList}" var="checkStatus">
+  <apex:repeat value="{!checkStatus}" var="c">
+                                                                                                                            
+            <tr style="page-break-after:auto;">   
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!c.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:14%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_Email__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_Company__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Registration_Info__r.TicketTypes__r.TT_Name__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Seat__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.MobileCheckInTime__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!IF(c.IsCheckedIn__c == TRUE, 'Checked In', 'Not Checked In')}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Scanned_by__r.firstname} {!c.Scanned_by__r.lastname}"/></td>
+
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+            <div style="float:right;">
+            Total CheckIns: {!TotalCheckins}                       
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+
+
+
+</apex:outputtext>
+
+
+<apex:outputtext rendered="{!ShowCHForAttendee}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>Report On CheckIn History (Filter based on Guest)</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b> Guest Name</b></th>
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Name</b></th>
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Session</b></th>
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>CheckIn Time</b></th>
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>CheckOut Time</b></th> 
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>                                                                                                                                                   
+<apex:repeat var="CheckInHistory" value="{!CheckInHistoryInnerList}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="6" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!CheckInHistory.EAMData.AS_ID__r.AS_FirstName__c} {!CheckInHistory.EAMData.AS_ID__r.AS_LastName__c}"/></b></td>
+            </tr>   
+<apex:repeat var="CheckIn" value="{!CheckInHistory.CheckInHistoryData}">
+            <tr style="page-break-after:auto;">   
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"></td>  
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!CheckIn.Individual_Ticket_Info__r.Registration_Info__r.TicketTypes__r.TT_Name__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!CheckIn.Individual_Ticket_Info__r.Ticket_Session_Mapping__r.Session__r.Session_Name__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!CheckIn.UC_CheckinTime__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"><apex:outputText value="{!CheckIn.CheckoutTime__c} "/></td>
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    
+</table> 
+</div>
+</body>
+
+</apex:outputtext>
+
+
+<apex:outputtext rendered="{!ShowCHForTicket}">
+<apex:outputPanel rendered="{!WithSessions}">     
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>Report On CheckIn History (Filter based on Ticket)</h3>
+
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+        <tr>                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Name</b></th>
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Session</b></th>
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b> Guest Name</b></th>
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>CheckIn Date/Time</b></th>
+            <th class="tableHeader" style="width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>CheckOut Date/Time</b></th> 
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>                                                                                                                                                   
+<apex:repeat var="CheckInHistory" value="{!CheckinHistoryTicketSessionInnerList}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="6" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!CheckInHistory.TicketData.TT_Name__c}"/></b></td>
+            </tr>   
+<apex:repeat var="CheckIn" value="{!CheckInHistory.SessionInnerData}">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="1" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"></td>
+              <td class="tableContent" colspan="5" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!IF(CheckIn.SessionData.Session__c != NULL, CheckIn.SessionData.Session__r.Session_Name__c,'No Session')}"/>    <apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!CheckIn.SessionData.Session__r.MatchLeads_Date__c - 0.208333333}"/></apex:outputText></b></td>
+            </tr>   
+<apex:repeat value="{!CheckIn.CheckInHistoryData}" var="guest">
+            <tr style="page-break-after:auto;"> 
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>  
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>               
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;"> {!guest.Individual_Ticket_Info__r.Event_Attendee_Mapping__r.AS_ID__r.AS_FirstName__c} {!guest.Individual_Ticket_Info__r.Event_Attendee_Mapping__r.AS_ID__r.AS_LastName__c}</td>
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;">{!guest.UC_CheckinTime__c}</td>
+              <td class="tableContent" style="text-align:left;width:20%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;">{!guest.CheckoutTime__c}</td>
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+      </apex:repeat> 
+    </TBODY>
+    
+</table> 
+
+
+</div>
+</body>
+</apex:outputpanel>
+
+
+<apex:outputPanel rendered="{!WithOutSessions}">     
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>Report On CheckIn History (Filter based on Ticket)</h3>
+
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+        <tr>                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            <th class="tableHeader" style="width:25%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket Name</b></th>
+            <th class="tableHeader" style="width:25%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b> Guest Name</b></th>
+            <th class="tableHeader" style="width:25%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>CheckIn Date/Time</b></th>
+            <th class="tableHeader" style="width:25%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>CheckOut Date/Time</b></th> 
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>                                                                                                                                                   
+    <apex:repeat value="{!CheckInHistoryTicketInnerList}" var="ticketName">
+            <tr style="border-top:1px solid #000000;page-break-after:auto;">
+              <td class="tableContent" colspan="4" style="font-family: Arial,Helvetica,sans-serif;font-size:10px;color:#04408c; background-color:#eaeaea;"><b><apex:outputText value="{!ticketName.TicketData.TT_Name__c}"/></b></td>
+            </tr>   
+ 
+    <apex:repeat value="{!ticketName.CheckInHistoryData}" var="guest">
+            <tr style="page-break-after:auto;"> 
+              <td class="tableContent" style="text-align:left;width:25%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"></td>  
+              <td class="tableContent" style="text-align:left;width:25%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:left;"> {!guest.Individual_Ticket_Info__r.Event_Attendee_Mapping__r.AS_ID__r.AS_FirstName__c} {!guest.Individual_Ticket_Info__r.Event_Attendee_Mapping__r.AS_ID__r.AS_LastName__c}</td>
+              <td class="tableContent" style="text-align:left;width:25%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:left;">{!guest.UC_CheckinTime__c}</td>
+              <td class="tableContent" style="text-align:left;width:25%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;text-align:right;">{!guest.CheckoutTime__c}</td>
+           </tr>
+        </apex:repeat> 
+      </apex:repeat> 
+    </TBODY>
+    
+</table> 
+
+
+</div>
+</body>
+</apex:outputpanel>
+
+</apex:outputtext>
+
+<apex:outputtext rendered="{!ShowRefundList}">
+
+<div class="header" style="text-align:center;padding:0px; margin:0px;font-family: Arial,Helvetica,sans-serif;color:#04408c;">
+<h3>Report On Refunds</h3>
+<table width="100%" cellspacing="0" cellpadding="5" style="border:1px solid #CCCCCC;">
+                                                                                                                                                                                                               
+        <tr>                                                                                                                                                                                                                                                                                                                                                                                       
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Order No</b></th>
+            <th class="tableHeader" style="width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Reg No</b></th>
+            <th class="tableHeader" style="width:14%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Guest</b></th>
+            <th class="tableHeader" style="width:14%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Ticket/Item Name</b></th>
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Refund Date</b></th> 
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Refund Mode</b></th>          
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Refund Amount</b></th>                
+            <th class="tableHeader" style="width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;"><b>Total Amount</b></th>                
+        </tr>
+        </table>
+</div>  
+<!-- header -->
+
+<!--table-->
+<body>
+<div style="padding-top:10px;">
+
+<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <TBODY>  
+<apex:repeat var="refundexport" value="{!refundsList}">
+<apex:repeat var="c" value="{!refundexport}">
+                                                                                                                            
+            <tr style="page-break-after:auto;">                                                                                                     
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Registration_Info__r.customer_key__r.Name}"/></td>
+              <td class="tableContent" style="text-align:left;width:10%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Registration_Info__r.Name}"/></td>
+              <td class="tableContent" style="text-align:left;width:14%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black;"><apex:outputText value="{!c.Event_Attendee_Mapping__r.AS_id__r.AS_FirstName__c} {!c.Event_Attendee_Mapping__r.AS_id__r.AS_LastName__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:14%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Registration_Info__r.TicketTypes__r.TT_Name__c}" rendered="{!IF(c.Registration_Info__r.TicketTypes__c != NULL, TRUE, FALSE)}" /> <apex:outputText value="{!c.Registration_Info__r.Item__r.Item_name__c}" rendered="{!IF(c.Registration_Info__r.Item__c != NULL, TRUE, FALSE)}" /></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!c.Refund_Date__c - 0.208333333}"/></apex:outputText></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;"><apex:outputText value="{!c.Refund_Mode__c}"/></td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!c.Refund_Amount__c}"/>
+                  </apex:outputText> 
+              </td>
+              <td class="tableContent" style="text-align:left;width:12%;font-family: Arial,Helvetica,sans-serif;font-size:9px;border-top: 1px black; text-align:right;">
+                  <apex:outputText value="{0,number,$ ###,##0.00}">
+                      <apex:param value="{!c.Amount__c}"/>
+                  </apex:outputText>
+              </td>
+           </tr>
+        </apex:repeat>
+        </apex:repeat> 
+    </TBODY>
+    <TFOOT>
+      <tr>      
+          <td colspan="11" style="font-family: Arial,Helvetica,sans-serif;font-size:9px;color:#04408c;background-color:#d6e3f2;border-bottom: 1px solid #CCCCCC;border-left: 1px solid #CCCCCC;border-top: 1px solid #CCCCCC;text-align:right;">
+            <div style="float:right;">
+            Total Refund Amount: &nbsp;
+            <apex:outputText value="{0,number,$ ###,##0.00}">
+                <apex:param value="{!TotalRefundAmount}"/>
+            </apex:outputText>                       
+          </div>
+          </td>
+      </tr>
+    </TFOOT>
+    
+</table> 
+</div>
+</body>
+
+
+
+</apex:outputtext>
+
+
+</html>
+
+</apex:page>

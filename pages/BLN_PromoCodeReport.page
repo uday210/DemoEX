@@ -1,0 +1,962 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" cache="true" controller="BLN_PromoCodeReportCon" action="{!hideEventsTab}" id="pg" readOnly="true">
+ 
+    <!------------ Begin Custom Components ------------>
+    <c:DateFormatChange />
+    <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------ End Custom Components ------------>
+    
+    <!------------ Begin Styles ------------>
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-promocode-report.css')}" />
+    <!------------ End Styes ------------>
+    <style>
+    #example1 tr td .grpheader li {
+    display: inline-block;
+    list-style-type: none;
+}
+#example3 tr td .grpheader li {
+    display: inline-block;
+    list-style-type: none;
+}
+#example4 tr td .grpheader li {
+    display: inline-block;
+    list-style-type: none;
+}
+
+
+table.dataTable thead tr th {
+    /* height: 27px; */
+    text-align: center;
+    color: #807f7f;
+    font-size: 12px;
+    border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd !important;
+    border-bottom-width: 3px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    padding: 8px 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </style>
+    
+
+    <!------------- Begin Basic template html component ------------------------------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="comid">
+    
+    <apex:form id="fm">
+    <!---------------------template code------------------>
+    
+        <div class="datatable-wrapper">
+        <!---start of tab1 topstats1--->
+            <div id="tab1topstats">
+                <apex:outputPanel id="pnlExportPromocode">
+                <!------------------------- Begin print and export button -------------------------------------------->
+                <div class="print_export_cont" style="text-align:right; margin-bottom:0px; margin-top:5px; margin-right:.4%;">
+                    <!--<apex:commandLink styleClass="datatables_btn" onclick="exportPromocode('{!promocodeSelectedType}');return false;" > <span>Export1</span> </apex:commandLink>-->
+                    <apex:outputText rendered="{!promoProcessList.size<1000}">
+                        <input type="button" class="datatables_btn" onclick="exportPromocode('{!promocodeSelectedType}');return false;" value="Export"/>
+                    </apex:outputText>
+                    
+                    <apex:outputText rendered="{!promoProcessList.size>1000}">
+                        <input type="button" class="datatables_btn" onclick="continueToBatch('sendToMail')" value="Export"/>
+                    </apex:outputText>
+                </div>
+                <!-------------------------- End of print and export button ---------------------------------->
+                </apex:outputPanel>
+
+                <apex:actionFunction name="bypromosummaryMethod" action="{!bypromosummrymethod}" rerender="pnlExportPromocode">
+                <apex:param name="bypromosumm" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction name="bydetailMethod" action="{!bypromodetailmethod}" rerender="pnlExportPromocode">
+                <apex:param name="bypromodetail" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction name="byticketsummaryMethod" action="{!byticketsummarymethod}" rerender="pnlExportTicket">
+                <apex:param name="bytickesumm" value="" />
+                </apex:actionFunction>
+                
+                <apex:actionFunction name="bydetailMethodticket" action="{!byticketdetailmethod}" rerender="pnlExportTicket">
+                <apex:param name="byticketdetail" value="" />
+                </apex:actionFunction>
+                
+
+                <apex:actionFunction action="{!exportPromocodeSummary}"  name="afExportPCSummary" ReRender="">
+                    <apex:param value="" name="fdate" />
+                    <apex:param value="" name="tdate" />
+                    <apex:param value="" name="searchKey" />
+                </apex:actionFunction>
+                
+                 <apex:actionFunction action="{!exportPromocodeDetails}"  name="afExportPCDetails" ReRender="">
+                    <apex:param value="" name="fdate" />
+                    <apex:param value="" name="tdate" />
+                    <apex:param value="" name="searchKey" />
+                </apex:actionFunction>    
+                
+                
+                 <apex:actionFunction action="{!exportTicketSummary}"  name="afExportTSummary" ReRender="">
+                    <apex:param value="" name="fdate" />
+                    <apex:param value="" name="tdate" />
+                    <apex:param value="" name="searchKey" />
+                </apex:actionFunction> 
+                
+                
+                 <apex:actionFunction action="{!exportTicketDetails}"  name="afExportTDetails" ReRender="">
+                    <apex:param value="" name="fdate" />
+                    <apex:param value="" name="tdate" />
+                    <apex:param value="" name="searchKey" />
+                </apex:actionFunction> 
+
+                <div class="top-stats" style="margin-bottom:0px;">
+                <!--------->
+                    <ul class="left">
+                    <!---->
+                        <li class="labeltitles">
+                            <input type="radio" checked='true' name="pcdetails" onchange="renderbypromosummary();"  id="pc_vs" />
+                            <label for="pc_vs">View Summary</label>
+                        </li>
+                        <li class="labeloutput"> </li>
+                        <!----->
+                        <li class="labeltitles" style="padding-left:5px;">
+                            <input type="radio" name="pcdetails" id="pc_vd" onchange="renderbypromodetails();" />
+                            <label for="pc_vd">View Details</label>
+                        </li>                    
+                    </ul>
+                    <!--close of left-->
+                    <!--------------------------------------->
+                    <div class="clear"></div>
+                    <!--close of clear-->
+                    
+                    <!---->
+                </div>
+                    <!--close of top-stats-->
+            </div>
+                <!--close of tab1 topstats--->
+
+            <!--------->
+            <!---start of tab2 topstats--->
+            <div id="tab2topstats" style="display:none;">
+            <!-------------------------print and export button-------------------------------------------->
+            
+             <apex:outputPanel id="pnlExportTicket">
+                <div class="print_export_cont" style=" text-align:right; margin-bottom:0px; margin-top:5px; margin-right:.4%;">
+                    <!--<apex:commandLink styleClass="datatables_btn" onclick="exportTicket('{!ticketSelectedType}');return false;"> <span>Export</span> </apex:commandLink>-->
+                    <apex:outputText rendered="{!(promoProcessList.size+ItmPromoProcessList.size)<1000}">
+                      <input type="button" class="datatables_btn" onclick="exportTicket('{!ticketSelectedType}');return false;" value="Export"/>
+                    </apex:outputText>
+                    
+                    <apex:outputText rendered="{!(promoProcessList.size+ItmPromoProcessList.size)>1000}">
+                      <input type="button" class="datatables_btn" onclick="continueToBatchPromo('sendToMailPromo')" value="Export"/>
+                    </apex:outputText>
+                </div>
+             </apex:outputPanel>
+
+                    <!--------------------------//end of print and export button---------------------------------->
+                    <div class="top-stats" style="margin-bottom:0px;">
+                       
+                        <ul class="left">
+                            <!---->
+                            <li class="labeltitles">
+                                <input type="radio" checked='true' name="tktdetails" id="bt_vs" onchange="renderbybyticketsummary();" />
+                                <label for="bt_vs">View Summary</label>
+                            </li>
+                            <li class="labeloutput"> </li>
+                            <!----->
+                            <li class="labeltitles" style="padding-left:5px;">
+                                <input type="radio" name="tktdetails" id="bt_vd" onchange="renderbyticketdetails();" />
+                                <label for="bt_vd">View Details</label>
+                            </li>
+                            <!------>
+
+                        </ul>
+                        <!--close of left-->
+                        <!-----start of from date and to date
+                             <!--------------------------------------->
+                        <div class="clear"></div>
+                        <!--close of clear-->
+
+                        <!---->
+                    </div>
+                    <!--close of top-stats-->
+                </div>
+                <!--close of tab2 topstats--->
+
+            </div>
+            <!--close of datatable-wrapper-->
+
+            <!-----------startoftabs---------------------------->
+
+            <div id="TabbedPanels" class="TabbedPanels" style="width:97.7%; margin-left:1%; margin-top:2px;">
+                <ul class="TabbedPanelsTabGroup">
+                    <li id="tab1clk" class="TabbedPanelsTab">By PromoCode</li>
+                    <li id="tab2clk" class="TabbedPanelsTab">By Ticket</li>
+                </ul>
+                
+                
+                <div class="TabbedPanelsContentGroup" style="padding-top:5px;">
+                    <!--------------------start of ist tab------------------>
+                    <div class="TabbedPanelsContent" style="padding-top:0px;">
+                        <!----------->
+                        <div id="pc_vsummary" class="datatable-wrapper">
+                        
+                                        <div id="example_filter" align="right"><label>Search:<input type="text" id="searchKeyPromocodeSummary" class="" aria-controls="example" onkeyup="table1.draw();" style="width:20%"/></label></div>
+                                        <br/>
+                         <!-----start of from date and to date----->
+                    <p class="right" style="text-align:right; margin-bottom: 15px;">
+                        <span class="labeltitles">From Date:</span>
+                        <span><apex:inputText value="{!psFromDate }" styleClass="ED" style="width:18%; height:20px;" id="idPSFromDate" /></span>
+                        <span class="labeltitles">To Date:</span><span>
+                        <apex:inputText value="{!psToDate }" styleClass="ED" style="width:18%; height:20px;" id="idPSToDate"/></span>
+                        <span><apex:commandLink onclick="table1.draw();return false;" styleClass="secondarybtn"> <i class="fa fa-search fa-1x" style='color: #ffffff;'></i> </apex:commandLink></span>
+
+                    </p>
+                    <br/>
+                            <!----- Begin Datatable by Promo summary ----->
+                            <table id="example" class="example display" cellpadding="0" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th style="padding:0px;">
+                                        <table class="display" style="width:100%; border-bottom:0px;" cellpadding="0" cellspacing="0"> 
+                                         <thead>
+                                            <tr> 
+                                                <th width="">Ticket Name</th>
+                                                <th width="20%"> Ticket Type</th>
+                                                <th width="14%"> Quantity Used</th>
+                                                <th width="16%"> Discount ({!eventcurrency} / %)</th>
+                                                <th width="22%"> Total Discounted Amount ({!eventcurrency})</th>
+                                            </tr>
+                                             </thead>
+                                        </table>
+                                        
+                                        </th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   
+                                                
+                                   
+                                </tbody>
+                            </table>
+                           <!----- End Datatable by Promo summary ----->
+                        </div>
+                        <!--close of datatable-wrapper(pc_vsummary)-->
+                        <!------------------------------------------------------------------>
+
+                        <!------------------------------------------------------------------>
+                        <div id="pc_vdetails" class="datatable-wrapper" style="display:none;">
+                        
+                                                                <div id="example_filter" align="right"><label>Search:<input type="text" id="searchKeyPromocodeDetails" class="" aria-controls="example" onkeyup="table2.draw();" style="width:20%"/></label></div>
+                                                                <br/>
+                               <!-----start of from date and to date----->
+                    <p class="right" style="text-align:right; margin-bottom: 15px;">
+                        <span class="labeltitles">From Date:</span>
+                        <span><apex:inputText value="{!pdFromDate}" styleClass="ED" style="width:18%; height:20px;" id="idPDFromDate" /></span>
+                        <span class="labeltitles">To Date:</span><span>
+                        <apex:inputText value="{!pdToDate}" styleClass="ED" style="width:18%; height:20px;" id="idPDToDate"/></span>
+                        <span><apex:commandLink styleClass="secondarybtn" onclick="table2.draw();return false;"> <i class="fa fa-search fa-1x" style='color: #ffffff;'></i> </apex:commandLink></span>
+
+                    </p>
+                    
+                    
+                        <!----------- Begin Datatable Promocode Details ------------->
+                            <table id="example2" class="example display">
+                                <thead>
+                                    <tr>
+                                    <th style="padding:0px;">
+                                     <table class="display"  style="width:100%" cellpadding="0" cellspacing="0"> 
+                                         <thead>
+                                            <tr> 
+                                        <th width="20%">Order No</th>
+                                        <th width="30%">Ticket Name</th>
+                                        <th width="33%">Attendee Name</th>
+                                        <th width="17%">Discount Amount ({!eventcurrency})</th>
+                                            </tr>
+                                             </thead>
+                                        </table>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   
+                                </tbody>
+                            </table>
+                          
+                            <!----------- End Datatable Promocode Details ------------->
+                        </div>
+                    </div>
+                    <!--close of tab content1---->
+                    <!----------------------------------------------------------------------->
+                    <!--------------------start of 2nd tab------------------>
+                    <div class="TabbedPanelsContent" style="padding-top:0px;">
+                        <div id="bt_vsummary" class="datatable-wrapper">
+                            <!-----datatable start by Ticketsummary----->
+<div id="example_filter" align="right"><label>Search:<input type="text" id="searchKeyTicketSummary" class="" aria-controls="example" onkeyup="table3.draw();" style="width:20%"/></label></div>
+                            <br/>
+                                <p class="right" style="text-align:right; margin-bottom: 15px;">
+                        <span class="labeltitles">From Date:</span>
+                        <span><apex:inputText value="{!tsFromDate }" styleClass="ED" style="width:18%; height:20px;" id="idTSFromDate" /></span>
+                        <span class="labeltitles">To Date:</span><span>
+                        <apex:inputText value="{!tsToDate }" styleClass="ED" style="width:18%; height:20px;" id="idTSToDate"/></span>
+                        <span><apex:commandLink styleClass="secondarybtn" onclick="table3.draw();return false;"> <i class="fa fa-search fa-1x" style='color: #ffffff;'></i> </apex:commandLink></span>
+
+                    </p>
+                    
+                            <table id="example3" class="example display">
+                                <thead>
+                                    <tr>
+                                        <th style="padding:0px;">
+                                        <table class="display" style="width:100%; border-bottom:0px;" cellpadding="0" cellspacing="0"> 
+                                            <thead>
+                                                <tr> 
+                                                    <th width="17%">Promotion Name</th>
+                                                    <th width="15%">Promo Code No</th>
+                                                    <th width="20%">Promo Code Type</th>
+                                                    <th width="16%">Discount ({!eventcurrency} / %)</th>
+                                                    <th width="13%">Used/Available</th>
+                                                    <th> Total Discounted Amount ({!eventcurrency})</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            
+                            <tbody>
+                            
+                            </tbody>
+                                        
+                                </table>        
+                            <!-----------end of datatable By Ticketsummary-->
+                        </div>
+                        <!--close of datatable-wrapper(bt_vsummary)-->
+                        <!------------------------------------------------------------------------>
+                        <div id="bt_vdetails" class="datatable-wrapper" style="display:none;">
+                            <!-----datatable start by Ticket detail----->
+                            <div id="example_filter" align="right"><label>Search:<input type="text" id="searchKeyTicketDetails" class="" aria-controls="example" onkeyup="table4.draw();" style="width:20%"/></label></div>
+                                <br/>
+                                <p class="right" style="text-align:right; margin-bottom: 15px;">
+                        <span class="labeltitles">From Date:</span>
+                        <span><apex:inputText value="{!tdFromDate }" styleClass="ED" style="width:18%; height:20px;" id="idTDFromDate" /></span>
+                        <span class="labeltitles">To Date:</span><span>
+                        <apex:inputText value="{!tdToDate }" styleClass="ED" style="width:18%; height:20px;" id="idTDToDate"/></span>
+                        <span><apex:commandLink styleClass="secondarybtn" onclick="table4.draw();return false;"> <i class="fa fa-search fa-1x" style='color: #ffffff;'></i> </apex:commandLink></span>
+
+                    </p>
+                    <br/>
+                     <table id="example4" class="example display" cellpadding="0" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                    
+                                      <th style=" padding:0px;">
+                                        <table class="display" width="100.1%" style="width:100%;" cellpadding="0" cellspacing="0"> 
+                                         <thead>
+                                            <tr> 
+                                        <th width="12%">Order No</th>
+                                        <th width="20%">Promo Code Name</th>
+                                        <th width="13%">Promo Code</th>
+                                        <th width="38%">Attendee Name</th>
+                                        <th width="17%">Discount Amount ({!eventcurrency})</th>
+                                         </tr>
+                                             </thead>
+                                        </table>
+                                        
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+</tbody>
+                            </table>
+
+                                                                 
+
+                            <!-----------end of datatable By Ticketdetail-->
+                        </div>
+                        <!--close of datatable-wrapper(bt_vdetail)-->
+
+                        <!----------->
+                    </div>
+                    <!--close of tab content2---->
+                    <!------------------------------------------------->
+                </div>
+                <!---close of TabbedPanelsContentGroup---->
+            </div>
+            <!-----close of TabbedPanels1--------->
+            <!-----------------//template code----------------------->
+
+        </apex:form>
+    </c:ed_basictemplate>
+    <!-------------//end of basic template component------------------------>
+
+    <!------------------------- Begin Java Script Section ------------------------->
+        <c:ed_popupbox ></c:ed_popupbox>  
+        <script>
+        
+        function continueToBatch(clkbtn)
+        {
+            Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+        }
+        
+        function callback(clkbtn , okbtnn){
+        if(clkbtn =='sendToMail')
+        {
+            exportPromocode('{!promocodeSelectedType}');
+        }
+        
+        }
+        function callbackcancel(clkbtn,cnclbtnn)
+        {
+        if(clkbtn =='sendToMail')
+        {
+        //alert('cancel');
+        }
+        
+        }
+        
+        function continueToBatchPromo(clkbtn)
+        {
+            Alertconfirm.render('Do you want continue to mail exported data?','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+        }
+        
+        function callback(clkbtn , okbtnn){
+        if(clkbtn =='sendToMailPromo')
+        {
+            exportTicket('{!ticketSelectedType}');
+        }
+        
+        }
+        function callbackcancel(clkbtn,cnclbtnn)
+        {
+        if(clkbtn =='sendToMailPromo')
+        {
+        //alert('cancel');
+        }
+        
+        }
+        </script>
+    <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+    
+    <script type="text/javascript" language="javascript" class="init">
+        var j = jQuery.noConflict();
+        j(document).ready(function() {            
+        
+        <!------------------------- Begin Datatable by Promo summary (nc)------------->
+            table1 = j('#example').DataTable( 
+            {
+                "pagingType" : "full_numbers",                
+                "aLengthMenu": [[  5, 10, 25, 50], [ 5, 10, 25, 50]],
+                "iDisplayLength": 5,
+                "sDom": 'W<"clear">lfrtip', 
+                
+                /**default orderid in asc sorting**/
+                "order" : [ [ 0, "asc" ] ],
+                "bSort": false,
+                "bAutoWidth": false, // Disable the auto width calculation
+                "bFilter": false,
+                "processing": true,
+                "serverSide": true,
+            
+                        "ajax": {
+                        "url":'{!$Page.BLN_PromoCodeReport_Helper_Page1}?core.apexpages.devmode.url=1',
+                        
+
+                        "data": function ( pagedata ) {
+                
+                                pagedata["fdate"]=$("[id$='idPSFromDate']").val();
+                                pagedata["tdate"]=$("[id$='idPSToDate']").val();
+                                pagedata["searchKey"]=$("[id$='searchKeyPromocodeSummary']").val();
+                          }
+                },
+            
+                "columns": [
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                        var htmlData = '';
+                        htmlData+='<ul class="grpheader"><li class="labeltitles">Promotion Name:</li><li class="labeloutput">'+row.promotionData.Name+'</li>';
+                        htmlData+='<li class="labeltitles">&nbsp;Promo Code:</li><li class="labeloutput">'+row.promotionData.Promo_Code__c+'</li>';
+                        htmlData+='<li class="labeltitles">&nbsp;Promo Code Type:</li><li class="labeloutput">'+row.promotionData.Promotion_Type__c+'</li>';
+                        
+                        htmlData+='<li class="labeltitles percent">&nbsp;Discount:</li><li class="labeloutput percent">';
+                        if(row.itemPromotionList[0].itemPromotionData.Item_Discount_Type__c == 'Amount'){
+                            htmlData+='{!eventcurrency}';
+                            htmlData+= row.itemPromotionList[0].itemPromotionData.Item_Discount_Value__c;
+                        }
+                        if(row.itemPromotionList[0].itemPromotionData.Item_Discount_Type__c == 'Percent'){
+                            htmlData+= row.itemPromotionList[0].itemPromotionData.Item_Discount_Value__c;
+                            htmlData+= '%';
+                        }
+                        htmlData+='</li>';
+                        htmlData+='<li class="labeltitles">&nbsp;Used/Available:</li><li class="labeloutput">'+ row.inntotalusedcont + '/' + row.promotionData.T_Max_Count__c + '</li></ul>';
+    
+                        var details = '<table class="display promocode_rpttbl" width="100.1%"><tbody>';
+                        
+                        for(j = 0; j < row.itemPromotionList.length; j++)
+                        {
+                            
+                            var s=row.itemPromotionList[j].itemPromotionData.Buy_Item__r.item_type__r.Name;
+                            //alert(s);
+                            <apex:variable value="" var="LabelName"/>   
+                            if(s=='Admissions'){
+                                <apex:repeat value="{!RegList}" var="r">        
+                                    <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Attendee'}"/>      
+                                </apex:repeat>
+                                s='{!LabelName}';
+                            }
+                        
+                            if(s=='Exhibitor'){
+                                <apex:repeat value="{!RegList}" var="r">        
+                                    <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Exhibitor'}"/>     
+                                </apex:repeat>
+                                s='{!LabelName}';
+                            }
+                            
+                            if(s=='Sponsor'){
+                                <apex:repeat value="{!RegList}" var="r">        
+                                    <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Sponsor'}"/>       
+                                </apex:repeat>
+                                s='{!LabelName}';
+                            }
+                            
+                            if(s=='Speaker'){
+                                <apex:repeat value="{!RegList}" var="r">        
+                                    <apex:variable value="{!r.Label_Name__c}" var="LabelName" rendered="{!r.Column_Name__c=='Speaker'}"/>       
+                                </apex:repeat>
+                                s='{!LabelName}';
+                            }
+                            
+                            
+                            
+                            details +='<tr>';
+                            details +='<td style="width: 28.2%">'+ row.itemPromotionList[j].itemPromotionData.Buy_Item__r.item_name__c +'</td>';
+                            details +='<td style="width: 20%">'+ s +'</td>';
+                            details +='<td style="width: 14%">'+ row.itemPromotionList[j].itemcount +'</td>';
+                             details +='<td style="width: 16%" class="percent">';
+                            if(row.itemPromotionList[j].itemPromotionData.Item_Discount_Type__c == 'Amount'){
+                                details +='{!eventcurrency}'+row.itemPromotionList[j].itemPromotionData.Item_Discount_Value__c;
+                            }else if(row.itemPromotionList[j].itemPromotionData.Item_Discount_Type__c == 'Percent'){
+                                details +=row.itemPromotionList[j].itemPromotionData.Item_Discount_Value__c+'%';
+                            }
+                            details +='</td>';
+                            details +='<td class="amount" style="width: 25%">' + row.itemPromotionList[j].totdiscount+'</td></tr>';
+                        }
+
+                        details += '</tbody></table>';
+                        return htmlData + details;
+                    }
+                }
+            ]});
+        <!------------------------- End Datatable by Promo summary ------------->
+        
+        <!------------------------- Begin Datatable by Promo Details ------------->
+            table2 = j('#example2').DataTable( 
+            {
+                "pagingType" : "full_numbers",                
+                "aLengthMenu": [[  5, 10, 25, 50], [ 5, 10, 25, 50]],
+                "iDisplayLength": 5,
+                "sDom": 'W<"clear">lfrtip', 
+                
+                /**default orderid in asc sorting**/
+                "order" : [ [ 0, "asc" ] ],
+                "bSort": false,
+                "bAutoWidth": false, // Disable the auto width calculation
+                "bFilter": false,
+                "processing": true,
+                "serverSide": true,
+            
+                        "ajax": {
+                        "url":'{!$Page.BLN_PromoCodeReport_Helper_Page2}?core.apexpages.devmode.url=1',
+                        
+
+                        "data": function ( pagedata ) {
+                
+                                pagedata["fdate"]=$("[id$='idPDFromDate']").val();
+                                pagedata["tdate"]=$("[id$='idPDToDate']").val();
+                                pagedata["searchKey"]=$("[id$='searchKeyPromocodeDetails']").val();
+                          }
+                },
+            
+                "columns": [
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                        var htmlData = '';
+                        htmlData+='<ul class="grpheader"><li class="labeltitles">Promotion Name:</li><li class="labeloutput">'+row.promotionData.Name+'</li>';
+                        htmlData+='<li class="labeltitles">&nbsp;Promo Code:</li><li class="labeloutput">'+row.promotionData.Promo_Code__c+'</li>';
+                        htmlData+='<li class="labeltitles">&nbsp;Promo Code Type:</li><li class="labeloutput">'+row.promotionData.Promotion_Type__c+'</li>';
+                        
+                        htmlData+='<li class="labeltitles percent">&nbsp;Discount:</li><li class="labeloutput percent">';
+                        if(row.promotionData.Item_Promotions__r.records[0].Item_Discount_Type__c == 'Amount'){
+                            htmlData+='{!eventcurrency}';
+                            htmlData+= row.promotionData.Item_Promotions__r.records[0].Item_Discount_Value__c;
+                        }else if(row.promotionData.Item_Promotions__r.records[0].Item_Discount_Type__c == 'Percent'){
+                            htmlData+= row.promotionData.Item_Promotions__r.records[0].Item_Discount_Value__c;
+                            htmlData+= '%';
+                        }
+                        htmlData+='</li>';
+                        htmlData+='<li class="labeltitles">&nbsp;Used/Available:</li><li class="labeloutput">'+ row.promotionData.T_Used_Count__c+ '/' + row.promotionData.T_Max_Count__c+ '</li></ul>';
+    
+                        var details = '<table class="display promocode_rpttbl" width="100.1%"><tbody>';
+                        
+                        for(j = 0; j < row.itemPromotionList1.length; j++)
+                        {
+                            if(row.itemPromotionList1[j].itemPromotionData.Item_Discount__c != 0){
+                                details +='<tr><td style="width: 20%">'+ row.itemPromotionList1[j].itemPromotionData.Order__r.Name+'</td>';
+                                details +='<td style="width: 30%">'+ row.itemPromotionList1[j].itemPromotionData.Item__r.item_name__c +'</td>';
+                                details +='<td style="width: 33%;text-align:center;">'+ row.itemPromotionList1[j].itemPromotionData.Order__r.BLN_TKT_profile__r.First_Name__c +' '+ row.itemPromotionList1[j].itemPromotionData.Order__r.BLN_TKT_profile__r.Last_Name__c +'</td>';
+                                details +='<td style="width: 17%">'+ row.itemPromotionList1[j].itemPromotionData.Item_Discount__c+'</td></tr>';
+                            }
+                        }
+
+                        details += '</tbody></table>';
+                        return htmlData + details;
+                    }
+                }
+            ]});
+        <!------------------------- End Datatable Promo Details ------------->
+        
+        
+        <!------------------------- Begin Datatable Ticket Summary ------------->
+            table3 = j('#example3').DataTable( 
+            {
+                "pagingType" : "full_numbers",                
+                "aLengthMenu": [[  5, 10, 25, 50], [ 5, 10, 25, 50]],
+                "iDisplayLength": 5,
+                "sDom": 'W<"clear">lfrtip', 
+                
+                /**default orderid in asc sorting**/
+                "order" : [ [ 0, "asc" ] ],
+                "bSort": false,
+                "bAutoWidth": false, // Disable the auto width calculation
+                "bFilter": false,
+                "processing": true,
+                "serverSide": true,
+            
+                        "ajax": {
+                        "url":'{!$Page.BLN_PromoCodeReport_Helper_Page3}?core.apexpages.devmode.url=1',
+                        
+
+                        "data": function ( pagedata ) {
+                
+                                pagedata["fdate"]=$("[id$='idTSFromDate']").val();
+                                pagedata["tdate"]=$("[id$='idTSToDate']").val();
+                                pagedata["searchKey"]=$("[id$='searchKeyTicketSummary']").val();
+                          }
+                },
+            
+                "columns": [
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                        var htmlData = '';
+                        htmlData+='<ul class="grpheader"><li class="labeltitles">Ticket Name:</li><li class="labeloutput">'+row.ticketname+'</li>';
+                        htmlData+='<li class="labeltitles">&nbsp;Ticket Type:</li><li class="labeloutput">'+row.tickettype+'</li></ul>';
+                     
+                        var details = '<table class="display promocode_rpttbl" width="100.1%"><tbody>';
+                        
+                        for(j = 0; j < row.prolistforticketinner.length; j++)
+                        {
+                            if(row.prolistforticketinner[j].usedbyticket != 0 && row.prolistforticketinner[j].totaldiscountbyticket != 0){
+                                details +='<tr><td style="width: 17%">'+ row.prolistforticketinner[j].prolistforticket.Name+'</td>';
+                                details +='<td style="width: 15%">'+ row.prolistforticketinner[j].prolistforticket.Promo_Code__c+'</td>';
+                                details +='<td style="width: 20%">'+ row.prolistforticketinner[j].prolistforticket.Promotion_Type__c+'</td>';
+                                details +='<td style="width: 16%">';
+                                console.log(row.prolistforticketinner[j].prolistforticket.Item_Promotions__r.records[0].Item_Discount_Type__c);
+                                if(row.prolistforticketinner[j].prolistforticket.Item_Promotions__r.records[0].Item_Discount_Type__c == 'Amount'){
+                                    details +='{!eventcurrency}';
+                                }
+                                
+                                details +='<span class="amount">';
+                                details += row.prolistforticketinner[j].prolistforticket.Item_Promotions__r.records[0].Item_Discount_Value__c;
+                                details +='</span>';
+                                    
+                                if(row.prolistforticketinner[j].prolistforticket.Item_Promotions__r.records[0].Item_Discount_Type__c == 'Percent'){
+                                    details +='%';
+                                }
+                                details +='</td>';
+                                details +='<td style="width: 13%">'+ row.prolistforticketinner[j].usedbyticket +'/' + row.prolistforticketinner[j].prolistforticket.T_Max_Count__c+ '</td>';
+                                details +='<td>'+ row.prolistforticketinner[j].totaldiscountbyticket+'</td></tr>';
+                            }
+                        }
+
+                        details += '</tbody></table>';
+                        return htmlData + details;
+                    }
+                }
+            ]});
+        <!------------------------- End Datatable Ticket Summary ------------->
+        
+        
+        <!------------------------- Begin Datatable Ticket Details ------------->
+            table4 = j('#example4').DataTable( 
+            {
+                "pagingType" : "full_numbers",                
+                "aLengthMenu": [[  5, 10, 25, 50], [ 5, 10, 25, 50]],
+                "iDisplayLength": 5,
+                "sDom": 'W<"clear">lfrtip', 
+                
+                /**default orderid in asc sorting**/
+                "order" : [ [ 0, "asc" ] ],
+                "bSort": false,
+                "bAutoWidth": false, // Disable the auto width calculation
+                "bFilter": false,
+                "processing": true,
+                "serverSide": true,
+            
+                        "ajax": {
+                        "url":'{!$Page.BLN_PromoCodeReport_Helper_Page4}?core.apexpages.devmode.url=1',
+                        
+
+                        "data": function ( pagedata ) {
+                
+                                pagedata["fdate"]=$("[id$='idTDFromDate']").val();
+                                pagedata["tdate"]=$("[id$='idTDToDate']").val();
+                                pagedata["searchKey"]=$("[id$='searchKeyTicketDetails']").val();
+                          }
+                },
+            
+                "columns": [
+                {
+                    data:   "item",
+                    render: function (data, type, row ) {
+                        var htmlData = '';
+                        htmlData+='<ul class="grpheader left"><li class="labeltitles">Ticket Name:</li><li class="labeloutput">'+row.blnitems.Buy_Item__r.item_name__c+'</li>';
+                        htmlData+='<li class="labeltitles">&nbsp;Ticket Type:</li><li class="labeloutput">'+row.blnitems.Buy_Item__r.item_type__r.Name+'</li></ul>';
+                        htmlData+='<span class="right"    ><span class="labeltitles" >&nbsp;Total: </span><span class="labeloutput">';
+                        var totaldiscount=0;
+                        for(d = 0; d < row.itemPromotionList1.length; d++)
+                        {
+                            if(row.itemPromotionList1[d].itemPromotionData.Item_Discount__c != 0){
+                            totaldiscount+=row.itemPromotionList1[d].itemPromotionData.Item_Discount__c;
+                     
+                            }
+                        }
+                        htmlData+=totaldiscount+'&nbsp;{!eventcurrency}'+'</span></span>';
+                        var details = '<table class="display promocode_rpttbl" width="100.1%"><tbody>';
+                        
+                        for(j = 0; j < row.itemPromotionList1.length; j++)
+                        {
+                            if(row.itemPromotionList1[j].itemPromotionData.Item_Discount__c != 0){
+                                details +='<tr><td style="width: 12%">'+ row.itemPromotionList1[j].itemPromotionData.Order__r.Name+'</td>';
+                                details +='<td style="width: 20%">'+ row.itemPromotionList1[j].itemPromotionData.Promotion__r.Name+'</td>';
+                                details +='<td style="width: 13%">'+ row.itemPromotionList1[j].itemPromotionData.Promotion__r.Promo_Code__c+'</td>';
+                                details +='<td style="width: 38%;text-align:center;">'+ row.itemPromotionList1[j].itemPromotionData.Order__r.BLN_TKT_profile__r.First_Name__c+' '+ row.itemPromotionList1[j].itemPromotionData.Order__r.BLN_TKT_profile__r.Last_Name__c +'</td>';
+                                details +='<td class="amount"  style="width: 17%>"'+ row.itemPromotionList1[j].itemPromotionData.Item_Discount__c+'</td></tr>';
+                            }
+                        }
+
+                        details += '</tbody></table>';
+                        return htmlData + details;
+                    }
+                }
+            ]});
+        <!------------------------- End Datatable Ticket Details ------------->
+
+
+        var fromDatePS1 = new Date(($("[id$='idPSFromDate']")).val());
+        var toDatePS1 = new Date(($("[id$='idPSToDate']")).val());
+        var fromDatePD1 = new Date(($("[id$='idPDFromDate']")).val());        
+        var toDatePD1 = new Date(($("[id$='idPDToDate']")).val());
+        
+        var fromDatePS2 = ($("[id$='idPSFromDate']")).val();
+        var toDatePS2 = ($("[id$='idPSToDate']")).val();
+        var fromDatePD2 = ($("[id$='idPDFromDate']")).val();
+        var toDatePD2 = ($("[id$='idPDToDate']")).val();
+ 
+        if(fromDatePS2.length != 0){
+            document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idPSFromDate}").value= changedate(fromDatePS1);
+        }
+        if(toDatePS2.length != 0){
+            document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idPSToDate}").value= changedate(toDatePS1);
+        }
+        if(fromDatePD2.length != 0){
+            document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idPDFromDate}").value= changedate(fromDatePD1);
+        }
+        if(toDatePD2.length != 0){
+            document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idPDToDate}").value= changedate(toDatePD1);
+        }
+        
+        var fromDateTS1 = new Date(($("[id$='idTSFromDate']")).val());
+        var toDateTS1 = new Date(($("[id$='idTSToDate']")).val());
+        var fromDateTD1 = new Date(($("[id$='idTDFromDate']")).val());        
+        var toDateTD1 = new Date(($("[id$='idTDToDate']")).val());
+        
+        var fromDateTS2 = ($("[id$='idTSFromDate']")).val();
+        var toDateTS2 = ($("[id$='idTSToDate']")).val();
+        var fromDateTD2 = ($("[id$='idTDFromDate']")).val();
+        var toDateTD2 = ($("[id$='idTDToDate']")).val();
+        
+        if(fromDateTS2.length != 0){
+            document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idTSFromDate}").value= changedate(fromDateTS1);
+        }
+        if(toDateTS2.length != 0){
+            document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idTSToDate}").value= changedate(toDateTS1);
+        }
+        if(fromDateTD2.length != 0){
+            document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idTDFromDate}").value= changedate(fromDateTD1);
+        }
+        if(toDateTD2.length != 0){
+            document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idTDToDate}").value= changedate(toDateTD1);
+        }
+    });
+    </script>
+    
+    
+     <script>
+        function renderbypromosummary() {
+            var bypromosumm = 'bypromosummarytab';
+            bypromosummaryMethod(bypromosumm);
+        }
+
+        function renderbypromodetails() {
+            var bypromodetail = 'bypromodetailtab';
+            bydetailMethod(bypromodetail);
+        }
+
+        function renderbybyticketsummary() {
+            var bytickesumm = 'byticketsummarytab';
+            byticketsummaryMethod(bytickesumm);
+        }
+
+        function renderbyticketdetails() {
+            var byticketdetail = 'byticketdetailtab';
+            bydetailMethodticket(byticketdetail);
+        }
+    </script>
+    
+    <script>
+        function exportPromocode(promocodeSelectedType){
+        
+            if(promocodeSelectedType == 'bypromosummarytab'){
+                exportPromocodeSummary();
+            }
+            else if(promocodeSelectedType == 'bypromodetailtab'){
+                exportPromocodeDetails();
+            }
+        } 
+        
+        function exportTicket(ticketSelectedType){
+        
+            if(ticketSelectedType == 'byticketsummarytab'){
+                exportTicketSummary();
+            }
+            else if(ticketSelectedType == 'byticketdetailtab'){
+                exportTicketDetails();
+            }
+        } 
+        
+        function exportPromocodeSummary(){
+            afExportPCSummary(document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idPSFromDate}").value,document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idPSToDate}").value,document.getElementById("searchKeyPromocodeSummary").value);
+        }
+        
+        function exportPromocodeDetails(){
+            afExportPCDetails(document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idPDFromDate}").value,document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idPDToDate}").value,document.getElementById("searchKeyPromocodeDetails").value);
+        }
+        
+        function exportTicketSummary(){
+            afExportTSummary(document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idTSFromDate}").value,document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idTSToDate}").value,document.getElementById("searchKeyTicketSummary").value);
+        }
+        
+        function exportTicketDetails(){
+            afExportTDetails(document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idTDFromDate}").value,document.getElementById("{!$Component.pg:comid:commoncomponent:fm:idTDToDate}").value,document.getElementById("searchKeyTicketDetails").value);
+        }
+    </script>
+    
+    <script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"/>
+    
+    <script>
+        var dt = jQuery.noConflict();
+        dt('.ED').datetimepicker({
+            timepicker: false,
+            format: 'm/d/Y',
+            formatDate: 'm/d/Y',
+        });
+    </script>
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+    <!--Intializing  tab function---->
+    <script type="text/javascript">
+        var TabbedPanels = new Spry.Widget.TabbedPanels("TabbedPanels", {
+            defaultTab: 0
+        });
+        /*************function calling for tab toggle showhide**************/
+        $("#tab1clk").click(function() {
+            showpackage("tab1topstats", "tab2topstats");
+        })
+        $("#tab2clk").click(function() {
+                showpackage("tab2topstats", "tab1topstats");
+            })
+            /***************************/
+        $("#pc_vs").click(function() {
+            showpackage("pc_vsummary", "pc_vdetails");
+        })
+
+        $("#pc_vd").click(function() {
+            showpackage("pc_vdetails", "pc_vsummary");
+        })
+
+        $("#bt_vs").click(function() {
+            showpackage("bt_vsummary", "bt_vdetails");
+        })
+
+        $("#bt_vd").click(function() {
+            showpackage("bt_vdetails", "bt_vsummary");
+        })
+    </script>
+    
+    <script>
+        function vdate(){
+            var frmdate = new Date(($("[id$='fdate']")).val());            
+            var ttdate = new Date(($("[id$='tdate']")).val());            
+            var tdatilfrmdate = new Date(($("[id$='tdfrdate']")).val());            
+            var tdatilttdate = new Date(($("[id$='tdtdate']")).val());
+    
+            if(frmdate > ttdate){
+                alert('From Date should not be greater than To Date');
+                return false;
+            }
+            else if(tdatilfrmdate > tdatilttdate){
+                alert('From Date should not be greater than To Date');
+                return false;
+            }
+            else{
+                return true;
+            }
+    
+        }
+    </script>
+    
+    <script>   
+    
+    <c:currencyFormatting ></c:currencyFormatting>
+    <script>
+        rightJustificationOrders('{!eventcurrency}');
+        rightJustificationOrders2('{!eventcurrency}');
+    </script>
+</apex:page>

@@ -1,0 +1,2405 @@
+<apex:page standardStylesheets="false" sidebar="false" showHeader="false" controller="MM_BA_Matches" action="{!CheckUser}">
+  <script type="text/javascript">
+function noenter(e) {
+    e = e || window.event;
+    var key = e.keyCode || e.charCode;
+    return key !== 13; 
+}
+</script>
+<apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>
+  <apex:includeScript value="{!$Resource.PhoneSetup}"/> 
+  <apex:includeScript value="{!$Resource.AjaxLoaderJs}/AjaxLoader.js"/> 
+  <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/jquery.akordeon.css")}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/reveal.css")}"/> 
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.min.js")}"/>
+  <apex:includeScript value="{!URLFOR($Resource.MM_styles,"js/jquery.akordeon.js")}"/>
+ <!--   <apex:stylesheet value="{!URLFOR($Resource.MM_BA_Styles,"css/stylesheet.css")}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.forschedulePage,"SpryAssets/SpryTabbedPanels.css")}"/>
+<apex:includeScript value="{!URLFOR($Resource.forschedulePage,"SpryAssets/SpryTabbedPanels.js")}"/>  --->
+<apex:stylesheet value="{!URLFOR($Resource.profile, 'viewprofile/css/osx.css')}"/>
+
+
+ <script type="text/javascript" src="{!URLFOR($Resource.profile, 'viewprofile/js/jquery/jquery-1.4.1.min.js')}"></script>
+ <script type="text/javascript" src="{!URLFOR($Resource.profile, 'viewprofile/js/jquery.simplemodal.js')}"></script>
+ <script type="text/javascript" src="{!URLFOR($Resource.profile, 'viewprofile/js/osx.js')}"></script>
+
+
+
+    <script>
+        $(document).ready(function(){
+            $(".menu_body").show();
+                //toggle the componenet with class menu_body
+                $(".menu_head").click(function(){
+                $(this).next(".menu_body").slideToggle(200);
+                var plusmin;
+                plusmin = $(this).children(".plusminus").text();
+                
+                if( plusmin == '+')
+                $(this).children(".plusminus").text('-');
+                else
+                $(this).children(".plusminus").text('+');
+            });
+            
+     $(".menu_body:eq(0)").show();
+     $(".menu_body:eq(1)").show();
+     $(".menu_body:eq(2)").show();
+ 
+        });
+    </script>
+   <style>
+       html{
+           font-size:15px;
+           }
+    </style>       
+   <style>
+    .search{border:1px solid #ffad41;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    font-size:12px;
+    font-family:arial, helvetica, sans-serif;
+    padding: 5px 10px 5px 10px; margin:3px; text-decoration:none; display:inline-block;text-shadow: -1px -1px 0 rgba(0,0,0,0.3);font-weight:bold; color: #FFFFFF;
+    background-color: #ffc579; background-image: -webkit-gradient(linear, left top, left bottom, from(#ffc579), to(#fb9d23));
+    background-image: -webkit-linear-gradient(top, #ffc579, #fb9d23);
+    background-image: -moz-linear-gradient(top, #ffc579, #fb9d23);
+    background-image: -ms-linear-gradient(top, #ffc579, #fb9d23);
+    background-image: -o-linear-gradient(top, #ffc579, #fb9d23);
+    background-image: linear-gradient(to bottom, #ffc579, #fb9d23);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#ffc579, endColorstr=#fb9d23);
+    cursor:pointer;}
+</style>
+
+  
+  
+  <!--topblock start    <apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>-->
+      <div id="topblock"> 
+            <div id="logo"></div>
+                 <apex:form onkeypress="return noenter(event)">    
+            <div id="topblockright"  style="position:absolute; top:0px;right:0px;">
+                 <table width="98%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="right"><div style="padding-right:20px;"> <span class="username"> {!$User.Firstname}&nbsp;{!$User.Lastname} <br />   </span></div></td>
+                    
+                    <td style="width:195px;">
+                      <div class="dropdown">
+                       <a class="account" href="#" onClick="show1();"><span style="margin-right:5px;" >&nbsp;Settings</span>
+                            <apex:image value="{!$Resource.DownArrow}"/></a>
+                          
+                          
+                             <div class="submenu" id="benefits" style="display: none; ">
+                             
+                            
+                              <ul class="root">
+                              <li> <apex:outputLink value="/MM_viewProfilecorp" style="text-style:bold; color:#000000; padding:10px 15px 0 0;"><span>  View Profile</span> </apex:outputLink> </li>
+                                <li> <apex:outputLink value="/MM_Profile" style="text-style:bold; color:#000000; padding:10px 15px 0 0;"><span> Edit Profile</span> </apex:outputLink> </li>
+                                <li ><apex:outputLink value="/MM_Changepassword?urlreturn=MM_BA_Matches" style="text-style:bold; color:#000000; padding:10px 15px 0 0;">Change Password</apex:outputLink></li>
+                                <li>  <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#000000; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink></li>
+                             </ul>
+                           
+                          </div>
+                            
+                      </div>
+                    </td>
+                    <!------------------------------------------HELP LINK--------------->
+                     <td align="right"><div style="padding-right:5px;"> 
+      <apex:outputLink value="http://matchleads.com/corporate-help-guide/index.html" target="_blank" style="text-style:bold; color:#000000; padding:10px 5px 0 0;">Help</apex:outputLink>
+      
+      </div></td>
+      <!------------------------------------------------------------->
+                  </tr>
+            </table>
+         </div>
+            
+     </apex:form>         
+                    
+             </div>     
+    <!--topblock end-->
+<!--menublock start-->
+        <div id="menublock">
+            <div id='cssmenu'>
+                  <ul>
+                      
+                       <!--<li ><apex:outputLink value="/apex/MM_BA_Dashboard" ><span>  Dashboard</span> </apex:outputLink></li>-->
+                        <li><apex:outputLink value="/apex/Matchleads_eventsPage" ><span>Events</span></apex:outputLink></li>
+                        <li class="active"><apex:outputLink value="/apex/MM_BA_Matches" ><span>Matches</span> </apex:outputLink></li>
+                         <li><apex:outputLink value="/apex/MM_BA_Schedule" ><span>Schedule</span> </apex:outputLink></li>
+                      <!--   <li> <apex:outputLink value="/apex/MM_BA_AttendeesDirectory" ><span>Attendees Directory</span> </apex:outputLink></li>  -->
+                   <!--    <li><apex:outputLink value="/apex/MM_BA_Reports" ><span>Reports</span> </apex:outputLink></li>  -->
+                     
+                  </ul>
+            </div>
+        </div>
+    <!--menublock end-->      
+  
+   <!--headdingbar start-->
+        <div id="headdingbar" >
+        <apex:form onkeypress="return noenter(event)">
+        <table style="width:100%;" border="0" >
+        <tr><td style="padding-right:20px; padding-bottom:10px;" >
+              <h2><apex:outputText value="Matches" rendered="{!matchBool}"></apex:outputText> 
+              </h2>
+         </td><td>     
+               
+               <!--  <b> Events :&nbsp;</b>
+                      <apex:selectList value="{!selectedEvent}" multiselect="false" size="1" style="width:180px;">
+                            <apex:selectOptions value="{!listofEvents}"/>
+                        <apex:actionSupport action="{!EventScheduleShow}" event="onchange" rerender="attschId,searchResultsShown,evType" status="AjaxLoader"/> 
+                    </apex:selectList>-->
+                     <!---   &nbsp; &nbsp;   <B>  Event Type : </B> &nbsp; &nbsp; <apex:outputText value="{!eventType}" id="evType"></apex:outputText>  --->
+                                         &nbsp;&nbsp;<B>Event Type : </B>&nbsp;&nbsp;
+                                   <apex:outputText value="{!IF(eventType=='Closed','Corporate Only Scheduling',eventType)}" ></apex:outputText>       
+                                        
+                 
+                     
+               
+          </td><td style="text-align:right;padding-right:30px;"><apex:inputText value="{!globalSearchStr}" style="width:222px;"/> &nbsp; 
+          <apex:commandButton value="Search" action="{!globalSearchMbe}" reRender="searchResultsShown" status="AjaxLoader"/>
+          <!-- reRender="searchResultsShown" status="AjaxLoader" -->
+           <br /> </td>
+         
+         
+          </tr>
+         
+          </table>  </apex:form>  
+            </div>
+      <!--headdingbar start--> 
+  
+      <div style="min-height:500px;">  
+   
+          <div id="bigcontainer" style="border:0px;"> 
+      <apex:form rendered="{!matchBool}" id="attschId">     
+          <!-----------------------------------  Side Search ----------------------------------------->
+                  <div id="smallleftcontainer">
+                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                          <tr> <td>
+                                   
+                               </td><td style="background-color:#eaeaea; text-align:left;">    
+                                   <apex:commandLink value="Filter {!attendeealias}" action="{!seachEventWiseAttendees}" style="color:#FFFFFF;" styleClass="search"/>
+                                   <apex:commandLink value="Clear All" action="{!ClearAll}" style="color:#FFFFFF;" styleClass="search"/>
+                                </td>
+                          </tr>
+                       </table>            
+                    <div id="demo-wrapper" style="margin-top:3px;">
+                          <div class="akordeon" id="buttons">
+                        <div class="akordeon-item expanded">
+                              <div class="menu_container">
+                              
+                              <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">- </span> Products/Services</p>
+                            <div class="menu_body" style="display: none;">
+                                    <table border="0" width="100%" >
+                                       <tr>
+                                           <td>  
+                                                 Products/Services &nbsp;&nbsp; <apex:inputText value="{!BAkeywords}"/> &nbsp;
+                                                 <br/>
+                                                 If you have multiple products/services, please separate each entity with a comma "<b>,"  Ex: </b> Indoor,Outdoor
+                                                   
+                                           </td>
+                                        </tr><tr>
+                                               <td>  
+                                               </td>
+                                       </tr>
+                                   </table>
+                                </div>
+                            <p class="menu_head" style=" background-color:#eaeaea; "><span class="plusminus">- </span> Attendee Name</p>
+                            <div class="menu_body" style="display: none;">
+                                   <table border="0" width="100%" >
+                                       <tr>
+                                           <td>  
+                                               Attendee Name &nbsp; <apex:inputText value="{!attName}"/> &nbsp; <a value="+"/> <br/>
+                                           </td>
+                                       </tr>
+                                   </table>              
+                                </div>
+                              <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">- </span> Company Name</p>
+                            <div class="menu_body" style="display: none;">
+                                   <table border="0" width="100%" >
+                                       <tr>
+                                           <td>  
+                                               Company Name &nbsp; <apex:inputText value="{!companyName}"/> &nbsp; <a value="+"/>
+                                           </td>
+                                       </tr>
+                                   </table>              
+                                </div>     
+                            <p class="menu_head" style=" background-color:#eaeaea; height:40px;"><span class="plusminus">+ </span> NAICS Codes</p>
+                            <div class="menu_body" style="display: none;">
+                                   NAICS Code &nbsp; <apex:inputText value="{!NaicsCode1}"/> &nbsp; <a value="+"/>
+                                </div>
+                                
+                            <p class="menu_head" style=" background-color:#eaeaea; height:40px;"><span class="plusminus">+ </span> Commodities</p>
+                            <div class="menu_body" style="display: none;">
+                                 <!--  Commodity &nbsp; <apex:inputText value="{!Commodity1}"/> &nbsp; <a value="+"/> -->
+                                <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:120px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;max-width:300px;">
+                                               <apex:selectCheckboxes value="{!Selectedcommodities}" layout="pageDirection">
+                                                    <apex:selectOptions value="{!commodityOpt}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                   </table> 
+                               
+                               
+                                </div>
+                                
+                           <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">+ </span> Certificates</p>
+                            <div class="menu_body" style="display: none;">
+                                   <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:120px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;max-width:300px;">
+                                               <apex:selectCheckboxes value="{!SelectedBusinessTypes}" layout="pageDirection">
+                                                    <apex:selectOptions value="{!BusinessTypeItems}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                   </table>              
+                                </div>
+                            <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">+ </span> GSA Schedule</p>
+                            <div class="menu_body" style="display: none;">
+                                  GSA Schedule &nbsp; 
+                                                      <apex:selectRadio value="{!GSASchedule}">
+                                                         <apex:selectOption itemValue="No" itemLabel="Yes"/>
+                                                         <apex:selectOption itemValue="Yes" itemLabel="No"/>
+                                                      </apex:selectRadio>
+                                   &nbsp; <a value="+"/> 
+                                </div>
+                             <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">+ </span> Business Revenues</p>
+                            <div class="menu_body" style="display: none;">
+                                  <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:80px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;">
+                                                <apex:selectCheckboxes value="{!SelectedRevenueAmount}" layout="pageDirection">
+                                                    <apex:selectOptions value="{!revenueItems}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                       </table> 
+                                </div>
+                                
+                                
+                            <!-- <p class="menu_head" style=" background-color:#eaeaea; "><span class="plusminus">+</span>Revenue Range</p>
+                            <div class="menu_body" style="display: none;">
+                                  <table border="0" width="100%" >
+                                       <tr>
+                                           <td>
+                                                Company Name &nbsp;<apex:selectList value="{!SelectedRevenueRangeAmount}" size="1">
+                                                    <apex:selectOptions value="{!revenueRangeItems}"/>
+                                                </apex:selectList> &nbsp; <a value="+"/>
+                                           </td>
+                                       </tr>
+                                       </table> 
+                                </div> -->
+                                         
+                             <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">+ </span> No. of Employees</p>
+                            <div class="menu_body" style="display: none;">
+                                  <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:80px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;">
+                                                <apex:selectCheckboxes value="{!SelectednoOfEmployees}" layout="pageDirection">
+                                                    <apex:selectOptions value="{!noOfEmployeesItems}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                   </table>
+                                </div>
+                                
+                                  <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">+</span> No. of Years in Business</p>
+                           <div class="menu_body" style="display: none;">
+                                  <table border="0" width="100%" >
+                                      <tr>
+                                          <td> <div style="overflow:auto; height:80px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;">
+                                              <apex:selectCheckboxes value="{!SelectedyearsOfbusiness}" layout="pageDirection">
+                                                   <apex:selectOptions value="{!yearsOfbusiness}"/>
+                                               </apex:selectCheckboxes> </div>
+                                          </td>
+                                      </tr>
+                                  </table>
+                               </div>
+                               
+                             <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">+ </span> Geography</p>
+                            <div class="menu_body" style="display: none;">                          
+                                  <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:80px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;">
+                                               <apex:selectCheckboxes value="{!Selectedstatess}" layout="pageDirection">
+                                                    <apex:selectOptions value="{!states}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                   </table>
+                                </div>
+                     <!--  <p class="menu_head">No. of Years in Business<span class="plusminus">+</span></p>
+                            <div class="menu_body" style="display: none;">
+                                   <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:80px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;">
+                                               <apex:selectCheckboxes value="{!Selectedyearss}" layout="pageDirection">
+                                                    <apex:selectOptions value="{!Years}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                   </table>
+                                </div> -->
+                           <!-- <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus" style="float:left; margin:0px;">+</span>Certifications </p>
+                            <div class="menu_body" style="display: none;">
+                                 <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:80px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;">
+                                                <apex:selectCheckboxes value="{!SelectedcompanyCertificationss}" layout="pageDirection">
+                                                    <apex:selectOptions value="{!companyCertifications}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                   </table>
+                                </div>-->
+                            <p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus">+ </span> Primary Industry Group</p>
+                            <div class="menu_body" style="display: none;">
+                                 <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:80px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;max-width:300px;">
+                                               <apex:selectCheckboxes value="{!Selectedprimarybusinesscategories}" layout="pageDirection" style="width:75%;">
+                                                    <apex:selectOptions value="{!primarybusinesscategory}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                   </table>
+                                </div>
+                     <!-- <p class="menu_head">Matched by peers<span class="plusminus">+</span></p>
+                            <div class="menu_body" style="display: none;">
+                                    <table border="0" width="100%" >
+                                       <tr>
+                                           <td> <div style="overflow:auto; height:80px; width:auto; white-space:nowrap;border:1px solid #CCCCCC;">
+                                                <apex:selectCheckboxes value="{!SelectedmatchedPeers}" layout="pageDirection">
+                                                    <apex:selectOptions value="{!matchedPeers}"/>
+                                                </apex:selectCheckboxes> </div>
+                                           </td>
+                                       </tr>
+                                   </table>
+                                </div>  --->
+                            <!--<p class="menu_head" style=" background-color:#eaeaea;"><span class="plusminus" style="float:left; margin:0px;">+</span>Phone Area Code </p>
+                            <div class="menu_body" style="display: none;">
+                                <table>
+                                   
+                                        <tr> <td>   
+                                             Phone Area Code &nbsp; </td><td> <apex:inputText value="{!phoneArea}"/> &nbsp; 
+                                        </td>
+                                     </tr>
+                                 </table>       
+                                         
+                                </div> -->
+                          </div>
+                            </div>
+                      </div>
+                        </div>
+                  </div>
+                 <!-----------------------------------  Side Search END----------------------------------------->
+            </apex:form>  
+            
+                
+              
+          </div>   
+          
+            <!-----------------------------------     SEARCH RESULTS SHOWN  ---------------------------------->
+          <apex:form id="searchResultsShown" onkeypress="return noenter(event)">
+          <script type="text/javascript" language="javascript">
+ function againload(){
+$(function() {
+  $("#osx-modal-content").modal({
+    overlayId: 'osx-overlay',
+    containerId: 'osx-container',
+    closeHTML: '<div class="close"><a href="#" class="simplemodal-close">x</a></div>',
+    minHeight:80,
+    opacity:65, 
+    position:['0',],
+    overlayClose:true,
+    onOpen:function (d) {
+      var self = this;
+      self.container = d.container[0];
+      d.overlay.fadeIn('slow', function () {
+        $("#osx-modal-content", self.container).show();
+        var title = $("#osx-modal-title", self.container);
+        title.show();
+        d.container.slideDown('slow', function () {
+          setTimeout(function () {
+            var h = $("#osx-modal-data", self.container).height()
+              + title.height()
+              + 20; // padding
+            d.container.animate(
+              {height: h}, 
+              200,
+              function () {
+                $("div.close", self.container).show();
+                $("#osx-modal-data", self.container).show();
+              }
+            );
+          }, 300);
+        });
+      })
+    },
+    onClose:function (d) {
+      var self = this;
+      d.container.animate(
+        {top:"-" + (d.container.height() + 20)},
+        500,
+        function () {
+          self.close(); // or $.modal.close();
+        }
+      );
+    }
+  });
+});
+}
+</script>
+             <div id="smallrightcontainer" style="width:72%;">
+                <h3>Search Results  
+                  <span style="float:right;">
+                       <table width="100%" >
+                       
+                           <tr height="35px;"><td>
+                              <!--  <apex:commandLink value="<< First" action="{!getFirstAcc}" reRender="searchResultsShown" status="AjaxLoader" rendered="{!hasFirstAcc}"  />
+                                <apex:outputText value="<< First" rendered="{!NOT(hasFirstAcc)}" /> &nbsp; -->
+                                <apex:commandLink value="< Previous" action="{!getPrevAcc}" reRender="searchResultsShown" status="AjaxLoader" rendered="{!hasPrevAcc}" />
+                                <apex:outputText value="< Previous" rendered="{!NOT(hasPrevAcc)}" /> &nbsp;
+                                <apex:commandLink value="Next >" action="{!getNextAcc}" reRender="searchResultsShown" status="AjaxLoader" rendered="{!hasNextAcc}" />
+                                <apex:outputText value="Next >" rendered="{!NOT(hasNextAcc)}" /> &nbsp;
+                               <!-- <apex:commandLink value="Last >>" action="{!getLastAcc}" reRender="searchResultsShown" status="AjaxLoader" rendered="{!hasLastAcc}" />
+                                <apex:outputText value="Last >>" rendered="{!NOT(hasLastAcc)}" /> &nbsp; -->
+                                </td><td align="right">
+                                 <apex:outputText >Records 
+                                  {!Startcount}-{!Endcount} Of {!Totalcount}
+                              <!--  {!StartRecAcc}-{!EndRecAcc} of {!TotalAccRecords} --> </apex:outputText>
+                            </td></tr></table>
+                  
+                  </span>
+                
+                </h3>
+                
+                
+               <!-- {!mainQueryString} --> 
+                    
+                   <table border="0" cellspacing="0" cellpadding="0" class="table1" style="width:100%;" >
+                     
+                    
+                      <tr>
+                        <th width="50%">&nbsp;</th>
+                        <th width="50%">&nbsp;</th>
+                        </tr>
+                        <apex:repeat value="{!innListToDisplay}" var="localInnaer"> 
+                        <tr>
+                         <apex:repeat value="{!localInnaer.innerEAMs}" var="InnerH">
+                        
+                           
+                              <apex:repeat value="{!InnerH.eam}" var="inn">
+                            <td width="50%" align="left" >
+                             
+                                
+                           
+                                 
+                       <table width="100%"  cellspacing="0" cellpadding="0" class="table2" border="0">
+                              <tr>
+                                 <td width="70" rowspan="6" align="left" >  
+                                 <apex:outputText rendered="{!inn.EV_id__r.Is_Webank_event__c==false}">
+                                 <apex:outputText rendered="{!pfsett.MBE_Small_Business_Image_Visible__c}">
+                                 <apex:outputText rendered="{!IF( inn.AS_id__r.AS_ImageUrl__c != null, TRUE, FALSE)}"> <apex:image url="/servlet/servlet.ImageServer?id={!inn.AS_id__r.AS_ImageUrl__c}&oid={!$Organization.Id}" height="70px" width="70px"/>  </apex:outputText>  
+                                 </apex:outputText>
+                                 </apex:outputText>
+                                 
+                                 <apex:outputText rendered="{!inn.EV_id__r.Is_Webank_event__c==true}">
+                                  <apex:outputText rendered="{!pfsett.MBE_Small_Business_Image_Visible__c}">
+                                 <apex:outputText rendered="{!IF( inn.MBE_Profile__r.AS_ImageUrl__c!= null, TRUE, FALSE)}"> <apex:image url="/servlet/servlet.ImageServer?id={!inn.MBE_Profile__r.AS_ImageUrl__c}&oid={!$Organization.Id}" height="70px" width="70px"/>  </apex:outputText>  
+                                 </apex:outputText>
+                                 </apex:outputText>
+                                 </td>
+                                <td>&nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td width="415" style="font-size:15px;padding:5px;">
+                                 <apex:outputText rendered="{!pfsett.MBE_First_Name_Visible__c}">
+                              <apex:commandLink value="{!inn.AS_id__r.AS_FirstName__c} {!inn.AS_id__r.AS_LastName__c}" status="AjaxLoader" action="{!viewProfile}" reRender="profileid"  Styleclass="osx demo " onclick="againload();" style="color:blue;" rendered="{!inn.EV_id__r.Is_Webank_event__c==false}">
+                               <apex:param value="{!inn.id}" name="viewProfileId"/>
+                             </apex:commandLink>
+                             </apex:outputText>
+                             <!--   rendered="{!inn.EV_id__r.Is_Webank_event__c==false}" -->
+                              <apex:outputText rendered="{!pfsett.MBE_First_Name_Visible__c}">
+                              <apex:commandLink value="{!inn.MBE_Profile__r.AS_FirstName__c} {!inn.MBE_Profile__r.AS_LastName__c}" status="AjaxLoader" action="{!viewProfile}" reRender="profileid" onclick="againload();"  Styleclass="osx demo " style="color:blue;" rendered="{!inn.EV_id__r.Is_Webank_event__c==true}">
+                               <apex:param value="{!inn.id}" name="viewProfileId"/>
+                             </apex:commandLink>
+                             </apex:outputText> 
+                             </td>
+                              </tr>
+                              <tr>
+                                <td style="font-size:15px;padding:5px;">  
+                                <apex:outputText value="{!inn.AS_id__r.AS_Company__c}" rendered="{!inn.EV_id__r.Is_Webank_event__c==false}"/>
+                                 <apex:outputText value="{!inn.MBE_Profile__r.AS_Company__c}" rendered="{!inn.EV_id__r.Is_Webank_event__c==true}" />  </td>
+                              </tr>
+                              <tr>
+                                <td>&nbsp; <!-- RATING IMage --></td>
+                              </tr>
+                              <tr>
+                                <td>&nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td align="right">
+                               <div style="float:right; margin-right:10px;">
+                                <apex:outputPanel rendered="{!IF(Mtype !='Closed', TRUE,FALSE)}">
+ <!-- --------------------------Blocking Booked Slots ------------------------------------------------- --> 
+                    <!---->   <apex:outputPanel rendered="{!IF(mm_Upe[0].MAtchMakingProfile__c == 'CorporateStaff',mm_Upe[0].EV_id__r.Partner_scheduling__c,True)}">
+                    <apex:commandLink value="Schedule" action="{!viewSchedule}" status="AjaxLoader" styleClass="big-link viewprofile" rendered="{! IF(eventType == 'Closed' , True, False) }">
+                                       <apex:param value="{!inn.id}" name="viewScheduleId"/>
+                                   </apex:commandLink>
+                                   </apex:outputPanel>  
+                                   </apex:outputPanel>  
+                                   &nbsp;&nbsp;
+                                   <apex:commandLink value="View Profile" status="AjaxLoader" action="{!viewProfile}" onclick="againload();" style="color:#000;backround-color:#eaeaea;text-decoration:none;border:1px solid #CCCCCC;" reRender="profileid"  Styleclass="osx demo big-link viewprofile">
+                                       <apex:param value="{!inn.id}" name="viewProfileId"/>
+                                   </apex:commandLink>   
+                                     
+                                 </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td align="left">&nbsp;</td>
+                                <td>&nbsp;</td>
+                              </tr>
+                            </table>    </td>
+                            
+                            
+                    </apex:repeat>
+                   
+                       </apex:repeat>    </tr>
+                 </apex:repeat>
+                 </table>
+
+          </div>
+            
+            
+            
+           <!------------------------------------      END OF SEARCH SHOWN   ---------------------------------->
+       </apex:form>  
+           </div>
+     
+           <!----------------------------------------------    POPUP FOR VIEW PROFILES  ----------------------------->
+      <div id="osx-modal-content" height="530px">
+           
+
+            <div class="close">
+            <!--<apex:form >
+            
+            <apex:commandLink value="x" rerender="profileid" status="AjaxLoader" title="Close" oncomplete="$.modal.close()"  action="{!cancel}"  style="font-size:18px;padding-top:10px;"></apex:commandLink></apex:form>-->
+            <a href="#" class="simplemodal-close" title="Close">x</a>
+            
+            </div>
+
+            <div id="osx-modal-data" style="padding:0px;margin-left:-5px;margin-top:-10px;" >    
+     <apex:form onkeypress="return noenter(event)">               
+     
+     
+              <apex:outputPanel id="profileid">
+              
+   <apex:outputPanel rendered="{!IF(eventone.Is_Webank_event__c==False,True,False)}">
+ 
+   <div id="container" style="width:100%;height:600px;">
+
+<div id="wrapper" style="width:100%; margin:0px auto;  padding-bottom:30px;padding-left:0px;padding-top:10px;background-color:#fff ;">
+<div id="contentbox" style="width:100%; height:auto;" >
+
+<div style="width:100%; background-color:#1DCFDE;">
+<p style=" font-size:20px; padding:6px; font-family:Arial, Helvetica, sans-serif ;margin-left:10px; color:#FFF; ">VIEW PROFILE</p>
+</div>
+
+<div id="contact-section" style="width:100%; height:auto;">
+<apex:outputText rendered="{!pfsett.MBE_Small_Business_Image_Visible__c}">
+<div id="contact-image" style="width:25%; height:180px; float:left; text-align:center; background-color:#FFF;">&nbsp;
+   <apex:image url="/servlet/servlet.ImageServer?id={!vewProfileEAM.AS_id__r.AS_ImageUrl__c}&oid={!$Organization.Id}" rendered="{!if(vewProfileEAM.AS_id__r.AS_ImageUrl__c!=null,true,false)}"  height="170px"  style="margin:5px;"/> 
+
+<!-- <img src="{!URLFOR($Resource.profile, 'viewprofile/indra.jpg')}" height="170" width="150" style="margin:5px;" /> --->
+</div>
+</apex:outputText>
+<div id="contact-desc" style="width:75%; float:right; height:180px; background-color: #Fff">
+
+ 
+      
+<div style=" height:auto;"  >
+<ul style="margin-left:10px; font-family:Arial, Helvetica, sans-serif;color:#000; line-height:30px;list-style:none;" >
+<li style="font-size:18px;margin-left:10px;font-weight:700; font-family:Arial, Helvetica, sans-serif;color:#000; line-height:30px;">
+<apex:outputText rendered="{!pfsett.MBE_Salutation_Visible__c }">{!vewProfileEAM.AS_id__r.As_prefixNew__c} </apex:outputText> 
+<apex:outputText rendered="{!pfsett.MBE_First_Name_Visible__c}"> {!vewProfileEAM.AS_id__r.AS_FirstName__c} </apex:outputText> &nbsp;
+<apex:outputText rendered="{!pfsett.MBE_First_Name_Visible__c}">{!vewProfileEAM.AS_id__r.AS_LastName__c} </apex:outputText></li>
+
+<li style="font-size:15px;margin-left:10px;font-weight:normal; font-family:Arial, Helvetica, sans-serif;color:#000; line-height:30px;">
+<apex:outputText rendered="{!pfsett.MBE_Title_Visible__c}">{!vewProfileEAM.AS_id__r.AS_Title__c} </apex:outputText> </li>
+
+<li style="font-size:15px;margin-left:10px;font-weight:normal; font-family:Arial, Helvetica, sans-serif;color:#000; line-height:30px;">
+<apex:outputText rendered="{!pfsett.MBE_Email_Visible__c}"> {!vewProfileEAM.AS_id__r.AS_Email__c} </apex:outputText></li>
+
+<li style="font-size:15px;margin-left:10px;font-weight:normal; font-family:Arial, Helvetica, sans-serif;color:#000; line-height:30px;">
+<!--<apex:outputText rendered="{!pfsett.MBE_Secondary_Email_Visible__c}"> {!vewProfileEAM.AS_id__r.AS_Secondary_Email__c} </apex:outputText>--></li>
+
+<li style="font-size:15px;margin-left:10px;font-weight:normal; font-family:Arial, Helvetica, sans-serif;color:#000; line-height:30px;">
+<apex:outputText rendered="{!pfsett.MBE_Mobile_Phone_Visible__c}">{!vewProfileEAM.AS_id__r.AS_CellPhone__c}</apex:outputText> </li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div style="clear:both"></div>
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:95%;"/>
+</div>
+
+
+<div style="width:100%; background-color:#DDD;">
+<p style=" font-size:20px; padding:6px; font-family:Arial, Helvetica, sans-serif ;margin-left:10px; color:#414141;"> &nbsp;COMPANY DETAILS</p>
+</div>
+
+
+
+<div id="company-section" style="width:100%; height:auto">
+
+<div id="company-image" style="width:27%;line-height:14px; height:auto; float:left; background-color:#FFF;">&nbsp;
+<!---- <div id="company-image" style="width:27%;line-height:14px; height:250px; float:left; background-color:#FFF;">&nbsp; ----->
+<apex:outputText rendered="{!pfsett.MBE_Company_Logo_Visible__c}">
+<apex:image url="/servlet/servlet.ImageServer?id={!vewProfileEAM.AS_id__r.Exhibitor_company_imageUrl__c}&oid={!$Organization.Id}"  height="100px"  style="margin:5px" rendered="{! IF(vewProfileEAM.AS_id__r.Exhibitor_company_imageUrl__c !=null, 'TRUE' ,'FALSE')}"/>           
+ </apex:outputText>                                          
+<br/>
+
+<p style="font-size:18px; font-family:Arial, Helvetica, sans-serif; font-weight:700; margin-left:10px;color:#000;">
+<apex:outputText rendered="{!pfsett.MBE_Company_Visible__c}">{!vewProfileEAM.AS_id__r.AS_Company__c}</apex:outputText>   </p>
+
+<apex:outputText rendered="{!pfsett.MBE_Work_Address_Visibility__c}">
+<p style="font-size:13px;font-weight:700; margin-left:10px;font-family:Arial, Helvetica, sans-serif;color:#000;">
+ {!vewProfileEAM.AS_id__r.AS_WorkAddress1__c} {!vewProfileEAM.AS_id__r.AS_WorkAddress2__c}</p>
+<p style="font-size:13px;font-weight:700; margin-top:-15px;margin-left:10px;font-family:Arial, Helvetica, sans-serif;color:#000;">{!vewProfileEAM.AS_id__r.AS_WorkCity__c}
+ <apex:outputText rendered="{!IF( (vewProfileEAM.AS_id__r.AS_WorkCity__c != NULL) && (vewProfileEAM.AS_id__r.AS_Work_States__c != NULL  || vewProfileEAM.AS_id__r.AS_WorkZip__c != NULL) , TRUE,FALSE)}">,</apex:outputText>
+     {!vewProfileEAM.AS_id__r.AS_Work_States__c} {!vewProfileEAM.AS_id__r.AS_WorkZip__c}</p>
+ 
+ </apex:outputText>
+
+<apex:outputText rendered="{!pfsett.MBE_Work_Phone_Visible__c }">
+<apex:outputText rendered="{!IF( vewProfileEAM.AS_id__r.AS_WorkPhone__c != NULL, True,False)}">
+<p style="font-size:13px;font-weight:700; margin-bottom:-2px; margin-left:10px; font-family:Arial, Helvetica, sans-serif;color:#000;">Phone: {!vewProfileEAM.AS_id__r.AS_WorkPhone__c}</p>
+</apex:outputText></apex:outputText>
+
+<apex:outputText rendered="{!pfsett.FaxNumber_Visible__c}">
+<apex:outputText rendered="{!IF( vewProfileEAM.AS_id__r.AS_FaxNumber__c != NULL, True,False)}">
+<p style="font-size:13px;font-weight:700; margin-bottom:-2px; margin-left:10px; font-family:Arial, Helvetica, sans-serif;color:#000;">FaxNumber: {!vewProfileEAM.AS_id__r.AS_FaxNumber__c}</p>
+</apex:outputText></apex:outputText>
+
+
+ <apex:outputText rendered="{!pfsett.MBE_Website_Visible__c}">
+  <a  href="http://{!vewProfileEAM.AS_id__r.AS_WebsiteUrl__c}" target="_blank" style="font-size:13px;margin-left:10px;font-weight:700; font-family:Arial, Helvetica, sans-serif;color:#000;">{!vewProfileEAM.AS_id__r.AS_WebsiteUrl__c}</a><br/>
+</apex:outputText>
+</div>
+
+<apex:outputText rendered="{!pfsett.MBE_Business_Description_Visible__c}">
+<apex:outputText rendered="{!IF( vewProfileEAM.AS_id__r.AS_BusinessDescription__c != NULL, True,False)}">
+ <div id="company-desc" style="width:72.5%; float:right; border:0px solid #000; height:auto; background-color: #Fff;">
+ <div id="business description" style=" border:1px solid  #E5E5E5; overflow: auto; width:94.5%; height:250px;background-color:#fff; margin-left:10px ;">
+  <p style=" margin-top:5px;text-align:justify;margin-right:8px; margin-left:8px; font-size:15px; line-height:24px; font-family:Arial, Helvetica, sans-serif;color:#000;">
+    {!vewProfileEAM.AS_id__r.AS_BusinessDescription__c}
+ </p>
+</div><!--close of business description-->
+
+
+</div><!--close of company-desc-->
+</apex:outputText></apex:outputText>
+</div>
+<div style="clear:both"></div>
+
+<apex:outputText rendered="{!pfsett.MBE_Uploaded_Company_Brochures_Visible__c}">
+<apex:outputText rendered="{! IF(attchments.size !=0, TRUE ,FALSE)}">
+<div style="width:100%; height:auto; padding-bottom:5px; background-color:#fff; margin-top:25px; margin-right:10px;">
+<img src="{!URLFOR($Resource.attachment_Icon)}" title="Company Brouchures" style="margin-left:10px; margin-right:5px;"/>
+<apex:repeat value="{!attchments}" var="attac">
+ <a href="https://boothleads.secure.force.com//MatchMaking/servlet/servlet.FileDownload?file={!attac.Id}" target="_blank" style="color:#000; margin-right:7px;">
+ {!attac.Name}</a>&nbsp;
+ </apex:repeat>                                              
+
+</div>
+</apex:outputText>
+</apex:outputText>
+
+
+<div style="width:100%; height:auto; padding-bottom:5px; background-color:#fff; margin-top:25px; margin-right:10px;">
+<apex:outputText rendered="{!pfsett.MBE_Uploaded_Video_Visible__c}">
+<apex:outputText rendered="{! IF(videos.size !=0, TRUE ,FALSE)}">
+<table width="97%">
+<tr >
+                                              <td align="right" width="35%" >Uploaded Video:&nbsp;</td>
+
+                                           <td height="30" width="65%"  align="left" valign="middle">
+<apex:repeat value="{!videos}" var="attac">
+  <iframe width="640" height="390" src="{!attac.YouTubeId_c__c}" frameborder="0"></iframe>  
+ </apex:repeat> 
+ </td>   
+  </tr>
+ </table>                                           
+</apex:outputText>
+</apex:outputText>
+</div>
+
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:100%;height:55%"/>
+
+</div><!--close of hr-->
+
+<div style="width:100%; margin-top:10px; height:24px;  padding:5px; background-color:#1DCFDE;">
+<p style=" font-size:20px; font-family:Arial, Helvetica, sans-serif ;margin:0px; color:#FFF;line-height:24px;"> &nbsp;MATCH MAKING DETAILS</p>
+</div>
+
+<div id="matchmakingdetails" style="width:100%; height:auto; padding-bottom:10px; background-color:#FFF;">
+<table width="98%" border="0" cellspacing="0" cellpadding="0" style="margin:0px auto;">
+  <tr>
+    <td width="50%" align="center" valign="top">
+    
+    
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" class="viewprofiletable">
+    
+    
+    
+    
+    
+    
+    <apex:outputText rendered="{!pfsett.MBE_Business_Duns_Number_Visible__c}">
+      <tr>
+        <td style="color:#000;">Business DUNS Number:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.AS_BusinessDunsNumber__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.Business_Structure_Visible__c}">
+      <tr>
+        <td style="color:#000;">Business Structure :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Business_Structure__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+     <apex:outputText rendered="{!pfsett.MBE_Business_Revenue_Visible__c}"> 
+      <tr>
+        <td style="color:#000;">Business Revenue :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.AS_BusinessRevenue__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_DBA_Visible__c}">
+      <tr>
+        <td style="color:#000;">DBA:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.DBA__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Cage_Code_Visible__c}">
+      <tr>
+        <td style="color:#000;">Cage Code :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.AS_CageCode__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Number_Of_Employees_Visible__c}">
+      <tr>
+        <td style="color:#000;">Number Of Employees :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.AS_NumberOfEmployees__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Primary_Business_Category_Visible__c}">
+      <tr>
+        <td style="color:#000;">Primary Business Category :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.AS_PrimaryBusinessCategory1__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+     <!-- <apex:outputText rendered="{!pfsett.MBE_BBB_Number_Visible__c}">
+      <tr>
+        <td style="color:#000;">BBB Number:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.BBB_Number__c}</td>
+      </tr>
+      </apex:outputText>-->
+      
+      
+      
+      
+     <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+      <tr>
+        <td style="color:#000;">Reference 1:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.References__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+       <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+      <tr>
+        <td style="color:#000;">Reference 2:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.References2__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Manufatures_Country_Visible__c}">
+      <tr>
+        <td style="color:#000;">If your company sells a product, what country or countries manufactures it?:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Manufactures_Country__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Certificate_Processed_by_RPO_Visible__c}">
+      <tr>
+        <td style="color:#000;">Certificate Processed by RPO:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Certificate_Processed_by_RPO__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      <apex:outputText rendered="{!pfsett.MBEAny_non_WBENC_awards_received_visible__c}">
+      <tr>
+        <td style="color:#000;">Non-WBENC awards received in the last 2 years:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Any_non_WBENC_awards_received__c}</td>
+      </tr>
+     </apex:outputText>
+      <apex:outputText rendered="{!pfsett.MBE_Business_Type_Visible__c}">
+          <tr>
+            <td align="left" valign="middle" style="color:#000;">Certificates :</td>
+            <td align="left" valign="middle" style="color:#000;">{!vewProfileEAM.DiversityType__c}</td>
+          </tr>
+          </apex:outputText>
+      
+    </table></td>
+    <td width="50%" align="center" valign="top">
+    
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" class="viewprofiletable">
+    
+    
+    <apex:outputText rendered="{!pfsett.MBE_Business_Established_Date_Visible__c}">
+      <tr>
+        <td style="color:#000;">Business Established Date :</td>
+        <td style="color:#000;"><!--{!vewProfileEAM.AS_id__r.AS_BusinessEstablishedDate__c}-->
+          
+            <apex:outputText value="{0,date,MMMM dd, yyyy}" >
+              <apex:param value="{!vewProfileEAM.AS_id__r.AS_BusinessEstablishedDate__c}" />
+            </apex:outputText>
+          </td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+     <apex:outputText rendered="{!pfsett.MBE_Year_in_Business_Visible__c}"> 
+      <tr>
+        <td style="color:#000;">Years in Business :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Year_in_business__c} </td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Business_Tax_ID_Visible__c}">
+      <tr>
+        <td style="color:#000;">Business Tax ID :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.AS_BusinessTaxId__c}</td>
+      </tr>
+     </apex:outputText> 
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Revenue_Range_Visible__c}">
+      <tr>
+        <td style="color:#000;">Revenue Range:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Revenue_Range__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_GSA_Schedule_Contract_Number_Visible__c}">
+      <tr>
+        <td style="color:#000;">GSA Schedule Contract Number:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.GSA_Schedule__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Certifications_Visible__c}">
+      <tr>
+        <td style="color:#000;">Certifications :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Company_Certifications__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+     <apex:outputText rendered="{!pfsett.MBE_Secondary_Business_Category_Visible__c}">
+      <tr>
+        <td style="color:#000;">Secondary Business Category :</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.As_SecondaryBusinessCategory1__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Ethnicity_Visible__c}">
+      <tr>
+        <td style="color:#000;">Ethnicity:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Ethnicity__c}</td>
+      </tr>
+      </apex:outputText>
+      
+     <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+       <tr>
+        <td style="color:#000;">Scope of Work 1:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Scope_of_Work__c}</td>
+      </tr>
+       </apex:outputText>
+       
+        <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+      <tr>
+        <td style="color:#000;">Scope of Work 2:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Scope_of_Work2__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Distributors_Country_Visible__c}">
+      <tr>
+        <td style="color:#000;">In which country is your companys distribution center located (if applicable)?:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.distribution_Country__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+     <apex:outputText rendered="{!pfsett.MBE_Geographical_Region_Visible__c}"> 
+      <tr>
+        <td style="color:#000;">Geographical Region:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Geographical_Region__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      <apex:outputText rendered="{!pfsett.MBECompanyhavefacility_partneroutsideUSA__c}">
+      <tr>
+        <td style="color:#000;">Does your company have either a facility or partner outside of the US?:</td>
+        <td style="color:#000;">{!vewProfileEAM.AS_id__r.Companyhaveafacility_partneroutsideUSA__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <tr>
+        <td style="color:#000;">&nbsp;</td>
+        <td style="color:#000;">&nbsp;</td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+<table width="97%" border="0" cellpadding="5" cellspacing="0" style="margin:0px auto;"> 
+  <apex:outputText rendered="{!pfsett.MBE_NAICS_CODES_Visible__c}">
+  
+  <tr>
+  <td colspan='4'> <hr/></td></tr>
+  <tr> <td style="text-align:left;margin:10px; "><h3 style="padding:0; margin:0px; color:#000;"> NAICS CODES: </h3></td> </tr>
+   <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.As_NAICSCode_1__c !=null, TRUE ,FALSE)}">
+   <tr style="margin-top:10px;border:0px solid #000;">
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.As_NAICSCode_1__c}</td>
+
+   </tr> 
+   </apex:outputText>
+   <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.As_NAICSCode_2__c !=null, TRUE ,FALSE)}">
+   <tr style="border:0px solid #000;"> 
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.As_NAICSCode_2__c}</td>
+
+   </tr>
+     </apex:outputText>
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.As_NAICSCode_3__c !=null, TRUE ,FALSE)}"> 
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.As_NAICSCode_3__c}</td>
+
+   </tr>
+   </apex:outputText>
+   <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.As_NAICSCode_4__c !=null, TRUE ,FALSE)}">
+   <tr style="border:0px solid #000;">
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.As_NAICSCode_4__c}</td>     
+
+   </tr>
+     </apex:outputText>
+  
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.As_NAICSCode_5__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.As_NAICSCode_5__c}</td>
+
+  </tr></apex:outputText>
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.AS_NAICSCode6__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.AS_NAICSCode6__c}</td>
+
+  </tr></apex:outputText>
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.AS_NAICSCode7__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.AS_NAICSCode7__c}</td>
+
+  </tr></apex:outputText>
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.AS_NAICSCode8__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.AS_NAICSCode8__c}</td>
+
+  </tr></apex:outputText>
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.AS_NAICSCode9__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;" colspan='4'>{!vewProfileEAM.AS_id__r.AS_NAICSCode9__c}</td>
+
+  </tr></apex:outputText>
+  </apex:outputText>
+ 
+  <apex:outputText rendered="{!pfsett.MBE_Commodities_Visible__c}">
+ 
+  <tr>
+  <td colspan='4'> <hr/></td></tr>
+  <tr> <td style="text-align:left;margin:10px; "><h3 style="padding:0; margin:0px; color:#000;"> COMMODITIES: </h3></td> </tr>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_1__c !=null, TRUE ,FALSE)}">
+    <tr style="margin-top:10px;border:0px solid #000;">   
+    <td style="color:#000;" >{!vewProfileEAM.AS_id__r.Commodity_1__c}</td>
+    </tr></apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_2__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_id__r.Commodity_2__c}</td>
+    </tr></apex:outputText>
+
+    <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_3__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_id__r.Commodity_3__c}</td>
+    </tr></apex:outputText>
+  
+   <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_4__c !=null, TRUE ,FALSE)}">
+   <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_id__r.Commodity_4__c}</td>     
+   </tr> </apex:outputText>
+
+  
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_5__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_id__r.Commodity_5__c} </td>
+  </tr></apex:outputText>
+ 
+  
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_6__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_id__r.Commodity_6__c}</td>
+    </tr></apex:outputText>
+
+    <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_7__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_id__r.Commodity_7__c}</td>
+    </tr></apex:outputText>
+  
+   <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_8__c !=null, TRUE ,FALSE)}">
+   <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_id__r.Commodity_8__c}</td>     
+   </tr> </apex:outputText>
+
+  
+  <apex:outputText rendered="{! IF(vewProfileEAM.AS_id__r.Commodity_9__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.AS_id__r.Commodity_9__c} </td>
+  </tr></apex:outputText>
+  </apex:outputText>
+    
+  
+</table>
+
+<apex:outputText rendered="{!pfsett.MBE_Procurement_Needs_Visible__c}">
+<apex:outputText rendered="{!IF(vewProfileEAM.AS_id__r.Keywords__c != null,TRUE,FALSE)}">
+
+<p style="margin:10px; font-size:15px; margin-top:15px;color:#000;font-weight:700; font-family:Arial, Helvetica, sans-serif">
+Products / Services :
+</p>
+<div style=" width:94%; height:130px; border:1px solid  #E5E5E5; overflow: auto; margin:0px auto; ">
+<p style="text-align:justify;color:#000; margin-right:8px; margin-top:5px; margin-left:8px; font-size:15px; line-height:24px; font-family:Arial, Helvetica, sans-serif;">
+  {!vewProfileEAM.AS_id__r.Keywords__c}
+   </p>
+</div>
+</apex:outputText>
+</apex:outputText>
+</div><!--close of matchmaking details-->
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:95%;"/>
+</div><!--close of hr-->
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+ </apex:outputpanel>
+<!--------------------------------------------------------------------------WEBANK----------------------------------------->
+            <apex:outputPanel rendered="{!IF(eventone.Is_Webank_event__c==True,True,False)}">
+ 
+   <div id="container" style="width:100%;height:530px;">
+
+
+<div style="width:100%; background-color:#1DCFDE;">
+<p style=" font-size:20px; padding:6px; font-family:Arial, Helvetica, sans-serif ;margin-left:10px; margin-top:10px; color:#FFF; ">VIEW PROFILE</p>
+</div>
+
+<div id="wrapper" style="width:100%; margin:0px auto;  padding-bottom:100px;padding-left:0px;padding-top:10px;background-color:#fff ;box-shadow: 0 0 0px #000000;">
+<div id="contentbox" style="width:100%; height:auto;" >
+
+
+<div id="contact-section" style="width:100%; height:auto;">
+<apex:outputText rendered="{!pfsett.MBE_Small_Business_Image_Visible__c}">
+<div id="contact-image" style="width:24%; height:180px; float:left; background-color:#FFF; text-align:center;">&nbsp;
+   <apex:image url="/servlet/servlet.ImageServer?id={!vewProfileEAM.MBE_Profile__r.AS_ImageUrl__c}&oid={!$Organization.Id}" rendered="{!if(vewProfileEAM.MBE_Profile__r.AS_ImageUrl__c!=null,true,false)}" style="margin:5px;max-width:100%;height:100% ;"/> 
+
+<!-- <img src="{!URLFOR($Resource.profile, 'viewprofile/indra.jpg')}" height="170" width="150" style="margin:5px;" /> --->
+</div>
+</apex:outputText>
+
+<div id="contact-desc" style="width:74%; float:right; height:180px; background-color: #Fff">
+<div style=" height:16px; margin-right:60px; margin-top:-50px; float:right;">
+
+<!--<apex:commandLink action="{!Printviewprofile}" title="Print"  style="color:#fff background-color:#ffffff; border:none;" target="_blank" >-->
+
+            <img src="{!URLFOR($Resource.profile, 'viewprofile/1397751205_print.png')}" width='20' height='20' style="outline:none;" onMouseOver="this.style.cursor='pointer'" onclick="window.open('https://boothleads.secure.force.com/MatchMaking/mm_MBE_Details?id={!vewProfileEAM.id}');"/>
+         
+      <!--</apex:commandLink>-->
+
+</div>
+ 
+
+
+
+<div style="height:auto;">
+<ul style="font-family:Arial, Helvetica, sans-serif; margin-left:10px;color:#000; list-style:none;" >
+<li style="font-size:18px; font-family:Arial, Helvetica, sans-serif; font-weight:700; margin-left:10px;color:#000; list-style:none;">
+            <apex:outputText rendered="{!pfsett.MBE_Salutation_Visible__c}">{!vewProfileEAM.MBE_Profile__r.As_prefixNew__c} </apex:outputText>
+            <apex:outputText rendered="{!pfsett.MBE_First_Name_Visible__c}">{!vewProfileEAM.MBE_Profile__r.AS_FirstName__c}&nbsp; {!vewProfileEAM.MBE_Profile__r.AS_LastName__c}</apex:outputText></li>
+<li style="font-size:15px; font-family:Arial, Helvetica, sans-serif; font-weight:normal; margin-left:10px;color:#000; list-style:none;"><apex:outputText rendered="{!pfsett.MBE_Title_Visible__c}">{!vewProfileEAM.MBE_Profile__r.AS_Title__c}</apex:outputText></li>
+<li style="font-size:15px; font-family:Arial, Helvetica, sans-serif; font-weight:normal; margin-left:10px;color:#000; list-style:none;"><apex:outputText rendered="{!pfsett.MBE_Email_Visible__c}">{!vewProfileEAM.MBE_Profile__r.AS_Email__c}</apex:outputText></li>
+<!--<li style="font-size:15px; font-family:Arial, Helvetica, sans-serif; font-weight:normal; margin-left:10px;color:#000; list-style:none;"><apex:outputText rendered="{!pfsett.MBE_Secondary_Email_Visible__c}">{!vewProfileEAM.MBE_Profile__r.AS_Secondary_Email__c}</apex:outputText></li>-->
+<li style="font-size:15px; font-family:Arial, Helvetica, sans-serif; font-weight:normal; margin-left:10px;color:#000; list-style:none;"><apex:outputText rendered="{!pfsett.MBE_Mobile_Phone_Visible__c}">{!vewProfileEAM.MBE_Profile__r.AS_CellPhone__c}</apex:outputText></li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div style="clear:both"></div>
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:95%;"/>
+</div>
+
+<div style="width:100%; margin-top:10px; height:24px; padding:5px; background-color:#DDD;">
+<p style=" font-size:20px; font-family:Arial, Helvetica, sans-serif ;line-height:24px;margin:0px; color:#414141;"> &nbsp;COMPANY DETAILS</p>
+
+</div>
+
+
+
+<div id="company-section" style="width:100%; height:auto">
+
+<div id="company-image" style="width:27%;line-height:14px; height:auto; float:left; background-color:#FFF;">&nbsp;
+<!---- <div id="company-image" style="width:27%;line-height:14px; height:250px; float:left; background-color:#FFF;">&nbsp; ----->
+<apex:outputText rendered="{!pfsett.MBE_Company_Logo_Visible__c}">
+<apex:image url="/servlet/servlet.ImageServer?id={!vewProfileEAM.MBE_Profile__r.Exhibitor_company_imageUrl__c}&oid={!$Organization.Id}"  height="100px"  style="margin:5px" rendered="{! IF(vewProfileEAM.MBE_Profile__r.Exhibitor_company_imageUrl__c !=null, 'TRUE' ,'FALSE')}"/>           
+</apex:outputText>                                              
+<br/>
+
+<p style="font-size:16px; font-family:Arial, Helvetica, sans-serif; font-weight:700; margin-left:10px;color:#000;">
+            <apex:outputText rendered="{!pfsett.MBE_Company_Visible__c}">{!vewProfileEAM.MBE_Profile__r.AS_Company__c}</apex:outputText></p>
+<apex:outputText rendered="{!pfsett.MBE_Work_Address_Visibility__c}">
+<p style="font-size:13px;font-weight:700; margin-left:10px;font-family:Arial, Helvetica, sans-serif;color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_WorkAddress1__c} {!vewProfileEAM.MBE_Profile__r.AS_WorkAddress2__c}</p>
+<p style="font-size:13px;font-weight:700; margin-top:-15px;margin-left:10px;font-family:Arial, Helvetica, sans-serif;color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_WorkCity__c}
+<apex:outputText rendered="{!IF( (vewProfileEAM.MBE_Profile__r.AS_WorkCity__c != NULL) && (vewProfileEAM.MBE_Profile__r.AS_Work_States__c != NULL  || vewProfileEAM.MBE_Profile__r.AS_WorkZip__c != NULL) , TRUE,FALSE)}">,</apex:outputText>
+
+{!vewProfileEAM.MBE_Profile__r.AS_Work_States__c} {!vewProfileEAM.MBE_Profile__r.AS_WorkZip__c}</p>
+ </apex:outputText>
+ 
+ <apex:outputText rendered="{!pfsett.MBE_Work_Phone_Visible__c }">
+<apex:outputText rendered="{!IF( vewProfileEAM.MBE_Profile__r.AS_WorkPhone__c != NULL, True,False)}">
+<p style="font-size:13px;font-weight:700; margin-bottom:-2px; margin-left:10px; font-family:Arial, Helvetica, sans-serif;color:#000;">Phone: {!vewProfileEAM.MBE_Profile__r.AS_WorkPhone__c}</p>
+</apex:outputText>
+</apex:outputText>
+
+
+<apex:outputText rendered="{!pfsett.FaxNumber_Visible__c}">
+<apex:outputText rendered="{!IF( vewProfileEAM.MBE_Profile__r.AS_FaxNumber__c != NULL, True,False)}">
+<p style="font-size:13px;font-weight:700; margin-bottom:-2px; margin-left:10px; font-family:Arial, Helvetica, sans-serif;color:#000;">FaxNumber: {!vewProfileEAM.MBE_Profile__r.AS_FaxNumber__c}</p>
+</apex:outputText></apex:outputText>
+
+<apex:outputText rendered="{!pfsett.MBE_Website_Visible__c}">
+<a  href="http://{!vewProfileEAM.MBE_Profile__r.AS_WebsiteUrl__c}" target="_blank" style="font-size:13px;margin-left:10px;font-weight:700; font-family:Arial, Helvetica, sans-serif;color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_WebsiteUrl__c}</a><br/>
+</apex:outputText>
+</div>
+
+<apex:outputText rendered="{!pfsett.MBE_Business_Description_Visible__c}">
+<apex:outputText rendered="{!IF( vewProfileEAM.MBE_Profile__r.AS_BusinessDescription__c != NULL, True,False)}">
+<div id="company-desc" style="width:72.5%; float:right; border:0px solid #000; height:auto; background-color: #Fff;">
+<div id="business description" style=" border:1px solid  #E5E5E5; overflow: auto; width:94.5%; height:250px;background-color:#fff; margin-left:10px ;">
+  <p style=" margin-top:5px;text-align:justify;margin-right:8px; margin-left:8px; font-size:15px; line-height:24px; font-family:Arial, Helvetica, sans-serif;color:#000;">
+    {!vewProfileEAM.MBE_Profile__r.AS_BusinessDescription__c}
+ </p>
+
+</div><!--close of business description-->
+
+
+</div><!--close of company-desc-->
+</apex:outputText>
+</apex:outputText>
+</div>
+<div style="clear:both"></div>
+<apex:outputText rendered="{!pfsett.MBE_Uploaded_Company_Brochures_Visible__c}">
+<apex:outputText rendered="{! IF(attchments.size !=0, TRUE ,FALSE)}">
+<div style="width:100%; height:auto; padding-bottom:5px; background-color:#fff; margin-top:25px; margin-right:10px;">
+<img src="{!URLFOR($Resource.attachment_Icon)}" title="Company Brouchures" style="margin-left:10px; margin-right:5px;"/>
+<apex:repeat value="{!attchments}" var="attac">
+ <a href="https://boothleads.secure.force.com/MatchMaking/servlet/servlet.FileDownload?file={!attac.Id}" target="_blank" style="color:#000; margin-right:7px;">
+ {!attac.Name}</a>&nbsp;
+ </apex:repeat>                                              
+
+</div>
+</apex:outputText>
+</apex:outputText>
+
+<apex:outputText rendered="{!pfsett.MBE_Uploaded_Video_Visible__c}">
+<apex:outputText rendered="{! IF(cvideos.size !=0, TRUE ,FALSE)}">
+<div style="width:100%; height:auto; padding-bottom:5px; background-color:#fff; margin-top:25px; margin-right:10px;text-align:center">
+
+<apex:repeat value="{!cvideos}" var="attac">
+  <iframe width="640" height="390" src="{!attac.YouTubeId_c__c}" frameborder="0"></iframe>  
+ </apex:repeat>                                              
+
+</div>
+</apex:outputText>
+</apex:outputText>
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:100%;height:55%"/>
+
+</div><!--close of hr-->
+
+<div style="width:100%; margin-top:10px; height:24px;  padding:5px; background-color:#1DCFDE;">
+<p style=" font-size:20px; font-family:Arial, Helvetica, sans-serif ;margin:0px; color:#FFF;line-height:24px;"> &nbsp;MATCH MAKING DETAILS</p>
+</div>
+
+<div id="matchmakingdetails" style="width:100%; height:auto; padding-bottom:10px; background-color:#FFF;">
+<table width="98%" border="0" cellspacing="0" cellpadding="0" style="margin:0px auto;">
+  <tr>
+    <td width="50%" align="center" valign="top">
+    
+    
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" class="viewprofiletable">
+    
+    
+    
+    
+    
+    <apex:outputText rendered="{!pfsett.MBE_Business_Duns_Number_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000; width:50%;">Business DUNS Number :</td>
+        <td align="left" style="color:#000; width:50%;">{!vewProfileEAM.MBE_Profile__r.AS_BusinessDunsNumber__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.Business_Structure_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Business Structure :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Business_Structure__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Business_Revenue_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Business Revenue :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_BusinessRevenue__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_DBA_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">DBA :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.DBA__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Cage_Code_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Cage Code :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_CageCode__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Number_Of_Employees_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Number of Employees :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_NumberOfEmployees__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Primary_Business_Category_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Primary Business Category :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_PrimaryBusinessCategory1__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_BBB_Number_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">BBB Number :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.BBB_Number__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Reference 1 :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.References__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Reference 2 :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.References2__c}</td>
+
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Manufatures_Country_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">If your company sells a product, what country or countries manufactures it? :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Manufactures_Country__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Certificate_Processed_by_RPO_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Certificate Processed by RPO :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Certificate_Processed_by_RPO__c}</td>
+      </tr>
+      </apex:outputText>
+      
+     <apex:outputText rendered="{!pfsett.MBEAny_non_WBENC_awards_received_visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Non-WBENC awards received in the last 2 years :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Any_non_WBENC_awards_received__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      <apex:outputText rendered="{!pfsett.MBE_Business_Type_Visible__c}">
+          <tr>
+            <td align="left"  style="color:#000;">Certificates :</td>
+            <td align="left"  style="color:#000;">{!vewProfileEAM.DiversityType__c}</td>
+          </tr>
+          </apex:outputText>
+    </table></td>
+    <td width="50%" align="center" valign="top">
+    
+    <table width="100%" border="0" cellspacing="0" cellpadding="5" class="viewprofiletable">
+    
+    
+    
+    
+    
+    <apex:outputText rendered="{!pfsett.MBE_Business_Established_Date_Visible__c}">
+      <tr>
+        <td width="49%" align="left" style="color:#000;">Business Established Date :</td>
+        <td width="51%" align="left" style="color:#000;"><!--{!vewProfileEAM.MBE_Profile__r.AS_BusinessEstablishedDate__c}-->
+         
+            <apex:outputText value="{0,date,MMMM dd, yyyy}" >
+              <apex:param value="{!vewProfileEAM.MBE_Profile__r.AS_BusinessEstablishedDate__c}" />
+            </apex:outputText>
+          </td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Year_in_Business_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Years in Business :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Year_in_business__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Business_Tax_ID_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Business Tax ID :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_BusinessTaxId__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Revenue_Range_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Revenue Range :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Revenue_Range__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_GSA_Schedule_Contract_Number_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">GSA Schedule Contract Number :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.GSA_Schedule__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Certifications_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Certifications :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Company_Certifications__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Secondary_Business_Category_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Secondary Business Category :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.As_SecondaryBusinessCategory1__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      <apex:outputText rendered="{!pfsett.MBE_Ethnicity_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Ethnicity :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Ethnicity__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+     <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Scope of Work 1 :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Scope_of_Work__c}</td>
+      </tr>
+      </apex:outputText>
+      
+       <apex:outputText rendered="{!pfsett.MBE_References_Visible__c}">
+      
+      <tr>
+        <td align="left" style="color:#000;">Scope of Work 2 :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Scope_of_Work2__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Distributors_Country_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">In which country is your companys distribution center located (if applicable)? :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.distribution_Country__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      <apex:outputText rendered="{!pfsett.MBE_Geographical_Region_Visible__c}">
+      <tr>
+        <td align="left" style="color:#000;">Geographical Region :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Geographical_Region__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      <apex:outputText rendered="{!pfsett.MBECompanyhavefacility_partneroutsideUSA__c}">
+      <tr>
+        <td align="left" style="color:#000;">Does your company have either a facility or partner outside of the US? :</td>
+        <td align="left" style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Companyhaveafacility_partneroutsideUSA__c}</td>
+      </tr>
+      </apex:outputText>
+      
+      
+      
+      <tr>
+        <td align="left" style="color:#000;">&nbsp;</td>
+        <td style="color:#000;">&nbsp;</td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+  <table width="97%" border="0" cellpadding="5" cellspacing="0" style="margin:0px auto;">
+  <tr> <td colspan='4'> <hr/></td></tr>
+   
+  <apex:outputText rendered="{!pfsett.MBE_NAICS_CODES_Visible__c}">
+   <tr> <td style="text-align:left;margin:10px; "><h3 style="padding:0; margin:0px; color:#000;"> NAICS CODES : </h3></td> </tr>
+  
+   <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.As_NAICSCode_1__c !=null, TRUE ,FALSE)}">
+   <tr style="margin-top:10px;border:0px solid #000;">
+    <td style="color:#000;" >{!vewProfileEAM.MBE_Profile__r.As_NAICSCode_1__c}</td>
+  </tr>    
+  </apex:outputText>
+  
+  <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.As_NAICSCode_2__c !=null, TRUE ,FALSE)}">
+  <tr style="margin-top:10px;border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.As_NAICSCode_2__c}</td>
+  </tr>
+  </apex:outputText>
+    
+
+  <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.As_NAICSCode_3__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">    
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.As_NAICSCode_3__c}</td>   
+   </tr> 
+  </apex:outputText>
+  <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.As_NAICSCode_4__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">    
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.As_NAICSCode_4__c}</td> 
+  </tr>    
+</apex:outputText>    
+
+
+  <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.As_NAICSCode_5__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.As_NAICSCode_5__c}</td>
+  </tr></apex:outputText>
+  
+   <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.AS_NAICSCode6__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_NAICSCode6__c}</td>
+  </tr></apex:outputText>
+   <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.AS_NAICSCode7__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_NAICSCode7__c}</td>
+  </tr></apex:outputText>
+  <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.AS_NAICSCode8__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_NAICSCode8__c}</td>
+  </tr></apex:outputText>
+  <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.AS_NAICSCode9__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.AS_NAICSCode9__c}</td>
+  </tr></apex:outputText>
+  </apex:outputText>
+  
+  <apex:outputText rendered="{!pfsett.MBE_Commodities_Visible__c}">
+  
+  <tr> <td colspan='4'> </td></tr>
+   <tr> <td style="text-align:left;margin:10px; "><h3 style="padding:0; margin:0px; color:#000;"> COMMODITIES : </h3></td> </tr>
+
+   <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_1__c !=null, TRUE ,FALSE)}">
+   <tr style="margin-top:10px;border:0px solid #000;">   
+    <td style="color:#000;" >{!vewProfileEAM.MBE_Profile__r.Commodity_1__c}</td>
+   </tr> </apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_2__c !=null, TRUE ,FALSE)}">
+   <tr style="margin-top:10px;border:0px solid #000;">    
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Commodity_2__c}</td>
+   </tr> </apex:outputText>
+
+    <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_3__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Commodity_3__c}</td>
+    </tr></apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_4__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Commodity_4__c}</td>    
+    </tr></apex:outputText>
+
+  
+  <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_5__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Commodity_5__c}</td>
+
+  </tr></apex:outputText>
+ 
+    
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_6__c !=null, TRUE ,FALSE)}">
+   <tr style="margin-top:10px;border:0px solid #000;">    
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Commodity_6__c}</td>
+   </tr> </apex:outputText>
+
+    <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_7__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Commodity_7__c}</td>
+    </tr></apex:outputText>
+    
+    <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_8__c !=null, TRUE ,FALSE)}">
+    <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Commodity_8__c}</td>    
+    </tr></apex:outputText>
+
+  
+  <apex:outputText rendered="{! IF(vewProfileEAM.MBE_Profile__r.Commodity_9__c !=null, TRUE ,FALSE)}">
+  <tr style="border:0px solid #000;">
+    <td style="color:#000;">{!vewProfileEAM.MBE_Profile__r.Commodity_9__c}</td>
+
+  </tr></apex:outputText>
+  </apex:outputText>
+  
+    
+  
+</table>
+<apex:outputText rendered="{!pfsett.MBE_Procurement_Needs_Visible__c}">
+<apex:outputText rendered="{!IF(vewProfileEAM.MBE_Profile__r.Key_Words__c != null,TRUE,FALSE)}">
+
+<p style="margin:10px; font-size:15px; margin-top:15px;color:#000;font-weight:700; font-family:Arial, Helvetica, sans-serif">
+Products / Services :
+</p>
+<div style=" width:94%; height:130px; border:1px solid  #E5E5E5; overflow: auto; margin:0px auto; ">
+<p style="text-align:justify;color:#000; margin-right:8px; margin-top:5px; margin-left:8px; font-size:15px; line-height:24px; font-family:Arial, Helvetica, sans-serif;">
+  {!vewProfileEAM.MBE_Profile__r.Key_Words__c}
+   </p>
+</div>
+</apex:outputText>
+</apex:outputText>
+
+</div><!--close of matchmaking details-->
+
+<div id="hr" style="width:100%; height:20px; background-color:#fff; ">
+<img src="{!URLFOR($Resource.profile, 'viewprofile/ft-shadow.png')}" style="margin-top:10px;width:95%;"/>
+</div><!--close of hr-->
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+ </apex:outputpanel>
+
+
+
+
+   
+   
+<!--------------------------------------------------------------------------------------------------------------------------->   
+   </apex:outputpanel>
+    </apex:form>      
+   
+            </div>
+            </div>
+     
+    
+     
+      
+      <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!vieProfileBool}"/> 
+        <apex:outputPanel styleClass="custPopup" layout="block" style="width:85%;"  rendered="{!vieProfileBool}">  
+         <apex:form onkeypress="return noenter(event)">
+           <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr><td class="pophead">
+                          <apex:outputText value="View Profile" style="width:100%;"  styleClass="pophead"></apex:outputText>
+                      </td>
+                      <td class="pophead">
+                           <apex:commandButton title="Cancel" action="{!cancel}" image="{!$Resource.Close1}"/>
+                      </td>     
+                      </tr>  
+                  </table>   
+                       
+                        
+
+<div id="TabbedPanels1" class="TabbedPanels" style="width:98%; margin:0px auto;">
+    <ul class="TabbedPanelsTabGroup" style="font-size:13px; padding:8px;">
+    <li class="TabbedPanelsTab" tabindex="0" style="font-size:13px; padding:8px;">CONTACT PROFILE</li>
+    <li class="TabbedPanelsTab" tabindex="0" style="font-size:13px; padding:8px;">COMPANY PROFILE</li>
+     <li class="TabbedPanelsTab" tabindex="0" style="font-size:13px; padding:8px;">MATCH LEADS DETAILS</li>
+   
+    
+    
+    
+  </ul>
+  
+  
+  <div class="TabbedPanelsContentGroup">
+    <div class="TabbedPanelsContent" style="background-color:#FFFFFF;">
+    
+      <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+<tr>
+  <td  align="center" valign="top"><table  cellpadding="0" cellspacing="0" width="100%" border="0">
+    <tr></tr>
+  </table>
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td  align="center" valign="top">
+        
+        <table width="100%" border="0" align="center"  cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="100%" height="30" colspan="2" align="left" valign="middle"  bgcolor="#F3F3F3" 
+            style="padding-left:15px; text-align:left; font-weight:bold;">Contact Details</td>
+  </tr>
+          <tr>
+            <td width="20%" align="left" valign="middle" style="padding-left:25px;">{!vewProfileEAM.AS_id__r.As_prefixNew__c} &nbsp; {!vewProfileEAM.AS_id__r.AS_FirstName__c}&nbsp; {!vewProfileEAM.AS_id__r.AS_LastName__c} </td>
+            <td width="80%" rowspan="3" align="left" valign="top" style="padding-left:25px; text-ali;gn:left">
+            <apex:image url="/servlet/servlet.ImageServer?id={!vewProfileEAM.AS_id__r.AS_ImageUrl__c}&oid={!$Organization.Id}" rendered="{!if(vewProfileEAM.AS_id__r.AS_ImageUrl__c!=null,true,false)}"  style="max-height:100px;max-width:120px;"/> </td>
+  </tr>
+          <tr>
+            <td width="20%" align="left" valign="middle" style="padding-left:25px;"> {!vewProfileEAM.AS_id__r.AS_Title__c} </td>
+  </tr>
+          <tr>
+            <td width="20%" align="left" valign="middle" style="padding-left:25px;">{!vewProfileEAM.AS_id__r.AS_Email__c}<br />
+              {!vewProfileEAM.AS_id__r.AS_CellPhone__c}</td>
+  </tr>  
+        </table></td>
+      </tr>
+      <tr >
+        <td colspan="2"  align="right" valign="middle">&nbsp;</td>
+        </tr>
+    </table>
+    <table  cellpadding="0" cellspacing="0" width="100%" border="0">
+    </table></td>
+</tr>
+</table>
+    
+    
+    </div>
+    
+    
+    
+    
+    <div class="TabbedPanelsContent" style="background-color:#FFFFFF;">
+     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                                    
+                                    <tr>
+                                      <td colspan="2" align="center" valign="top">
+                                      <table  cellpadding="0" cellspacing="0" width="100%">
+                                       
+                                          <tr>
+                                            <td width="90%" height="30" colspan="2" align="left" valign="middle"  bgcolor="#F3F3F3" 
+                                            style="padding-left:15px; text-align:left;font-weight:bold">Company Informaton</td>
+  </tr>
+                                       
+                                        
+                                        <tbody>
+                                          <tr>
+                                           <td height="30" align="left" valign="middle" style="padding-left:25px;"> 
+                                           {!vewProfileEAM.AS_id__r.AS_company__c}  <br /> {!vewProfileEAM.AS_id__r.AS_WebsiteUrl__c}
+                                        </td>
+                                          </tr>
+                                          
+                                         <tr>
+                                            <td width="90%" height="30" align="left" valign="middle"  bgcolor="#F3F3F3" 
+                                            style="padding-left:15px; text-align:left; font-weight:bold;">Address</td>
+                                          </tr>
+                                        
+                                        <tr>
+                                            <td height="30" align="left" valign="middle" style="padding-left:25px;">
+                                               {!vewProfileEAM.AS_id__r.AS_WorkAddress1__c}<br /> 
+                                          {!vewProfileEAM.AS_id__r.AS_WorkAddress2__c}<br /> 
+                                          {!vewProfileEAM.AS_id__r.AS_WorkCity__c} <apex:outputPanel rendered="{!IF(vewProfileEAM.AS_id__r.AS_Work_States__c!=null,true,false)}"> ,{!vewProfileEAM.AS_id__r.AS_Work_States__c}</apex:outputPanel> {!vewProfileEAM.AS_id__r.AS_WorkZip__c}
+                                          
+                                            </td>
+                                          </tr>
+                                        
+                                        
+                                        
+                                        
+                                        
+                                           <tr>
+                                            <td width="90%" height="30" align="left" valign="middle"  bgcolor="#F3F3F3" 
+                                            style="padding-left:15px;font-weight:bold;">Business Category</td>
+                                          </tr>
+                                            <tr>
+                                            <td width="90%" height="30" align="left" valign="middle" style="padding-left:25px;" >
+                                             <b>Primary :</b> {!vewProfileEAM.AS_id__r.AS_PrimaryBusinessCategory1__c}<br />
+                                             <b>Secondary :</b> {!vewProfileEAM.AS_id__r.As_SecondaryBusinessCategory1__c}
+                                          </td ></tr>
+                                           
+                                          
+                                        </tbody>
+                                      </table></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                      <td width="49%">&nbsp;</td>
+                                      <td width="51%">&nbsp;</td>
+                                    </tr>
+                                  </table>
+    
+    
+    </div>
+    
+   
+
+    
+     <div class="TabbedPanelsContent" style="background-color:#FFFFFF;">
+     
+       <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                                    
+                                    <tr >
+                                      <td  align="center" valign="top">
+                                      
+                                      <table  cellpadding="0" cellspacing="0" width="100%">
+                                       
+                                       
+                                       
+                                        <!--  <tr style="padding-left:20px;">
+                                            <td width="90%" height="30" bgcolor="#F3F3F3" style="padding-left:15px;">MATCH LEADS DETAILS</td>
+                                           
+                                          </tr> -->
+                                        
+                                        <tbody>
+                                        
+                                        <tr style="padding-left:20px;">
+                                            <td height="30" align="left" valign="middle" bgcolor="#FFFFFF"  style="background-color:#f3f3f3;padding-left:15px; font-weight:bold; text-align:left;">Business Information</td>
+                                        </tr>
+                                        
+                                   <!--      <tr> 
+                                             <td>
+                                               <apex:outputField value="{!vewProfileEAM.AS_id__r.AS_PrimaryBusinessCategory1__c}"  /> 
+                                              </td>
+                                         </tr>
+                                         <tr> 
+                                             <td>
+                                               <apex:outputField value="{!vewProfileEAM.AS_id__r.As_SecondaryBusinessCategory1__c}"   /> 
+                                              </td>
+                                         </tr>   --->
+                                        <tr> 
+                                             <td>
+                                          <B>  Business Duns Number: </B>     <apex:outputField value="{!vewProfileEAM.AS_id__r.AS_BusinessDunsNumber__c}"   /> 
+                                             </td>    
+                                         </tr>   
+                                         <tr> 
+                                             <td>
+                                                 <B> Business Revenue: </B>
+                                                 $<apex:outputPanel rendered="{!if(vewProfileEAM.AS_id__r.AS_BusinessRevenue__c!=null,true,false)}">
+                                                  <apex:outputText value="{0, number, 000000}">
+                                                        <apex:param value="{!vewProfileEAM.AS_id__r.AS_BusinessRevenue__c}" />
+                                                  </apex:outputText></apex:outputPanel>
+                                                
+                                              </td>
+                                         </tr>
+                                         <tr> 
+                                             <td> <B> Business TaxId: </B>
+                                                 <apex:outputField value="{!vewProfileEAM.AS_id__r.AS_BusinessTaxId__c}"   /> 
+                                                   
+                                              </td>
+                                         </tr>  
+                                         <tr> 
+                                             <td> <B> Cage Code: </B>
+                                                 <apex:outputField value="{!vewProfileEAM.AS_id__r.AS_CageCode__c}"   /> 
+                                                   
+                                              </td>
+                                         </tr>
+                            
+                                          <tr> 
+                                             <td>     <B> GSA Schedule: </B>
+                                               <apex:outputField value="{!vewProfileEAM.AS_id__r.GSA_Schedule__c}"   /> 
+                                              </td>
+                                         </tr>
+                                         <tr> 
+                                             <td> <B> Number of Employees: </B>
+                                               <apex:outputField value="{!vewProfileEAM.AS_id__r.AS_NumberOfEmployees__c}"   /> 
+                                              </td>
+                                         </tr>
+                                         <!--<tr> 
+                                             <td> <B> Diversity Type: </B>
+                                               <apex:outputField value="{!vewProfileEAM.DiversityType__c}"   /> 
+                                              </td>
+                                         </tr>-->
+                                          <tr> 
+                                             <td> <B> Company Certifications: </B>
+                                               <apex:outputField value="{!vewProfileEAM.AS_id__r.Company_Certifications__c}"   /> 
+                                              </td>
+                                         </tr>
+                                                   
+                              <tr style="padding-left:20px;">
+                                <td height="30" align="left" valign="middle" bgcolor="#FFFFFF" 
+                                style="background-color:#f3f3f3;padding-left:15px; font-weight:bold; text-align:left;">NAICS Codes</td>
+                              </tr>
+                                          
+                                         <tr>
+                                            <td height="30" align="left" valign="middle" style="padding-left:25px;">
+                                          <apex:outputPanel rendered="{!if(vewProfileEAM.AS_id__r.As_NAICSCode_1__c!=null,true,false)}">
+                                         {!vewProfileEAM.AS_id__r.As_NAICSCode_1__c}</apex:outputPanel>
+                                            </td> 
+                                          </tr>
+                                          <tr>
+                                            <td height="30" align="left" valign="middle" style="padding-left:25px;">
+                                          <apex:outputPanel rendered="{!if(vewProfileEAM.AS_id__r.As_NAICSCode_2__c!=null,true,false)}">
+                                          {!vewProfileEAM.AS_id__r.As_NAICSCode_2__c}</apex:outputPanel>
+                                          </td> 
+                                          </tr>
+                                            <tr>
+                                            <td height="30" align="left" valign="middle" style="padding-left:25px;">
+                                          <apex:outputPanel rendered="{!if(vewProfileEAM.AS_id__r.As_NAICSCode_3__c!=null,true,false)}">
+                                          {!vewProfileEAM.AS_id__r.As_NAICSCode_3__c}</apex:outputPanel>
+                                            </td> 
+                                          </tr>
+                                          <tr>
+                                            <td height="30" align="left" valign="middle" style="padding-left:25px;">
+                                          <apex:outputPanel rendered="{!if(vewProfileEAM.AS_id__r.As_NAICSCode_4__c!=null,true,false)}">
+                                          {!vewProfileEAM.AS_id__r.As_NAICSCode_4__c}</apex:outputPanel>
+                                            </td> 
+                                          </tr>
+                                          <tr>
+                                            <td height="30" align="left" valign="middle" style="padding-left:25px;">
+                                          <apex:outputPanel rendered="{!if(vewProfileEAM.AS_id__r.As_NAICSCode_5__c!=null,true,false)}">
+                                          {!vewProfileEAM.AS_id__r.As_NAICSCode_5__c}</apex:outputPanel>
+                                         &nbsp;
+                                          </td> 
+                                          </tr>
+                                         
+                                       
+                                        </tbody>
+                                      </table></td>
+                                    </tr>
+                                     <tr style="padding-left:20px;">
+                                            <td height="30" bgcolor="#FFFFFF" style="background-color:#f3f3f3;font-weight:bold; padding-left:15px;">Products / Services</td>
+                                            <td height="30" bgcolor="#FFFFFF" style="background-color:#f3f3f3;">&nbsp;</td>
+                                    </tr>
+                                     <tr>                                  
+                                            <td height="30" colspan="2" align="left" valign="middle" style="padding-left:25px;">
+                                            <apex:outputField value="{!vewProfileEAM.AS_id__r.Keywords__c}" style="width:220px; padding-left:25px;"/> </td>
+                                     </tr>
+                                    <tr style="padding-left:20px;">
+                                            <td height="30" bgcolor="#FFFFFF" style="background-color:#f3f3f3;font-weight:bold; padding-left:15px;">Business Description  </td>
+                                            <td height="30" bgcolor="#FFFFFF" style="background-color:#f3f3f3;">&nbsp;</td>
+                                    </tr>
+                                     <tr>                                  
+                                            <td height="30" colspan="2" align="left" valign="middle" style="padding-left:25px;">
+                                            <apex:outputField value="{!vewProfileEAM.AS_id__r.AS_BusinessDescription__c}" style="width:220px;padding-left:25px;"/> </td>
+                                     </tr>
+     <tr>
+     <td height="35px" colspan="2" align="center" valign="middle">
+      <!-- <apex:commandbutton Value="Close" title="Close" action="{!CloseviewPopup}"/> --> 
+     </td>
+     </tr>
+     </table>    
+     
+     </div>
+   
+  </div>
+</div>
+ <script type="text/javascript">
+var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+</script>
+           
+           
+          
+                        <!-- <a class="close-reveal-modal">&#215;</a>  -->
+         </apex:form>                
+      </apex:outputPanel>
+      <!----------------------------------------------  END OF POPUP FOR VIEW PROFILES  -----------------------------> 
+     
+    
+      
+     <apex:form onkeypress="return noenter(event)"> 
+     <apex:actionfunction name="closepopup" action="{!CloseSuccessPopup}"/>
+      <!-- ---------------------- Display Success Message ------------------------------------- -->
+   <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!dispaySuccessPopup}" style="width:100%;z-index:950;"/> 
+<apex:outputPanel styleClass="custPopup"  layout="block" style="width:70%;z-index:960;" rendered="{!dispaySuccessPopup}" >  
+ 
+ <table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td class="pophead">Schedule Request: {!schedulestartTime} -{!scheduleendTime} </td>
+<td class="pophead"><apex:commandButton action="{!CloseSuccessPopup}"  image="{!$Resource.Close1}"/>
+</td>
+</tr>
+</table>
+
+
+ <!--<h1 style="line-height:50px;border:0px; "> You have an successfully made an appointment.</h1> -->
+ 
+   <table cellspacing="0" cellpadding="0" border="0" style="width:90%;margin:0px auto;">
+   
+   <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:14px">&nbsp; </td></tr>
+   
+   
+   
+    <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:16px">Your comments  </td></tr>
+   
+   <tr> <td>  <apex:inputTextarea richText="true"  value="{!comments}" style="width:80%"/>  </td></tr>
+  
+  <tr> <td align="right"> <apex:commandButton action="{!CloseSuccessPopup}"  value="Close"/> &nbsp;&nbsp; 
+   <apex:commandButton action="{!makeSchedule}" value="Confirm" status="AjaxLoader" reRender="Block" oncomplete="closepopup();"/>  </td></tr></table>
+  
+  
+  </apex:outputPanel>
+  <!-----------------------------------ERROR MESSAGE------------------------------>
+
+   <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!dispaySuccessPopup21}" style="width:100%;z-index:950;"/> 
+<apex:outputPanel styleClass="custPopup"  layout="block" style="width:70%;z-index:960;" rendered="{!dispaySuccessPopup21}" >  
+ 
+  
+   <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr><td class="pophead">&nbsp; </td>
+    <td class="pophead"><apex:commandButton action="{!CloseSuccessPopup21}"  image="{!$Resource.Close1}"/>
+   </td></tr>
+</table>
+
+   <table cellspacing="0" cellpadding="0" border="0" style="width:90%;margin:0px auto;">
+   
+   <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:14px">&nbsp; </td></tr>
+   
+   
+   
+    <tr> <td align="left" style="font-weight:bold;text-align:left;font-size:16px"> </td></tr>
+   
+   <tr> <td> You already have an appointment. {!attendeealias} are allowed to make only one appointment with {!exhibitoralias }.</td></tr>
+  
+  <tr> <td align="right"> <apex:commandButton action="{!CloseSuccessPopup21}"  value="Ok"/> &nbsp;&nbsp; 
+    </td></tr></table>
+  
+  
+  </apex:outputPanel>
+</apex:form>
+  <!-- ---------------------- Display Success Message ------------------------------------- -->
+      
+      <!----------------------------------------------- View Schedules For Profiles --------------------------------->
+         <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!viewScheduleBool}"/> 
+         <apex:outputPanel styleClass="custPopup" layout="block" style="width:85%;"  rendered="{!viewScheduleBool}"> 
+          <apex:form >
+                <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr><td class="pophead">
+                          <apex:outputText value="Schedule an Appointment" style="width:100%;"  styleClass="pophead"></apex:outputText>
+                      </td>
+                      <td class="pophead"> 
+                          <apex:commandButton title="Cancel" action="{!cancel}" image="{!$Resource.Close1}"/>
+                      </td>    
+                    </tr>
+                    
+                    
+          <tr>
+          
+        <td valign="top" style="width:100%;">  
+          <table cellpadding="0" celspacing="0" style="width:100%;" border="0">
+             <tr><td style="width:20%;" valign="top">
+              
+                </td> 
+                <td valign="top" style="line-height:15px;">{!evs.AS_id__r.AS_Company__c}<br />
+                 {!evs.AS_id__r.AS_FirstName__c}&nbsp; {!evs.AS_id__r.AS_LastName__c}<br />
+                {!evs.AS_id__r.AS_WorkAddress1__c} {!evs.AS_id__r.AS_WorkAddress2__c}<br />
+                {!evs.AS_id__r.AS_WorkCity__c}, {!evs.AS_id__r.AS_Work_States__c} {!evs.AS_id__r.AS_WorkZipCode__c} 
+                 </td> 
+                 
+                
+                 <td valign="top">
+                  <table cellpadding="0" celspacing="0" style="width:100%;" border="0">
+                    <tr><td style="width:10%;"> 
+                      <div style="width:20px;height:20px;background-color:#f05b5b;"></div></td>
+                      <td style="width:90%;"><apex:outputText value="Your scheduled timings" ></apex:outputText></td></tr>
+                      
+                      <tr> <td> <div style="width:20px;height:20px;background-color:#00c47c;"></div></td>
+                     <td><apex:outputText value="{!exhibitoralias} available timings" ></apex:outputText>
+                    </td> </tr>
+                    
+                     <tr> <td> <div style="width:20px;height:20px;background-color:#808080;"></div></td>
+                     <td><apex:outputText value="{!attendeealias} busy timings" ></apex:outputText>
+                    </td> </tr>
+                    
+                    
+                    </table>
+                  
+                  
+                 </td></tr>    
+                    </table></td></tr>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                      
+                  </table>   
+                        
+          <apex:outputText rendered="{!NOT(eventTypeBool)}">     
+            <!--   <div style="width:100% height:40px; background-color:#F3F3F3;text-align:center; color:#FF0000;"> 
+                      Please select an available time slot to schedule an appointment with <b> {!evs.AS_id__r.AS_FirstName__c}&nbsp; {!evs.AS_id__r.AS_LastName__c} </b>
+                
+                </div>-->
+              
+             <table ><!--   
+             <tr>
+             <table align="right" style="right-padding:20px;">
+                    <tr>
+                    <td> {!evs.AS_id__r.AS_FirstName__c}&nbsp; {!evs.AS_id__r.AS_LastName__c}</td>
+                    
+                    </tr>
+                    <tr>
+                    <td> {!evs.AS_id__r.AS_Company__c}</td>
+                    </tr>
+                    <tr>
+                    <td>
+                    </td>
+                    </tr>
+                </table>    
+                   
+             </tr> 
+             <tr> <td colspan="3"> 
+                <table><tr>
+                    <td style="width:21px;height:21px;"> <div style="width:20px;height:20px;" class="comlinkblue"></div> </td>
+                    <td>Available Timings for Attendees. &nbsp;&nbsp; </td>
+                    
+                    <td style="width:21px;height:21px;"> <div style="width:20px;height:20px;" class="comlink"></div></td> 
+                    <td> Attendee/Exhibitor Busy at the time slots. &nbsp;&nbsp; </td>
+                
+               
+                 </tr></table>   
+                 
+                 </td>
+             </tr>-->
+             
+                  
+         
+  <tr>
+    <td colspan="2" valign="top" style="width:100%;text-align:center;margin-bottom:1px solid #FFFFFF; ">
+      <!--<div style='overflow:auto; width:250px;height:600px;'> -->
+  
+      <table cellpadding="0" cellspacing="0"  style="margin:2px;width:100%;" >
+       
+              <apex:repeat value="{!toDisplayValues}" var="t">
+            <tr style="background-color:#55B7F4">
+              <td style="border-bottom:0px solid #FFFFFF;text-align:left;padding:5px; color:#FFFFFF;" valign="top" >
+                 <apex:outputText value="{0,date,MM/dd/yyyy}" >
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        <apex:param value="{!t.scheduledate}" /> 
+               </apex:outputText>
+               </td></tr>
+            
+            
+            <tr >
+                <td style="border-bottom:1px solid #FFFFFF;text-align:left;" valign="top" >
+                    <apex:outputPanel >
+                        <div style="width:98%;border:0px solid red;height:100%;text-align:center;" >
+                            <apex:repeat value="{!t.schedules}" var="sch">
+                                <!-- -------------------------------------------------- Time Slot Availability ------------------------------------- -->
+                                <apex:outputPanel rendered="{!IF(OR(Contains(listvals,sch.actualSlot),(Contains(listvalsmbe,sch.actualSlot))),False,True)}" style="margin:2px 2px 2px 2px ;float:left;width:19%;"> 
+                                    <apex:commandLink value="{!sch.actualSlot}" rendered="{! NOT(OR(sch.attendeeBooked, sch.exibitorBooked)) }"  styleClass="comlinkblue" style="color:white;" action="{!Schedules}">
+                                        <apex:param name="scheduleTime" value="{!sch.actualSlot}"/>
+                                        <apex:param name="scheduleDate" value="{! TEXT( t.scheduleDate ) }"/>
+                                    </apex:commandLink> 
+                                    <apex:outputText value="{!sch.actualSlot}" styleClass="comlink" style="{!IF(sch.attendeeBooked ,  'background-color:#808080' , 'background-color:#f05b5b')}" title="{! IF((OR(sch.attendeeBooked ,(Contains(listvalsmbe,sch.actualSlot)))),  'Attendee Booked For this time slot ' , 'You have Booked For this Time Slot')}   {! sch.es.MM_To_EAM__r.AS_id__r.AS_FirstName__c} {!sch.es.MM_To_EAM__r.AS_id__r.AS_LastName__c} {!sch.es.MM_To_UPE__r.BoothAdmin_id__r.Name}" rendered="{!(sch.attendeeBooked==true || sch.exibitorBooked==True)}"></apex:outputText>
+                                </apex:outputPanel>
+                                
+                            </apex:repeat>  
+                        </div>
+                    </apex:outputPanel>
+                </td>
+            </tr>
+            
+            
+            
+                     </apex:repeat>
+               </table>
+          </td> 
+     </tr> 
+            </table>
+          </apex:outputText>       
+               
+           <apex:outputText rendered="{!eventTypeBool}">      
+               
+               Sorry Event Type is Closed, Please contact Event Administrator  for Scheduling. <br/> Thank you
+               
+           </apex:outputText>       
+         </apex:form>     
+          
+          </apex:outputPanel>
+       
+      <!---------------------------------------------  END OF View Schedules For Profiles ---------------------------->
+  <style>
+      .pophead{
+            background-color:#54b5f1;
+            height:35px;
+            width:100%;
+            color:#FFFFFF;
+            font-size:18px;
+            text-align:center;
+      }
+     .comlink{
+        font-family:Verdana, Geneva, sans-serif; font-size:100%;
+           color:#FFFFFF;
+           padding:5px;
+             margin:5px;
+            background-color:#808080;
+           border:1px solid #808080;
+           border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px;
+           text-decoration:none;
+    }
+
+     .comlinkblue{
+           font-family:Verdana, Geneva, sans-serif; font-size:100%;
+           color:#000000;
+           padding:5px;
+             margin:5px;
+            background-color:#00c47c;
+           border:1px solid #00c47c;
+
+           border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px;
+           text-decoration:none;
+       }
+        
+        .comlinkblue a{
+            color:#FFFFFF;
+        }
+        
+        
+        .comlinkred{
+            font-family:Verdana, Geneva, sans-serif; 
+            font-size:13px; color:#FFFFFF;
+            padding:5px; height:20px; 
+            background-color:#d11d0c; 
+            border:1px solid #841206; 
+            border-radius:3px;-webkit-border-radius:3px; -moz-border-radius:3px; 
+            text-decoration:none;
+            }
+      
+      
+      
+</style>
+
+
+
+
+<apex:stylesheet value="{!URLFOR($Resource.MM_BA_Styles,"css/stylesheet.css")}"/>
+
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+<apex:stylesheet value="{!URLFOR($Resource.MM_styles,"css/stylesheet.css")}"/>-->
+
+
+
+
+<script type="text/javascript" >
+$(document).ready(function()
+{
+$(".account").click(function()
+{
+var X=$(this).attr('id');
+
+if(X==1)
+{
+$(".submenu").hide();
+$(this).attr('id', '0'); 
+}
+else
+{
+
+$(".submenu").show();
+$(this).attr('id', '1');
+}
+
+});
+
+//Mouseup textarea false
+$(".submenu").mouseup(function()
+{
+return false
+});
+$(".account").mouseup(function()
+{
+return false
+});
+
+
+//Textarea without editing.
+$(document).mouseup(function()
+{
+$(".submenu").hide();
+$(".account").attr('id', '');
+});
+
+});
+
+</script> 
+
+<style>
+.table2{ border:1px solid #eaeaea; margin:2px; height:auto; height:50px;}
+
+.table2 td{height:25px;}
+.pophead{
+background-color:#54b5f1;
+height:35px;
+width:100%;
+color:#FFFFFF;
+font-size:18px;
+text-align:center;
+}
+</style>
+
+
+  <!--footer start-->
+        <div id="footer">
+            © GlobalNest LLC. All Rights Reserved 
+         </div>
+    <!--footer end-->
+</apex:page>

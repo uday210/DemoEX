@@ -1,0 +1,429 @@
+<apex:page controller="BLN_RegistrationLinks" showHeader="false" standardStylesheets="false">
+
+     <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <c:ed_popupbox />
+    <style>
+.tabstitle{ margin:10px 0px -10px 0px;}
+</style>
+
+<script>
+function saveshorturl(){
+//alert('global');
+var shurlkey = document.getElementById("shorturlkey").value;
+var resarr = shurlkey.split(" ");
+if(shurlkey  == null || shurlkey ==''){
+alert("Text box cannot be empty");
+}else if(resarr.length >1){
+alert('Please Provide Single Word Short Name');
+}else if(shurlkey.length >30){
+alert('Please Choose Short Word');
+}
+else{
+
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.BLN_RegistrationLinks.getshorturl}',shurlkey,'{!selectedEvent}','{!RegistrationLink}',
+            function(result, event){
+           // alert(result);
+             if(result == true){
+             alert('URL name already exists! Please choose another.');
+             }else{
+               windowreloadfunct();
+             }
+            }); 
+
+
+//getshorturlkey(shurlkey);
+}
+}
+
+
+function editshorturl(){
+//alert(" hitted by global");
+editshorturlkey();
+}
+</script>
+<apex:form >
+ <apex:actionfunction name="windowreloadfunct" action="{!refreshpage}" rerender="">
+    
+ </apex:actionFunction>
+ 
+ <apex:actionfunction name="editshorturlkey" action="{!editshorturl}" rerender="outpan1,outpan2">
+    
+ </apex:actionFunction>
+</apex:form>
+    <!------------//common styles component---------->
+     <!---start of basictemlate component------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!RegistrationLinks}" >
+  <!-----------------start of template section code--------->
+  <!------------------->
+          <div class="grid-1">
+          <div class="form-embed-div" style="width:97%;">
+          <div class="form-content-div" style="padding:0px;"> 
+          <!------------------->
+          <!------------------->
+                <div id="TabbedPanels1" class="TabbedPanels" style="border:none;" >
+                <ul class="TabbedPanelsTabGroup">
+                <li class="TabbedPanelsTab">Public Links</li>
+                <li class="TabbedPanelsTab">Private Links</li>
+                <li class="TabbedPanelsTab">All Links</li>
+                </ul>
+                 <div class="TabbedPanelsContentGroup">
+                <!--------------------start of ist tab------------------>
+                 <div class="TabbedPanelsContent" style="padding:5px;;">
+                <!---------------------------------------------------------->
+                 <apex:outputpanel rendered="{!publictickets}">
+                <!-------------------------All Link section---------------------------> 
+     <div class="shadow-div">
+   
+    <p class="padding-5px bg-font"><span> <i class="fa fa-link">&nbsp;&nbsp;</i></span>Link to this form on your website or Embed this form on your website</p><!--close of black-title-->
+    
+     <div class="embed-div cf left" style="width:83%;">
+ <div  style="width:84.9555%;height: 80px;">
+ <p>   
+ <a class="a_underline" href="{!RegistrationLink}" target="_blank" style="white-space: pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;height: 80px;">{!RegistrationLink}</a></p>
+ </div>
+       <a href="{!RegistrationLink}"  target="_blank"> <button type="button">Click</button></a>
+</div>
+ <!-------------Embed link button expand collapse content---------->
+   <!---------> 
+  <div class="green_bgbtn left togglebtn2" style="  margin-left: 10px; margin-top: 22px;">
+   <i class="fa fa-code" style="font-weight:700;"></i> Embed Link
+  </div>
+ <!--close of green_bgbtn------>
+           <div class="contentexp clear" style=" display:none;">
+          <div class="embed-div cf left" style="width:83%;">
+         <input type="text" id="iframevalue"   value="{!iframes}" style="width:84.733%;word-wrap: break-word;word-break: break-word;height: 80px;"/>
+        <button type="button" class="ctrlcAll" title="Select and Copy by clicking CTRL+A" >CTRL+A</button>
+      </div>
+  <div class="clear"></div>
+  <p class="notemsg_red" style="">*Note: Copy and paste the above code into an HTML page on your website</p>                  
+       </div><!--close of contentexp------>
+  <!----------------//end of Embed Button expand collapse content---->    
+    <div class="clear"></div>    
+    </div><!--close of shadow-div-->
+     <!-------------------------End of All Link section-------------------->
+ <!---------------------- short url start --------------------- -->
+     <div class="shadow-div">
+   
+    <p class="padding-5px bg-font"><span> <i class="fa fa-link">&nbsp;&nbsp;</i></span>Short Url for your Registration Page</p>
+  <div class="embed-div cf left" style="width:83%;">
+ <div  style="width:84.9555%;height: 80px;">
+ <apex:outputPanel id="outpan1" rendered="{!shortUrlPannelBooledit}">
+<div style="display:inline-flex;"> <p>   
+  <a class="a_underline" href="http://eventdex.com" target="_blank" >http://eventdex.com/</a> </p><input type="text" id="shorturlkey" value="{!shorturlkey}" style="height:100%;margin-left:-68px;padding:0% 0% 0% 1%;" /></div>
+  <button type="button" onclick ="saveshorturl();">Save</button>
+  </apex:outputPanel>
+  <apex:outputPanel id="outpan2" rendered="{!shortUrlPannelBoolshow}">
+ <p>   
+  <a class="a_underline" href="{!shorurl}" target="_blank" >{!shorurl}</a> </p>
+  <apex:form >
+  
+  <apex:commandButton value="edit" action="{!editshorturl}" style="
+    overflow: visible;
+    position: relative;
+    float: right;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    height: 40px;
+    width: 110px;
+    font: bold 15px/40px 'lucida sans', 'trebuchet MS', 'Tahoma';
+    color: #fff;
+    text-transform: uppercase;
+    background: #4F91CD;
+    border-radius: 0 3px 3px 0;
+    text-shadow: 0 -1px 0 rgba(0, 0 ,0, .3);
+    outline: none;
+"/></apex:form>
+  </apex:outputPanel>
+ </div>
+
+</div>
+
+    <div class="clear"></div>    
+    </div>
+   <!----------------------- short url end ---------------->
+      <!-------------------------All Tabs section---------------------------> 
+     <apex:outputPanel rendered="{!if(reg.size>0,true,false)}">
+     <div class="shadow-div">
+     <p class="padding-5px bg-font"><span> <i class="fa fa-link">&nbsp;&nbsp;</i></span>Link to this Tab on your website or Embed this Tab on your website</p><!--close of black-title-->
+     
+     <apex:repeat value="{!reg}" var="r">
+     <apex:repeat value="{!frame}" var="key">
+     <apex:repeat value="{!frame[key]}" var="fm" rendered="{!if(key==r,true,false)}">
+    <!------------>
+    <div><!--repeat---->
+   <p class="labeltitles clear tabstitle">
+   <apex:outputText value="{!key}" rendered="{!if(key==r,true,false)}"/>
+   </p> 
+      <div class="embed-div cf left" style="width:83%;">
+     <div  style="width:84.9555%;height: 80px;">
+     <p>
+     <a class="a_underline" href="{!RegistrationLink}&tab={!r}"  target="_blank" style="white-space: pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;height: 80px;">{!RegistrationLink}&amp;tab&#61;{!r}</a>
+     </p>
+     </div>
+       <a href="{!RegistrationLink}&tab={!r}" target="_blank"> <button type="button">Click</button></a>
+    </div>
+     <!-------------Embed link button expand collapse content---------->
+     <!---------> 
+  <div class="green_bgbtn left togglebtn2" style="  margin-left: 10px; margin-top: 22px;">
+   <i class="fa fa-code" style="font-weight:700;"></i> Embed Link
+  </div>
+ <!--close of green_bgbtn------>
+
+       <div class="contentexp clear" style="display:none;">
+          <div class="embed-div cf left" style="width:83%;">
+
+ <apex:outputPanel rendered="{!if(key==r,true,false)}">
+ <input type="text" id="iframevalue"  value="{!fm}" style="width:84.7333%;word-wrap: break-word;word-break: break-word;height: 80px;"/>
+</apex:outputPanel>
+
+    <button type="button" class="ctrlc" title="Select and Copy by clicking CTRL+A" >CTRL+A</button>
+  </div>
+  <div class="clear"></div>
+  <p class="notemsg_red" style="">*Note: Copy and paste the above code into an HTML page on your website</p>                  
+       </div><!--close of contentexp------>
+  <!----------------//end of Embed Button expand collapse content---->  
+  </div><!--end of repeat---->  
+ <div class="clear"></div>
+    <!------------> 
+       </apex:repeat>
+       </apex:repeat>
+       </apex:repeat>
+      </div><!--close of shadow-div-->
+      </apex:outputPanel>
+     <!-------------------------All tabs section------------------------> 
+      </apex:outputpanel>
+       <!-------------------------End of All tabs section------------------------> 
+                <!------------------------------------End of Embed Link--------------------------------------------->
+                      </div><!--close of tab1 tabbedpanelscontent-->
+          <!-------------------------->
+               <!--------------------start of 2nd content------------------>
+                 <div class="TabbedPanelsContent" style="padding:5px;" >
+              <!---------------------------------------------------------->
+                    <!---------------------------------------------------------->
+                 <apex:outputpanel rendered="{!privatetickets}">
+                <!-------------------------All Link section---------------------------> 
+     <div class="shadow-div">
+   
+    <p class="padding-5px bg-font"><span> <i class="fa fa-link">&nbsp;&nbsp;</i></span>Link to this form on your website or Embed this form on your website</p><!--close of black-title-->
+    
+     <div class="embed-div cf left" style="width:83%;">
+ <div  style="width:84.9555%;height: 80px;">
+ <p>   
+ <a class="a_underline" href="{!RegistrationLink}&Visib=Private" target="_blank" style="white-space: pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;height: 80px;">{!RegistrationLink}&amp;Visib&#61;Private</a>
+ </p>
+ </div>
+       <a  href="{!RegistrationLink}&Visib=Private" target="_blank"> <button type="button">Click</button></a>
+</div>
+ <!-------------Embed link button expand collapse content---------->
+   <!---------> 
+  <div class="green_bgbtn left togglebtn2" style="  margin-left: 10px; margin-top: 22px;">
+   <i class="fa fa-code" style="font-weight:700;"></i> Embed Link
+  </div>
+ <!--close of green_bgbtn------>
+           <div class="contentexp clear" style=" display:none;">
+          <div class="embed-div cf left" style="width:83%;">
+         <input type="text" id="iframevalue"   value="{!priviframes}" style="width:84.733%;word-wrap: break-word;word-break: break-word;height: 80px;"/>
+        <button type="button" class="ctrlcAll" title="Select and Copy by clicking CTRL+A" >CTRL+A</button>
+      </div>
+  <div class="clear"></div>
+  <p class="notemsg_red" style="">*Note: Copy and paste the above code into an HTML page on your website</p>                  
+       </div><!--close of contentexp------>
+  <!----------------//end of Embed Button expand collapse content---->    
+    <div class="clear"></div>    
+    </div><!--close of shadow-div-->
+     <!-------------------------End of All Link section-------------------->
+
+      <!-------------------------All Tabs section---------------------------> 
+     <apex:outputPanel rendered="{!if(reg.size>0,true,false)}">
+     <div class="shadow-div">
+     <p class="padding-5px bg-font"><span> <i class="fa fa-link">&nbsp;&nbsp;</i></span>Link to this Tab on your website or Embed this Tab on your website</p><!--close of black-title-->
+     
+     <apex:repeat value="{!reg}" var="r">
+     <apex:repeat value="{!privframe}" var="key">
+     <apex:repeat value="{!privframe[key]}" var="fm" rendered="{!if(key==r,true,false)}">
+    <!------------>
+    <div><!--repeat---->
+   <p class="labeltitles clear tabstitle">
+   <apex:outputText value="{!key}" rendered="{!if(key==r,true,false)}"/>
+   </p> 
+      <div class="embed-div cf left" style="width:83%;">
+     <div  style="width:84.9555%;height: 80px;">
+     <p>
+     <a class="a_underline" href="{!RegistrationLink}&tab={!r}&Visib=Private"  target="_blank" style="white-space: pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;height: 80px;">{!RegistrationLink}&amp;tab&#61;{!r}&amp;Visib&#61;Private</a>
+     </p>
+     </div>
+       <a href="{!RegistrationLink}&tab={!r}&Visib=Private" target="_blank"> <button type="button">Click</button></a>
+    </div>
+     <!-------------Embed link button expand collapse content---------->
+     <!---------> 
+  <div class="green_bgbtn left togglebtn2" style="  margin-left: 10px; margin-top: 22px;">
+   <i class="fa fa-code" style="font-weight:700;"></i> Embed Link
+  </div>
+ <!--close of green_bgbtn------>
+
+       <div class="contentexp clear" style="display:none;">
+          <div class="embed-div cf left" style="width:83%;">
+
+  <apex:outputPanel rendered="{!if(key==r,true,false)}">
+ <input type="text" id="iframevalue"   value="{!fm}" style="width:84.7333%;word-wrap: break-word;word-break: break-word;height: 80px;"/>
+</apex:outputPanel>
+
+    <button type="button" class="ctrlc" title="Select and Copy by clicking CTRL+A" >CTRL+A</button>
+  </div>
+  <div class="clear"></div>
+  <p class="notemsg_red" style="">*Note: Copy and paste the above code into an HTML page on your website</p>                  
+       </div><!--close of contentexp------>
+  <!----------------//end of Embed Button expand collapse content---->  
+  </div><!--end of repeat---->  
+ <div class="clear"></div>
+    <!------------> 
+       </apex:repeat>
+       </apex:repeat>
+       </apex:repeat>
+      </div><!--close of shadow-div-->
+      </apex:outputPanel> 
+     <!-------------------------All tabs section------------------------> 
+      </apex:outputpanel>
+
+       <!-------------------------End of All tabs section------------------------> 
+                <!------------------------------------End of Embed Link--------------------------------------------->
+          </div><!--close of tab2 tabbedpanelscontent-->
+                  <!--------------------End of 2nd content------------------>
+                    <!--------------------start of 3rd content------------------>
+                 <div class="TabbedPanelsContent" style="padding:5px;" > 
+                <!---------->
+                   <!---------------------------------------------------------->
+                  <apex:outputpanel rendered="{!alltickets}">
+                <!-------------------------All Link section---------------------------> 
+     <div class="shadow-div">
+   
+    <p class="padding-5px bg-font"><span> <i class="fa fa-link">&nbsp;&nbsp;</i></span>Link to this form on your website or Embed this form on your website</p><!--close of black-title-->
+    
+     <div class="embed-div cf left" style="width:83%;">
+ <div  style="width:84.9555%;height: 80px;">
+ <p>   
+ <a class="a_underline" href="{!RegistrationLink}&Visib=Public~Private" target="_blank" style="white-space: pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;height: 80px;">{!RegistrationLink}&amp;Visib&#61;Public~Private</a></p>
+ </div>
+ <a class="a_underline" href="{!RegistrationLink}&Visib=Public~Private" target="_blank" > <button type="button">Click</button></a>
+</div>
+ <!-------------Embed link button expand collapse content---------->
+   <!---------> 
+  <div class="green_bgbtn left togglebtn2" style="  margin-left: 10px; margin-top: 22px;">
+   <i class="fa fa-code" style="font-weight:700;"></i> Embed Link
+  </div>
+ <!--close of green_bgbtn------>
+           <div class="contentexp clear" style=" display:none;">
+          <div class="embed-div cf left" style="width:83%;">
+         <input type="text" id="iframevalue"   value="{!alliframes}" style="width:84.733%;word-wrap: break-word;word-break: break-word;height: 80px;"/>
+        <button type="button" class="ctrlcAll" title="Select and Copy by clicking CTRL+A" >CTRL+A</button>
+      </div>
+  <div class="clear"></div>
+  <p class="notemsg_red" style="">*Note: Copy and paste the above code into an HTML page on your website</p>                  
+       </div><!--close of contentexp------>
+  <!----------------//end of Embed Button expand collapse content---->    
+    <div class="clear"></div>    
+    </div><!--close of shadow-div-->
+     <!-------------------------End of All Link section-------------------->
+
+      <!-------------------------All Tabs section---------------------------> 
+     <apex:outputPanel rendered="{!if(reg.size>0,true,false)}">
+     <div class="shadow-div">
+     <p class="padding-5px bg-font"><span> <i class="fa fa-link">&nbsp;&nbsp;</i></span>Link to this Tab on your website or Embed this Tab on your website</p><!--close of black-title-->
+     
+    <apex:repeat value="{!reg}" var="r">
+    <apex:repeat value="{!allframe}" var="key">
+     <apex:repeat value="{!privframe[key]}" var="fm" rendered="{!if(key==r,true,false)}">
+    <!------------>
+    <div><!--repeat---->
+   <p class="labeltitles clear tabstitle">
+   <apex:outputText value="{!key}" rendered="{!if(key==r,true,false)}"/>
+   </p> 
+      <div class="embed-div cf left" style="width:83%;">
+     <div  style="width:84.9555%;height: 80px;">
+     <p>
+     <a class="a_underline" href="{!RegistrationLink}&tab={!r}&Visib=Public~Private"  target="_blank" style="white-space: pre-wrap;white-space: -moz-pre-wrap;white-space: -pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;height: 80px;">{!RegistrationLink}&amp;tab&#61;{!r}&amp;Visib&#61;Public~Private</a></p>
+     </div>
+       <a href="{!RegistrationLink}&tab={!r}&Visib=Public~Private" target="_blank"> <button type="button">Click</button></a>
+    </div>
+     <!-------------Embed link button expand collapse content---------->
+     <!---------> 
+  <div class="green_bgbtn left togglebtn2" style="  margin-left: 10px; margin-top: 22px;">
+   <i class="fa fa-code" style="font-weight:700;"></i> Embed Link
+  </div>
+ <!--close of green_bgbtn------>
+
+       <div class="contentexp clear" style="display:none;">
+          <div class="embed-div cf left" style="width:83%;">
+
+  <apex:outputPanel rendered="{!if(key==r,true,false)}">
+ <input type="text" id="iframevalue"  value="{!fm}" style="width:84.7333%;word-wrap: break-word;word-break: break-word;height: 80px;"/>
+</apex:outputPanel>
+
+    <button type="button" class="ctrlc" title="Select and Copy by clicking CTRL+A" >CTRL+A</button>
+  </div>
+  <div class="clear"></div>
+  <p class="notemsg_red" style="">*Note: Copy and paste the above code into an HTML page on your website</p>                  
+       </div><!--close of contentexp------>
+  <!----------------//end of Embed Button expand collapse content---->  
+  </div><!--end of repeat---->  
+ <div class="clear"></div>
+    <!------------> 
+       </apex:repeat>
+       </apex:repeat>
+       </apex:repeat>
+      </div><!--close of shadow-div-->
+      </apex:outputPanel>
+     <!-------------------------All tabs section------------------------> 
+      </apex:outputpanel>
+       <!-------------------------End of All tabs section------------------------> 
+                <!------------------------------------End of Embed Link--------------------------------------------->
+                <!----------->
+                 </div><!--close of tab3 tabbedpanelscontent-->
+                  <!--------------------End of 3rd content------------------>
+                </div><!--close of TabbedPanelsContentGroup-->
+                </div><!--close of tabbedpanelsgroup1--> 
+           <!-------------------> 
+             </div><!--close of grid-1------------->
+        </div><!-----close of form-embed-div---->
+        </div><!--close of form-content-div------>
+        <div class="clear"></div>
+          
+  <!-----------------end of template section code----------->
+    </c:ed_basictemplate>
+  <!---End of basictemlate component------------->
+   <!------------//common js libraries component------------>
+  <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+<!--Intializing  tab function---->
+<script type="text/javascript">
+/// function for select of iframe value on click of ctrl-c btn///
+    $(document).ready(function(){
+    
+    if('{!onlinepayment}'=='true')
+    Alert.render('Please set online payment from payment setting screen','Information','OK');
+    
+     $('.ctrlcAll').click(function(){
+                    /*$(this).next('#login-content').slideToggle();
+                    $(this).toggleClass('active');  */  
+                    $(this).parent().children().focus();    
+                    $(this).parent().children().select();
+                    
+                    })
+    
+    
+                $('.ctrlc').click(function(){
+                    /*$(this).next('#login-content').slideToggle();
+                    $(this).toggleClass('active');  */  
+                    $(this).parent().children().children().focus();    
+                    $(this).parent().children().children().select();
+                    
+                    })
+    });
+
+        var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1",{ defaultTab:0 });
+        
+</script>       
+<!----->
+</apex:page>

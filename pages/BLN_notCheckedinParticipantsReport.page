@@ -1,0 +1,109 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" cache="true"  controller="BLN_notCheckedinParticipantsReportCon" action="{!displayPermissions}" id="pgid" readOnly="true">
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/>
+    <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-ordersummary-report.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-checkinhistory-report.css')}" />
+    <!-----------//datatable stylescss------------->
+    <!-------------basic template html component------------------------------------->
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="copid">
+        <apex:form id="myForm">
+        <div style="display:inline-block; float: right;">
+            <apex:commandLink styleClass="datatables_btn" action="{!userSelectPerticularToExport}" >
+                <span>Export</span>
+            </apex:commandLink>
+            
+        </div>
+        <div class="datatable-wrapper">
+        <div class="top-stats"> 
+        <span class="right" style="text-align:right;">
+            <apex:selectList value="{!selectedTicketName}" size="1" multiselect="false" styleClass="selectlist-datatable"> 
+                <apex:selectOptions value="{!Ticketnamefilter}"/>
+                <apex:actionSupport event="onchange" reRender="myForm" action="{!filtermethod}" status="AjaxLoader"/>
+            </apex:selectList>
+            <apex:selectList value="{!selectedpaymentFilterType}" size="1" multiselect="false" styleClass="selectlist-datatable"> 
+               <apex:selectOptions value="{!paymentfilterTypes}"/>
+               <apex:actionSupport event="onchange" action="{!filtermethod}" reRender="myForm" status="AjaxLoader"/>
+           </apex:selectList>
+        </span>
+        </div>
+        <table id="example" class="display" >
+        <thead>
+            <tr>
+            <th width="18%">Name</th>
+            <th width="18%">Email</th>
+            <th width="18%">Company</th>
+            <th width="18%">Mobile Phone</th>
+            </tr>
+        </thead>  
+        <tbody >  
+            <apex:repeat value="{!innCls}" var="inn">
+            <tr>
+            <td  colspan="6"  class="grptd">
+            <ul class="grpheader">      
+            <li class="labeltitles">Name:</li>        
+            <li class="labeloutput">        
+            <apex:outputText >{!inn.GuestName.Item_Pool__r.Item_Pool_Name__c}</apex:outputtext>       
+            </li>       
+            </ul>
+            <table class="display checkin_rpttbl" width="100.1%">
+            <apex:repeat value="{!inn.tcinn}" var="tinn">
+            
+            <tr>
+                <td width="18%">{!tinn.tkt_profile__r.First_Name__c}&nbsp;{!tinn.tkt_profile__r.Last_Name__c}</td>
+                <td width="18%">{!tinn.tkt_profile__r.Email__c}</td>
+                <td width="18%">{!tinn.tkt_profile__r.TKT_Company__c}</td>
+                <td width="18%">{!tinn.tkt_profile__r.Mobile__c}</td>
+            </tr>
+            </apex:repeat>
+            </table>
+            </td>
+            </tr>
+            </apex:repeat>
+        </tbody >    
+        </table>
+        </div>
+
+        
+    
+    <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+    <c:ed_datatablejs ></c:ed_datatablejs>
+    
+    <script type="text/javascript" class="init">
+            var table;
+            var j = jQuery.noConflict();
+            j(document).ready(
+                function() {
+                    table = j('#example').DataTable( 
+                        {
+                          "pagingType" : "full_numbers",
+                          "aLengthMenu": [[ 5, 10, 25, 50], [5, 10, 25, 50]],
+                          "iDisplayLength": 10,
+                          "sDom": 'W<"clear">lfrtip', 
+    
+                          /**default orderid in asc sorting**/
+                          "order" : [ [ 0, "asc" ] ],
+                          "bSort": false,
+                          "bAutoWidth": false, // Disable the auto width calculation
+                          "bFilter": false,
+                          
+                        });
+                }
+            )
+            
+            function exporder(){
+            individualexport();
+            } 
+            
+           
+    </script>        
+    </apex:form>
+        
+    </c:ed_basictemplate>       
+</apex:page>

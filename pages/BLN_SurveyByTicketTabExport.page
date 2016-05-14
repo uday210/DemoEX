@@ -1,0 +1,77 @@
+<apex:page showHeader="false" cache="true" standardStylesheets="false" sidebar="false" controller="BLN_SurveyByTicketTabReportCon" action="{!surveyByTicketBatchTemplate}" contentType="application/vnd.ms-excel#SurveyByTicket.xls">
+ 
+   <!-- ================================================ Survey By Ticket Export Excel Start================================================== -->
+   <apex:outputPanel rendered="{!unsBatchList.size<=1000}"> 
+   <Table border="1">
+      <tr>
+         <td><b>Ticket Name</b></td>
+         <td><b>Email</b></td>
+         <td><b>Order Id</b></td>
+         <td><b>Ticket Id</b></td>
+         <td><b>Question</b></td>
+         <td><b>Answer</b></td>
+         <td><b>Answer Type</b></td>
+         <td><b>Level</b></td>
+         <td><b>Name</b></td>
+      </tr>
+      <apex:variable value="" var="questionCount"/> 
+      <apex:repeat value="{!unsBatchList}" var="usrA">
+      <apex:outputText rendered="{!usrA.Item_Question__r.Question__r.Answer_Type__c != 'Checkboxes'}"> 
+               <tr>
+                  <td>
+                     <apex:outputText value="Event Level" rendered="{!usrA.item_question__r.Question_Level__c== 'Event Level'}"/>
+                     <apex:outputText value="{!usrA.item_question__r.Item__r.item_name__c}" rendered="{!usrA.item_question__r.Item__c != Null}"/>
+                     <apex:outputText value="{!usrA.item_question__r.Item_Pool__r.Item_Pool_Name__c}" rendered="{!usrA.item_question__r.Item_Pool__c != Null}"/>
+                  </td>
+                  <td>{!usrA.ticket__r.tkt_profile__r.Email__c}</td>
+                  <td>{!usrA.ticket__r.order__r.name}</td>
+                  <td>{!usrA.ticket__r.name}</td>
+                  <td>{!usrA.item_question__r.Question__r.Question_Text__c}</td>
+                  <td>{!usrA.UAnswer_Text__c}</td>
+                  <td>{!usrA.item_question__r.Question__r.Answer_Type__c}</td>
+                  <td>{!usrA.item_question__r.Question_Level__c}</td>
+                  <td>{!usrA.ticket__r.tkt_profile__r.First_Name__c} {!usrA.ticket__r.tkt_profile__r.Last_Name__c}</td>
+               </tr>
+              </apex:outputText> 
+               
+               <apex:outputText rendered="{!(!Contains(questionCount,usrA.item_question__r.question__r.id))}">
+            <apex:variable value="{!(questionCount+usrA.item_question__r.question__r.id)}" var="questionCount"/>
+            <apex:outputText rendered="{!usrA.Item_Question__r.Question__r.Answer_Type__c != 'Checkboxes'}"> 
+            <tr>
+                <td>
+                     <apex:outputText value="Event Level" rendered="{!usrA.item_question__r.Question_Level__c== 'Event Level'}"/>
+                     <apex:outputText value="{!usrA.item_question__r.Item__r.item_name__c}" rendered="{!usrA.item_question__r.Item__c != Null}"/>
+                     <apex:outputText value="{!usrA.item_question__r.Item_Pool__r.Item_Pool_Name__c}" rendered="{!usrA.item_question__r.Item_Pool__c != Null}"/>
+                  </td>
+                    <td>{!usrA.ticket__r.tkt_profile__r.Email__c}</td>
+                  <td>{!usrA.ticket__r.order__r.name}</td>
+                  <td>{!usrA.ticket__r.name}</td>
+                  <td>{!usrA.item_question__r.Question__r.Question_Text__c}</td>
+                  <td>
+                 <apex:variable value="" var="resultitemcheckbox2"/>
+                    <apex:variable value="{!usrA.Item_Question__r.question__r.id}" var="QueId1"/>
+                    <apex:repeat value="{!unsBatchList}" var="ticket1">
+                        <apex:outputText rendered="{!IF((ticket1.Item_Question__r.question__r.id==QueId1 && ticket1.ticket__r.id==usrA.ticket__r.id),True,False)}">
+                            <apex:outputText rendered="{!ticket1.item_question__r.question__r.Answer_Type__c=='Checkboxes'}">
+                                <apex:variable value="{!IF(resultitemcheckbox2==Null,ticket1.UAnswer_Text__c,', '+ticket1.UAnswer_Text__c)}" var="resultitemcheckbox2" />
+                                <apex:outputText value="{!resultitemcheckbox2}"> </apex:outputText>
+                            </apex:outputText>
+                        </apex:outputText>
+                    </apex:repeat> 
+              </td>
+                  <td>{!usrA.item_question__r.Question__r.Answer_Type__c}</td>
+                  <td>{!usrA.item_question__r.Question_Level__c}</td>
+                  <td>{!usrA.ticket__r.tkt_profile__r.First_Name__c} {!usrA.ticket__r.tkt_profile__r.Last_Name__c}</td>
+              
+                 
+            </tr>
+            </apex:outputText> 
+        </apex:outputText> 
+      </apex:repeat>
+   </Table>
+   </apex:outputPanel>
+   <!-- ================================================ Survey By Ticket Export Excel End================================================== -->            
+   <apex:outputPanel rendered="{!unsBatchList.size>1000}"> 
+       Please check your eamil
+   </apex:outputPanel>
+</apex:page>

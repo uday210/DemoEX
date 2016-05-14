@@ -1,0 +1,59 @@
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" controller="BLN_TicketSalesReportCon" action="{!exportselected}" contentType="application/vnd.ms-excel#TicketDetailReport.xls"><apex:pageBlock >
+<apex:outputpanel rendered="{!exportTickets1.size<=1000}">
+<table border="1">
+  <tr>
+    <th>Ticket Number</th>
+    <th>Ticket Name</th>
+    <th>Order ID</th>
+    <th>Ticket Type</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Email</th>
+    <th>Title</th>
+    <th>Company</th>
+    <th>Status</th>
+    <th>Sale Date</th>
+    <th>Badge Status</th>
+  </tr>
+ 
+  <apex:repeat value="{!exportTickets1}" var="ticket">
+
+      <tr>
+        <td>{!ticket.Name}</td>
+        <td> {!ticket.Item_pool__r.Item_Pool_Name__c} </td>                    
+        <td>{!ticket.Order__r.Name}</td>
+        <td>
+        
+        <apex:repeat value="{!RegList}" var="r">        
+        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Attendee' && ticket.Item_type__r.Name=='Admissions')}"/>
+        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Exhibitor' && ticket.Item_type__r.Name=='Exhibitor')}"/>
+        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Sponsor' && ticket.Item_type__r.Name=='Sponsor')}"/>
+        <apex:outputText value="{!r.Label_Name__c}" rendered="{!(r.Column_Name__c=='Speaker' && ticket.Item_type__r.Name=='Speaker')}"/>      
+        </apex:repeat> 
+       <apex:outputText value="{!ticket.Item_type__r.Name}" rendered="{!(ticket.Item_type__r.Name!='Admissions' && ticket.Item_type__r.Name!='Exhibitor' && ticket.Item_type__r.Name!='Sponsor' && ticket.Item_type__r.Name!='Speaker')}"/>
+     
+        
+        </td>                    
+        <td>{!ticket.tkt_Profile__r.First_Name__c}</td>
+        <td>{!ticket.tkt_Profile__r.Last_Name__c}</td>
+        <td>{!ticket.tkt_Profile__r.Email__c}</td>
+        <td>{!ticket.tkt_Profile__r.TKT_Job_Title__c}</td>
+        <td>{!ticket.tkt_Profile__r.TKT_Company__c}</td>
+        <td>{!ticket.Ticket_Status__c}</td>
+        <td><c:EV_FormatDt date_Timevalue="{!ticket.Order__r.CreatedDate}" t_Zone="{!seventdet.Time_Zone__c}"></c:EV_FormatDt> 
+        <!-- <c:MFSI_FormatDateTime date_Timevalue="{!ticket.Order__r.CreatedDate}" />--></td> 
+        <td>{!ticket.Item_Pool__r.Badgable__c}</td>
+      </tr>
+
+
+  </apex:repeat>
+ 
+</table>
+</apex:outputpanel>
+
+<apex:outputpanel rendered="{!exportTickets1.size>1000}">
+Please Check your Email
+</apex:outputpanel> 
+
+</apex:pageBlock>
+</apex:page>

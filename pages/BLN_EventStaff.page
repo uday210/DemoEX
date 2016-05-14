@@ -1,0 +1,297 @@
+<apex:page controller="BLN_EventstaffCon" showHeader="false" sidebar="false" standardStylesheets="false" id="thePage">
+  
+  <c:ed_commonstyles ></c:ed_commonstyles>
+  
+  <!-- <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/style.css')}"/> 
+      <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/style-button.css')}"/>
+      <apex:stylesheet value="{!URLFOR($Resource.Promocodes, 'promocodes/css/nwbuttons.css')}"/>-->
+     <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+
+       <!--<script type="text/javascript" src="{!URLFOR($Resource.Promocodes, 'promocodes/js/jquery.min.js')}"></script>-->
+      <!-- <script type="text/javascript" src="{!URLFOR($Resource.Promocodes, 'promocodes/js/jquery-ui-1.8.16.custom.min.js')}"></script>-->
+       <!--<script type="text/javascript" src="{!URLFOR($Resource.Promocodes, 'promocodes/js/functions.js')}"></script>-->
+      <!--<script type="text/javascript" src="{!URLFOR($Resource.draganddropjs, 'tablednd.js')}"></script>--->
+      
+      
+<script>
+
+function validateUser(){
+    
+
+    var fn=document.getElementById('{!$Component.thePage:j_id7:commoncomponent:displaytableid:FName}');
+    var ln=document.getElementById('{!$Component.thePage:j_id7:commoncomponent:displaytableid:LName}');
+    var em=document.getElementById('{!$Component.thePage:j_id7:commoncomponent:displaytableid:UEmail}');
+    var phn=document.getElementById('{!$Component.thePage:j_id7:commoncomponent:displaytableid:UPhone}');
+        
+    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+    if(fn.value == "" ) {
+        alert('Please Enter First Name');
+        return false;
+    }
+    
+    if(ln.value == "" ) {
+        alert('Please Enter Last Name');
+        return false;
+    }
+    
+    if(em.value == "" ) {
+        alert('Please Enter Email Id');
+        return false;
+    } else if (!filter.test(em.value)) {
+        alert('Please provide a valid Email Id');
+        em.focus();
+        return false;
+    } 
+     
+    if(phn.value != ""){
+       if( validatePhoneNumber(phn.value)== false){
+           alert(' Please provide valid 10 digit phone number');
+           phn.focus();
+           return false;
+       }
+    } 
+    
+   
+}
+
+  function validatePhoneNumber(elementValue)
+    {  
+        var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
+        return phoneNumberPattern.test(elementValue);  
+    }
+</script>
+
+   <c:ed_basictemplate BLN_UtillDisplayLinks="{!Eventstaff}">
+    
+     
+     
+<div id="surveytablediv">
+ <apex:form id="displaytableid" >   
+ 
+          
+ 
+ 
+  <apex:outputPanel rendered="{!Displaystaff}">
+         <div class="grid-1"  >
+          <div class="title-grid-selectevent" style=""></div>
+
+      
+            <div class="content-gird-selectevents" style="">
+      
+    
+     <!--Add survey questions Button-->
+     <apex:commandButton action="{!AddStaff}"  value="Add Event Staff"  Styleclass="button-a blue" style="height:32px; float:right; margin-bottom:5px; " />   
+                 </div><!--close of content-grid-->
+                 </div><!--title-grid-->
+        
+        <!--Statistic-->
+        <div class="grid-1"  >
+        
+
+     <!--survey questions table-->
+          
+          
+          
+           
+             <table id="surveytable"  class="display" >
+              <thead>
+                <tr >
+                  <!--- <th width ="2%" ></th>--->
+                   <th width="20%" >Name</th>
+                  <th width="27%" >Email</th>
+                  <th width="25%">Company </th>
+                  <th width="15%">Role</th>
+                  
+                  <th width="10%" >Action</th>
+                 
+                </tr>
+              </thead>
+              <tbody>
+              <apex:variable var="listcou" value="{!0}" id="listcountid"/>
+                <apex:repeat value="{!StaffToDisp}" var="x">
+                 <apex:variable var="listcou" value="{!listcou+1}"/>
+                 <tr>
+                 <td><apex:outputText value="{!x.GN_User__r.First_Name__c}"/></td>
+                 <td class="name"><apex:outputText value="{!x.GN_User__r.Last_Name__c}"/></td>
+              <!--  <td class="name"><apex:outputText value="{!x.GN_User__r.Company_Name__c}"/></td>-->
+               <td class="name"><apex:outputText value="{!x.Company__r.Name}"/></td> 
+               
+                <td class="name"><apex:outputText value="{!x.RoleId__r.Name}"/></td>
+               <td class="name"> <apex:commandLink action="{!editstaff}" >
+               <apex:image url="{!URLFOR($Resource.Promocodes, 'promocodes/images/edit-1.png')}" />
+               <apex:param value="{!x.id}" name="UCID"/>
+               </apex:commandLink></td>
+                  </tr>
+             </apex:repeat>
+          
+              </tbody>
+            </table>
+            </div><!--close of grid1-->
+             </apex:outputPanel>
+             <apex:outputPanel rendered="{!Addstaffbool}">
+             
+                  <div id="addeventstaff">
+                
+         <div class="grid-1"  >
+          <div class="title-grid-selectevent" style=""></div>
+
+    
+            <div class="content-gird-selectevents" style="">
+
+     <!--Add survey questions Button-->
+           
+            <apex:outputLink value="/apex/BLN_Eventstaff" styleClass="button-a blue" style="height:32px; float:right; margin-bottom:5px; ">
+           <span> Event Staff </span></apex:outputLink>
+                 </div><!--close of content-grid-->
+                 </div><!--title-grid-->
+        <div class="grid-1"  >
+         <!-- <div class="title-grid">Add Event Admin Staff</div>-->
+
+     
+            <div class="content-gird" style="border:none;" >
+            
+            <div class="form" >
+           
+   
+               
+               <div id="left-form" style=" margin-left:25%; margin-top:10px; width:49%; padding-bottom:20px;  border:0px #000000 solid; float:left">
+              
+               <div class="elem">
+                  <label>First Name: </label><label id="mandatory">*</label>    
+                  <div class="indent">
+                  <apex:inputField value="{!Us.FirstName}" styleClass="medium" id="FName"/>
+                    
+                  </div>   
+                  </div>
+                
+                 <div class="elem">
+                  <label>Last Name: </label><label id="mandatory">*</label>
+                  <div class="indent">
+                     <apex:inputField value="{!Us.LastName}" styleClass="medium" id="LName"/>
+                  </div>
+                  </div>
+                
+              
+                   <div class="elem">
+                  <label>Email:</label><label id="mandatory">*</label>
+                  <div class="indent">
+                     <apex:inputField value="{!Us.Email}" styleClass="medium" id="UEmail"/>
+                  </div>
+                </div>  
+                
+                <div class="elem">
+                  <label>Company: </label>
+                  <div class="indent">
+                     <apex:inputField value="{!Companyrec.Name}" styleClass="medium"/>
+                  </div>
+                 </div>
+                  
+                 <!-- <div class="elem">
+                  <label>Phone Number: </label>
+                  <div class="indent">
+                    <apex:inputField value="{!Us.Phone}" styleClass="medium" id="UPhone"/>
+                  </div>
+                  </div> 
+                  
+                   <div class="elem">
+                  <label>Role: </label><label id="mandatory">*</label>
+                  <div class="indent">
+                   <apex:selectList value="{!selectedrole}" multiselect="false" size="1" >
+                   <apex:selectOptions value="{!roles}"></apex:selectoptions>
+                   </apex:selectList>
+
+                  
+                  </div>
+                  </div> -->
+                   <div class="elem">
+                  <label>Select Item : </label><label id="mandatory">*</label>
+                   <div class="indent">
+                   <apex:selectList value="{!selectedItem }" multiselect="false" size="1" >
+                   <apex:selectOptions value="{!Itemsoptions}"></apex:selectoptions>
+                   </apex:selectList>
+
+                  
+                  </div>
+                  </div>
+                    
+                <br/>
+                
+                 <div class="indent">
+                  <!--   <input id="send" name="send" type="submit" class="button-a gray" value="Save">-->
+                      
+                      <apex:commandButton value="Save" action="{!saveStaff}" styleClass="button-a blue" /> <!-- onclick="return validateUser();" -->
+                     
+                    &nbsp;&nbsp;
+                    <apex:commandButton action="{!cancel}" styleClass="button-a dark-blue" value="Cancel" immediate="true"/>
+                    
+                  </div>
+                
+               
+                </div><!--close of left-form-->
+                
+                <div class="right-form"  style=" width:0%; padding-bottom:20px; margin-top:15px;  border:0px #000000 solid; float:right">
+                 <br/>
+                    
+                  </div><!--close of right-form-->
+                  
+               
+         
+              <div class="clear"> </div>
+            </div>
+          </div>
+          <!--------------------------------------------------------------------------------->
+          
+          
+            
+            
+            
+           
+            
+    <div class="clear"></div>
+         
+        </div>
+         <!---------------End of Event Staff----------------->
+       </div><!--close of addeventstaff-->
+             
+             
+             
+             </apex:outputPanel>
+          <apex:actionFunction action="{!}" name="rendereditquestion" reRender="displaytableid,queformid,createquestionid,errorbboolid">
+                  <apex:param value="" name="editquid"/>
+        </apex:actionFunction>   
+             
+             
+        <!---  <apex:actionFunction action="{!updatequestion}" name="questionorder" reRender="displaytableid,queformid,createquestionid,errorbboolid">
+                  <apex:param value="" name="questionorder"/>
+        </apex:actionFunction>   --->
+           
+      </apex:form>
+             </div>
+        <!--close of survey table-->
+
+
+
+
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     </c:ed_basictemplate>
+     <c:ed_commonjs ></c:ed_commonjs>
+</apex:page>

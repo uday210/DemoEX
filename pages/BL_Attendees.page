@@ -1,0 +1,1449 @@
+<apex:page showHeader="false" controller="BL_AttendeesCon" action="{!login}" standardStylesheets="false" id="attendee">
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+ <title>Boothleads</title> 
+ <!--
+<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.0.7-gpl/ext-all.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.0.7-gpl/resources/css/ext-all.css"/> 
+
+<link rel="Stylesheet" type="text/css" href="{!$Resource.extjs4_5}/extjs4_5/resources/css/ext-all.css"/>
+<script type="text/javascript" src="{!$Resource.extjs4_1}/extjs4_1/ext-all.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_3/examples/ux/data/PagingMemoryProxy.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_3/examples/ux/ProgressBarPager.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_2/examples/grid-plugins.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_2/examples/paging.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_3}/extjs4_3/examples/ux/CheckColumn.js"></script>
+<script type="text/javascript" src="{!$Resource.extjs4_5}/extjs4_5/src/selection/CheckboxModel.js"></script>
+<link rel="Stylesheet" type="text/css" href="{!$Resource.extjs4_3}/extjs4_3/examples/ux/grid/css/GridFilters.css"/>
+-->
+<!-- load ExtJS -->
+<apex:stylesheet value="{!$Resource.ExtJS4}/resources/css/ext-all.css" />
+<apex:includeScript value="{!$Resource.ExtJS4}/ext-all.js"/>  
+<apex:includeScript value="{!$Resource.ExtJS4}/resources/Direct.js"/>  
+<apex:includeScript value="{!$Resource.ExtJS4}/resources/PagingMemoryProxy.js"/>  
+<!-- <apex:includeScript value="{!$Resource.ExtJS4}/resources/PagingSelectionPersistence.js"/>  --> 
+
+ <script type="text/javascript">
+   
+function blank(a) { if(a.value == a.defaultValue) a.value = ""; }
+function unblank(a) { if(a.value == "") a.value = a.defaultValue; }</script>
+<style>
+x-grid3-hd-inner x-grid3-hd-GlobalNestEM__Event_Title__c
+{
+background-color: #FFFFFF;
+}
+</style>
+<script>
+ function submitform()
+ {
+  var toemail = document.getElementById('{!$Component.attendee:BVSform:toemail}').value;
+  
+ var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+   
+if(toemail!=""&& toemail.match(mailformat)){
+return true;
+}
+else{
+alert('Please Enter valid Email address');
+return false;
+}
+ }
+</script>
+
+<!-- Start: page-top-outer -->
+<div id="page-top-outer">    
+
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    <div id="logo">
+   
+      
+    </div>
+    <!-- end logo -->
+    
+    <!--  start top-search -->
+    <div id="top-search">
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+        <td class="welcome"> 
+         Welcome  :
+                   <span class="username"> {!$User.Firstname}&nbsp;{!$User.Lastname}    </span>
+        
+        <!--<apex:area/>inputText value="{!searchstr}" styleClass="top-search-inp" />-->  </td>
+        
+        
+        
+        </tr>
+        </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+        <div id="nav-right">
+        
+          
+           <!----LOGOUT ACTION -->
+           <div class="nav">
+        <div class="table">
+        
+       <apex:form >
+        
+       
+        <div class="nav-divider">&nbsp;</div>
+        
+     <!--  <apex:commandLink action="{!profileaction}"  style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:commandLink> -->
+      <apex:outputLink value="Bl_Profile?url=Bl_attendees"  style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile </apex:outputLink>
+      
+       <div class="nav-divider">&nbsp;</div>
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+        </apex:form>
+
+            </div></div>
+           
+           <!----LOGOUT ACTION END--->
+           
+           
+            <div class="clear">&nbsp;</div>
+        
+            <!--  start account-content --> 
+            <div class="account-content">
+            <div class="account-drop-inner">
+                <a href="" id="acc-settings">Settings</a>
+                
+                <a href="" id="acc-stats">Statistics</a> 
+            </div>
+            </div>
+            <!--  end account-content -->
+        
+        </div>
+        <!-- end nav-right -->
+
+
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">
+        <apex:outputPanel rendered="{!booleanforDisplayBoothadminTab}">
+        <ul class="select"><li>
+        <apex:form >
+       <!--  <apex:commandLink action="{!Dashboard}"><b>Dashboard</b></apex:commandLink> -->
+       
+        <apex:outputLink value="BL_BoothAdmin_Dashboard"><b>Dashboard</b> </apex:outputLink>
+        </apex:form>
+       
+        </li>
+        </ul>  
+    
+         </apex:outputPanel> 
+        
+        
+      
+       
+        
+        <div class="nav-divider">&nbsp;</div>
+                            
+        <ul class="select"><li>
+        <apex:form >
+          <apex:outputLink value="BL_Eventadmin_events"><b>Events</b> </apex:outputLink>
+      <!--  <apex:commandLink action="{!EventAction}"><b>Events</b></apex:commandLink> -->
+        </apex:form>
+      
+        </li>
+        </ul>
+        
+        
+        
+        <div class="nav-divider">&nbsp;</div>
+        <apex:outputPanel rendered="{!booleanforDisplayBoothadminTab}">
+        <ul class="select"><li>
+        <apex:form >
+          <apex:outputLink value="BL_boothpersonnels"><b>Booth Users</b> </apex:outputLink>
+       <!-- <apex:commandlink action="{!Customeraction}"><b>Booth Users</b></apex:commandlink> -->
+        </apex:form>
+       
+        </li>
+        </ul>
+        <div class="nav-divider">&nbsp;</div>
+         </apex:outputPanel> 
+        <ul class="current"><li>
+        <apex:form >
+          <apex:outputLink value="Bl_attendees"><b>Leads </b> </apex:outputLink>
+       <!-- <apex:commandLink action="{!AttendeesAction}" ><b>Leads </b> </apex:commandLink> -->
+        </apex:form>
+       
+        </li>
+        </ul>
+        
+        
+        
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li>
+       <apex:form > <!--<apex:commandlink action="{!Reportsaction}"><b>Reports</b></apex:commandlink> -->
+         <apex:outputLink value="Bl_Reports"><b>Reports</b> </apex:outputLink>
+        </apex:form>
+        
+        </li>
+        </ul>
+        
+       <div class="nav-divider">&nbsp;</div>
+         <apex:outputPanel rendered="{!booleanforDisplayBoothadminTab}">
+        <ul class="select"><li>
+        <apex:form >
+         <apex:outputLink value="BL_BoothQr"><b>Booth Qrcodes</b> </apex:outputLink>
+       <!-- <apex:commandlink action="{!boothaction}"><b>Booth Qrcodes</b></apex:commandlink> -->
+        </apex:form>
+       
+        </li>
+        </ul>  
+         <div class="nav-divider">&nbsp;</div>
+         </apex:outputPanel> 
+        
+        
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <!--  start nav -->
+        
+
+</div>
+
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................................................... END -->
+
+               
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+<div id="content">
+    <!--  start page-heading -->
+    <div id="page-heading">
+    <apex:form >
+  <table width="98%">
+  <tr><td width="30%" align="left" style="padding-left:10px;">
+    
+    <apex:outputText value="Events:    " style="font-weight:BOLD; Font-color:#RR0000;"></apex:outputText>  
+      <apex:selectList value="{!eventSelected}" multiselect="false" size="1" style="width:180px;">
+       <apex:selectOptions value="{!selectEvents}"/>
+      <apex:actionSupport action="{!getEvents}" event="onchange" reRender="frm2,pagemesageerror"/>
+      </apex:selectList></td> <td width="40%" style="color:red;font-weight:bold;"><apex:pageMessages id="pagemesageerror" /></td>
+      
+      <td width="30%" align="right" style="padding-right:10px;"> <apex:inputText value="{!searchString}" style="color:#6D7B8D;font-size:17px;" onfocus="blank(this)" onblur="unblank(this)" size="20"/> 
+      &nbsp;&nbsp; <apex:commandButton value="Go" action="{!search}" styleClass="awesome" reRender="frm2,pagemesageerror"/>
+       </td>
+    </tr></table> </apex:form>
+     
+                                  
+        
+    </div>
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">
+        
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt="" /></th>
+        <th class="topleft"></th>
+        <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        <!--  start content-table-inner ...................................................................... START -->
+        <div id="content-table-inner">
+        
+            <!--  start table-content  -->
+            <div id="table-content">
+
+    <style>
+    .reply-text {
+    /*margin:15px  !important;
+    white-space:pre-wrap !important;
+    display:inline-block;
+    */
+}
+</style>
+    
+      
+        
+    
+<apex:form id="frm2">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr align="right"><td  align="left">
+<apex:repeat value="{!strAlfhabets}" var="e">&nbsp;
+<apex:commandLink value="{!e}" action="{!valuesOfeventswithselectedvalue}" style="color:blue;" reRender="frm2,pagemesageerror">
+ <apex:param value="{!e}" name="valu" />
+</apex:commandLink>&nbsp; |
+
+</apex:repeat>
+</td><td align="right" valign="top" style="margin-bottom:3px;"> 
+<apex:commandButton value="Export" onclick="functioncall();" action="{!seltoexport}" styleClass="awesome" />&nbsp;
+<apex:commandButton value="Forward Leads" onclick="functioncall();" action="{!EmailCsv}" styleClass="awesome"/><div style="height:5px;"></div>
+</td></tr>
+
+
+</table>
+   <script>
+    
+        var hdneventName;
+        var recordId2; 
+    function functioncall()
+    {  
+     hdneventName.value=temp;    
+    }
+         function ModalPopupsCustom1() 
+        {     
+            ModalPopups.Custom('idCustom1','Update Current Status Details',    
+                '<div style=\'padding: 25px;\'>' +    
+                '<table>' +
+                '<tr height=\'20\'><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td><font color=\'red\'>*</font>=Required</td></tr>' +
+                '<tr height=\'20\'><td></td><td></td></tr>' +   
+                
+                '<tr height=\'20\'><td></td><td></td></tr>' +
+                '</table>' +    
+                '</div>',    
+                 {   
+                  width: 650,   
+                  buttons:'ok,cancel',    
+                  okButtonText: 'Save',   
+                  cancelButtonText: 'Cancel',   
+                  onOk: 'ModalPopupsCustom1Save()',   
+                  onCancel: 'ModalPopupsCustom1Cancel()'  
+                 }   
+                ); 
+               
+        }
+         
+    
+</script>
+        
+       
+<script>
+var temp= new Array();
+</script>  
+        
+<script type="text/javascript"> 
+// -------------------------------------------- ExtJS Grid Start ---------------------------------------------------      
+
+Ext.define('Ext.ux.grid.plugin.PagingSelectionPersistence', {
+alias: 'plugin.pagingselectpersist',
+extend: 'Ext.AbstractPlugin',
+pluginId: 'pagingSelectionPersistence',
+
+//array of selected records
+selection: [],
+//hash map of record id to selected state
+selected: {},
+    
+init: function(grid) {
+ 
+ this.grid = grid;
+ this.selModel = this.grid.getSelectionModel();
+ this.isCheckboxModel = (this.selModel.$className == 'Ext.selection.CheckboxModel');
+ this.origOnHeaderClick = this.selModel.onHeaderClick;
+ this.bindListeners();
+},
+
+
+destroy: function() {
+ this.selection = [];
+ this.selected = {};
+ this.disable();
+},
+
+enable: function() {
+ var me = this;
+ if(this.disabled && this.grid) {
+  this.grid.getView().on('refresh', this.onViewRefresh, this);
+  this.selModel.on('select', this.onRowSelect, this);
+  this.selModel.on('deselect', this.onRowDeselect, this);
+  if(this.isCheckboxModel) {
+   this.selModel.onHeaderClick = function(headerCt, header, e) {
+   var isChecked = header.el.hasCls(Ext.baseCSSPrefix + 'grid-hd-checker-on');
+   me.origOnHeaderClick.apply(this, arguments);        
+   if(isChecked) {
+    me.onDeselectPage();
+   }
+   else {
+    me.onSelectPage();
+    }
+   };
+  }
+ }
+ this.callParent();
+},
+    
+disable: function() {
+ if(this.grid) {
+  this.grid.getView().un('refresh', this.onViewRefresh, this);
+  this.selModel.un('select', this.onRowSelect, this);
+  this.selModel.un('deselect', this.onRowDeselect, this);
+  this.selModel.onHeaderClick = this.origOnHeaderClick;
+ }
+ this.callParent();
+},
+
+
+bindListeners: function() {
+ var disabled = this.disabled;
+ this.disable();
+ if(!disabled) {
+  this.enable();
+ }
+},
+
+   
+onViewRefresh : function(view, eOpts) {
+ var store = this.grid.getStore(),
+ sel = [],
+ hdSelectState,
+ rec,
+ i;
+ this.ignoreChanges = true;
+ for(i = store.getCount() - 1; i >= 0; i--) {
+  rec = store.getAt(i);
+  if(this.selected[rec.getId()]) {
+   sel.push(rec);
+  }
+ }
+ this.selModel.select(sel, false);
+
+ if(this.isCheckboxModel) {
+  hdSelectState = (this.selModel.selected.getCount() === this.grid.getStore().getCount());
+  this.selModel.toggleUiHeader(hdSelectState);
+ }
+ this.ignoreChanges = false;
+},
+    
+onRowSelect: function(sm, rec, idx, eOpts) {
+ if(this.ignoreChanges === true) {
+  return;
+ }
+ if(!this.selected[rec.getId()]) 
+ {  
+  this.selection.push(rec);
+  this.selected[rec.getId()] = true;
+ }
+  var r = grid.getSelectionModel().getSelection();  
+  var results=new Array();
+   for(i=0; i<=r.length-1; i++){
+    var checkarray=r[i].get('id');   
+   }
+  temp.push(checkarray);
+},
+      
+onRowDeselect: function(sm, rec, idx, eOpts) {
+ var i; 
+ if(this.ignoreChanges === true) {
+  return;
+ }    
+ if(this.selected[rec.getId()])
+ {  
+  for(i = this.selection.length - 1; i >= 0; i--) {
+   if(this.selection[i].getId() == rec.getId()) {
+    this.selection.splice(i, 1);
+    this.selected[rec.getId()] = false;
+    break;
+   }
+  }
+ }
+ var r = grid.getSelectionModel().getSelection();  
+ var results=new Array();
+  for(i=0; i<=r.length-1; i++){
+   var checkarray=r[i].get('id');   
+  }
+ temp.pop(checkarray);
+},
+    
+onSelectPage: function(){ 
+ var sel = this.selModel.getSelection(),
+ selectedCheckboxLength= this.getPersistedSelection().length, 
+ i;
+ for(i = 0; i < sel.length; i++) {
+  selection1=this.onRowSelect(this.selModel, sel[i]); 
+ }
+ if(selectedCheckboxLength!== this.getPersistedSelection().length) {
+  this.selModel.fireEvent('selectionchange', this.selModel, [], {});
+ }
+ var results=new Array();
+ var r = grid.getSelectionModel().getSelection();   
+  for(i=0; i<=r.length-1; i++){  
+   var checkarray=r[i].get('id');  
+   temp.push(checkarray); 
+   temp.sort();
+   for ( var i = 1; i < temp.length; i++ ){
+    if ( temp[i] === temp[ i - 1 ] ) {
+     temp.splice( i--, 1 );
+    }  
+   }   
+  }  
+},
+   
+onDeselectPage: function() {
+ var store = this.grid.getStore(),
+ selectedCheckboxLength= this.getPersistedSelection().length,
+ i;
+    
+ for(i = store.getCount() - 1; i >= 0; i--) {
+  this.onRowDeselect(this.selModel, store.getAt(i));
+ }        
+ if(selectedCheckboxLength!== this.getPersistedSelection().length) {
+  this.selModel.fireEvent('selectionchange', this.selModel, [], {});
+ }
+ var results=new Array();
+ var r = grid.getSelectionModel().getSelection();  
+  for(i=0; i<=r.length-1; i++){  
+   var checkarray=r[i].get('id');  
+   temp.pop(checkarray);
+   // temp=results;
+  }
+},  
+    
+getPersistedSelection: function() {
+  return [].concat(this.selection);
+}, 
+   
+clearPersistedSelection: function(){ 
+    var changed = (this.selection.length > 0);   
+    this.selection = [];
+    this.selected = {};
+    this.onViewRefresh();    
+    if(changed) {
+     this.selModel.fireEvent('selectionchange', this.selModel, [], {});
+   }
+}
+
+});
+
+
+var grid, store;
+var GridTitle='Leads';   
+Ext.onReady(function(){
+
+ var myData1=new Array();
+
+<apex:repeat value="{!bvsList}" var="row1">   
+ <apex:repeat value="{!row1}" var="row"> 
+ 
+  var rowArray=new Array();
+  rowArray[0]=  '{!row.id}';
+                  
+  var sfName="{!row.BVS_FirstName__c} {!row.BVS_LastName__c}";
+  rowArray[1]= sfName.replace(/\'/g,'\'');
+         
+  var cName= "{!row.BVS_Company__c}";
+  rowArray[2]=cName.replace(/\'/g,'\'');  
+            
+  var fName ="{!row.BVS_Email__c}";
+  rowArray[3]=fName.replace(/\'/g,'\'');
+  
+  var comm ="{!row.User_id__r.Name}";
+  rowArray[4]=comm.replace(/\'/g,'\''); 
+              
+  var followup="{!row.BVS_FollowUps__c}";
+  rowArray[5]=followup.replace(/\'/g,'\''); 
+              
+  var note="{!row.BVS_Notes__c}";
+  rowArray[6]=note.replace(/\'/g,'\''); 
+           
+                        
+  var dummayvalue ="{!row.Dummy__c}"; 
+  if(dummayvalue!=''){
+    rowArray[7]="{!row.Dummy__c}"; 
+  }
+  else{
+   rowArray[7]="{!row.EA_AttendeeBarcode__r.AS_id__r.AS_ImageUrl__c}"; 
+  }
+            
+  rowArray[8]="<apex:outputText value="{0,date,MM/dd/yyyy hh:mm:ss a}">
+                <apex:param value="{!row.ScanTime__c}"/>
+               </apex:outputText>"; 
+            
+  myData1.push(rowArray); 
+       
+  </apex:repeat>    
+ </apex:repeat>  
+
+
+if(myData1.length<=0)
+{
+ GridTitle=GridTitle+' - <span style=\'padding-left:200px\'><font color=\'red\'>No Records Found</font></span>';
+ tSize=0;        
+}
+
+
+store = new Ext.data.SimpleStore({
+fields:[{name:'id'},{name:'FirstName'},{name:'Company'},{name:'Email'},{name:'ScanedByName'},{name:'followup'},{name:'note'},{name:'img'},{name:'scan'}],
+remoteSort: true,
+pageSize: 50,
+proxy: {
+ type: 'pagingmemory',
+ data: myData1,
+ reader: {
+  type: 'array'
+ }
+}
+});
+
+
+function openrender(value, p, r)
+{
+ return String.format('<a <href="#" onClick="selectOneCheckBox(\'{0}\')" style="color:blue;text-decoration:none;">{0}</a>',value, r.data.state, r.data.ptt, 'Open');
+}       
+
+grid = Ext.create('Ext.grid.Panel',{
+store: store, 
+selModel: Ext.create('Ext.selection.CheckboxModel'),
+plugins: [{ptype : 'pagingselectpersist'}],
+viewConfig: {
+id: 'gv',
+trackOver: true,
+stripeRows: true,
+loadMask: false
+}, 
+listeners:
+{
+afterrender: function (component)
+{
+component.down('#refresh').hide();
+}
+},        
+columns: [
+{header:'id', dataIndex: 'id',hidden:true },             
+{header:"<b>Image</b>",flex:1, dataIndex:'img',renderer: function(value,p,r){
+ if(value !=''){
+  if(value.indexOf('015O')!=-1){
+    return '<image src="/servlet/servlet.ImageServer?id='+value+'&oid=00DF0000000BpyH" height="30px" width="30px"/>';
+ }
+ else{
+  return '<image src="/servlet/servlet.FileDownload?file='+value+'" height="30px" width="30px"/>';
+ }
+ }else{
+   return '<image src="/servlet/servlet.ImageServer?id=015F0000001vD0t&oid=00DF0000000BpyH" height="30px" width="30px"/>';
+ }
+ }            
+}, 
+{   
+header:"<b>Name</b>",flex:2, dataIndex:'FirstName',
+ renderer: function(value,p,r){
+  return '<a href="#" onClick="deailpage(\''+ r.data['id']+'\')" style=\"color:blue;text-decoration:underline;\"> '+r.data['FirstName']+'</a>';
+ }
+}, 
+{header: "<b>Company</b>",flex:1.5, dataIndex: 'Company'},
+{
+header: "<b>E-Mail</b>",flex:2.5, dataIndex: 'Email',
+ renderer: function(value, p, r){
+  return '<a href="mailto:'+ r.data['Email'] +'" style=\"color:blue;text-decoration:underline;\"> '+r.data['Email'] +'</a>';
+ }
+},              
+{ header: "<b>Follow Up Type</b>",flex:2, dataIndex: 'followup'},    
+{ header: "<b>Notes</b>",flex:2, dataIndex: 'note'},
+{ header: "<b>Scanned By</b>",flex:2,  dataIndex: 'ScanedByName' }, 
+{ header: "<b>Scan Time</b>",flex:2, dataIndex: 'scan'},
+],
+height: 350, 
+width: '100%',
+title: GridTitle,
+stripeRows:true,
+bbar: new Ext.PagingToolbar({
+        store: store,
+        pageSize: 50,
+        displayInfo: true  
+})                         
+});
+grid.render('items-grid1');
+store.load();
+
+});
+// -------------------------------------- Grid End --------------------------------------
+      
+  
+  function selectOneCheckBox(selection1)
+  {
+   hdneventName.value=selection1;
+   getEventDetails(selection1);
+  }
+  
+  function deailpage(eventName)
+  {
+   hdneventName.value=eventName;
+   getEventDetails(eventName);
+  }
+  
+  function Email(eventName)
+  {
+   hdneventName.value=eventName;
+   EmailCsv(eventName); 
+  }
+    
+ </script>
+       
+
+ <div id="items-grid1"/>
+  
+  <apex:inputHidden value="{!eventName}" id="eventNameValue"/>
+
+  <apex:actionFunction action="{!getEventDetails}" name="getEventDetails"  reRender="BVSform"/>
+         
+  <script> 
+   hdneventName = document.getElementById("{!$Component.eventNameValue}");
+  </script>  
+        
+</apex:form>   
+    
+<!------------------------------- START Of BVS Detail and Transfer Leads Page------------------------->
+<!-------------------------------START of Booth Visit Summary Detail ---------------------------------->
+
+
+<apex:form id="BVSform">
+ <apex:outputPanel id="BVSdetail">
+<apex:outputPanel layout="block" styleClass="popupBackground"
+rendered="{!BVSDetail}" />
+<apex:outputPanel layout="block" styleClass="custPopup"
+rendered="{!BVSDetail}" style="width:95%">
+
+                   
+         <table style="border:0px solid #CCCCCC;" width="100%">
+      
+        <tr height="20px" bgcolor="#75b9fe">
+       
+         <td colspan="2">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+               <tr>
+                   <td  height="35" colspan="2" align="center" valign="middle" bgcolor="#75b9fe"><b style="color:#FFFFFF; font-size:16px;">Attendee Information</b></td>
+           
+                   <td align="right" width="35px;"> <apex:commandButton image="{!URLFOR($Resource.Close1)}" action="{!closePopup}"  rerender="tstpopup,BVSform" immediate="true" title="Close"/></td>
+               </tr>
+           </table>
+    </td>
+        
+        
+        </tr>
+        <tr >
+         <td style="padding-left:80px;" width="30%">
+         <apex:image value="/servlet/servlet.FileDownload?file={!attachmentIdOfImage}"   rendered="{!attachmentIdOfImage !=null }" style="max-width:150px;max-height:300px"/>
+        
+        <apex:image value="/servlet/servlet.ImageServer?id={!urlIdOfImage}&oid=00DF0000000BpyH"   rendered="{!urlIdOfImage  !=null}" style="max-width:150px;max-height:300px"/>
+       
+       
+       <apex:image value="/servlet/servlet.ImageServer?id=015F0000001vD0t&oid=00DF0000000BpyH" style="max-width:150px;max-height:300px" rendered="{!And(urlIdOfImage ==null ,attachmentIdOfImage ==null)}"/>
+      
+      
+        
+         </td>
+       
+        <td align="center" width="60%">
+         <table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
+         <apex:outputText rendered="{!gg.prefix}">
+        <tr style="background-color:#F7F6F6;border:0px solid red;" ><td width="20%" height="19"  >
+        <apex:outputLabel value="Prefix" style="color:Black; padding-left:20px; " /></td>
+        <td width="20%" height="19">
+         :<apex:outputLabel value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.As_prefixNew__c}" /></td></tr>
+        </apex:outputText>
+        
+         
+        <tr><td width="20%" height="19" >
+        <apex:outputLabel value="Name" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19" >
+        : <apex:outputLabel id="FirstName" value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_FirstName__c}"/>
+         
+        
+        
+        
+         </td></tr><tr style="background-color:#F7F6F6"><td width="20%" height="19" >
+         <apex:outputLabel value="Last Name" style="color:Black; padding-left:20px; " /></td><td width="20%" height="19" >
+         :<apex:outputLabel id="LastName" value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_LastName__c}" /></td></tr>
+        
+        <apex:outputText rendered="{!gg.sufix}">
+        <tr><td width="20%" height="19">
+        <apex:outputLabel value="Suffix" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+        : <apex:outputLabel value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.As_SuffixNew__c}" /> 
+         
+        
+        </td></tr>  </apex:outputText>
+        
+        <tr style="background-color:#F7F6F6"><td width="20%" height="19">
+        <apex:outputLabel value="Email ID" style="color:Black; padding-left:20px; " /></td><td width="20%" height="19">
+         :<apex:outputLabel id="EmailId" value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_Email__c}" /></td></tr>
+        
+        
+        <apex:outputText rendered="{!gg.Comp}">
+        <tr><td width="20%" height="19">
+        <apex:outputLabel value="Company Name" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+        : <apex:outputLabel id="companyName" value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_Company__c}" /></td></tr>
+          </apex:outputText>
+          
+           <apex:outputText rendered="{!gg.Degi}">
+        <tr style="background-color:#F7F6F6"><td width="20%" height="19">
+        <apex:outputLabel value="Designation" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+        : <apex:outputLabel id="degi" value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_Title__c}" /></td></tr>
+         </apex:outputText>
+        
+         <apex:outputText rendered="{!gg.mobile}">
+        <tr><td width="20%" height="19">
+        <apex:outputLabel value="Mobile Number" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+        : <apex:outputLabel value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_CellPhone__c}" /></td></tr>
+          </apex:outputText>
+        
+       
+        <tr style="background-color:#F7F6F6"><td width="20%" height="19">
+        <apex:outputLabel value="Work Phone Number" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+        : <apex:outputLabel value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_WorkPhone__c}" /></td></tr>
+        
+        
+         <apex:outputText rendered="{!gg.age}">
+        <tr ><td width="20%" height="19">
+        <apex:outputLabel value="Age" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+        : <apex:outputText value="{0,number,0}">
+        <apex:param value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_Age__c}"/>
+       </apex:outputText>
+
+       </td></tr>
+        </apex:outputText>
+        
+         <apex:outputText rendered="{!gg.gen}">
+        <tr style="background-color:#F7F6F6"><td width="20%" height="19">
+     
+      <apex:outputLabel value="Gender" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+         
+        :  <apex:outputLabel value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_Gender__c}" id="gender" />
+           
+        
+        
+        </td></tr>
+          </apex:outputText>
+       <apex:outputText rendered="{!gg.dob}">
+        <tr ><td width="20%" height="19">
+        <apex:outputLabel value="DOB" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+         : <apex:outputText value="{0,date,MM/dd/yyyy}">
+           <apex:param value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_BirthDate__c}"/>
+       </apex:outputText></td></tr>
+          </apex:outputText>
+         
+         
+         <!-- <tr style="background-color:#F7F6F6"><td width="20%" height="19">
+        <apex:outputLabel value="Through EventBrite" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+       :  <apex:outputLabel value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_ThroughEventBrite__c}" /></td></tr>
+         
+         -->
+         
+        <!--   <tr><td width="20%" height="28px">
+        <apex:outputLabel value="Follow-UpDate" style="color:Black; padding-left:20px; "/></td><td width="20%" height="28px">
+         : <apex:outputText value="{0,date,MM/dd/yyyy}">
+           <apex:param value="{!attendeeSummary.Follow_Update__c}"/>
+       </apex:outputText></td></tr> -->
+         
+         
+         
+         
+        <tr style="background-color:#F7F6F6"><td width="20%" height="19">
+        <apex:outputLabel value="Follow Up Date" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+        :
+       <!-- <apex:outputText value="{0,date,MM/dd/yyyy hh:mm:ss}"> -->
+        <apex:outputText value="{0,date,MM/dd/yy hh:mm a}"> 
+          <apex:param value="{!attendeeSummary.Follow_Update__c}"/>
+         </apex:outputText></td></tr>
+         
+          <tr ><td width="20%" height="19">
+        <apex:outputLabel value="Follow Up Type" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+        : <apex:outputLabel value="{!attendeeSummary.BVS_FollowUps__c}" /></td></tr>
+      
+      
+        <tr style="background-color:#F7F6F6"><td width="20%" height="19">
+        <apex:outputLabel value="Scanned By" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+       :  <apex:outputLabel value="{!attendeeSummary.User_id__r.Name}" /></td></tr>
+     
+   <!--      
+        
+        
+         <tr><td width="20%" height="28px">
+        <apex:outputLabel value="Notes" style="color:Black; padding-left:20px; "/></td><td width="20%" height="28px">
+        <apex:outputLabel value="{!userSelectedBVS.Attendee_GatheredComments__c }" /> 
+           
+        </td></tr>-->
+        
+        <tr ><td width="20%" height="19">
+        <apex:outputLabel value="Notes" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+       :  <apex:outputLabel value="{!attendeeSummary.BVS_Notes__c}" /> 
+        
+        </td></tr> 
+        
+        
+         <tr style="background-color:#F7F6F6"><td width="20%" height="19">
+        <apex:outputLabel value="Rating" style="color:Black; padding-left:20px; "/></td><td width="20%" height="19">
+         : 
+      <apex:repeat value="{!listOfintegers}" var="tr">
+        <apex:image value="{!tr}"/>
+        </apex:repeat>
+         </td></tr> 
+        
+        
+        </table>
+        </td></tr>
+
+         </table>
+     
+       
+       
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:13px;">
+      <tr>
+       
+       <td colspan="2">
+        
+         
+         <apex:tabPanel activeTabClass="activeTab" contentClass="contentClass" inactiveTabClass="inactiveTab" selectedTab="TabTwo" style="width:98%">
+        
+       
+        <apex:tab label="Business Information" id="TabTwo" rendered="{!gg.BusinessBool}"   style="font-size:13px;">
+      
+       
+       <table width="100%" style="border:0px solid #cccccc;margin-left:1%;"><tr><td>
+       
+       <table  width="100%" > 
+       
+      <apex:outputText rendered="{!gg.PBC}"> 
+        <tr><td>
+        <apex:outputLabel value="Primary Business Category" style="color:Black; padding-left:20px; "/></td><td>
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_PrimaryBusinessCategory1__c}" />
+        </td></tr></apex:outputText>
+        
+         <apex:outputText rendered="{!gg.SBC}"> 
+        <tr style="background-color:#F7F6F6"><td>
+        <apex:outputLabel value="Secondary Business Category" style="color:Black; padding-left:20px; "/></td><td>
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.As_SecondaryBusinessCategory1__c}" /> 
+      
+        </td></tr></apex:outputText> 
+        
+        <apex:outputText rendered="{!gg.NOEmp}"> 
+        <tr><td width="20%">
+        <apex:outputLabel value="No Of Employees" style="color:Black; padding-left:20px; "/></td><td width="20%">
+     
+         <apex:outputText value="{0,number,0}">
+        <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_NumberOfEmployees__c}" id="NoOfEmployess"/>
+       </apex:outputText></td></tr></apex:outputText>
+        
+         <apex:outputText rendered="{!gg.BEDate}"> 
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Business Established Date" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputText value="{0,date,MM/dd/yyyy}">
+            <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_BusinessEstablishedDate__c}"/>
+               </apex:outputText>
+        </td></tr></apex:outputText>
+        
+         <apex:outputText rendered="{!gg.BRev}"> 
+        <tr><td width="20%">
+        <apex:outputLabel value="Business Revenue" style="color:Black; padding-left:20px; "/></td><td width="20%">
+       
+        
+        <apex:outputText value="{0,number,0}">
+        <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_BusinessRevenue__c}" id="Revenue"/>
+       </apex:outputText>
+        </td></tr></apex:outputText>
+        
+         
+          <apex:outputText rendered="{!gg.BTaxID}"> 
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Business Tax ID" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_BusinessTaxId__c}" /></td></tr>
+         </apex:outputText>
+         
+          <apex:outputText rendered="{!gg.BDN}"> 
+        <tr><td width="20%">
+        <apex:outputLabel value="Business Duns Number" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_BusinessDunsNumber__c}" /></td></tr>
+        </apex:outputText>
+        
+          <apex:outputText rendered="{!gg.webUrl}"> 
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="WebSite URL" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_WebsiteUrl__c}" /></td></tr>
+          </apex:outputText>
+        
+         <apex:outputText rendered="{!gg.blogURL}"> 
+        <tr><td width="20%">
+        <apex:outputLabel value="Blog URL" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_BlogUrl__c}" /></td></tr> 
+          </apex:outputText>
+         
+         
+        <apex:outputText rendered="{!gg.DT}">
+         <tr style="background-color:#F7F6F6">
+         <td width="20%"><apex:outputLabel value="Diversity Type" style="color:Black; padding-left:20px; "/></td>
+        <td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.DiversityType__c}" />
+        
+        </td>
+        </tr>
+         </apex:outputText>
+        
+         <apex:outputText rendered="{!gg.BDesc}">
+        <tr><td width="20%">
+        <apex:outputLabel value="Business Description" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_BusinessDescription__c}" />
+        
+          </td></tr>
+          </apex:outputText>
+          
+           </table>
+        
+        </td></tr> </table>
+
+        </apex:tab>
+       
+       
+       <apex:tab label="NAICS Information" rendered="{!gg.NAICSCodeBool}"  style="font-size:16px;">
+           
+        <table width="100%" style="border:5px solid #cccccc;margin-left:1%;"  cellpadding="0" cellspacing="0" border="0">
+      
+      
+        <tr><td>
+         <table  width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:13px;" > <apex:outputText rendered="{!gg.NAICSCode1}"> <tr><td width="20%">
+          <apex:outputLabel value="NAICS Code 1" style="color:Black; padding-left:20px; "/></td><td width="20%">
+           <apex:outputText value="{0,number,0}">
+           <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_NAICSCode1__c}" />
+          </apex:outputText>
+          </td></tr> </apex:outputText>
+        
+           <apex:outputText rendered="{!gg.NAICSCode2}">
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="NAICS Code 2" style="color:Black; padding-left:20px; "/></td><td width="20%">
+         <apex:outputText value="{0,number,0}">
+        <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_NAICSCode2__c}" />
+       </apex:outputText>
+       </td></tr> </apex:outputText>
+        
+        <apex:outputText rendered="{!gg.NAICSCode3}"> <tr>
+        <td width="20%"><apex:outputLabel value="NAICS Code 3" style="color:Black; padding-left:20px; "/></td>
+        <td width="20%">
+        <apex:outputText value="{0,number,0}">
+        <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_NAICSCode3__c}" />
+       </apex:outputText>
+        
+       </td>
+        </tr></apex:outputText>
+            
+         <apex:outputText rendered="{!gg.NAICSCode4}">
+       <tr style="background-color:#F7F6F6">
+        <td width="20%"><apex:outputLabel value="NAICS Code 4" style="color:Black; padding-left:20px; "/></td>
+        <td width="20%">
+        <apex:outputText value="{0,number,0}">
+        <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_NAICSCode4__c}" />
+       </apex:outputText>
+        
+       </td>
+        </tr>  </apex:outputText>    
+        
+        
+        <apex:outputText rendered="{!gg.NAICSCode5}">
+        <tr>
+        <td width="20%"><apex:outputLabel value="NAICS Code 5" style="color:Black; padding-left:20px; "/></td>
+        <td width="20%">
+        <apex:outputText value="{0,number,0}">
+        <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_NAICSCode5__c}" />
+       </apex:outputText>
+        
+       </td>
+        </tr></apex:outputText>   
+        
+        
+        </table>
+        
+         </td></tr>
+        
+        </table>
+        </apex:tab>
+       
+       
+       
+        <apex:tab label="Business Address" id="Tabthree" rendered="{!gg.workinfo}"  style="font-size:16px;">
+          
+        
+        <table width="100%" style="border:5px solid #cccccc;margin-left:1%; font-size:13px;" cellpadding="0" cellspacing="0" border="0"><tr><td>
+        <table  width="100%"> 
+   
+        
+        <tr><td width="20%">
+        <apex:outputLabel value="Work Address1" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_WorkAddress1__c}" /></td></tr>
+        
+        
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Work Address2" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_WorkAddress2__c}" /></td></tr>
+        
+        <tr><td width="20%">
+        <apex:outputLabel value="Work City" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_WorkCity__c}" /></td></tr>
+        
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Work State" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!attendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_Work_States__c}" /></td></tr>
+        
+        <tr><td width="20%">
+        <apex:outputLabel value="Work country" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_Work_Country__c}" /></td></tr>
+        
+        
+        
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Work Zip" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        
+        <!-- <apex:outputText value="{0,number,0}">
+      <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_WorkZip__c}" />
+       </apex:outputText>  -->
+        
+        <apex:outputText >
+      {!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_WorkZip__c}
+       </apex:outputText> 
+        
+        </td></tr>
+        
+        <!-- <tr><td width="20%">
+        <apex:outputLabel value="Work PoBox" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        
+          <apex:outputText value="{0,number,0}">
+     <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_WorkPoBox__c}" />
+       </apex:outputText>
+        
+        </td></tr> -->
+       
+       
+         </table>
+        </td></tr>
+       
+       
+         </table>
+        </apex:tab>
+        
+        
+        
+        
+          <apex:tab label="Shipping Address" rendered="{!gg.Shippinginfo}" style="font-size:16px; ">
+        
+           
+       <table width="100%" style="border:5px solid #cccccc;margin-left:1%; font-size:13px;"  cellpadding="0" cellspacing="0" border="0"><tr><td valign="top">
+       
+       
+        <table  width="100%" > <tr><td width="20%">
+        <apex:outputLabel value="Shipping Address1" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_ShippingAddress1__c}" /></td></tr>
+        
+         <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Shipping Address2" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_ShippingAddress2__c}" /></td></tr>
+        
+        <tr><td width="20%">
+        <apex:outputLabel value="Shipping City" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_ShippingCity__c}" /></td></tr>
+        
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Shipping State" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.As_Shipping_States__c}" /></td></tr>
+        
+        
+        
+          <tr><td width="20%">
+        <apex:outputLabel value="Shipping Phone " style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_ShippingPhone__c}" /></td></tr>
+        
+         <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Shipping Country" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.As_Shipping_Country__c}" /></td></tr>
+        
+        
+        
+        
+         <tr><td width="20%">
+        <apex:outputLabel value="Shipping Zipcode" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        
+          <apex:outputText >
+       {!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_shippingzip__c}
+       </apex:outputText>
+        
+        </td></tr>
+        
+       
+        
+        
+       <!-- <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Shipping PoBox" style="color:Black; padding-left:20px; "/></td><td width="20%">
+       
+       <apex:outputText value="{0,number,0}">
+        <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_ShippingPoBox__c}" />
+       </apex:outputText>
+       
+       </td></tr> -->
+        
+        
+       
+        
+        
+        
+        </table>
+        </td></tr>
+       
+       
+         </table>
+        
+        </apex:tab>
+        
+        
+        
+        
+        
+       
+       
+        <apex:tab label="Home Address"  style="font-size:16px;" rendered="{!gg.homeinfo}">
+        <table width="100%" style="border:5px solid #cccccc;margin-left:1%; font-size:13px;"  cellpadding="0" cellspacing="0" border="0"><tr><td align="center" valign="top">
+        <table  width="100%">
+        
+            <tr><td width="20%">
+        
+        <apex:outputLabel value="Home Phone Number" style="color:Black; padding-left:20px; "/></td>
+        <td width="20%"><apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_HomePhone__c}" /></td></tr>
+        
+       <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Home FaxNumber" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_FaxNumber__c}" /></td></tr>
+        
+        
+        <tr ><td width="20%">
+        <apex:outputLabel value="Home Address1" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_HomeAddress1__c}" /></td></tr>
+         
+        
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Home Address2" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_HomeAddress2__c}" /></td></tr>
+        
+        
+        <tr><td width="20%">
+        <apex:outputLabel value="Home City" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_HomeCity__c}" /></td></tr>
+        
+        
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Home State" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.As_Home_State__c}" /></td></tr>
+        
+        
+         <tr><td width="20%">
+        <apex:outputLabel value="Home Country" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.As_Home_Country__c}" /></td></tr>
+        
+        
+        
+        
+        
+         <tr style="background-color:#F7F6F6"><td width="20%">
+        <apex:outputLabel value="Home Zipcode" style="color:Black; padding-left:20px; "/></td><td width="20%">
+       <apex:outputText >
+        {!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_HomeZip__c}
+       </apex:outputText>
+        
+        </td></tr>
+        
+        
+        
+       <!-- <tr ><td width="20%">
+        <apex:outputLabel value="Home PoBox" style="color:Black; padding-left:20px; "/></td><td width="20%">
+       
+        <apex:outputText value="{0,number,0}">
+        <apex:param value="{!AttendeeSummary.EA_AttendeeBarcode__r.AS_id__r.AS_HomePoBox__c}" />
+       </apex:outputText>
+        
+        </td></tr> -->
+        
+        
+        
+        </table></td></tr>
+       
+       
+         </table>
+        </apex:tab>
+        
+        
+        
+         <apex:tab label="Lead Qualifiers" id="Tabten" style="font-size:16px;">
+          
+        
+        <table width="100%" style="border:5px solid #cccccc;margin-left:1%; font-size:13px;"  cellpadding="0" cellspacing="0" border="0"><tr><td align="center" valign="top">
+        <table  width="100%" border="0"> 
+       <tr style="border-bottom:0px solid Black;"><td width="20%" >
+        <apex:outputLabel value="Survey Question" style="color:Black;font-weight:bold; padding-left:25px; "/></td><td width="20%">
+        <apex:outputLabel value="Selected Answer" style="color:Black;font-weight:bold;  "/></td></tr> 
+        
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <!-- <apex:outputLabel value="Survey Question 1" style="color:Black; padding-left:20px; "/>--> <apex:outputLabel value="{!AttendeeSummary.BVS_SurveyQuestion1__c}" style="color:Black; padding-left:20px; "/></td><td width="20%">
+       <apex:outputLabel value="{!AttendeeSummary.BVS_SurveyAnswer1__c}" />
+        </td></tr>
+        
+        
+       
+        
+        <tr><td width="20%">
+        <!--<apex:outputLabel value="Survey Question 2" style="color:Black; padding-left:20px; "/> -->
+        <apex:outputLabel value="{!AttendeeSummary.BVS_SurveyQuestion2__c}" style="color:Black; padding-left:20px; "/>
+        </td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.BVS_SurveyAnswer2__c}" /></td></tr>
+        
+    <!-- <tr><td width="20%" height="28px">
+        <apex:outputLabel value="Survey Answer 2" style="color:Black; padding-left:20px; "/></td><td width="20%" height="28px">
+        </td></tr>-->
+        
+        <tr style="background-color:#F7F6F6"><td width="20%">
+        <!--<apex:outputLabel value="Survey Question 3" style="color:Black; padding-left:20px; "/>-->
+        <apex:outputLabel value="{!AttendeeSummary.BVS_SurveyQuestion3__c}" style="color:Black; padding-left:20px; "/></td><td width="20%">
+        <apex:outputLabel value="{!AttendeeSummary.BVS_SurveyAnswer3__c}" /></td></tr>
+        
+        
+        
+      <!--  <tr><td width="20%" height="28px">
+        <apex:outputLabel value="Survey Answer 3" style="color:Black; padding-left:20px; "/></td><td width="20%" height="28px">
+        </td></tr> -->
+        
+          <tr><td width="20%">
+       <!-- <apex:outputLabel value="Survey Question 4" style="color:Black; padding-left:20px; "/>-->
+       <apex:outputLabel value="{!AttendeeSummary.BVS_SurveyQuestion4__c}" style="color:Black; padding-left:20px; "/></td><td width="20%">
+       <apex:outputLabel value="{!AttendeeSummary.BVS_SurveyAnswer4__c}" /> </td></tr>
+      
+     <!-- <tr><td width="20%" height="28px">
+        <apex:outputLabel value="Survey Answer 4" style="color:Black; padding-left:20px; "/></td><td width="20%" height="28px">
+        </td></tr> -->
+       
+         </table>
+        </td></tr>
+       
+       
+         </table>
+        </apex:tab>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        </apex:tabPanel>
+        
+        </td></tr>
+       
+       
+               
+                  <tr height="30px">
+                        <td colspan="2" align="right" style="padding-right:35px">
+                     
+                        <apex:commandButton value="Close" action="{!closePopup}" immediate="true"
+                            rerender="tstpopup"  styleClass="awesome" reRender="BVSform"/></td>
+                        
+                        
+                    </tr>
+              </table>
+        </apex:outputpanel>
+        </apex:outputpanel>
+ 
+     <apex:outputPanel id="email">
+            <apex:outputPanel layout="block" styleClass="popupBackground"
+                rendered="{!email}" />
+            <apex:outputPanel layout="block" styleClass="custPopup"
+                rendered="{!email}" style="width:80%;background-color:#ebeaea">
+                
+                <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="padding:10px;">
+                    <tr>
+                        <td colspan="2" align="center" height="35px" style="background-color:#CCCCCC;"><H2 > <font size="4">Transfer Leads</font> </H2> </td> 
+                    </tr>
+                    
+                    <tr><td colspan="2">&nbsp;</td></tr>
+                    
+                    <tr><td style="padding-left:30px;" colspan="2"><apex:commandButton value="Send" style="color:#FFFFFF;Font-weight:BOLD; background-color:#3476e3; border:0px; width:60px; -webkit-border-radius:3px; height:33px; -moz-border-radius:3px;" action="{!sendEmail}"  onclick="return submitform();" />
+                                &nbsp;&nbsp;&nbsp;<apex:commandButton value="Discard"  action="{!cancel}" style="color:#FFFFFF;Font-weight:BOLD; background-color:#d54433; border:0px; width:70px; -webkit-border-radius:3px; height:33px; -moz-border-radius:3px;"/> </td></tr>
+                    <tr><td colspan="2">&nbsp;</td></tr>           
+                    <tr><td width="15%" style="padding-left:10px;"> TO :</td><td width="85%"> <apex:inputText value="{!EmailTo}" size="100" styleClass="width:10000" id="toemail"/> </td></tr>
+                    <tr> <td style="padding-left:10px;"> Subject : </td><td><apex:inputText value="{!subject}" size="100" styleClass="width:100%"/> </td></tr>
+                    <tr> <td colspan="2" style="padding-left:10px;"> Mail Body </td></tr>
+                    <tr> <td style="padding-left:40px;padding-right:20px" colspan="2"> <apex:inputTextarea value="{!body}" richText="true" rows="15" style="width:100%" styleClass="width:100%"/></td></tr>
+                    
+                </table>
+                
+         <br/>        
+         <!--<apex:commandButton value="Send" action="{!sendEmail}" style="margin-left:40px" styleClass="awesome" /> &nbsp;&nbsp;
+            <apex:commandButton value="Discard"  action="{!cancel}" styleClass="awesome"/>-->
+        
+        
+        
+        
+        </apex:outputPanel>
+        </apex:outputPanel> 
+        
+      
+    </apex:form>
+
+        
+        
+       
+        </div>
+           
+            <div class="clear"></div>
+         
+        </div>
+     
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+
+</div>
+ 
+<!--  end content -->
+<div class="clear">&nbsp;</div>
+</div>
+<!--  end content-outer........................................................END -->
+
+<div class="clear">&nbsp;</div>
+    
+<!-- start footer -->         
+<div id="footer">
+    <!--  start footer-left -->
+    <div id="footer-left">&copy; Copyright Globalnest LLC. <span id="spanYear"></span> 
+    <a href="">www.globalnest.com</a>. All rights reserved.</div>
+    <!--  end footer-left -->
+    <div class="clear">&nbsp;</div>
+</div>
+<!-- end footer -->
+ 
+
+
+
+   
+
+</apex:page>

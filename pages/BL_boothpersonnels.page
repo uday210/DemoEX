@@ -1,0 +1,880 @@
+<apex:page showHeader="false" controller="BL_BoothPersonnelsCon" standardStylesheets="false" id="thepage" action="{!login}">
+ <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/screen.css")}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.FormultiEvent,"css/datePicker.css")}"/>
+<c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+
+
+ <title>Boothleads</title>
+      
+<script>
+
+function validate(){
+
+var x =document.getElementById('{!$Component.thepage.frm51.emailid}').value;
+
+var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+if(document.getElementById("{!$Component.thepage.frm51.frname}").value == '')
+ {
+  alert('Please Enter First Name');
+  return false;
+ }
+if(document.getElementById("{!$Component.thepage.frm51.LsName}").value == '')
+ {
+  alert('Please Enter Last Name');
+  return false;
+ }
+if(x!=""&& x.match(mailformat)){
+return true;
+}
+else{
+alert('Please Enter Email address');
+return false;
+}
+}
+function firsNameReq(){
+var x =document.getElementById('{!$Component.thepage.frm1.firName}').value;
+var l =document.getElementById('{!$Component.thepage.frm1.lasName}').value;
+if(x!="" && l!=""){
+alert('gggg true'+x+''+l);
+return true;
+}else{
+alert('Please Enter Name');
+return false;
+}
+}
+
+</script>
+
+
+<style>
+
+.grid{ 
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    /* Zebra striping */
+   .grid tr:nth-of-type(odd) { 
+        background: #eee; 
+    }
+     .grid tr:hover{ 
+        background: #f3f3f3; 
+    }
+   .grid th { 
+        background: #CCCCCC;
+       color: #414141; 
+       padding-left:7px;
+        font-weight: bold; 
+        background: #eaeaea; /* Old browsers */
+background: -moz-linear-gradient(top,  #eaeaea 0%, #f3f3f3 39%, #f3f3f3 58%, #eaeaea 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eaeaea), color-stop(39%,#f3f3f3), color-stop(58%,#f3f3f3), color-stop(99%,#eaeaea)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* IE10+ */
+background: linear-gradient(to bottom,  #eaeaea 0%,#f3f3f3 39%,#f3f3f3 58%,#eaeaea 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eaeaea', endColorstr='#eaeaea',GradientType=0 ); /* IE6-9 */
+    }
+    .grid td{ 
+        padding:2px; 
+        border-bottom:1px solid #eaeaea; 
+        text-align: left;
+      border-right:0px;; 
+    }
+    .grid th { 
+        padding:2px; 
+        padding-left:5px; 
+        border: 1px solid #D3D3D3; 
+        font-size:11px;
+        text-align: left; 
+        height:19px;
+    }
+    .grid1 td{
+    border-right:0px solid #F00; 
+  
+    }
+ .grid tr:nth-child(odd)     { background-color:#fafafa; }
+ .grid tr:nth-child(even)      { background-color:#fff; }
+ 
+  .grid tr:hover{background-color:#eaeaea;} 
+  
+.glossy{background: #d8e5f5; /* Old browsers */
+background: -moz-linear-gradient(top,  #d8e5f5 0%, #cfdff3 45%, #c6d9f1 48%, #b6ceee 48%, #aec9ed 48%, #bed4f0 73%, #caddf3 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d8e5f5), color-stop(45%,#cfdff3), color-stop(48%,#c6d9f1), color-stop(48%,#b6ceee), color-stop(48%,#aec9ed), color-stop(73%,#bed4f0), color-stop(100%,#caddf3)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #d8e5f5 0%,#cfdff3 45%,#c6d9f1 48%,#b6ceee 48%,#aec9ed 48%,#bed4f0 73%,#caddf3 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8e5f5', endColorstr='#caddf3',GradientType=0 ); /* IE6-9 */
+ border-top:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;
+}
+.gridbottom{border-bottom:1px solid #91b5db; border-right:1px solid #91b5db; border-left:1px solid #91b5db;background-color:#d6e3f2; padding:3px; border-top:1px solid #91b5db;}
+.trwhite{ background-color: #FFFFFF; }
+.trwhite:hover { background-color: #FFFFFF; }
+
+</style>
+
+<!-- Start: page-top-outer -->
+<div id="page-top-outer">    
+ <div style="float:right;color:#FFFFFF;font-weight:bold;padding-right:20px;border:0px solid white;position:absolute;top:0px;right:0px;">
+        Your Time Zone : <c:User_TimeZone date_Timevalue="{!$User.Id}"/></div>
+<!-- Start: page-top -->
+<div id="page-top">
+
+    <!-- start logo -->
+    
+    <div id="logo">
+   
+    </div>
+   
+    <!-- end logo -->
+    
+    <!--  start top-search -->
+    <div id="top-search">
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+        <td class="welcome">
+        Welcome :
+                   <span class="username">{!$User.Firstname}&nbsp;{!$User.Lastname}  </span>
+        
+        <!--<apex:inputText value="{!searchstr}" styleClass="top-search-inp" />-->  </td>
+        
+        
+        
+        </tr>
+        </table>
+    </div>
+    <!--  end top-search -->
+    <div class="clear"></div>
+
+</div>
+<!-- End: page-top -->
+
+</div>
+<!-- End: page-top-outer -->
+    
+<div class="clear">&nbsp;</div>
+ 
+<!--  start nav-outer-repeat................................................................................................. START -->
+<div class="nav-outer-repeat"> 
+<!--  start nav-outer -->
+<div class="nav-outer"> 
+
+<!-- Start Nav Right-->
+        <div id="nav-right">
+        
+      
+           <div class="nav">
+        <div class="table">
+        
+       <apex:form >
+       
+       
+        <div class="nav-divider">&nbsp;</div>
+        
+     <!--  <apex:commandLink action="{!profileaction}"  style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile</apex:commandLink> -->
+     <apex:outputLink value="Bl_Profile?url=Bl_boothpersonnels&id={!eventSelected}" id="Profile"  style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">Profile </apex:outputLink>
+      
+     
+        <div class="nav-divider">&nbsp;</div>
+        <apex:commandLink action="{!$Site.Prefix}/secur/logout.jsp" rendered="{!NOT(ISPICKVAL($User.UserType,'Guest'))}" style="text-style:bold; color:#FFFFFF; padding:10px 15px 0 0;">{!$Label.site.logout}</apex:commandLink>
+        </apex:form>
+
+            </div></div>
+           
+           <!----LOGOUT ACTION END--->
+           
+           
+            <div class="clear">&nbsp;</div>
+        
+            <!--  start account-content --> 
+            <div class="account-content">
+            <div class="account-drop-inner">
+                <a href="" id="acc-settings">Settings</a>
+                
+                <a href="" id="acc-stats">Statistics</a> 
+            </div>
+            </div>
+            <!--  end account-content -->
+        
+        </div>
+        <!-- end nav-right -->
+
+
+        <!--  start nav -->
+        <div class="nav">
+        <div class="table">
+        
+     <apex:outputPanel rendered="{!booleanforDisplayBoothadminTab}">
+ 
+        <ul class="select"><li>
+        <apex:form >
+       <!-- <apex:commandLink action="{!dashBoardAction}"><b>Dashboard</b></apex:commandLink> -->
+        <apex:outputLink value="BL_BA_Dashboard?id={!eventSelected}" id="Dashboard"><b>Dashboard</b> </apex:outputLink>
+        </apex:form>
+       
+        </li>
+        </ul>  
+    
+         </apex:outputPanel> 
+     
+    
+       
+              
+        
+         <div class="nav-divider">&nbsp;</div>                   
+        <ul class="select"><li>
+        <apex:form >
+          <apex:outputLink value="bl_eventadmin_events?id={!eventSelected}" id="Events"><b>Events</b> </apex:outputLink>
+        <!--<apex:commandLink action="{!EventAction}"><b>Events</b></apex:commandLink> -->
+        </apex:form>
+       
+        </li>
+        </ul>
+        
+        
+        
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="current"><li>
+        <apex:form >
+          <apex:outputLink value="BL_boothpersonnels?id={!eventSelected}" id="BoothPersonnel"><b>Booth Users</b> </apex:outputLink> 
+       <!-- <apex:commandlink action="{!Customeraction}"><b>Booth Users</b></apex:commandlink> -->
+        </apex:form>
+       
+        </li>
+        </ul>
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li>
+        <apex:form >
+         <apex:outputLink value="Bl_BoothAdmin_attendees?id={!eventSelected}" id="Leads"><b>Leads </b> </apex:outputLink>
+      <!--  <apex:commandLink action="{!AttendeesAction}" ><b>Leads </b> </apex:commandLink> -->
+        </apex:form>
+       
+        </li>
+        </ul>
+        
+        
+        
+        <div class="nav-divider">&nbsp;</div>
+        
+        <ul class="select"><li><apex:form >
+         <apex:outputLink value="Bl_BA_Reports?id={!eventSelected}" id="BAReports"><b>Reports</b> </apex:outputLink>
+        <!--<apex:commandlink action="{!Reportsaction}"><b>Reports</b></apex:commandlink> -->
+        
+        </apex:form>
+       
+        </li>
+        </ul>
+        
+       
+         <div class="nav-divider">&nbsp;</div>
+         <apex:outputPanel >
+        <ul class="select"><li>
+        <apex:form >
+         <apex:outputLink value="BL_BoothQr?id={!eventSelected}" id="BoothQR"><b>Booth Qrcodes</b> </apex:outputLink>
+      <!--  <apex:commandlink action="{!boothaction}"><b>Booth Qrcodes</b></apex:commandlink> -->
+        </apex:form>
+       
+        </li>
+        </ul>  
+         <div class="nav-divider">&nbsp;</div>
+         </apex:outputPanel> 
+        
+        
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <!--  start nav -->
+        
+
+</div>
+<div class="clear"></div>
+<!--  start nav-outer -->
+</div>
+<!--  start nav-outer-repeat................................................... END -->
+
+ <div class="clear"></div>
+
+                
+        
+                        
+                       
+     
+               
+<!-- start content-outer ........................................................................................................................START -->
+<div id="content-outer">
+<!-- start content -->
+<div id="content">
+
+    <!--  start page-heading -->
+    <div id="page-heading">
+    
+  
+   <table width="100%"><tr><td>
+    <apex:form >
+      <apex:outputLabel ><font size="2" color="Black">Events</font></apex:outputLabel>
+      <apex:selectList value="{!eventSelected}" multiselect="false" size="1">
+       <apex:selectOptions value="{!items}"/>
+       <apex:actionSupport action="{!getBoothPersonnels}" event="onchange" /> 
+      </apex:selectList>
+    </apex:form>
+       </td><td>    
+     <apex:form id="frm100">   
+                    
+    <apex:outputPanel rendered="{!errorMessage}" id="idforoutputpannel"><font size="4" color="red">{!message}</font></apex:outputPanel> </apex:form> 
+      </td><td>
+   <!--   <apex:outputText id="boothiderror" rendered="{!boothadminiderror}"><font size="4" color="red"></font></apex:outputText> -->
+      
+     <div style="float:right;padding-right:30px">
+     <apex:form >
+    <apex:commandButton value="Create Booth User"
+                    action="{!addPersonnels}"  styleClass="awesome" title="Create Booth User" reRender="tstpopup2"/>
+      <apex:outputPanel id="tstpopup2">
+     
+            <apex:outputPanel styleClass="popupBackground" layout="block"
+                rendered="{!displayPopUpForAddBooth}" />
+            <apex:outputPanel styleClass="custPopup" layout="block" style="width:80%"
+                rendered="{!displayPopUpForAddBooth}">
+ 
+   <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  
+  <tr>
+    <td colspan="2">
+    
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        
+            <tr>
+                <td height="40px"  align="center" valign="middle" class="pophead"> <h2 style="color:#FFFFFF; font-size:16px;">Add Booth User To {!eventNameforGried}</h2></td>
+                <td class="pophead"><div style="float:right;"><apex:commandButton image="{!URLFOR($Resource.Close1)}" action="{!closePopup2}" immediate="true"  rerender="tstpopup2" title="Close"/> </div></td>
+            </tr>
+        </table>
+    
+    
+    </td>
+  </tr>
+  <tr height="5px" >
+ 
+  </tr>
+  
+  <tr> <td colspan="2"><apex:pageMessages ></apex:pageMessages>   
+       </td>
+       
+       </tr>
+  
+  <tr>
+    <td width="50%" height="25" align="center" valign="top">
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr><apex:outputPanel rendered="{!ShowUserError}" ><font style="color:Red;font:size:14px;">User Already Exist!</font></apex:outputPanel></tr>
+      <tr>
+            <td width="50%" height="25" align="right"> 
+                <apex:outputLabel style="color:#000000;">First Name<font style="color:Red;font:size:14px;">*</font></apex:outputLabel> 
+           </td>
+            <td width="50%" height="25" align="left" style="padding-left:5px;">
+             
+              <apex:inputField value="{!CreateUser.FirstName}" id="frname"/>
+            </td>
+      </tr>
+       <tr><td></td> <td style="color:red"></td> </tr>
+      <tr>
+        <td height="25" align="right">
+            <apex:outputLabel style="color:#000000;">Last Name <font style="color:Red;font:size:14px;">*</font></apex:outputLabel></td>
+        <td height="25" align="left" style="padding-left:5px;">
+          
+          
+           <apex:inputField value="{!CreateUser.LastName}" id="LsName"/>
+            </td>
+      </tr>
+      
+      
+      
+      
+      
+       <tr>
+        <td width="50%" height="15" align="right">
+      </td>
+        <td width="50%" height="15" align="left" style="padding-left:5px;">
+            
+             
+            </td>
+      </tr>
+      
+      
+      
+      
+      <tr>
+        <td width="50%" height="25" colspan="2" align="right">
+       
+       <apex:selectRadio value="{!country}">
+            <apex:selectOptions value="{!SeletOptions}"/> 
+            </apex:selectRadio>
+            
+            </td>
+      </tr>
+      <tr><td></td> <td style="color:red"></td> </tr>
+      
+      <tr>
+        <td width="50%" height="15" align="right">
+      </td>
+        <td width="50%" height="15" align="left" style="padding-left:5px;">
+            
+             
+            </td>
+      </tr>
+      
+      
+      
+    </table>
+    </td>
+    <td width="50%" height="25" align="center" valign="top">
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+     
+      <tr>
+        <td height="25" align="right">
+            <apex:outputLabel style="color:#000000;">Email ID<font style="color:Red;font:size:14px;">*</font></apex:outputLabel></td>
+        <td height="25" align="left" style="padding-left:5px;">
+          <apex:inputText value="{!email}" id="emailid">
+           </apex:inputText></td>
+      </tr>
+      <tr><td></td><td style="color:red">{!Emailerror} </td></tr>
+      
+       <tr>
+        <td width="50%" height="25" align="right" valign="middle">
+        <apex:outputLabel style="color:#000000;">Designation</apex:outputLabel></td>
+        <td width="50%" height="25" align="left" style="padding-left:5px;">
+            
+             <apex:inputField value="{!CreateUser.Title}" id="title"/>
+            </td>
+      </tr>
+      
+      
+      
+      
+       
+      
+      
+    </table></td>
+  </tr>
+ <tr>
+    <td height="25" colspan="2" align="center" valign="middle">
+    <apex:commandButton value="Save" onclick="return validate();"
+                            action="{!savePopUpValues}"  styleClass="awesome"  title="Save" />
+                            
+                            
+   &nbsp; <apex:commandButton value="Close" action="{!closePopup2}" immediate="true"
+                            rerender="tstpopup2" styleClass="awesome"  title="Close"/>
+    </td>
+  </tr> 
+</table> 
+           
+    
+            </apex:outputPanel>
+        </apex:outputPanel>
+    
+            </apex:form></div>
+     </td></tr></table> 
+        
+    </div>
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
+    <tr>
+        <th rowspan="3" class="sized">
+        
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowleft.jpg")}" width="20" height="300" alt="" /></th>
+        <th class="topleft"></th>
+        <td align="right" valign="middle" id="tbl-border-top">&nbsp;</td>
+        <th class="topright"></th>
+        <th rowspan="3" class="sized">
+        <img src="{!URLFOR($Resource.QRCode_CSS,"css/images/shared/side_shadowright.jpg")}" width="20" height="300" alt="" /></th>
+    </tr>
+    <tr>
+        <td id="tbl-border-left"></td>
+        <td>
+        
+ <div id="content-table-inner">
+                
+ <div id="table-content">
+            
+
+ <apex:form id="frm2">
+
+ 
+<!--===============================================================START GRID==================================== --> 
+ 
+<table width="100%" border="2" cellspacing="0" cellpadding="0" class="grid">
+  
+  <div style="width:99.8%; height:23px; background-color:#d6e3f2; text-align:center;" class="glossy">
+      <div style="font-weight:bold; float:left; color:#04408c; padding:3px 0 0 8px;">Booth Users</div>
+  </div> 
+
+    <tr>
+      
+        <th style="width:10%;"> Action </th>
+        <th style="width:15%;">Name</th>
+        
+        <th style="width:24%;">Email</th>
+        <th style="width:18%;">Company </th>
+        <th style="width:18%;"> Designation</th>
+        <th style="width:15%;"> Status </th>
+     
+    </tr>
+<tr><td colspan="6" class="trwhite" style="border-right:1px solid #91b5db;border-left:1px solid #91b5db;">
+<DIV style="overflow:auto;width:100%;height:280px;">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:11px;">
+
+<apex:repeat value="{!ForPagination }" var="val" >
+
+
+<tr style="padding-left:7px;" >
+
+<td  style="width:10%;">
+  <apex:commandLink action="{!editAttendees}"><apex:image value="{!$Resource.Qrcode_edit}"/>
+   <apex:param name="mycheck" value="{!val.upevalue.id}" />
+    </apex:commandLink>&nbsp;&nbsp;
+     <apex:commandLink action="{!deleteadminrecord}"><apex:image value="{!$Resource.Qrcode_delete}"/>
+    <apex:param name="mycheck" value="{!val.upevalue.id}"  />
+    </apex:commandLink>
+</td>
+
+
+<td  style="width:15%;">
+<apex:commandLink action="{!getEventDetails}" value="{!val.upevalue.User_id__r.FirstName} {!val.upevalue.User_id__r.LastName}" style="color:#0000ff">
+<!-- <apex:param name="mycheck" value="{!val.upevalue.id}"/>-->
+<apex:param name="mycheck" value="{!val.upevalue.id}"/>
+</apex:commandLink>
+</td>
+
+<td  style="width:24%;"><apex:outputText value="{!val.upevalue.User_id__r.Email}"/></td>
+<td  style="width:18%;"><apex:outputText value="{!val.upevalue.User_id__r.CompanyName}" style="padding-left:7px;" /></td>
+<td  style="width:18%;"><apex:outputText value="{!val.upevalue.User_id__r.Title}" style="padding-left:7px;" /></td>
+<td  style="width:15%;">
+
+<apex:commandLink action="{!deleteAdminRecord1}" value="{!val.upevalue.Status__c}">
+   <apex:param name="mycheck" value="{!val.upevalue.id}" />
+    </apex:commandLink>
+
+<apex:outputText style="padding-left:8px;" /></td>
+
+</tr>
+</apex:repeat></table>
+</div></td>
+</tr>
+</table>
+ <!--------------------------------Pagination--------------------------------->
+<div class="gridbottom" > 
+               <apex:panelGroup >
+                <apex:commandLink action="{!First}" reRender="gridMain">             
+                       <apex:image value="{!$Resource.First_Icon}" height="16px" width="16px" title="First"  rendered="{!hasFirst}"/> 
+                </apex:commandLink>&nbsp;&nbsp;
+                
+               
+                <apex:commandLink action="{!Prev}" reRender="gridMain">              
+                       <apex:image value="{!$Resource.Previous_Icon}" height="16px" width="16px" title="Previous" rendered="{!hasPrevious}"/> 
+                </apex:commandLink>&nbsp;&nbsp;
+                
+ 
+                <apex:commandLink action="{!Next}" reRender="gridMain">             
+                     <apex:image value="{!$Resource.Next_Icon}" height="16px" width="16px" title="Next" rendered="{!hasNext}" /> 
+                </apex:commandLink>&nbsp;&nbsp;
+                 
+                
+                <apex:commandLink action="{!Last}" reRender="gridMain">             
+                        <apex:image value="{!$Resource.Last_Icon}" height="16px" width="16px" title="Last"  rendered="{!hasLast}"/> 
+                </apex:commandLink>&nbsp;&nbsp;
+               
+                <div style="float:right; width:40%; text-align:right;"><apex:outputLabel style="font-size:12px;float:right;">Page &nbsp;{!pageno} / {!Pgno} </apex:outputLabel></div>
+                 
+
+                </apex:panelGroup>
+               </div>
+
+ 
+ 
+
+<!--===============================================================END GRID==================================== --> 
+ 
+
+    </apex:form>
+ 
+  
+   
+  
+    
+    
+ <apex:form id="frm">
+
+        <apex:outputPanel id="tstpopup">
+            <apex:outputPanel styleClass="popupBackground" layout="block"
+                rendered="{!displayPopUp}" />
+            <apex:outputPanel styleClass="custPopup" layout="block" style="width:80%"
+                rendered="{!displayPopUp}">
+                
+                
+               
+                
+               <apex:repeat value="{!detailsOfBoothPersonnel}" var="bp"> 
+                
+                
+               <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+         
+  <tr>
+    <td width="50%" height="35" colspan="2" align="center" valign="middle" bgcolor="#75b9fe"><b style="color:#FFFFFF; font-size:16px;">Booth User</b></td>
+    
+    
+    <td style="text-align:right;" class="pophead"><apex:commandButton image="{!URLFOR($Resource.Close1)}" action="{!closePopup}"  rerender="tstpopup" immediate="true" title="Close"/></td>
+  </tr> 
+  <tr>
+    <td width="50%" height="25" align="center" valign="top" >
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="50%" height="25" align="right"><apex:outputLabel value="Name:" style="color:#000000" /></td>
+        <td width="50%" height="25" align="left" style="padding-left:5px;"> 
+       <apex:outputLabel value="{!bp.User_id__r.Name}"  style="color:#000000" />
+       
+       </td>
+      </tr>
+      <tr>
+        <td height="25" align="right"><apex:outputLabel value="Email Id: " style="color:#000000" /></td>
+        <td height="25" align="left" style="padding-left:5px;">
+        <apex:outputLabel value="{!bp.User_id__r.Email}"  style="color:#000000"/>
+        
+        </td>
+      </tr>
+    </table></td>
+    <td width="50%" height="25" align="center" valign="top"><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="50%" height="25" align="right"> <apex:outputLabel value="Company Name: "  style="color:#000000"/></td>
+        <td width="50%" height="25" align="left" style="padding-left:5px;"> 
+       <apex:outputLabel value="{!bp.User_id__r.CompanyName}" style="color:#000000" />
+        
+        </td>
+      </tr>
+      <tr>
+        <td height="25" align="right"> <apex:outputLabel value="Designation: "  style="color:#000000"/></td>
+        <td height="25" align="left" style="padding-left:5px;">
+        <apex:outputLabel value="{!bp.User_id__r.Title}"  style="color:#000000"/>
+        
+        </td>
+      </tr>
+    </table></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td height="35" colspan="2" align="center" valign="middle"> <apex:commandButton value="Close" action="{!closePopup}"
+                    rerender="tstpopup" styleClass="awesome" /></td>
+                    <td>&nbsp;</td>
+  </tr> 
+   
+</table>
+               </apex:repeat>
+        </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form> 
+   
+    
+    
+    
+    
+    
+ 
+  <apex:form id="frm1">
+
+        <apex:outputPanel id="tstpopup1">
+            <apex:outputPanel styleClass="popupBackground" layout="block"
+                rendered="{!displayPopUpForAdd}" />
+            <apex:outputPanel styleClass="custPopup" layout="block" style="width:80%"
+                rendered="{!displayPopUpForAdd}">
+    
+   <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+  
+  <tr>
+    <td height="35px" colspan="2" align="center" valign="middle" bgcolor="#75b9fe">
+      <h2 style="color:#FFFFFF; font-size:16px;">Edit Booth User</h2>
+     </td><td align="right" width="35px" class="pophead">
+         <div style="float:right;">                             
+                <apex:commandButton image="{!URLFOR($Resource.Close1)}" action="{!closePopup1}" rerender="tstpopup1" immediate="true" title="Close"/> </div>  
+                            
+    </td>
+  </tr>
+  <tr height="5px" >
+    
+  </tr>
+  
+  <tr height="5px" >
+    <td colspan="2">
+    <apex:pageMessages ></apex:pageMessages>
+    </td>
+  </tr>
+  
+  <tr>
+    <td width="50%" height="25" align="center" valign="top"><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+            <td width="50%" height="25" align="right"> 
+                <apex:outputLabel style="color:#000000;">First Name<font style="color:Red;font:size:14px;">*</font> :</apex:outputLabel> 
+           </td>
+            <td width="50%" height="25" align="left" style="padding-left:5px;">
+              <apex:inputText value="{!editOfBoothPersonnel.FirstName}"  id="firName"/>
+            </td>
+      </tr>
+      <tr>
+        <td height="25" align="right">
+            <apex:outputLabel style="color:#000000;">LastName <font style="color:Red;font:size:14px;">*</font>: </apex:outputLabel></td>
+        <td height="25" align="left" style="padding-left:5px;">
+          
+             <apex:inputText value="{!editOfBoothPersonnel.LastName}" required="true" id="lasName"/>
+            </td>
+      </tr>
+    </table>
+    </td>
+    <td width="50%" height="25" align="center" valign="top"><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+     
+      <tr>
+        <td height="25" align="right">
+            <apex:outputLabel style="color:#000000;">Email ID <font style="color:Red;font:size:14px;">*</font>:</apex:outputLabel></td>
+        <td height="25" align="left" style="padding-left:5px;">
+          
+             <apex:outputLabel value="{!editOfBoothPersonnel.Email}" />
+            </td>
+      </tr>
+       <tr>
+        <td width="50%" height="25" align="right">
+        <apex:outputLabel style="color:#000000;">Designation :</apex:outputLabel></td>
+        <td width="50%" height="25" align="left" style="padding-left:5px;">
+           
+             <apex:inputField value="{!editOfBoothPersonnel.Title}" />
+            </td>
+      </tr>
+      
+     
+
+      
+      
+    </table></td>
+  </tr>
+ <tr>
+    <td height="25" colspan="2" align="center" valign="middle">
+    <apex:commandButton value="Save"  
+                            action="{!EditPopUpValues}" rerender="tstpopup1,frm2,frm1" styleClass="awesome" title="Save" />
+                            
+                            
+   &nbsp; <apex:commandButton value="Close" action="{!closePopup1}" immediate="true"
+                            rerender="tstpopup1" styleClass="awesome"  title="Close"/>
+    </td>
+  </tr>
+</table>
+                        
+                
+                
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form> 
+    
+    
+      
+ 
+    
+  
+   
+    
+     
+     
+     <apex:form id="frmselect">
+
+        <apex:outputPanel id="tstpopupselect">
+            <apex:outputPanel styleClass="popupBackground" layout="block"
+                rendered="{!displayPopUpForAddcheck}" />
+            <apex:outputPanel styleClass="custPopup" layout="block" style="width:80%"
+                rendered="{!displayPopUpForAddcheck}">
+    
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+ 
+  
+  <tr>
+    <td height="35px" align="center" valign="middle"   class="pophead">
+       <h2 style="color:#FFFFFF; font-size:16px;">Change The Status</h2>
+    </td>
+    <td align="right" width="35px" class="pophead">
+        <apex:commandButton image="{!URLFOR($Resource.Close1)}" action="{!closePopupSelect}" title="Close"/>
+    </td>
+  </tr>
+  
+       <tr>
+        <td width="50%" height="25" colspan="2" align="center">
+             <font size="4" color="red">{!errormsg}</font>  
+       <apex:selectRadio value="{!countrySelect}" layout="pageDirection" immediate="true">
+            <apex:selectOptions value="{!SeletSelect}" />
+            </apex:selectRadio> 
+          
+          </td>
+      </tr>
+      
+      <tr>
+    <td height="25" colspan="2" align="center" valign="middle">
+      <apex:commandButton value="Save"
+                            action="{!saveLicenceValues}"  styleClass="awesome"  title="Save" reRender="frmselect,frm2"/>
+      
+      
+      &nbsp; <apex:commandButton value="Close" action="{!closePopupSelect}" 
+                            styleClass="awesome"  title="Close" reRender="frmselect"/>
+    </td>
+  </tr> 
+      
+   </table>
+        
+            </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form>
+    
+    
+    
+         </div>
+            <!--  end content-table  -->
+            
+            
+        
+            <!--  start actions-box ............................................... -->
+            <!-- end actions-box........... -->
+            
+            
+            <div class="clear">
+            
+        
+            
+            
+            </div>
+         
+        </div>
+        <!--  end content-table-inner ............................................END  -->
+        </td>
+        <td id="tbl-border-right"></td>
+    </tr>
+    <tr>
+        <th class="sized bottomleft"></th>
+        <td id="tbl-border-bottom">&nbsp;</td>
+        <th class="sized bottomright"></th>
+    </tr>
+    </table>
+    <div class="clear">&nbsp;</div>
+
+</div>      
+ 
+<!--  end content -->
+<div class="clear">&nbsp;</div>
+</div>
+<!--  end content-outer........................................................END -->
+
+<div class="clear">&nbsp;</div>
+    
+<!-- start footer -->         
+<div id="footer">
+    <!--  start footer-left -->
+    <div id="footer-left">&copy; Copyright Globalnest LLC. <span id="spanYear"></span> 
+    <a href="">www.globalnest.com</a>. All rights reserved.</div>
+    <!--  end footer-left -->
+    <div class="clear">&nbsp;</div>
+</div>
+<!-- end footer -->  
+
+</apex:page>

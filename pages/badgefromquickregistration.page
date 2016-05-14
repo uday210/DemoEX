@@ -1,0 +1,168 @@
+<apex:page controller="saveattendee_print" sidebar="false" standardStylesheets="false" showHeader="false" >
+<script>      
+     window.onload = function(){ submitprint(); };
+      function submitprint() {
+            window.focus();
+            window.print();
+         window.close();
+            return false;
+        }
+    </script>
+
+<style>
+
+@page{
+size:4.15in 3.5in;
+margin-top:-5px;
+margin-left:-5px;
+margin-bottom:-5px;
+margin-right:-5px;
+}
+.tablelabel {
+    background:#25BEF5;
+   
+    padding:5px;
+    }
+    
+</style>
+ <!-- QRCode_viewbadge, 
+ <apex:stylesheet value="{!$Resource.pdfstyle_css}"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.advancedpdfresource, 'qrstyle2.css')}"/>
+<!--apex:commandButton value="pdf" action="{!generatepdf}"/-->
+
+ <!-- QRCode_viewbadge, 
+ <apex:stylesheet value="{!$Resource.pdfstyle_css}"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.advancedpdfresource, 'qrstyle2.css')}"/>
+<!--apex:commandButton value="pdf" action="{!generatepdf}"/-->
+<style>
+.tablelabel {
+    background:#25BEF5;
+    padding:5px;
+    }
+</style>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="page-break-inside:avoid">
+  <tr>
+    <td colspan="2">
+    <table border="0" cellspacing="0" cellpadding="0" align="center" style="width:100%; margin-top:10px;">
+
+    <tr style="height:2.5cm;">
+        <td width="100%" height="100px;" style="padding-Left:5px;" valign="top">
+    
+    <apex:outputPanel >
+         <apex:image url="/servlet/servlet.FileDownload?file={!eventdetails.EV_EventLogo__c}" 
+         style="padding-left:3px;padding-top:3px;width:100%;height:auto"/>
+        </apex:outputPanel>
+        </td>
+        <td width="70%" style="text-align:center; width:80%;padding-right:8px;font-size:15px">
+        
+        <div style="z-index:-17; text-align:center;width:125px; margin:0px auto; margin-top:-20px;position:relative; height:2.3cm;">
+       
+    
+         <apex:image value="https://chart.googleapis.com/chart?chs=125x125&cht=qr&chl={!eam1.EA_AttendeeBarcode__c}"/>
+   
+     
+  
+    </div>
+        
+        
+        
+        </td>
+             </tr>  
+             
+</table>
+   </td>
+</tr>
+    
+    
+    <tr style="height:1.5cm;padding-top:20px;">
+<td align="center" colspan="2" valign="middle">
+  
+  <apex:outputPanel rendered="{!if(AND((contains(selectedattendeetypes,'Attendee')),(NOT(contains(selectedattendeetypes,'Exhibitor')))),true,false)}">
+  <div style=" position:absolute; text-align:center; margin:10px 0px 0px 0px ; width:100%;">
+ 
+<font  style="font-size:32px;margin-bottom:10px; text-align:center">
+         {!eam1.AS_id__r.AS_FirstName__c} {!eam1.AS_id__r.AS_LastName__c} 
+  
+   </font>            
+   </div>
+   
+   </apex:outputPanel>
+   
+   
+      <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypes,'Exhibitor')),(contains(selectedattendeetypes,'SPONSOR')),(contains(selectedattendeetypes,'Sponsor'))),true,false)}">      
+             <font  style="font-size:32px;text-align:center"  >
+              {!eam1.AS_id__r.AS_FirstName__c} {!eam1.AS_id__r.AS_LastName__c} 
+             </font>
+       </apex:outputPanel>
+        <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypes,'Exhibitor')),(contains(selectedattendeetypes,'SPONSOR')),(contains(selectedattendeetypes,'Sponsor')),(contains(selectedattendeetypes,'Attendee'))),false,true)}"> 
+             <font  style="font-size:32px;text-align:center"  >
+              {!eam1.AS_id__r.AS_FirstName__c} {!eam1.AS_id__r.AS_LastName__c} 
+             </font>
+       </apex:outputPanel>
+      </td> </tr>     
+              <tr>  
+    <td align="center" colspan="2" valign="middle" style="padding:0;font-size:24pt;font-face:Calibri (Body);">
+    <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypes,'Exhibitor')),(contains(selectedattendeetypes,'Sponsor')),(contains(selectedattendeetypes,'SPONSOR'))),true,false)}"> 
+      <font  style="font-size:24px;">
+      {!eam1.AS_id__r.AS_Company__c}
+      </font>
+  </apex:outputpanel>
+      <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypes,'Exhibitor')),(contains(selectedattendeetypes,'SPONSOR')),(contains(selectedattendeetypes,'Sponsor')),(contains(selectedattendeetypes,'Attendee'))),false,true)}"> 
+      <font  style="font-size:24px;">
+      {!eam1.AS_id__r.AS_Company__c}
+      </font>
+  </apex:outputpanel>
+   </td>
+  </tr>
+    
+    
+   <tr height="2cm">
+   <td width="100%" colspan="2" height="19" style="width:80%;font-size:18pt;font-face:Calibri (Body);Padding-Left:10px;Padding-Right:10px;text-align:right;">
+ <div style="width:100%;">  
+    <apex:outputPanel rendered="{!if(OR((contains(selectedattendeetypes,'Sponsor')),(contains(selectedattendeetypes,'SPONSOR'))),true,false)}">
+    <font style="valign:bottom;text-align:center;background-color:#ff0000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> SPONSOR </font>
+    </apex:outputPanel>
+    
+   
+     <apex:outputPanel rendered="{!if(contains(selectedattendeetypes,'Exhibitor'),true,false)}">
+     <font style="valign:bottom;text-align:center;background-color:#008000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> EXHIBITOR </font>
+    </apex:outputPanel>
+     <apex:outputPanel rendered="{!if(contains(selectedattendeetypes,'Volunteer'),true,false)}">
+    <font style="valign:bottom;text-align:center;background-color:#000000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> VOLUNTEER </font>
+    </apex:outputPanel>
+    
+     <apex:outputPanel rendered="{!if(contains(selectedattendeetypes,'Press'),true,false)}">
+    <font style="valign:bottom;text-align:center;background-color:#000000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> PRESS </font>
+    </apex:outputPanel>
+    
+     <apex:outputPanel rendered="{!if(contains(selectedattendeetypes,'Staff'),true,false)}">
+    <font style="valign:bottom;text-align:center;background-color:#000000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> STAFF </font>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!if(contains(selectedattendeetypes,'Speaker'),true,false)}">
+    <font style="valign:bottom;text-align:center;background-color:#000000;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> SPEAKER </font>
+    </apex:outputPanel>
+      <apex:outputPanel rendered="{!if(OR(othervalue != null || othervalue != ''),true,false)}">
+     <font style="valign:bottom;text-align:center;background-color:#800080;display:block;font-size:26px;color:#ffffff;font-face:Arial-BoldMT;"> {!othervalue}</font>
+    </apex:outputPanel>
+   
+    
+    
+ </div>
+    
+    </td>
+  </tr>
+  
+  
+  
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+    
+    
+  
+</table>
+
+
+
+</apex:page>

@@ -1,0 +1,155 @@
+<apex:page showHeader="false" sidebar="false" controller="BLN_PromoCodeReportCon"  standardStylesheets="false" renderAs="pdf">
+
+
+<apex:stylesheet value="{!URLFOR($Resource.landscape_pdf, 'landscape_pdf.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+<apex:stylesheet value="{!URLFOR($Resource.boothscreen_pdf, 'boothscreen.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-promocode-report.css')}" />
+<apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}"/> 
+ 
+<div style=" text-align:center;background-color:#FFFFFF;" class="printpdfreportname">Promocode Report</div>
+<div>
+<c:EventDetails BLN_EventDetails="{!eventInfo}"></c:EventDetails>
+
+</div>
+<apex:outputText rendered="{!byticketsummtype=='byticketsummarytab'}">
+ 
+ <table id="example" class="example display" style="page-break-inside: avoid !important;">
+                <thead>
+                    <tr>
+                        <th style="width:16%;">Promotion Name</th>
+                        <th style="width:13%;">Promo Code No</th>
+                       <th style="width:16%;">Promo Code Type</th>
+                        <th style="width:16%;">Discount Amount({!eventcurrency})</th>
+                        <th style="width:16%;">Used/Available</th>
+                        <th style="width:19%;">Total Discount Amount ({!eventcurrency})</th>
+                    </tr>
+                </thead>
+
+    <tbody>
+  <!--------------------Start of Parent Record (Main Repeat)------------------------>
+   <apex:repeat value="{!promoCodeInnerListbyticket}" var="promocode">
+    <apex:outputText rendered="{!if(promocode.prolistforticketinner.size!= 0, true,false)}">
+    <tr>
+     <td  colspan="6"  class="grptd"  style="width:100%; margin-left:0px; font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+     <div style="page-break-inside: avoid !important;">
+
+   <!-----------> 
+   <!--Group header-->
+   <ul class="grpheader" style="margin-left:-1px;">
+    <li class="labeltitles">Ticket Name:</li>
+    <li class="labeloutput">{!promocode.ticketname}</li>
+    <li class="labeltitles">Ticket Type:</li>
+    <li class="labeloutput">{!promocode.tickettype}</li>
+   </ul>
+   <!---------------->
+   <table class="display promocode_rpttbl" width="100.1%">
+  <tbody>
+ <!-----inside repeat for ticket belongs to pc-----> 
+ <apex:repeat value="{!promocode.prolistforticketinner}" var="itemPromotion">
+  <apex:outputText rendered="{!if(itemPromotion.usedbyticket!= 0 && itemPromotion.totaldiscountbyticket!=0,true,false)}">
+  <tr>
+    <td style="width:16%"><div style="page-break-inside: avoid !important;">{!itemPromotion.prolistforticket.name}</div></td>
+    <td style="width:13%"><div style="page-break-inside: avoid !important;"> {!itemPromotion.prolistforticket.Promo_Code__c}</div> </td>
+    <td style="width:16%"><div style="page-break-inside: avoid !important;"> {!itemPromotion.prolistforticket.Promotion_Type__c}</div></td>
+    <td style="width:16%"><div style="page-break-inside: avoid !important;">
+     <apex:outputText rendered="{!IF(itemPromotion.prolistforticket.Item_Promotions__r[0].item_Discount_Type__c== 'Amount', TRUE, FALSE)}" value="{!eventcurrency}" />
+     {!itemPromotion.prolistforticket.Item_Promotions__r[0].Item_Discount_Value__c}
+     <apex:outputText rendered="{!IF(itemPromotion.prolistforticket.Item_Promotions__r[0].item_Discount_Type__c== 'Percent', TRUE, FALSE)}" value="%" /></div>
+    </td>
+    <td style="width:16%"><div style="page-break-inside: avoid !important;">
+    {!itemPromotion.usedbyticket}/{!itemPromotion.prolistforticket.T_Max_Count__c}
+    </div>
+    </td>
+    <td style="width:19%"><div style="page-break-inside: avoid !important;">
+    <apex:outputText value="{0,number,{!eventcurrency} ###,##0.00}"> <apex:param value="{!itemPromotion.totaldiscountbyticket}"/> </apex:outputText></div>
+    </td>
+     
+  </tr>
+  </apex:outputText>
+   </apex:repeat>
+ <!--------> 
+  </tbody>
+</table>
+<!----------------->
+</div>
+  </td>
+    </tr>   
+     </apex:outputText> 
+     </apex:repeat>
+                 
+    <!-------------//end of Parent Record (Main Repeat)----------------------------> 
+       </tbody>
+</table>   
+</apex:outputText>
+ <apex:outputText rendered="{!byticketdetailtype=='byticketdetailtab'}">
+ 
+  
+         <table  width="100%" id="example" class="diaplay printpdfheaderborder promocode_rpttbl" style="width:100%; border-right:1px solid #ddd; font-family:Arial, Helvetica, sans-serif; font-size:13px;page-break-inside: avoid !important;" border="0" cellpaddin="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th  width="20%">Order No</th>
+                        <th width="30%">Promo Code Name</th>
+                       <th width="30%">Attendee Name</th>
+                        <th>Discount Amount ({!eventcurrency})</th>
+                 </tr>
+                </thead>
+                <tbody>
+                  <!--------------------Start of Parent Record (Main Repeat)------------------------>
+                  
+                   <apex:repeat value="{!promoCodeInnerListbyticketdetail}" var="promocode">
+                     
+                      
+                      
+                      
+                      
+                    <tr>
+                     <td  colspan="4" class="grptd" style="width:100%; margin-left:0px; font-family:Arial, Helvetica, sans-serif; font-size:12px;">
+                     <div style="page-break-inside: avoid !important;">
+                    <!-----------> 
+                    <!--Group header-->
+                    <ul class="grpheader" style="margin-left:-1px;">
+                    <li class="labeltitles">Ticket Name:</li>
+                    <li class="labeloutput">{!promocode.blnitems.Buy_Item__r.item_name__c} </li>
+                     <li style="margin-left:6px; margin-right:6px; color:#CCCCCC;">|</li>
+                     <li class="labeltitles">Ticket Type: </li>
+                    <li class="labeloutput"> {!promocode.blnitems.Buy_Item__r.item_type__r.Name}</li>
+                    </ul>
+                    <!---------------->
+                    <table class="display promocode_rpttbl" width="100%" border="0" style="page-break-inside: avoid !important;">
+                    <tbody>
+                    <!-----inside repeat for ticket belongs to pc-----> 
+                    
+                    
+                    <apex:repeat value="{!promocode.itemPromotionList1}" var="itemPromotion"> 
+                    
+                    <apex:outputText rendered="{!if(itemPromotion.itemPromotionData.Item_Discount__c!= 0 ,true,false)}">
+                    <tr>
+                    <td style="width:20%"><div style="page-break-inside: avoid !important;"> {!itemPromotion.itemPromotionData.Order__r.Name}</div></td>
+                    <td style="width:30%"> <div style="page-break-inside: avoid !important;">{!itemPromotion.itemPromotionData.Promotion__r.Name}</div></td>
+                    <td style="width:30%"><div style="page-break-inside: avoid !important;"> {!itemPromotion.itemPromotionData.Order__r.BLN_TKT_profile__r.First_Name__c}{!itemPromotion.itemPromotionData.Order__r.BLN_TKT_profile__r.Last_Name__c}</div></td>
+                    <td class="textcenter"> <div style="page-break-inside: avoid !important;">
+                     <apex:outputText value="{0,number,{!eventcurrency} ###,##0.00}">
+                      <apex:param value="{!itemPromotion.itemPromotionData.Item_Discount__c}" />
+                     </apex:outputText></div>
+                   </td>
+                    
+                    </tr>
+                   
+                    </apex:outputText>
+                    </apex:repeat>
+                   
+                      
+                                
+                    <!-------------//end of Parent Record (Main Repeat)---------------------------->
+                 </tbody>
+                 </table></div>
+                 </td>
+                 </tr>
+                 
+                    </apex:repeat>
+                    </tbody>
+                 </table>
+  </apex:outputText>  
+  
+</apex:page>

@@ -1,0 +1,380 @@
+<apex:page controller="BL_NYNJNMSDCSuccessPageCon" showHeader="false" standardStylesheets="false" action="{!MainMethod}"> 
+ 
+<apex:stylesheet value="{!URLFOR($Resource.Attendee_Portal_SelfRegistration_CSS,"AttendeeArrowCSSBradcom.css")}"/>
+  <apex:includeScript value="{!$Resource.GE_ES_JQueryFile}"  />
+<script>
+
+$(document).ready(function() {
+  
+  $(".spanCls").click(function(){
+ var s=$(this).attr('id');
+ s= "#" + s.replace('SpanCol','tr1');
+ $(s).toggle();
+});
+ });
+</script>
+
+
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3.5&sensor=true"></script>
+    <!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
+    <script type="text/javascript"> 
+    
+    $(document).ready(function() {
+    
+      var myOptions = {
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: false
+      }
+    
+      var map;
+      var marker;
+    
+      var geocoder = new google.maps.Geocoder();
+      var address = "{!eve.EV_HistingAddr1__c}, " + "{!eve.AS_HostingAddr2__c}, " + "{!eve.AS_HostingCity__c}, " + "{!eve.EV_HostingCountryNew__c}";
+    
+      var infowindow = new google.maps.InfoWindow({
+        content: "<b>{!eve.EV_HistingAddr1__c}</b><br>{!eve.EV_HistingAddr1__c}<br>{!eve.AS_HostingAddr2__c}, {!eve.AS_HostingCity__c}<br>{!eve.EV_HostingCountryNew__c}"
+      });
+    
+      geocoder.geocode( { address: address}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK && results.length) {
+          if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+    
+            //create map
+            map = new google.maps.Map(document.getElementById("map"), myOptions);
+    
+            //center map
+            map.setCenter(results[0].geometry.location);
+    
+            //create marker
+            marker = new google.maps.Marker({
+                position: results[0].geometry.location,
+                map: map,
+                title: "{!eve.EV_HostingCountry__c}"
+            });
+    
+            //add listeners
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(map,marker);
+            });
+            google.maps.event.addListener(infowindow, 'closeclick', function() {
+              map.setCenter(marker.getPosition()); 
+            });
+    
+          }
+    
+        } else {
+          $('#map').css({'height' : '15px'});
+          $('#map').html("");
+          resizeIframe();
+        }
+      });
+    
+      function resizeIframe() {
+        var me = window.name;
+        if (me) {
+          var iframes = parent.document.getElementsByName(me);
+          if (iframes && iframes.length == 1) {
+            height = document.body.offsetHeight;
+            iframes[0].style.height = height + "px";
+          }
+        }
+      }
+    
+    });
+    </script>
+    
+    <style>
+    body{font-family:Tahoma;font-size:12px;}
+    #maphead{background-color:#eaeaea; height:25px; padding-top:5px; border:1px solid #CCCCCC; padding-left:15px;
+     background: #ffffff;
+
+     }
+#map {
+  font-family: Arial;
+  font-size:12px;
+  line-height:normal !important;
+  height:150px;
+  background:transparent;
+}
+
+
+.error{ 
+        color: #FF0000;
+      }
+    
+.element {color:#414141;}
+
+
+</style>
+
+
+
+
+
+<!--------------------------END MAP----------------------------------------------------------------------->
+  
+ 
+
+ 
+ 
+ 
+ <style>
+    
+                 
+   .borders {
+   border:1px solid #72ade7;
+  
+   font-size:12px;
+   }              
+    
+    .rich-tabpanel-content  {
+      background-color: #FFFFFF;
+      border:1px solid #FF0000;
+    }
+    
+  <!---------------------------- STYLES FOR TABS In POPUP-------------------------------->
+
+
+.button {
+    color:#FFFFFF;
+    font:1.5em Futura, ‘Century Gothic’, AppleGothic, sans-serif;
+    padding:4px;
+    background:url(overlay.png) repeat-x center #54b5f1;
+    background-color:rgba(84,181,241,1);
+    border:1px solid #ffcc00;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+    border-radius:10px;
+    border-bottom:1px solid #9f9f9f;
+    -moz-box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
+    -webkit-box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
+    cursor:pointer;
+    margin-top:15px;
+}
+.gradiant {
+    background: -moz-linear-gradient(top, #EFEFEF, #BBBBBB);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EFEFEF), to(#BBBBBB));
+}
+#header1 {
+    height:auto;
+    background-color:#60A4EB;
+    background: #0096c9; /* Old browsers */
+background: -moz-linear-gradient(top, #0096c9 0%, #00689b 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0096c9), color-stop(100%,#00689b)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #0096c9 0%,#00689b 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #0096c9 0%,#00689b 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, #0096c9 0%,#00689b 100%); /* IE10+ */
+background: linear-gradient(to bottom, #0096c9 0%,#00689b 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0096c9', endColorstr='#00689b',GradientType=0 ); /* IE6-9 */
+    width:100%;
+    border:0px solid #996699;
+    border-bottom:1px solid #996699;
+    position:relative;
+    clear:both;
+    margin:0px auto;
+    -webkit-box-shadow:
+ 0 0 2px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, .2), 0 3px 0 #fff, 0 4px 0 rgba(0, 0, 0, .2), 0 6px 0 #fff, 0 7px 0 rgba(0, 0, 0, .2);
+    -moz-box-shadow:
+ 0 0 2px rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(0,   0,   0,   .1), 3px 3px 0 rgba(255, 255, 255, 1), 4px 4px 0 rgba(0,   0,   0,   .1), 6px 6px 0 rgba(255, 255, 255, 1), 7px 7px 0 rgba(0,   0,   0,   .1);
+    box-shadow:
+ 0 0 2px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, .2), 0 3px 0 #fff, 0 4px 0 rgba(0, 0, 0, .2), 0 6px 0 #fff, 0 7px 0 rgba(0, 0, 0, .2);
+}
+#headleft {
+    padding-left:25px;
+    padding-top:8px;
+    width:25%;
+    border:0px solid #996699;
+}
+#headright {
+    float:right;
+    width:64%;
+    text-align:right;
+    border:0px solid #996699;
+    position:absolute;
+    top:5px;
+    right:0;
+    padding-right:30px;
+}
+#headright ul {
+    list-style:none;
+    display:inline;
+    font-size:16px;
+}
+#headright ul li {
+    display:inline;
+    color:#FFFFFF;
+}
+#headright ul li a {
+    text-decoration:none;
+}
+#footer {
+    height:25px;
+    background-color:#f2f2f2;
+    width:100%;
+    border:0px solid #FF0000;
+    border-top:1px solid #CCCCCC;
+    position:relative;
+    clear:both;
+    margin:0px auto;
+    margin-bottom:0px;
+    background-color:#414141
+}
+hr {
+    border: 0;
+    width:95%;
+    background-color: #CCCCCC;
+    height: 1px;
+}
+.awesome {
+    background-color:#2486c3;
+    color:#FFFFFF;
+    padding:5px;
+    font-weight:normal;
+    border:0px;
+    cursor:pointer;
+    font-size:13px;
+    background: -moz-linear-gradient(top, #2a81b8, #3298d8);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2a81b8), to(#3298d8));
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.awesome:hover {
+    background-color:#2486c3;
+    color:#FFFFFF;
+    padding:5px;
+    font-weight:normal;
+    border:0px;
+    cursor:pointer;
+    font-size:13px;
+    background: -moz-linear-gradient(top, #3298d8, #2a81b8);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3298d8), to(#2a81b8));
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.title-social-bar-wrapper {
+margin: 0 auto;
+padding: 0 0 5px 0;
+background-color: #eee;
+overflow: auto;
+width: 970px;
+-moz-border-radius-topright: 5px;
+-moz-border-radius-topleft: 5px;
+border-top-right-radius: 5px;
+border-top-left-radius: 5px;
+}
+
+
+
+</style>
+<!-------------------------------------------HEADER------------------------------------->
+   <div id="header1">
+      
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="line-height:35px;">
+      <tr> 
+        <td width="102"> <apex:image url="/servlet/servlet.ImageServer?id={!eve.EV_EventLogo__c}&oid={!$Organization.Id}" height="100px" width="150px" style="padding:6px;" rendered="{!if(eve.EV_EventLogo__c!=null,true,false)}"/> </td>
+        <td align="left" style="text-align:left;" valign="bottom">
+        <table cellpadding="0" cellspacing="0" width="100%" border="0" style="color:#000; padding:10px; font-size:12px;" align="right">
+          <tr>
+            <td bgcolor="" align="left"><h2 style="margin:0px 0px 5px 0px ; padding:0px; line-height:22px;  height:22px; font-family:Georgia, 'Times New Roman', Times, serif;font-size:25px;color:#ffffff;  ">{!eve.EV_Title__c}</h2></td>
+          </tr>
+          <tr>
+            <td align="left" style="color:#FFFFFF; height:22px;" valign="middle">
+            <b>Date  Time:&nbsp;</b> <apex:outputText value="{0,date,MM/dd/yyyy}"> 
+            <apex:param value="{!eve.EV_StartDate__c}" /> </apex:outputText> &nbsp; {!eve.StartTime__c}&nbsp;
+             <B>TO </B> &nbsp;<apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!eve.EV_EndDate__c}" /> </apex:outputText> &nbsp; {!eve.EV_EndTime__c}
+              </td>
+          </tr>
+        </table>
+        
+        
+        <div id="headright">
+        <ul style="list-style:none; display:inline;color:#ffffff">
+          <li><a href="http://boothleads.com/" class="link" style="color:#FFFFFF;font-size:15px">Home</a>
+          |
+         <a href="http://boothleads.boothleads.cs11.force.com/" class="link" style="color:#FFFFFF;font-size:15px">Create Event</a>
+          |
+         <a href="https://boothleads.boothleads.cs11.force.com/bl_Attendee_Registration" class="link" style="color:#FFFFFF;font-size:15px">Find Event</a></li>
+        </ul>
+      </div>
+       
+        </td>
+      </tr>
+    </table>
+    
+    
+    
+    
+    
+    
+    
+      
+      </div>
+<br />
+<!------------------------------------------------HEADER END-------------------------------->
+  
+  <apex:form >
+  <div style="width:98%;margin:0px auto; border:0px solid #FF0000; height:150px;" >
+   
+ <div id="map" style=" border:0px solid #CCCCCC;width:70%;float:left; "></div>
+ 
+ <div style="width:30%;float:right; border:0px solid #CCCCCC; background-color:#F1EFE8; text-align:center; font-size:14px; line-height:30px; height:150px; ">
+   <font color="#BE5F5B" style="padding:5px; font-size:14px;"><b> Event Location</b></font><br/><hr />
+            
+ <font style="color:#0096dd">{!eve.EV_HistingAddr1__c}</font><br/>
+ <font style="color: #0096dd">{!eve.AS_HostingCity__c},</font>
+ <font style="color: #0096dd">{!eve.EV_HostingState__c},</font>
+ 
+ <br/>
+ 
+ <font style="color:#0096dd">{!eve.EV_HostingCountryNew__c}</font><br/>
+ 
+ </div>
+   </div>
+  </apex:form>
+  
+  
+   
+    
+    
+    
+    
+    <!-- ---------------------------44444444444444 ------------------------------ -->
+    
+    
+    
+<div style="min-height:450px;padding-top:2px;">
+<table style="background-color:#96C9E9;width:98%;height:100%;margin:20px 20px 10px 50px ; margin:0px auto;">
+<tr ><td>
+<h1 style="margin:20px 0px 5px 0px ; padding:0px; line-height:22px;  height:10px; font-family:Georgia, 'Times New Roman', Times, serif;font-size:25px;color:#FA5858; text-align:center ">
+  Transaction is Success...!  
+  </h1><br /><br />
+ <h1 style="margin:0px 0px 5px 0px ; padding:0px; line-height:22px;  height:8px; font-family:Georgia, 'Times New Roman', Times, serif;font-size:25px;color:#FFFFFF; text-align:center ">
+ <p>Thanks for registering to the event {!eve.EV_Title__c}.</p>
+ 
+ 
+ <p>Now you can download the mobile app and sign up to capture the Leads.</p></h1><br /><br /><br /><br /><br />
+ <apex:form ><br />
+  <p style="text-align:center"> <apex:commandButton action="{!redirectPage}" value="OK" style="width:120px;height:40px;"/></p></apex:form>
+ 
+ <br />
+ <apex:image value="{!$Resource.tornpaper_style}" style="width:100%;padding-top:250px;"/>
+ </td></tr>
+  
+ </table>
+ 
+ </div>
+<div id="footer">
+      <div style="float:left; width:40%;border:0px solid #FF0000;position:absolute;
+    top:16px; left:0; text-align:left; color:#FFFFFF; padding-left:30px;">2012 @ Copyrights reserved Globalnest LLC. All Rights Reserved.</div>
+      <div style="float:right; width:40%; border:0px solid #FF0000;position:absolute;
+    top:5px; right:0; text-align:right">
+        <apex:image url="{!URLFOR($Resource.Attendee_Portal_Images_All,"Images/productbyglobalnest.png")}"/>
+      </div>
+    </div>
+</apex:page>

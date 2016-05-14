@@ -1,0 +1,1143 @@
+<apex:page controller="BLN_Seminars_updCon" standardStylesheets="false" showHeader="false" id="eventschedule">
+ 
+ <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+     <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <!------------//common styles component---------->
+     <!-----------datatable stylescss------------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+       <!-----------//datatable stylescss------------->
+    <!-------------basic template html component------------------------------------->
+  <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}" id="bscompo">
+   <script>
+        var contents='';
+        
+        var iframelink=[];//storing the embed links value
+     
+        <!---------------------------youtube component script------------------------------> 
+        
+        var jq = jQuery.noConflict();
+        jq(function() {
+                 
+             ///function calling for delete youtube box 
+            jq(document.body).on('click', '.crossicon' ,function(){
+                  //alert("enter");
+                   jq(this).each(function() {
+                    var current_index=jq(this).parent().index();
+                    //alert("Currentbox Index" + jq(this).parent().index());
+                    
+                    iframelink.splice(current_index-1,1);//removing the deleted link from the array..
+                    //alert("Updated Array Size ---" + iframelink.length);
+                    //alert("Updated Array Link ---" + iframelink);
+                   jq(this).parent().remove();//deleting the box
+               
+                    if(iframelink.length==0){
+                        $(".ytwraper").css("display","none");//youtube wrapper with youtube heading will vanish
+                        }      
+               
+             
+                   })
+         try{
+         
+                    $("[id$='speakervideohidden']").val(iframelink.toString());
+                   }catch(e){}
+            });
+            
+            
+        
+        //function calling for appending youtube iframe link    
+            jq(".ytsave_btn").click(function(){
+                 
+                var iframeval=jq(".framelinkval").val();//capturing user embed link
+                var box=jq("<div class='ytbox'></div>")//creating parent div
+                var delimg=jq("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+                var iframebox=jq("<div class='iframebox'></div>");
+                var ytregex=iframeval.match(/(<iframe.+?<\/iframe>)/g);
+                //condition for shouldnot equal to null and match the regex of iframe
+                if(iframeval!="" && ytregex){
+                    //alert("has");
+                        jq(".ytwraper").css("display","block");
+                        jq(box).append(delimg);
+                        
+                        jq(iframebox).append(iframeval);
+                        iframelink.push(iframeval);
+                        jq(box).append(iframebox);
+                        jq(".ytwraper").append(box);
+                        jq(".framelinkval").val("");//clearing the embedlink textbox
+                    } 
+                    
+                else{
+                    //alert("Shouldnot Null And Provide Embed Format");
+                    Alert.render('Please Provide a Correct Youtube Embed Format' ,'Alert !','ok');
+                    jq(".framelinkval").val("");
+                    }   
+                //alert("Array Size ---" + iframelink.length);
+                // alert("Array List---" + iframelink.join(","));
+                  try{
+                   
+                    $("[id$='speakervideohidden']").val(iframelink.toString());
+                   }catch(e){}
+                        
+                         
+                })
+            //alert(iframeval)
+            });
+                
+        </script>
+
+
+        <apex:form id="showNew">
+        <apex:actionFunction action="{!saveRoom}" name="svrm"  status="AjaxLoader" rerender="outPan,addroompanel" oncomplete="$('.roomedit').bind('click',roomedit);$('.roomdel').bind('click',roomdel);">
+     <apex:param name="roomname" value="" />
+     <apex:param name="roomnum" value="" />
+     <apex:param name="xyid" value="" />
+     </apex:actionfunction> 
+     
+     <apex:actionFunction action="{!deleteroom}" name="rmdel" status="AjaxLoader" rerender="outPan" >
+          <apex:param name="delrmRecid" value="" />
+     </apex:actionfunction> 
+            <!---------------------template code------------------>
+              <div id="agendatblbox" class="datatable-wrapper" style="display:{!IF(createNewSeminarBool==false,'','none')}">  
+ 
+  <div class="top-stats">
+  
+     <!--<button type="button" id="new_campaign" class="togglebtn right margin-ryt-5px margin-lft-5px"  style="padding:5px;" onclick="showpackage('agendaform','agendatblbox')">Add Agenda</button>  -->
+   <apex:commandButton id="new_campaign" value="Create Event Schedule" action="{!createNewSeminar}" styleClass="togglebtn right margin-ryt-5px margin-lft-5px" style="padding:5px;"/>
+
+     <div class="clear"></div><!--close of clear-->   
+ <!---->
+        </div><!--close of top stats---->
+        
+        <!-- script for DRAG & DROP Functionality -->
+        <c:ed_RowDragAndDrop ></c:ed_RowDragAndDrop><!-- component for drag and drop -->
+        <script> 
+            window.onload=function() {      
+            var table = document.getElementById('agendaTableId');    
+            var tableDnD = new TableDnD();
+            tableDnD.init(table);
+        }
+        </script> 
+        <!-- DRAG and DROP Functionality End --> 
+    <!----------Start Action function for updating reordered rows of agenda table table ---------------------->             
+         <apex:actionFunction action="{!updateAgendaOrder}" name="rowOrderDisplay" reRender="agendaTableId" >
+            <apex:param value="" name="agendaOrder"/>
+        </apex:actionFunction>
+    <!----------End Action function for updating reordered rows of agenda table table ---------------------->  
+<apex:outputPanel id="agendele">
+<div id="Agendagrp" class="targetdiv" style="display:block"><!--start of grp1----> 
+<!---start of  output table----->
+
+ 
+<table class="example display" id="agendaTableId" >
+  <thead>
+    <tr>
+      <th width ="2%"></th>
+      <th width="30%">Program Name</th>
+      <th width="27%">Program Date</th>
+      <th width="12%">Room</th>
+      <th width="17%">Speaker</th>
+      <th width="12%">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+   <!-----------parent first record(repeat)-------->
+   <apex:variable var="listcou" value="{!0}" id="listcountid"/>
+   <apex:repeat value="{!seminarInn}" var="sem">
+    <apex:repeat value="{!sem.agendaList}" var="s">
+    <apex:variable var="listcou" value="{!listcou+1}"/>
+    <tr id="{!s.ID}">
+      <td colspan="8" style="padding:0px; border:none;"><!------------>
+        
+        <table  class="display subtable" style="border:none; background-color:transparent;">
+         
+        
+         <apex:repeat value="{!s.Time_Slots__r}" var="k">
+         
+           <tr style="background-color:transparent;"> 
+            <!---->
+             <td  width="2%" class=" textcenter" ><apex:image url="{!$Resource.DragButton}"  style="margin-left:-5px;" /> </td>
+            <td width="30%" class=" textleft">{!s.Agenda_Name__c}</td>
+            
+            <td width="27%" class=" textleft">
+            <c:EV_FormatDt date_Timevalue="{!k.Slot_Start_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}" t_format="MM/dd/yyyy hh:mm a"/>
+            - <c:EV_FormatDt date_Timevalue="{!k.Slot_End_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}" t_format="MM/dd/yyyy hh:mm a"/>
+            </td>
+                            
+            <td width="12%" class=" textleft">{!k.Room__r.NAME} {!k.room__r.Room_Number__c}</td>
+            <td width="17%" class=" textleft"><apex:variable value="{!1}" var="partNumber"/>
+                            <apex:repeat value="{!agendaParticipants[s.id]}" var="par">
+                                 <p style="text-align:left; margin-top:5px; "> <apex:outputText value="{!partNumber}"></apex:outputText>  &nbsp;
+                                     <apex:outputText value="{!par.BLN_TKT_profile__r.First_Name__c}"></apex:outputText>&nbsp;
+                                      <apex:outputText value="{!par.BLN_TKT_profile__r.Last_Name__c}"></apex:outputText>
+                                 </p>
+                                 <apex:variable value="{!(partNumber+1)}" var="partNumber"/>
+                            </apex:repeat>
+                            </td>
+            <td width="12%" class=" textcenter">
+            <apex:outputpanel layout="none" rendered="{!s.Agenda_Type__c =='Event level Agenda'}">
+            <apex:commandLink styleClass="edit-link" title="Edit" action="{!editSeminar}"  >
+                          <i class=" fa fa-pencil fa-edit20px  btnEditar"></i>
+                          <apex:param value="{!s.id}" name="editAgendaId"/>
+                      </apex:commandLink>
+            &nbsp;&nbsp;
+            <!-- <apex:commandLink styleClass="delete-link" title="Delete" action="{!deleteAgenda}" >
+                         <i class="fa fa-trash-o fa-delete20px btnExcluir "></i>
+                          <apex:param value="{!s.id}" name="deleteAgendaId"/>
+                      </apex:commandLink> --> <!--<a class="delete-link" title="Delete"><i class="fa fa-trash-o fa-delete20px btnExcluir "></i></a>-->
+                       <i class="fa fa-trash-o fa-delete20px btnExcluir " onclick="deleteasm('{!s.id}',this);" title="Delete"></i>
+                      </apex:outputpanel>
+              <div class="expcolp_img"></div></td>
+          </tr>
+          <!--------->
+          </apex:repeat>
+         
+        </table>
+        <!--close of subtable----->
+        
+        <div class="expdiv" >
+        
+        <!---->
+        
+        <div class="form-embed-div"> 
+          <!----------->
+          <div class="form-content-div"> 
+            <!----------->
+            
+            <p class="padding-5px  strong_700 lblheading" style=" display:inline-block" >Description:</p>
+            <p class="padding-5px right  strong_700 lblheading" style=" display:inline-block; padding-right:45px" > Speaker: <span class="labeltitles"><apex:variable value="{!1}" var="partNumber"/>
+                            <apex:repeat value="{!agendaParticipants[s.id]}" var="par">
+                <span style="text-align:right; margin-top:5px; "> <span style="text-align:right; margin-top:5px;padding-right:15px;width:15%">  <apex:outputText value="{!partNumber}"></apex:outputText>  &nbsp;
+                                    <apex:outputText value="{!par.BLN_TKT_profile__r.First_Name__c}"></apex:outputText>&nbsp;
+                                      <apex:outputText value="{!par.BLN_TKT_profile__r.Last_Name__c}"></apex:outputText>
+                </span></span>
+                                 <apex:variable value="{!(partNumber+1)}" var="partNumber"/>
+                            </apex:repeat></span></p>
+            <!--------->
+            <p class="padding-5px lblheading" > <apex:outputField value="{!s.Agenda_Description__c}"/> </p>  
+            <!------> 
+            
+          </div>
+          <!--form-embed-div--> 
+        </div>
+        <!---form-content-div-->
+     
+  <!----->
+  </div>
+   <!--close of expdiv---></td>
+    </tr>
+    <!---------------------------***********end of parent(repeat)-------------------------------------------> 
+    </apex:repeat>
+     </apex:repeat>
+  
+    <!--------->
+    
+  </tbody>
+</table>
+
+
+
+
+
+<!---end of output table----->
+</div>
+<script>
+try{
+dtcalldt();
+}catch(e){}
+</script>
+</apex:outputpanel>
+<!--close of seminargrp---> 
+
+</div>
+<!--close of eventscheduletblbox----> 
+
+<!-------create Agenda form Section----------->
+<div id="agendaform" class="createform" style="display:{!IF(createNewSeminarBool==true,'','none')}" >
+  <div class="content-top-btn-box" style="margin-top:15px; margin-right:1.5%;">
+    <!--<button type="button" id="new_campaign" class="togglebtn" style=" padding:5px;" onclick="showpackage('agendatblbox','agendaform')">Agenda</button>-->
+    <apex:commandButton styleClass="togglebtn" style="padding:5px;" value="Event Schedule"  action="{!cancelAgenda}"/>
+     </div>
+  <div class="clear"></div>
+  <div class="shadow-div" style=" margin-top:0px;">
+    <p class="padding-5px bg-font">Add Agenda</p>
+    <!--close of black-title-->
+    <div class="form-embed-div" style=" width:60%; margin-top:20px;"> 
+      <!----------->
+      <div class="form-content-div" style=" padding:0px;">
+        <div class="formbox" >
+       <!------->
+        <div class="formelem_boxbig">
+              <div class="formlabel-left textright">
+                <label>Program Name:</label>
+                <label class="mandatory">*</label>
+                 </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+              <!-------->   
+              <apex:inputField value="{!newAgendas.Agenda_Name__c}" id="seminarName" onfocus="oldvalfn(this.value)"/> 
+              <!---------->
+                </div><!---close of formelement-ryt---->
+               <div class="clear"></div>
+            </div>
+       <!------->  
+        <!------->
+        <div class="formelem_boxbig">
+              <div class="formlabel-left textright">
+               <label>Start Time:</label>
+                <label class="mandatory">*</label>
+                 </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+             
+              <input class="jqdatepicker" id="eventsdate" type="text" placeholder="__/__/____  __:__" />
+              <div style="display:none" > 
+                     <!--  <apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}">
+                            <apex:param value="{!timeslots.Slot_Start_date__c+offset}"/>
+                         </apex:outputText> -->
+                 
+                  <apex:outputpanel rendered="{!timeslots.Slot_Start_date__c!=null}" >
+                           <c:EV_FormatDt date_Timevalue="{!timeslots.Slot_Start_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}"  id="strValue"/>
+                      </apex:outputpanel>
+                           
+                     </div>
+                  
+              <!---------->
+                </div><!---close of formelement-ryt---->
+               <div class="clear"></div>
+            </div>
+       <!------->  
+       
+        <!------->
+        <div class="formelem_boxbig">
+              <div class="formlabel-left textright">
+                <label>End Time:</label>
+                <label class="mandatory">*</label>
+                 </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+              <!-------->   
+              <input class="jqdatepicker1" id="eventedate" type="text" placeholder="__/__/____  __:__" />
+              <!-- ------ -->
+              <div style="display:none" > 
+                 <!--<apex:outputText value="{0,date,MM/dd/yyyy hh:mm a}">
+                            <apex:param value="{!timeslots.Slot_End_date__c+offSet}"/>
+                         </apex:outputText>  -->    
+                     <apex:outputpanel rendered="{!timeslots.Slot_End_date__c!=null}" >
+                           <c:EV_FormatDt date_Timevalue="{!timeslots.Slot_End_date__c}" t_Zone="{!selectedEvent.Time_Zone__c}"  id="strValueEd"/>
+                      </apex:outputpanel>  
+                         </div>
+                </div><!---close of formelement-ryt---->
+                
+               
+               <div class="clear"></div>
+            </div>
+       <!------->    
+       <style>
+           .formelem_boxbig .formelement-ryt .selectlist {
+    width: 77%;
+}
+       </style>
+        <!------->
+        <div class="formelem_boxbig">
+              <div class="formlabel-left textright">
+               <label>Room:</label>
+                 </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+              <!-------->   
+               <apex:outputPanel id="outPan">
+                        <apex:selectList value="{!timeslots.Room__c}" multiselect="false" size="1" styleClass="selectlist" id="seminarsRoom1" >
+                         <apex:selectOptions value="{!roomsSelectOptions}"/>
+                        </apex:selectList> 
+                     </apex:outputPanel> 
+                <span> <a id="room_btn" class="togglebtn" onclick="Alert_room.render('dialogbox_room','broom_dialogoverlay','Alert_room' ,this)" > <i class="fa fa-gear" style="padding:6px 5px;"></i> </a> </span>
+              <!---------->
+                </div><!---close of formelement-ryt---->
+               <div class="clear"></div>
+            </div>
+       <!------->      
+          <!------->
+        <div class="formelem_boxbig">
+              <div class="formlabel-left textright">
+                <label>Speaker:</label> 
+               
+                 </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+              <!-------->   
+              <!--<select class="selectlist chzn-select " multiple="true" style=" width:214%">
+                  <option>David Cameron</option>
+                  <option>Oprah Winfrey</option>
+                  <option>John Davis</option>
+                </select>-->
+                <apex:selectList value="{!sel_speaker}"  multiselect="true" styleclass="selectlist chzn-select" style="width:255px;">
+                         <apex:selectOptions value="{!Al_speaker}"/>
+                      </apex:selectList> 
+                      
+              <!---------->
+                </div><!---close of formelement-ryt---->
+               <div class="clear"></div>
+            </div>
+       <!-------> 
+       <!------->
+        <div class="formelem_boxbig">
+              <div class="formlabel-left textright">
+                <label>Visibility:</label> 
+       
+                 </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+              <!-------->   
+       
+                <apex:selectList value="{!newAgendas.Visibility__c}" id="seminarsTrack" multiselect="false" size="1" styleClass="selectlist">
+                        <apex:selectOptions value="{!Visibility}"/>
+                      </apex:selectList>
+                      
+              <!---------->
+                </div><!---close of formelement-ryt---->
+               <div class="clear"></div>
+            </div>
+        <!------->
+       
+        <!------->
+        <div class="formelem_boxbig">
+              <div class="formlabel-left textright">
+                  <label>Program Description:</label>
+               
+                 </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+              <!-------->   
+               <!--<textarea rows="5"></textarea>-->
+               <apex:inputField value="{!newAgendas.Agenda_Description__c}" style="height:200px;"/>
+              <!---------->
+                </div><!---close of formelement-ryt---->
+               <div class="clear"></div>
+            </div>
+       <!-------> 
+          <!------->
+        <div class="formelem_boxbig">
+              <div class="formlabel-left textright">
+                  <label>Attachment:</label>
+        
+                 </div><!---close of formlabel--->
+              <div class="formelement-ryt textleft">
+              <!-------->   
+               <!--<textarea rows="5"></textarea>-->
+                                  <input type="file" id="idAttachment" onchange="checkfile()"  multiple="false" accept="application/pdf" >{!AttName} </input> 
+              <!----<apex:inputFile value="{!attachment.body}" filename="{!attachment.name}" onchange="checkfile();" id="file"/>---->
+              
+              
+                <apex:outputpanel id="opAtt">
+                <apex:repeat value="{!attlist}" var="attachment">
+                <a href="{!$Label.siteurl}/servlet/servlet.FileDownload?file={!attachment.Id}" target="_blank"  style="color:black">{!attachment.Name}</a>&nbsp; 
+                
+                <input type="button" value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete" onclick="return deleteConfirm('{!attachment.Id}','{!attachment.Name}');"/>
+                <!---<apex:commandlink value="x" styleClass="attdelcl"  style="text-decoration:none;color:Red" title="Delete"  onclick="return deleteConfirm('{!attachment.Id}','{!attachment.Name}');" >&nbsp;
+                </apex:commandLink>-->
+                
+                
+                </apex:repeat>
+                </apex:outputpanel>
+                    
+              <!---------->
+                </div><!---close of formelement-ryt---->
+               <div class="clear"></div>
+            </div>
+       <!------->   
+           <apex:inputHidden id="speakervideohidden" value="{!newAgendas.Video__c}" />  
+                <!--------Youtube Embed Link------->
+                <div class="formelem_boxbig">
+                  <div class="formlabel-left textright">
+                    <label>Video:</label>
+                  </div>
+                  <!---close of formlabel--->
+                  <div class="formelement-ryt textleft">
+                    <input class="framelinkval" type="text" id="iframevideotext"/>
+                    <i class="fa fa-save  fa-save20px ytsave_btn " title="Save">&nbsp;</i> </div>
+                  <!---close of formelement-ryt----> 
+                  <!-----End of Youtube Embed Link-------> 
+                  <!--------> 
+                </div>
+                
+                <!---close of formelem_box---> 
+                <!----------------------------------------------------->
+                <div class="clear"></div>
+                <div class="ytwraper">
+                  <p class="bg-font" >Youtube Links</p>
+                </div>
+                <div class="clear"></div>
+            
+        </div>
+        <!--close of formbox----> 
+      </div>
+      <!--close of form-content-div----> 
+    </div>
+    <!--close of form-embed-div----->
+    <div style="margin-top:20px; text-align:center;">
+      <!--<button class="button-a blue" onclick="showpackage('agendatblbox','agendaform')">Save</button>-->
+      <!--<apex:commandButton value="Save" action="{!saveAgenda}" onclick="return saveFunction();" styleclass="button-a blue" />-->
+     <!-- <apex:commandButton value="Save" onclick="return saveFunction();" styleclass="button-a blue" oncomplete="windows.location.reload();"/>-->
+                  <button class="button-a blue" onclick="saveFunction(contentsatt,contentsattname);return false;">Save</button>  
+                  
+      &nbsp;&nbsp;
+      <apex:inputHidden id="evsdate" value="{!eventStartDate}" />
+      <apex:inputHidden id="evedate" value="{!eventEndDate}" />
+
+      <!--<button class="button-a dark-blue" onclick="showpackage('agendatblbox','agendaform')">Cancel</button>-->
+      <apex:commandButton value="Cancel" action="{!cancelAgenda}" styleclass="button-a dark-blue"  />
+    </div>
+     
+  </div>
+  <!---close of shadow-div-----> 
+  
+</div>
+<!--close of createform-----> 
+
+ <apex:actionFunction name="afDelAttach" action="{!DelAttachment}" reRender="opAtt"  status="AjaxLoader" immediate="true">
+                             <apex:param value="" name="deletedId" />   
+                   </apex:actionFunction>
+                   
+<apex:actionFunction action="{!saveAgenda}" name="savefn" status="AjaxLoader"  rerender="saveAgenda" oncomplete="windows.location.reload();">
+   <apex:param name="AttData" value="" assignTo="{!AttData}"/>
+      <apex:param name="AttName" value="" assignTo="{!AttName}"/>
+</apex:actionFunction>
+<!----------------------------delete agenda------------------------------->
+      <apex:actionFunction action="{!deleteAgenda}" name="deleteAgendafrromlist" rerender="agendele"  status="AjaxLoader">
+
+                                <apex:param value="" name="deleteAgendaId"/>
+              
+                                </apex:actionFunction>
+                                <!----------------------------delete agenda----------------------------->
+<!------------start of popup component function------------------>
+    
+    <!------------/close of popup component function------------------>
+    
+     <script type="text/javascript">
+
+ var deleteAgendaId='';
+  function deleteasm(delagenda,clkbtn){
+  deleteAgendaId=delagenda;
+ 
+ Alertconfirm.render('Are you sure,Do you want to Delete ?' , 'Confirmation',clkbtn,'Yes','No','Alertconfirm');
+ //var r = confirm("Are you sure,Do you want to Delete ?");
+ //if (r == true) {
+     //deleteAgendafrromlist(deleteAgendaId);
+//} 
+
+ 
+  }
+      
+    function callback(clkbtn , okbtnn){
+    
+deleteAgendafrromlist(deleteAgendaId);
+
+
+}  
+ </script>   
+
+<script>
+    var oldAgendaName='';
+    function oldvalfn(oldVal){
+    oldAgendaName =oldVal;
+    //alert('oldAgendaName' +oldAgendaName);
+    }
+    
+    
+      var contentsatt='';
+var contentsattname='';
+         function checkfile()
+         {
+            var oFReader = new FileReader();
+          var f = document.getElementById("idAttachment").files[0];
+           var fo = document.getElementById("idAttachment").value;
+          var fopdf=fo.toLowerCase();
+          var ext = fopdf.split('.').pop();
+           var filesize= f.size;
+           if(ext=="pdf"){
+            if(filesize > 241664){
+             document.getElementById("idAttachment").value = null;
+             //window.alert("Image size cannot be greater than 200KB!");
+                     Alert.render('Attachment size cannot be greater than 200KB!' ,'Alert','Ok');
+             return false;
+            }
+         contentsattname=f.name;
+         //alert(contentsattname);
+           if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+      contentsatt= e.target.result.split(',')[1];
+        
+//        alert(contentsatt); 
+      }
+      r.readAsDataURL(f);
+     
+    } else { 
+        Alert.render('Failed to load file' ,'Alert','Ok');
+      //alert("Failed to load file");
+    }
+    }else{
+    document.getElementById("idAttachment").value = null;
+
+Alert.render('Attachments Should be in PDF Format','Alert','Ok');
+return false;
+    }
+
+         }
+    
+    function saveFunction(contentsatt,contentsattname){
+       var seminarNa = document.getElementById('eventschedule:bscompo:commoncomponent:showNew:seminarName'); 
+        var startDate = document.getElementById('eventsdate').value;
+
+        var endDate = document.getElementById('eventedate').value;
+
+       
+      document.getElementById('eventschedule:bscompo:commoncomponent:showNew:evsdate').value = startDate ;
+      document.getElementById('eventschedule:bscompo:commoncomponent:showNew:evedate').value = endDate ;
+       
+       
+       if(seminarNa.value == ''){
+           //alert('Please Fill Seminar Name');
+           Alert.render('Please Fill Agenda Name' ,'Alert','ok');
+           seminarNa.focus();
+           return false;
+       }  
+       if(startDate == '__/__/____  __:__'||startDate== '' ){
+            //alert('Please Select Start Time');
+            Alert.render('Please Select Start Time' ,'Alert','ok');
+            startDate.focus();
+            return false;
+       }
+       
+       if(endDate == '__/__/____  __:__' || endDate == ''){
+            //alert('Please Select End Time');
+            Alert.render('Please Select End Time' ,'Alert','ok');
+            endDate.focus();
+            return false;
+       }
+       var startTime = new Date(startDate );
+       var endTime = new Date(endDate);
+       
+      if(endTime < startTime || endTime.getTime() == startTime.getTime() )
+      {
+          //alert('Start Time should not be greater than or equal to End Time ');
+          Alert.render('Start Time should not be greater than or equal to End Time ' ,'Alert','ok');
+            return false;
+      }
+       
+      /*var eventSDate = '{!eventSDateTime}';
+      var eventEDate = '{!eventEDateTime}';
+      var sDate = new Date(eventSDate);
+      var eDate = new Date(eventEDate);
+       
+      if(startTime < sDate)
+      {
+          Alert.render('Start date should not be less than Event start date' ,'Alert','ok');
+       return false;
+       } 
+      
+      if(endTime > eDate)
+      {
+          Alert.render('End date should not be greater than Event end date' ,'Alert','ok');
+            return false;
+      }*/
+      
+     var selspkr=$('.chzn-select').val();
+     // alert('aaa               '+selspkr);
+     /*if(selspkr!=null){
+             Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.BLN_Seminars_updCon.getvalidationmethod}', 
+            startDate ,endDate, selspkr,oldAgendaName,
+            function(result, event){
+           
+                if (event.status) {
+               
+                    if(result==true){
+                   
+                    Alert.render('Speaker is busy in this timeslot' ,'Alert','ok');
+                        return false;
+                    }else{
+                       
+                        savefn();
+       
+                        return true;
+                    }
+                   }
+                } );
+        } else{*/
+        savefn(contentsatt,contentsattname);
+       // }
+        //alert('bbb');
+        return true;
+       
+    }
+    </script>
+
+<!-------------//close of eventschedule section--------> 
+            <!-----------------//template code----------------------->
+
+        </apex:form>
+    </c:ed_basictemplate>
+    <!-------------//end of basic template component------------------------>
+
+    <!--/*********************Java Script Section*******************/-->
+        <!--------//start of datatable js component------------->
+<c:ed_popupbox >
+    </c:ed_popupbox>
+    <c:ed_datatablejs ></c:ed_datatablejs>
+
+    <script type="text/javascript" class="init">
+var j = jQuery.noConflict();
+j(document).ready(function() {
+    j('.example').dataTable( {
+        "pagingType": "full_numbers",
+        
+         "aLengthMenu": [[ 100], [100]],
+        "iDisplayLength": 100,
+    
+        /**default orderid in asc sorting**/
+         "order": [[ 0, "asc" ]],
+    "bSort": false,
+    "bAutoWidth": false, // Disable the auto width calculation
+
+        /**sorting coloumn disable**/
+        /*"aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] },
+     
+   ]*/
+   
+        
+    } );
+        
+})
+
+
+
+</script>
+<script>
+function dtcalldt(){
+j('.example').dataTable( {
+        "pagingType": "full_numbers",
+        
+         "aLengthMenu": [[ 100], [ 100 ]],
+        "iDisplayLength": 100,
+    
+        /**default orderid in asc sorting**/
+         "order": [[ 0, "asc" ]],
+    "bSort": false,
+    "bAutoWidth": false, // Disable the auto width calculation
+
+        /**sorting coloumn disable**/
+        /*"aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] },
+     
+   ]*/
+   
+        
+    } );
+}
+</script>
+    <!--------//end of datatable js component------------->
+    <!----/************************Datepicker js************************************************/-->
+    
+    <script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+    
+    <script>
+    var startDate = '{!eventSDateTime}';
+
+    var endDate = '{!eventEDateTime}';
+
+    var sdate = startDate.split(' ');
+    var timest = sdate[1] + ' ' + sdate[2];
+    var dstarttime = startDate.split(' ')[1].trim();
+    var dstarttimeampm = startDate.split(' ')[2].trim();
+
+
+    var dendtime = endDate.split(' ')[1].trim();
+    var dendtimeampm = endDate.split(' ')[2].trim();
+    var timeend = dendtime + ' ' + dendtimeampm;
+
+var dt = jQuery.noConflict();        
+dt('.jqdatepicker').datetimepicker({
+   formatDate: 'Y/m/d',
+  step:15,  
+//  mask:'9999/19/39 29:59',
+
+                            //minDate:'{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+                            //maxDate:'{!YEAR(myEDate)}/{!MONTH(myEDate)}/{!DAY(myEDate)}',
+        //defaultDate: y1 + '/' + m1 + '/' + dt1,
+        defaultDate: '{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+        defaultTime: timest,
+        formatTime: 'h:i A'
+                        });
+                        
+dt('.jqdatepicker1').datetimepicker({
+                                formatDate: 'Y/m/d',
+  step:15, 
+  // mask:'9999/19/39 29:59',
+                           // formatDate: 'Y/m/d',
+                            //defaultTime:'5:00 PM',
+                                //minDate:'{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+                                //maxDate:'{!YEAR(myEDate)}/{!MONTH(myEDate)}/{!DAY(myEDate)}',
+        //defaultDate: y2 + '/' + m2 + '/' + dt2,
+        defaultDate: '{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+        defaultTime: timeend,
+        formatTime: 'h:i A'
+                           });  
+                           
+                          
+try{
+var dateTimest = document.getElementById("eventschedule:bscompo:commoncomponent:showNew:strValue").innerHTML;
+        //var startDate = document.getElementById('eventsdate').value;
+        // var endDate = document.getElementById('eventedate').value;
+
+        if(dateTimest!=""){
+           var dateTimest1=dateTimest.split(', ');
+           var newDate = new Date(dateTimest);
+           var sMonth = newDate.getMonth() + 1;
+           var sDay = newDate.getDate();
+           var dateTimest2=sMonth+'/'+sDay+'/'+dateTimest1[1].trim();
+            var dateTimest3 = dateTimest2.split(' ')[0].trim();
+            var dateTimest4 = dateTimest3.toString();
+
+
+            var dt1 = dateTimest4.split('/')[1].trim();
+            var m1 = dateTimest4.split('/')[0].trim();
+            var y1 = dateTimest4.split('/')[2].trim();
+
+            //new code
+            var stime = dateTimest1[1].trim();
+            var rtime = stime.split(' ');
+            var timeStr1 = rtime[1] + ' ' + rtime[2];
+           document.getElementById("eventsdate").value=dateTimest2.trim();
+
+            var dt = jQuery.noConflict();
+            dt('.jqdatepicker').datetimepicker({
+                formatDate: 'Y/m/d',
+                step: 15,
+                //  mask:'9999/19/39 29:59',
+
+                //minDate:'{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+                //maxDate:'{!YEAR(myEDate)}/{!MONTH(myEDate)}/{!DAY(myEDate)}',
+                //defaultDate: '{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+                defaultDate: y1 + '/' + m1 + '/' + dt1,
+                defaultTime: timeStr1,
+                formatTime: 'h:i A'
+
+            });
+        }
+        
+        var dateTimeEd = document.getElementById("eventschedule:bscompo:commoncomponent:showNew:strValueEd").innerHTML;
+        if(dateTimeEd !=""){
+           var dateTime1Ed=dateTimeEd.split(', ');
+           var newDateEd = new Date(dateTimeEd);
+           var sMonthEd = newDateEd.getMonth() + 1;
+           var sDayEd = newDateEd.getDate();
+           var dateTime2Ed=sMonthEd+'/'+sDayEd+'/'+dateTime1Ed[1].trim();
+
+            var dateTimest3 = dateTime2Ed.split(' ')[0].trim();
+            var dateTimest4 = dateTimest3.toString();
+            //new code
+            var dt2 = dateTimest4.split('/')[1].trim();
+            var m2 = dateTimest4.split('/')[0].trim();
+            var y2 = dateTimest4.split('/')[2].trim();
+    
+            var etime = dateTime1Ed[1].trim();
+            var rtime = etime.split(' ');
+
+            var timeStr2 = rtime[1] + ' ' + rtime[2];
+            document.getElementById("eventedate").value = dateTime2Ed.trim();
+
+            dt('.jqdatepicker1').datetimepicker({
+                formatDate: 'Y/m/d',
+                step: 15,
+                // mask:'9999/19/39 29:59',
+                // formatDate: 'Y/m/d',
+                //defaultTime:'5:00 PM',
+                //minDate:'{!YEAR(mysDate)}/{!MONTH(mysDate)}/{!DAY(mysDate)}',
+                //maxDate:'{!YEAR(myEDate)}/{!MONTH(myEDate)}/{!DAY(myEDate)}',
+                defaultDate: y2 + '/' + m2 + '/' + dt2,
+                defaultTime: timeStr2,
+                formatTime: 'h:i A'
+
+            });
+        }
+    } catch (e) {}
+</script>
+
+ <script>
+       function deleteConfirm(inputrec,inputname){
+          var sFileExtension = inputname.split('.')[inputname.split('.').length - 1];
+          var a = inputname.replace('.'+sFileExtension, '');
+          var x =  confirm('Are you sure you want to delete ' + a + '?');
+           if(x){
+              afDelAttach(inputrec);
+              return true;
+            }
+            return false;
+          }
+      </script>
+      
+     <!------------common js libraries component------------>
+    <c:ed_commonjs ></c:ed_commonjs>
+    <!------------//common js libraries component------------>
+    
+   
+    <!-----------choosen multiselect function----------------------> 
+<script type="text/javascript"
+        src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/chosen.jquery.min.js')}"> </script>
+<script>
+
+    $(document).ready(function() {
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+    
+     
+    });
+    
+    
+//for Rooms///
+function roomadd(){
+    //alert("tttt");
+
+    $(".roomtbl tbody").append(
+
+        "<tr>"+
+        "<td><input type='text' /></td>"+"<td><input type='text' /></td>"+
+        "<td class='textcenter'><a class='roomsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='roomdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a></td>"+
+        "<  /tr>");
+    
+    
+        $(".roomsave").bind("click",roomsave);      
+        $(".roomdel").bind("click",roomdel);
+}; 
+
+ 
+
+function roomsave(){
+     var par = $(this).parent().parent(); //tr
+    var roomname = par.children("td:nth-child(1)");
+    var roomno = par.children("td:nth-child(2)");
+    var tdButtons = par.children("td:nth-child(3)");
+    roomname.html(roomname.children("input[type=text]").val());
+    roomno.html(roomno.children("input[type=text]").val());
+    //alert(roomname.html(roomname.children("input[type=text]").val()));
+    //alert(roomno.html(roomno.children("input[type=text]").val()));
+    var roomname = roomname.html(roomname.children("input[type=text]").val());
+    var roomnum = roomno.html(roomno.children("input[type=text]").val());
+    var  roomid = par.children("td:nth-child(4)").text();
+    var xyid=roomid.trim();
+   
+    
+    //alert(xyid.length)
+    if(roomname.trim() != "" &&  xyid == ""){
+    
+   // alert("sagaradapa");
+     svrm(roomname.trim(),roomnum.trim(),xyid);
+    }
+    if(roomname.trim() != "" &&  xyid != ""){
+    
+    svrm(roomname.trim(),roomnum.trim(),xyid);
+    }
+    tdButtons.html("<a class='roomedit'><i class='fa fa-pencil fa-edit20px' title='Edit'>&nbsp; &nbsp;</i></a><a class='roomdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+   $(".roomedit").bind("click",roomedit);
+    $(".roomdel").bind("click",roomdel);
+                /////////////////////// 
+
+}; 
+
+function roomedit(){
+    var par = $(this).parent().parent(); //tr
+
+    var roomname = par.children("td:nth-child(1)");
+    var roomno = par.children("td:nth-child(2)");
+    var tdButtons = par.children("td:nth-child(3)");
+
+    roomname.html("<input type='text'  value='"+roomname.html()+"'/>");
+    roomno.html("<input type='text'  value='"+roomno.html()+"'/>");
+    tdButtons.html("<a class='roomsave'><i class='fa fa-save  fa-save22px' title='Save'> &nbsp; &nbsp; </i></a><a class='roomdel'><i class='fa fa-minus-square-o fa-minus-23x'></i></a>");
+
+    $(".roomsave").bind("click", roomsave);
+    $(".roomedit").bind("click", roomedit);
+    $(".roomdel").bind("click", roomdel);
+};
+
+
+
+function roomdel(){
+    var par = $(this).parent().parent(); //tr
+    var delrmRecid=par.children("td:nth-child(4)").text();
+    //alert(delrmRecid);
+    if(delrmRecid.trim()!= ""){
+    rmdel(delrmRecid.trim());
+    }
+    par.remove();
+}; 
+        /////////////////////// 
+
+$(function(){
+    //Add, Save, Edit and Delete functions code
+    $(".roomedit").bind("click",roomedit);
+    $(".roomdel").bind("click",roomdel);
+    $(".roomadd").bind("click",roomadd);
+    $(".roomsave").bind("click",roomsave);
+});
+///////////////////////end of rooms/////////////////////// 
+
+
+/**************expand collapse row function*************/
+  $(".expdiv").hide(); 
+ $(".subtable  .expcolp_img").click(function(){
+    // alert("ddd");
+     $(this).parent().parent().parent().parent().next(".expdiv").toggle();
+     $(this).parent().find(".expcolp_img").toggleClass("up");
+     
+ })
+  /**************end of expand collapse row function*************/
+
+</script> 
+<!---------------------------end of display.js---------------------------------------> 
+<!----------------form Popup script-----------------------------> 
+<script>
+  function Custom_formPopup(){
+        this.render =function(dialogbox_id,dialogoverlay_id,instanceclass,clkbtn){
+            //alert(clkbtn.id);
+            
+            //if (clkbtn.id=="dddddd"){fsfsdfsdfsf}
+            var winW = window.innerWidth;
+            var winH = window.innerHeight;
+            var dialogoverlay =document.getElementById(dialogoverlay_id);
+            var dialogbox = document.getElementById(dialogbox_id);
+            dialogoverlay.style.display="block";
+            
+            dialogbox.style.top="10px";
+            
+            dialogbox.style.position="fixed";
+            dialogbox.style.display="block";
+            
+      
+          /*************/ 
+         this.Save= function(){
+             popup_savecallback(clkbtn);
+             document.getElementById(dialogbox_id).style.display ="none";
+             document.getElementById(dialogoverlay_id).style.display ="none";
+                //alert(clkbtn.id);
+         return true;
+
+            }
+        /*************/
+        this.Cancel = function(){
+            document.getElementById(dialogbox_id).style.display ="none";
+                    document.getElementById(dialogoverlay_id).style.display ="none";
+                    return false;
+            
+            }
+        /*************/
+          }
+        }
+    </script> 
+<script>
+    /*******creating instances for calling popups*******/
+var Alert_room = new Custom_formPopup(); //room popup
+    /***************/   
+</script> 
+
+<!---------popup for Room------->
+<div class="dialogoverlay" id="broom_dialogoverlay" style="z-index:9999;"></div>
+<!-----------------> 
+<!--close of dialogoverlay-->
+<div  id="dialogbox_room" style=" display:none;z-index:99991; width:40%; margin-left:29%;"> <a id="close" onclick="Alert_room.Cancel()" style="margin-top:-6px;">×</a>
+  <div class="form-embed-div" style=" width:95%; margin-top:20px;">
+    <div class="form-content-div" style=" padding:0px; max-height:575px; overflow:auto;"> 
+      <!----------->
+      <div class="grid-1" style=" width:98%;margin-left:1%; margin-bottom:10px; padding-right:0px;">
+        <div class="title-grid">Room</div>
+        <div class="content-gird" > 
+          <!-------------->
+          
+          <div id="seminarform" class="createform">
+            <div class="content-top-btn-box" style="">
+              <button type="button" id="new_campaign" class="togglebtn roomadd" style=" padding:5px;" onclick="">Add Room</button>
+            </div>
+            <!--close of content-top-btn-box--->
+            <div class="clear"></div>
+            <apex:outputpanel id="addroompanel">
+            <!---------room table--------->
+            <div class="tablewrapper"><!--start of tablewrapper---->
+              <table class="display roomtbl">
+                <!---->
+                <thead>
+                  <tr>
+                    <th>Room Name</th>
+                    <th>Room No</th>
+                    <th style="width:25%; text-indent:6%;">Action</th>
+                  </tr>
+                </thead>
+                <!----> 
+                <!---->
+                <tbody>
+                  <!----------->
+                  <apex:repeat value="{!RrcMap}" var="rd">
+                  <tr>
+                    <td><apex:outputText value="{!rd.rmname}"/></td>
+                    <td><apex:outputText value="{!rd.rmnumb}"/></td>
+                    <td class="textcenter"><a class="edit-link roomedit" title="Edit"><i class=" fa fa-pencil fa-edit20px"></i></a> &nbsp;&nbsp; <a class="delete-link roomdel" title="Delete"><i class="fa fa-minus-square-o  fa-minus-23x"></i></a></td>
+                      <td style="display:none;"> <apex:outputText value="{!rd.rmid}" /> </td>
+                  </tr>
+                  </apex:repeat>
+                  
+                  <!------->
+                </tbody>
+                <!---->
+              </table>
+            </div>
+             </apex:outputpanel>
+            <!--close of tablewrapper----> 
+            
+            <!---------------> 
+          </div>
+          <!--close of seminarform----> 
+        </div>
+        <!--close of content-grid---> 
+      </div>
+      <!--close of grid-1-----> 
+      <!-----> 
+    </div>
+    <!----close of form-content-div-----> 
+  </div>
+  <!----close of form-embed-div------> 
+</div>
+<!--close of dialogbox----> 
+<!------------end of popup for Room-------------> 
+
+
+<!----------------end of form Popup script----------------------------->
+    <!-----/*********************//Java Script Section*******************/-->
+  <script>
+  
+        
+        
+   iframelink=[];
+                        
+ if('{!newAgendas.Video__c}'!=''&&'{!newAgendas.Video__c}'!=undefined){
+
+  var st='{!newAgendas.Video__c}';
+   var res = st.split(",");
+  for(i=0;i<res.length;i++)
+  {
+
+  iframelink.push(res[i]);
+  
+        var box=jq("<div class='ytbox'></div>")//creating parent div
+         var delimg=jq("<img class='crossicon' title='Delete' src='{!URLFOR($Resource.edsr_master, 'edsr_root/images/close_icon.png')}'/>")//creating delete icon
+         var iframebox=jq("<div class='iframebox'></div>");
+         
+                 jq(".ytwraper").css("display","block");
+                 jq(box).append(delimg);
+                 
+                 jq(iframebox).append(res[i]);
+                 jq(box).append(iframebox);
+                 jq(".ytwraper").append(box);
+                 jq(".framelinkval").val("");//clearing the embedlink textbox
+                
+  }
+ }
+            
+  </script>          
+
+</apex:page>

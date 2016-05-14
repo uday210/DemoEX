@@ -1,0 +1,447 @@
+<apex:component >
+<script>
+/*********
+Eventdex 
+frontend Validations component
+@author Rahil Gupta
+Validation Type: Email,Not Null, Phone, Zipcode(USA, India) , Url,Max Length for Textarea
+****/
+var sel_country;
+function  validation_test(){
+ // Warning Object Messages
+ 
+ var warnings = {
+        text : '*This field is required',
+        email_txt :"*Please enter a valid email",
+        url_txt :"*Please enter a valid url",
+        zipcode_txt :"*Please enter a valid zipcode",
+        textarea: 'This field is required',
+        phoneno_txt:'*Please enter a valid phone number',
+        maxchar_txt:'You have exceeded 255 characters',
+        num_txt:"Please provide numbers only",
+        sel_txt:"Please select atleast one option",
+        
+    }
+    
+
+/*********Global Regex Variables**************/
+ var email_regex=/^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+  
+ var url_regex =("^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|www\\.){1}([0-9A-Za-z-\\.@:%_\+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?");
+ var phoneno_regex= /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/gm; 
+ 
+ /*
+ (U.S. postal code), allowing both the five-digit and nine-digit (called ZIP+4) formats. The regex should match 12345 and 12345-6789, but not 1234, 123456, 123456789, or 1234-56789.
+ */
+ 
+ 
+ /*
+ Indian postal index numbers are 6 digit numbers,  Our statement will consist of two parts, the first consisisting of numbers ranging from 1-9, the second, consisting of 5 digits will be 0-9:
+ */
+ var no_regex =/^[0-9.,]*$/; 
+ /*********End Global Regex Variables**************/
+ 
+ //Text area max characters
+  var maxlength =255;
+ 
+// validation Boolean (return state true/false)
+  var validate = true;  
+  //Remove old warnings
+    $(".required-label").remove();
+    
+    
+    
+    //$("input").removeClass('required-ignore-multi');
+    $(" .required").each(function(){
+        var current_field = $(this);
+      var filter = '';
+          //removing the error message on keyup  
+            current_field.keyup(function(e) {
+             current_field.css("border" ,"1px solid #ddd");
+             current_field.next(".required-label").remove();   
+            });
+    
+            //removing the error message on change 
+             current_field.change(function(){
+             current_field.css("border" ,"1px solid #ddd");
+             current_field.next(".required-label").remove(); 
+         });
+    
+    
+        //text
+        if( current_field.is(".valid_txt")  && (current_field.val()==='' ||current_field.val().trim()=='')){
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.text+'</div>').addClass('required-active');
+            validate = false;
+        }
+        
+        
+        //Selectlist 
+            else if( current_field.is(".valid_select") ){
+                 if($(this).attr("selectedIndex") == 0 || $(this).attr("selectedIndex") == undefined){
+                     current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.sel_txt+'</div>').addClass('required-active');
+            validate = false;
+        }
+            }
+        /*************/
+     
+        //Email(if it is null (validate==false))
+        else if( current_field.is(".valid_email") && current_field.val()==='' ){
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.text+'</div>').addClass('required-active');
+            validate = false;
+        }
+        
+        //Email(if it is not  null and should match regex(validate==false))
+        else if(current_field.is(".valid_email") && current_field.val()!==''){
+             current_field_trim=current_field.val().trim();
+            var valid_email= current_field_trim.match(email_regex);
+                
+                
+            if(valid_email){
+                //alert("valid Email");
+                //validate = true;
+                }
+            
+            else {
+                current_field.css("border" ,"1px solid #f00");
+                current_field.after('<div class="required-label">'+warnings.email_txt+'</div>').addClass('required-active');
+                validate = false;
+                }
+            
+            }
+            
+            
+            //Number(if it is null)
+            else
+             if(current_field.is(".valid_num") && current_field.val()==''){
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.text+'</div>').addClass('required-active');
+            validate = false;
+                }
+            
+        
+        //Number(if it is not  null and should match regex(validate==false))
+        
+        else if(current_field.is(".valid_num") && current_field.val()!==''){
+            //if(isNaN(current_field.val())){
+              if(!no_regex.test(current_field.val())){  
+                current_field.css("border" ,"1px solid #ff0");
+                current_field.after('<div class="required-label">'+warnings.num_txt+'</div>').addClass('required-active');
+                validate = false;
+                }
+    
+            
+            }
+        
+        
+/***Url Validation*******/
+     
+     //Url(if it is null (validate==false))
+        else if( current_field.is('.valid_url')&& current_field.val()==='' ){
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.text+'</div>').addClass('required-active');
+            validate = false;
+        }    
+        
+    //Url(if it is not  null and should match regex(validate==false))
+       else if(current_field.is(".valid_url") && current_field.val()!==''){
+            var valid_url= current_field.val().match(url_regex);
+            
+            if(valid_url){
+                }
+            
+            else{
+                current_field.css("border" ,"1px solid #f00");
+                current_field.after('<div class="required-label">'+warnings.url_txt+'</div>').addClass('required-active');
+                validate = false;
+                }
+            
+            }
+        
+/***Phone Validation*******/    
+    
+//Phone(if it is null (validate==false))
+     else if( current_field.is(".valid_phoneno")  && current_field.val()==='' ){
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.text+'</div>').addClass('required-active');
+            validate = false;
+        }
+        
+//Phone(if it is not null (validate==false))
+     else if( current_field.is(".valid_phoneno")  && current_field.val()!=='' ){
+            
+         var phonedecimal_valid=$(current_field).val().match(phoneno_regex);
+        
+            if(phonedecimal_valid){
+                    var phoneno_format =("" + phonedecimal_valid).replace(/(\d{3})(\d{3})(\d{4})/, "($1)$2-$3");
+                    current_field.val(phoneno_format); 
+                    //validate = true;
+                    }
+            else{
+                current_field.css("border" ,"1px solid #f00");
+                current_field.after('<div class="required-label">'+warnings.phoneno_txt+'</div>').addClass('required-active');
+                validate = false;
+                }   
+          }     
+/*******zipcode validation********/ 
+//Zipcode(if it is null (validate==false))
+     else if( current_field.is(".valid_zipcode")  && current_field.val()==='' ){
+         current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.text+'</div>').addClass('required-active');
+            validate = false;
+        }
+        
+        
+ //ZipCode(if it is not null (validate==false))
+ else if( current_field.is(".valid_zipcode")  && current_field.val()!=='' )
+
+ {
+  switch(sel_country){
+      case "United_States_Of_America":
+      if(current_field.is(".United_States_Of_America_zipcode")){
+                filter = /^([0-9]{5})(?:[-\s]*([0-9]{4}))?$/;
+                if(!filter.test($(".United_States_Of_America_zipcode").val())){
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.zipcode_txt+'</div>').addClass('required-active');   
+            validate = false;
+                }
+                
+                }
+                 break;
+        
+        case "India":
+      if(current_field.is(".India_zipcode")){
+                filter = /^([1-9])([0-9]){5}$/;
+                if(!filter.test($(".India_zipcode").val())){
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.zipcode_txt+'</div>').addClass('required-active');   
+            validate = false;
+                }
+                
+                }
+                 break;
+                 default:
+                
+                 break;
+                 
+                 
+      }  }
+              
+    /***************/   
+
+
+
+     //alert("validate status" + validate);
+     
+      })
+
+
+
+
+/*************************/
+
+$(".notreq").each(function(e) {
+    //alert("test11");
+    var current_field=$(this);
+    var filter = '';
+    //removing the error message on keyup  
+            current_field.keyup(function(e) {
+             current_field.css("border" ,"1px solid #ddd");
+             current_field.next(".required-label").remove();   
+            });
+/**************************************************/            
+     //ZipCode(if it is not null (validate==false))
+  if( current_field.is(".valid_zipcode")  && current_field.val()!=='' )
+
+ {
+     
+  switch(sel_country){
+      case "United_States_Of_America":
+      if(current_field.is(".United_States_Of_America_zipcode")){
+                filter = /^([0-9]{5})(?:[-\s]*([0-9]{4}))?$/;
+                if(!filter.test($(".United_States_Of_America_zipcode").val())){
+            //alert("wrong US_zip");
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.zipcode_txt+'</div>').addClass('required-active');   
+            validate = false;
+                }
+                
+                }
+                 break;
+        
+        case "India":
+      if(current_field.is(".India_zipcode")){
+                filter = /^([1-9])([0-9]){5}$/;
+                if(!filter.test($(".India_zipcode").val())){
+            //alert("wrong IN_zip");
+            current_field.css("border" ,"1px solid #f00");
+            current_field.after('<div class="required-label">'+warnings.zipcode_txt+'</div>').addClass('required-active');   
+            validate = false;
+                }
+                
+                }
+                 break;
+      } 
+    
+ }
+/**************************************************/        
+        
+    //Phone(if it is not null (validate==false))
+     else if( current_field.is(".valid_phoneno")  && current_field.val()!=='' ){
+            
+         var phonedecimal_valid=$(current_field).val().match(phoneno_regex);
+        
+            if(phonedecimal_valid){
+                    /*alert("valid phone no");*/
+                    var phoneno_format =("" + phonedecimal_valid).replace(/(\d{3})(\d{3})(\d{4})/, "($1)$2-$3");
+                    //alert(phoneno_format);
+                    current_field.val(phoneno_format); 
+                    //validate = true;
+                    }
+            else{
+                /*alert("Wrong Format");*/
+                current_field.css("border" ,"1px solid #f00");
+                current_field.after('<div class="required-label">'+warnings.phoneno_txt+'</div>').addClass('required-active');
+                validate = false;
+                }   
+          }         
+        /**************************************************/
+        
+        //Email(if it is not  null and should match regex(validate==false))
+        else if(current_field.is(".valid_email") && current_field.val()!==''){
+             //alert(current_field.val());
+            var  current_field_trim=current_field.val().trim();
+            var valid_email= current_field_trim.match(email_regex);
+            
+            if(valid_email){
+                }
+            
+            else {
+                //alert("wrong Email");
+                current_field.css("border" ,"1px solid #f00");
+                current_field.after('<div class="required-label">'+warnings.email_txt+'</div>').addClass('required-active');
+                validate = false;
+                }
+            
+            }
+        /**************************************************/
+        
+        //Url(if it is not  null and should match regex(validate==false))
+       else if(current_field.is(".valid_url") && current_field.val()!==''){
+           var valid_url= current_field.val().match(url_regex);
+            
+            if(valid_url){
+                
+                }
+            
+            else{
+                current_field.css("border" ,"1px solid #f00");
+                current_field.after('<div class="required-label">'+warnings.url_txt+'</div>').addClass('required-active');
+                validate = false;
+                }
+            
+            }
+        
+    /**************************************************/
+    //Number(if it is not  null and should match regex(validate==false))
+        
+        else if(current_field.is(".valid_num") && current_field.val()!==''){
+             //alert(current_field.val());
+            //if(isNaN(current_field.val())){
+                if(!no_regex.test(current_field.val())){ 
+                current_field.css("border" ,"1px solid #f00");
+                current_field.after('<div class="required-label">'+warnings.num_txt+'</div>').addClass('required-active');
+                validate = false;
+                }
+        }
+    /**************************************************/    
+        
+    
+});
+/*********************/ 
+      
+/*****final return value of function(true or false)*****/    
+    if( validate ){
+        return true;
+    }else{
+        return false;
+    } 
+        
+/*******************************/
+
+
+/********************************/      
+        }
+        
+/**************text area max characters (255 validations)*********************/
+$( document ).ready(function() {
+$(".valid_maxlengthchar").keyup(function(e) {
+    $(this).each(function(index, element) {
+       var current_field = $(this);
+       var maxLength = 100;
+       if(current_field.val()!==''){
+           $(".required-label").empty();
+           var length = $(this).val().length;
+           var length = maxLength-length;
+           $(current_field).val($(this).val().substring(0, maxLength));  
+            current_field.after('<div class="required-label">'+length+'</div>');
+        }
+       
+    });
+});
+
+/*********************/
+})
+/************** end text area max characters (255 validations)*********************/
+
+ var nwclass='';
+            $(document).ready(function(e) {
+        
+$(".country_onchange ").each(function(index, element) {
+    //alert('each loop');
+    $(this).change(function(e){
+    var cz_wrapper = $(this).parents(".cz_wrapper");    
+     //alert("test");
+     sel_country= $(this).find('option:selected').text();
+      sel_country=sel_country.replace(" ","_") ;
+      sel_country=sel_country.replace(" ","_") ;
+      sel_country=sel_country.replace(" ","_") ;
+     //alert(sel_country);
+   
+    $(cz_wrapper).find(".valid_zipcode").removeClass(nwclass); 
+     //alert(cz_wrapper);
+    nwclass=sel_country +'_zipcode'
+    $(cz_wrapper).find(".valid_zipcode").addClass(nwclass);
+    });
+    
+    
+    /*******************new code for onload runs only once*******************/
+    var cz_wrapper = $(this).parents(".cz_wrapper");    
+     //alert("test");
+     sel_country= $(this).find('option:selected').text();
+      sel_country=sel_country.replace(" ","_") ;
+      sel_country=sel_country.replace(" ","_") ;
+      sel_country=sel_country.replace(" ","_") ;
+    // alert(sel_country);
+   
+    $(cz_wrapper).find(".valid_zipcode").removeClass(nwclass); 
+     //alert(cz_wrapper);
+    nwclass=sel_country +'_zipcode'
+    $(cz_wrapper).find(".valid_zipcode").addClass(nwclass);
+
+    /*******************end of new code for onload*******************/
+    
+    
+    
+    
+});
+                });
+/******************************************************************/
+
+
+
+
+</script>
+</apex:component>

@@ -1,0 +1,495 @@
+<apex:page showHeader="false" controller="BLN_RegistrationnewCon3" cache="true"  standardStylesheets="false" id="TktPage">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+ <apex:stylesheet value="{!URLFOR($Resource.reg1, 'reg1/css/font-awesome.min.css')}"/>
+   <!-- Bootstrap -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/templatecss/ed-reg.css')}"/>
+ <!-- Responsive -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/reg_responsive.css')}"/>
+  
+  <!--Chosen -->
+  <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/chosen.css')}"/>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <meta charset="utf-8"/> 
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/> 
+<meta name="viewport" content="width=device-width, initial-scale=1"/> 
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --> 
+<meta name="description" content=""/>
+
+
+  <apex:form forceSSL="true">
+    <!-------- Action Functions ------->
+    <apex:actionfunction name="applyPromocode" reRender="AmountPanel"  action="{!applyPromocode}" status="refreshAmount">
+      <apex:param name="itqnty" assignTo="{!itqnty}" value=""/>
+      <apex:param name="itoldqnty" assignTo="{!itoldqnty}" value=""/>
+      <apex:param name="itpoolid" assignTo="{!itpoolid}" value=""/>
+      <apex:param name="itlabel" assignTo="{!itlabel}" value=""/>
+    </apex:actionfunction>
+    <!------ //Action Functions ----->
+    <apex:actionFunction name="actionpage1" action="{!OrderNow}"  status="AjaxLoader" >
+    </apex:actionFunction>
+    <!------------ticket right section ------>
+    <apex:outputPanel rendered="{!IF(ShowSecondPage== FALSE, TRUE, FALSE)}" id="tktsec">
+    <apex:variable value="{!registrationEvent.BLN_Country__r.Currency__r.Currency_Symbol__c}" var="curSym"/>
+    <div class="col-lg-12" style="background-color:#FFF;background-color:#FFF;padding-top:10px;padding-bottom:10px;"> 
+      <!---------ticket section ------>
+      <div class="tabs-style-2" style="    margin-right: -13px;margin-left: -15px;"> 
+        
+        <!-- Nav tabs -->
+        <ul  class="nav nav-tabs" role="tablist">
+          <apex:repeat value="{!RegItemList}" var="ril" > 
+            <!------>
+            
+            <li style="display:{!IF(ril.TabLabel=='All'||(ril.TabLabel!=$CurrentPage.parameters.tab&&$CurrentPage.parameters.tab!='')||($CurrentPage.parameters.tab!=''&&ril.displayTabName==false),'none','')}"> <a href="#{!ril.TabLabel}{!ril.tabOrder}" role="tab" data-toggle="tab">{!ril.TabLabel}</a> </li>
+            <!-----> 
+            
+          </apex:repeat>
+        </ul>
+        <br/>
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <apex:repeat value="{!RegItemList}" var="ril"> 
+            <!-------------------start of tab data------------->
+            <div class="tab-pane fade " id="{!ril.TabLabel}{!ril.tabOrder}" >
+              <div class="space-bottom"></div>
+              <div class="col-md-12"> 
+                <!-- 1st row start -->
+                <div class="row">
+                  <div class="panel panel-default" style="margin-bottom:0px;">
+                    <div class="panel-heading" id='tktbg' >
+                      <h3 class="panel-title" id='tktinfo'> Ticket Information </h3>
+                    </div>
+                  </div>
+                </div>
+                <!-- 1st row end --> 
+              </div>
+              <div class="col-md-12"> 
+                
+                <!-- ======================================================== ============================================= --> 
+                <!-- =================table start========================== --> 
+                <!-- Ticket Repeat -->
+                <div class="row tkt_header " > 
+                  <!--left start--> 
+                  <!-- =================table start========================== --> 
+                  <!-----------static header for desktop and ipad screen--------->
+                  <apex:repeat value="{!DisplaySettings}" var="ds"> 
+                    <!-----ticket image---->
+                    <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Ticket Image' && ds.Included__c == TRUE, TRUE, FALSE)}" >
+                      <div class="col-lg-2 col-md-2 col-xs-12">
+                        <div class="col-lg-12  col-md-12 col-xs-6 labelvalue" style="padding:0px;"> {!ds.Label_Name__c} </div>
+                      </div>
+                    </apex:outputPanel>
+                    <!-----//tkt image-----> 
+                    <!-- first  -->
+                    <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Ticket Type' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                      <div class="col-lg-3 col-md-3 col-xs-12">
+                        <div class="col-lg-12  col-md-12 col-xs-6 labelvalue"  style="padding:0px;"> {!ds.Label_Name__c} </div>
+                      </div>
+                    </apex:outputPanel>
+                    <!-- first  --> 
+                    <!-- second  -->
+                    <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Sales End' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                      <div class="col-lg-3 col-md-3 col-xs-12">
+                        <div class="col-lg-12  col-md-12 col-xs-6 labelvalue"  style="padding:0px;"> {!ds.Label_Name__c} </div>
+                      </div>
+                    </apex:outputPanel>
+                    <!-- second  --> 
+                    <!-- third  -->
+                    <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Price' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                      <div class="col-lg-2 col-md-2 col-xs-12">
+                        <div class="col-lg-12  col-md-12 col-xs-6 labelvalue"  style="padding:0px;"> {!ds.Label_Name__c} </div>
+                      </div>
+                    </apex:outputPanel>
+                    <!-- third  --> 
+                    <!-- fourth  -->
+                    <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Fee' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                      <div class="col-lg-1 col-md-1 col-xs-12">
+                        <div class="col-lg-12  col-md-12 col-xs-6 labelvalue"  style="padding:0px;"> {!ds.Label_Name__c} </div>
+                      </div>
+                    </apex:outputPanel>
+                    <!-- fourth  --> 
+                    <!-- fifth  -->
+                    <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Quantity' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                      <div class="col-lg-1 col-md-1 col-xs-12">
+                        <div class="col-lg-12  col-md-12 col-xs-6 labelvalue"  style="padding:0px;"> {!ds.Label_Name__c} </div>
+                      </div>
+                    </apex:outputPanel>
+                    <!-- fifth  --> 
+                    <!-----------end of static header for desktop and ipad screen---------> 
+                  </apex:repeat>
+                </div>
+                <!---close of row ticket header---> 
+                <!-- ======================================================== ============================================= --> 
+                <!-- ======================================================== ============================================= --> 
+                <!-----start of ticket row apex repeat----->
+                <apex:outputPanel id="ticketsInput" layout="none">
+                  <apex:repeat value="{!ril.ItemsList}" var="ite">
+                    <div class="row tkt_recordrow" >
+                      <apex:outputPanel rendered="{!IF(ite.items.Early_Bird_Pricing_Display_Flag__c == TRUE , TRUE, if(NOW() >= ite.items.sale_start__c && NOW() <= ite.items.sale_end__c ,true,false))}" layout="none"> 
+                        <!-- first  -->
+                        <apex:repeat value="{!DisplaySettings}" var="ds">
+                          <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Ticket Image' && ds.Included__c == TRUE, TRUE, False)}" layout="none">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                              <apex:repeat value="{!DisplaySettings}" var="ds">
+                                <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Ticket Image' && ds.Included__c == TRUE, TRUE, FALSE)}" >
+                                  <div class="col-xs-6 labelhead ">{!ds.Label_Name__c} :</div>
+                                </apex:outputPanel>
+                              </apex:repeat>
+                              <div class="col-lg-12 col-md-12 col-xs-6 labelvalue text-center" style="padding:0px;">
+                                <div class="tkt-img"> 
+                                  <!-------------->
+                                  <apex:image url="/servlet/servlet.ImageServer?id={!ite.items.image_url__c}&oid={!$Organization.Id}" rendered="{!IF(ite.items.image_url__c!=null && ite.items.image_url__c!='',true,false)}" styleClass="img-responsive"/>
+                                  <apex:image rendered="{!IF(ite.items.image_url__c==null && ite.items.image_url__c=='',true,false)}" value="{!URLFOR($Resource.edsr_master, 'edsr_root/images/nogallery.png')}" styleClass="img-responsive" />
+                                  
+                                  <!--------------> 
+                                </div>
+                                <!--close of tkt-img----> 
+                                
+                              </div>
+                            </div>
+                          </apex:outputPanel>
+                        </apex:repeat>
+                        <!-- first  --> 
+                        
+                        <!-- first  -->
+                        <apex:repeat value="{!DisplaySettings}" var="ds">
+                          <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Ticket Type' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                              <div class="col-xs-6 labelhead ">{!ds.Label_Name__c} :</div>
+                              <div class="col-lg-12 col-md-12 col-xs-6 labelvalue" style="padding:0px;">
+                                <apex:outputText value="{!ite.items.item_name__c}"></apex:outputText>
+                                <br />
+                                <!-------> 
+                                <span class="moreinfo-toggle"> <a> 
+                                <!------->
+                                
+                                <apex:repeat value="{!displaySettings}" var="ds">
+                                  <apex:outputText value="{!ds.Label_Name__c}" rendered="{!if(ds.Column_Name__c == 'More Info' && ds.Included__c == TRUE && ite.items.Description__c != null , TRUE, FALSE)}"/>
+                                </apex:repeat>
+                                <!--------> 
+                                </a> </span> </div>
+                            </div>
+                          </apex:outputPanel>
+                        </apex:repeat>
+                        <!-- first  --> 
+                        <!-- second(Sales End Date)  -->
+                        <apex:repeat value="{!DisplaySettings}" var="ds">
+                          <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Sales End' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                            <div class="col-lg-3 col-md-3 col-xs-12">
+                              <div class="labelhead col-xs-6">{!ds.Label_Name__c} :</div>
+                              <div class="col-lg-12  col-md-12 col-xs-6 labelvalue" style="padding:0px;"> 
+                                <!--------->
+                                <c:EV_FormatDt date_Timevalue="{!ite.items.sale_end__c}" t_Zone="{!registrationEvent.Time_Zone__c}"/>
+                                <!-----------> 
+                              </div>
+                            </div>
+                          </apex:outputPanel>
+                        </apex:repeat>
+                        <!-- second  --> 
+                        
+                        <!-- third(Price)  -->
+                        <apex:repeat value="{!DisplaySettings}" var="ds">
+                          <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Price' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                            <div class="col-lg-2 col-md-2 col-xs-12">
+                              <div class="col-xs-6 labelhead ">{!ds.Label_Name__c} :</div>
+                              <div class="col-lg-12 col-md-12 col-xs-6 labelvalue " style="padding:0px;" > 
+                                <!----------->
+                                <apex:outputText rendered="{!IF($User.Username==registrationEvent.owner.userName,true,false)}">
+                                  <apex:outputText >{!curSym}</apex:outputText>
+                                  <apex:outputText value="{!ite.items.price__c}" style="width:70%;margin-left:1%;" ></apex:outputText>
+                                </apex:outputText>
+                                <apex:outputText rendered="{!IF($User.Username==registrationEvent.owner.userName,false,true)}"> {!curSym}
+                                  <apex:outputText value="{!ite.items.price__c}" style="width:70%"></apex:outputText>
+                                </apex:outputText>
+                                
+                                <!-----------> 
+                              </div>
+                            </div>
+                          </apex:outputPanel>
+                        </apex:repeat>
+                        <!-- third  --> 
+                        
+                        <!-- fourth (Currency) -->
+                        <apex:repeat value="{!DisplaySettings}" var="ds">
+                          <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Fee' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                            <div class="col-lg-1 col-md-1 col-xs-12">
+                              <div class="labelhead col-xs-6">{!ds.Label_Name__c} :</div>
+                              <div class="col-lg-12 col-md-12 col-xs-6 labelvalue" style="padding:0px;"> 
+                                <!----------> 
+                                {!curSym}&nbsp;
+                                <apex:outputText value="{0, number,###,##0.00}" rendered="{!IF(ite.items.Payment__c != 'Free' && ite.items.Item_Type__r.Name != 'Package' && ite.items.service_fee__c=='Add Eventdex fee on top of the total ticket price'  ,TRUE,FALSE)}">
+                                  <apex:param value="{!IF(mapItemWithPrice[ite.items.Item_Type__r.id].BL_Fee_Amount__c!=null  ,  (ite.items.price__c*(mapItemWithPrice[ite.items.Item_Type__r.id].BL_Fee_Percentage__c/100))+mapItemWithPrice[ite.items.Item_Type__r.id].BL_Fee_Amount__c, 0.0 )}"/>
+                                </apex:outputText>
+                                <apex:outputText value="{0, number,###,##0.00}" rendered="{!IF(ite.items.Payment__c != 'Free' && ite.items.Item_Type__r.Name == 'Package' && ite.items.service_fee__c=='Add Eventdex fee on top of the total ticket price' ,TRUE,FALSE)}">
+                                  <apex:param value="{!IF(mapItemWithPriceforpkg[ite.items.Item_Pool__c].BL_Fee_Amount__c>0 ||  mapItemWithPriceforpkg[ite.items.Item_Pool__c].BL_Fee_Percentage__c > 0 ,  (ite.items.price__c*(mapItemWithPriceforpkg[ite.items.Item_Pool__c].BL_Fee_Percentage__c/100))+mapItemWithPriceforpkg[ite.items.Item_Pool__c].BL_Fee_Amount__c, 0.0 )}"/>
+                                </apex:outputText>
+                                <apex:outputText value="0.00" rendered="{!IF(ite.items.Payment__c != 'Free' && ite.items.service_fee__c!='Add Eventdex fee on top of the total ticket price' ,TRUE,FALSE)}" />
+                                <apex:outputText value="0.00" rendered="{!IF(ite.items.Payment__c == 'Free' && ite.items.Item_Type__r.Name != 'Package',TRUE,FALSE)}"/>
+                                <apex:outputText value="0.00" rendered="{!IF(ite.items.Payment__c == 'Free' && ite.items.Item_Type__r.Name == 'Package',TRUE,FALSE)}"/>
+                                
+                                <!-----------> 
+                              </div>
+                            </div>
+                          </apex:outputPanel>
+                        </apex:repeat>
+                        <!-- fourth  --> 
+                        
+                        <!-- fifth (Quantity) -->
+                        <apex:repeat value="{!DisplaySettings}" var="ds">
+                          <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Quantity' && ds.Included__c == TRUE, TRUE, FALSE)}" layout="none">
+                            <div class="col-lg-1 col-md-1 col-xs-12">
+                              <div class="labelhead col-xs-6">{!ds.Label_Name__c} :</div>
+                              <div class="col-lg-12 col-md-12 col-xs-6 labelvalue" style="padding:0px;"> 
+                                <!------------>
+                                <apex:outputPanel rendered="{!IF(NOW() >= ite.items.sale_start__c&& NOW() <= ite.items.sale_end__c,TRUE,FALSE)}" layout="none">
+                                  <apex:selectList value="{!itqnty}" multiselect="false" id="ItemQuantity" size="1" styleClass="opts"  style="width:50px;" onfocus="this.oldvalue = this.value;" onchange="applyPromocode(this.value,this.oldvalue,'{!ite.items}','{!ril.TabLabel}');this.oldvalue = this.value;" >
+                                    <apex:selectOptions value="{!ite.itemSelectOptions}"/>
+                                  </apex:selectList>
+                                </apex:outputPanel>
+                                <apex:outputText value="-- NA --" rendered="{!IF(NOW() >= ite.items.sale_start__c&& NOW() <= ite.items.sale_end__c,FALSE,TRUE)}"></apex:outputText>
+                                <!------------> 
+                                
+                              </div>
+                            </div>
+                          </apex:outputPanel>
+                        </apex:repeat>
+                        <!------> 
+                        <!-- moreinfo description output -->
+                        <div class="col-lg-12 col-md-12 col-xs-12 moreinfo_content">
+                          <apex:outputText escape="false" value=" {!ite.items.Description__c}"></apex:outputText>
+                        </div>
+                        <!---close of more info content----> 
+                      </apex:outputPanel>
+                    </div>
+                    <!-----start of ticket table bottom section-----> 
+                    
+                  </apex:repeat>
+                </apex:outputPanel>
+                <!-----end of ticket row apex repeat------> 
+                
+                <!-- ======================================================== ============================================== --> 
+              </div>
+            </div>
+            <!-------------------close of tab data-------------> 
+          </apex:repeat>
+        </div>
+        <!--close of tab-content---> 
+        <!-------------------------------------------------> 
+        
+      </div>
+      
+      <!---------end of ticket section-----> 
+      <!----------Total Invoice Amount section----->
+      <div class="col-lg-12 text-right" style="    padding: 10px;">
+        <apex:outputPanel id="AmountPanel"> 
+          <!------> 
+          <!---subtotal--->
+          <div>
+            <apex:outputText value="Sub Total : {!curSym}{!actualAmount}"></apex:outputText>
+          </div>
+          <!--- end of subtotal ----> 
+          <!--- promocode discount --->
+          <apex:repeat value="{!DisplaySettings}" var="ds1">
+            <apex:outputPanel rendered="{!IF(ds1.Column_Name__c == 'Promo code' && ds1.Included__c == TRUE, TRUE, FALSE)}">
+              <div>
+                <apex:outputText value="Promo Discount : {!curSym}{!DiscountedAmount}"></apex:outputText>
+              </div>
+            </apex:outputPanel>
+          </apex:repeat>
+          <!--- end of promocode discount ---> 
+          <!--- fee ----->
+          <apex:outputPanel >
+            <div>
+              <apex:outputText value="Fee : {!curSym}{!FeeAmount}"></apex:outputText>
+            </div>
+          </apex:outputPanel>
+          <!--- end of fee ----> 
+          <!--- tax ----->
+          <apex:outputPanel rendered="{!IF(registrationEvent.Accept_Tax_Rate__c == TRUE && registrationEvent.Tax_Rate__c != NULL, TRUE, FALSE)}">
+            <div>
+              <apex:outputText value="Tax @ {!registrationEvent.Tax_Rate__c}% : {!curSym}{!TaxAmount}"></apex:outputText>
+            </div>
+          </apex:outputPanel>
+          <!--- end of tax----> 
+          
+          <!--- total amount due ---->
+          <div>
+            <apex:outputText value="Total Amount Due : {!curSym}"></apex:outputText>
+            <apex:outputText >
+              <apex:outputText value="{!TotalAmountwithTaxes}" id="totalamts" style="font-size:14px;font-weight:bold;"></apex:outputText>
+            <apex:actionStatus id="refreshAmount" >
+              <apex:facet name="start">
+                <apex:image url="{!$Resource.LoaderImage}" style="float:right"/>
+              </apex:facet>
+            </apex:actionStatus>
+            </apex:outputText>
+            
+          </div>
+          <!---end of total amount due ---> 
+          
+          <!-------- error promocode txt ------>
+          <div> <span style="color:red;"> {!errorpromo}</span > </div>
+          <!--- end of error promocode txt ------> 
+        </apex:outputPanel>
+        <!--end of Amount Panel---> 
+        
+        <!---start of promotional box----->
+        <apex:repeat value="{!DisplaySettings}" var="ds1">
+          <apex:outputPanel rendered="{!IF(ds1.Column_Name__c == 'Promo code' && ds1.Included__c == TRUE, TRUE, FALSE)}"> 
+            <!----->
+            <div style="font-weight:bold;" class="promocode_toggle" > <a>Enter Promotional Code</a> </div>
+            <!--- end of promocode_toggle-->
+               <div class="promocode_exp" style="display:none; width:100%; min-height:35px; margin-bottom:10px;">
+               <apex:inputText value="{!promocode}" html-placeholder="Promo Code"/>
+               &nbsp; &nbsp;
+                <apex:commandButton disabled="{!disablepromobutton}" value="Apply" styleClass="btn btn-primary text-center" action="{!applyPromocodenew}" status="refreshAmount" reRender="qty,AmountPanel" />
+              </div><!-- close of promocode_exp ---> 
+            <!-----> 
+          </apex:outputPanel>
+        </apex:repeat>
+        <!--------> 
+      </div>
+      <!----> 
+      
+      <!----------End of Total Invoice Amount section-----> 
+      <!---End of ticket table bottom section-----> 
+      
+      <!-------start of ordernowbtn---->
+      <apex:outputText rendered="{!registrationEvent.Event_Status__c=='Live'}">
+        <div class="row" style="text-align:right; width:100%;">
+   <!--    <apex:commandLink value="Order Now" action="{!OrderNow}" styleClass="btn btn-primary text-center" onclick="return checkTicketSelected();" />-->
+    <!--   < value="Order Now" action="{!OrderNow}" styleClass="btn btn-primary text-center" onclick="return checkTicketSelected();" />-->
+    
+    
+    <apex:outputpanel rendered="{!IF(contains(pageurl, "BLN_TicketSectionpage") || (contains(pageurl, "BLN_TemplatePreview")), false, true)}"><div class='btn btn-primary' onclick="actionpage()">order Now</div></apex:outputpanel>
+    <apex:commandLink value="Order Now" action="{!OrderNow}" styleClass="btn btn-primary text-center" target="_blank" onclick="return checkTicketSelected();"  rendered="{!IF(contains(pageurl, "BLN_TicketSectionpage"), true, false)}" />
+    <apex:outputpanel rendered="{!IF(contains(pageurl, "BLN_TemplatePreview"),true , false)}">
+    <div class='btn btn-primary' >order Now </div></apex:outputpanel>
+    
+
+
+        </div>
+      </apex:outputText>
+      <apex:outputText rendered="{!registrationEvent.Event_Status__c!='Live'}">
+        <div class="row" style="text-align:right; width:100%;">
+     <apex:commandLink value="Order Now" action="{!OrderNow}" styleClass="btn btn-primary text-center" onclick="checkEventState();return false;" />
+     <!-- <div class='btn btn-primary' onclick="showsecondpage()">orderNow</div>--->
+        </div>
+      </apex:outputText>
+      
+      <!------close of ordernowbtn---> 
+      
+      <!----start of sales message----->
+      <apex:repeat value="{!displaySettings}" var="ds">
+        <apex:outputPanel rendered="{!IF(ds.Column_Name__c == 'Sales Message' && ds.Included__c == TRUE && (ds.Sales_Message__c!=null && ds.Sales_Message__c!=''), TRUE, FALSE)}">
+          <div class="row" style="background-color:#FFF; clear:both;">
+            <p class="sales_msg" style="padding:15px; padding-bottom:0px;"> <strong>SALES NOTE:&nbsp;</strong>
+              <apex:outputText escape="false" value="{!ds.Sales_Message__c}" rendered="{!IF(ds.Sales_Message__c != NULL, TRUE, FALSE)}" ></apex:outputText>
+            </p>
+          </div>
+        </apex:outputPanel>
+      </apex:repeat>  
+      <!-----------end of sales message-----> 
+      
+      <!----start of event description--------->
+      <apex:outputPanel rendered="{!IF(registrationEvent.Description__c!=null  ,true,false)}">
+        <div class="row" style="background-color:#FFF;">
+          <p class="event_desc" style="padding:15px; padding-bottom:0px;"> <strong> EVENT DESCRIPTION:&nbsp; </strong>
+            <apex:outputText escape="false" value="{!registrationEvent.Description__c}"></apex:outputText>
+          </p>
+        </div>
+      </apex:outputPanel>
+      <!----end of event description-----> 
+      
+      <!-- =================================================== --> 
+    </div>
+    <!------------///close of ticket right section----> 
+    </apex:outputPanel>
+    <!------------include script---------> 
+    
+    <!-------------function calling on click of Order Now Button-------------> 
+    <script>   
+    function checkTicketSelected(){ 
+     var elements = document.getElementsByClassName('opts');
+            var maxcount;
+           for(var i=0;i<elements.length;i++){
+            var x =  document.getElementById(elements[i].id).selectedIndex;
+            var p =document.getElementById(elements[i].id);
+             var d = p.options[x].value;
+              if(d>0){
+              maxcount+=d;
+               if(maxcount>100){
+                  alert('Max you can book 100 per trasaction');
+                  return false;
+               }
+              //alert('Please select at least one ticket');
+               return true;
+             }
+           }
+           alert('Please select atleast 1 ticket');
+           return false;
+          }
+  
+function checkEventState(){
+    var stname ='This Event is in '+ '{!registrationEvent.Event_Status__c}'+ ' Mode, You can not Order the Tickets !!';
+    alert(stname);
+    
+}
+ </script> 
+ <script type="text/javascript">
+   
+    
+        $(".moreinfo-toggle").click(function(){
+            $(this).parent().parent().siblings(".moreinfo_content").slideToggle();
+    
+        })
+    
+        $(".promocode_toggle").click(function(){
+  
+            $(this).parent().children(".promocode_exp").toggle();
+         
+         })
+   
+            
+    
+  </script> 
+    <!---------------------> 
+    <script>
+    
+    function actionpage(){
+      var aa =   checkTicketSelected();
+      if(aa)
+        actionpage1();
+    }
+    </script>
+<!----new script for showing ticket tabs------>
+<script>
+ var jj$ = jQuery.noConflict();
+    jj$(document).ready(function(){
+    
+   /***********Default first tab as expanded************/
+    //alert( $(".nav-tabs li a").length);
+    //alert( $(".nav-tabs li:eq(0) a").text());
+    if(jj$(".nav-tabs li a").length==1 && jj$(".nav-tabs li a").text() == "All" ){
+     jj$(".nav-tabs li:eq(0) a").tab('show');
+   jj$(".nav-tabs").hide();
+    
+        }
+    else{
+     jj$(".nav-tabs li:eq(0) a").tab('show');
+  
+    }
+   /******/ 
+   /******/  
+    })
+   </script> 
+<!--------------------------> 
+  </apex:form>
+  <style>
+{!regcss.Styles__c}
+
+  
+</style>
+</apex:page>

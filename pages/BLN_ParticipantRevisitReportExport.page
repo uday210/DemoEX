@@ -1,0 +1,50 @@
+<apex:page controller="BLN_ParticipantRevisitReportCon" contentType="txt/xml#ParticipantRevisitReportExport.xls" cache="true" readOnly="true" action="{!expmethod}">
+<apex:outputText value="{!xlsHeader}"/>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+ <Style ss:ID="s1">
+ <Alignment/>
+ <Borders/>
+ <Font ss:Bold="1"/>
+ <Interior/>
+ <NumberFormat/>
+ <Protection/>
+ </Style>
+ </Styles>
+
+ <Worksheet ss:Name="Participant Revisit Report">
+ <Table x:FullColumns="1" x:FullRows="1">
+ <Column ss:Width="170"/>
+ <Column ss:Width="280"/>
+ <Column ss:Width="330"/>
+ <Row>
+ <Cell ss:StyleID="s1"><Data ss:Type="String" >Name</Data></Cell>
+ <Cell ss:StyleID="s1"><Data ss:Type="String" >Email</Data></Cell>
+ <Cell ss:StyleID="s1"><Data ss:Type="String" >Company</Data></Cell>
+  <Cell ss:StyleID="s1"><Data ss:Type="String" >Date</Data></Cell>
+ </Row>
+ <apex:repeat value="{!Totalinner}" var="inn">
+  <apex:repeat value="{!inn.RevisitedList}" var="RE">
+  <apex:repeat value="{!RE.TstatusRecs}" var="x">
+ <Row>
+  <Cell><Data ss:Type="String">
+  <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+  <apex:param value="{!x.scan_time__c}" /></apex:outputText>
+  
+  </Data></Cell>
+ <Cell><Data ss:Type="String">{!x.Ticket__r.tkt_profile__r.First_Name__c}&nbsp;{!x.Ticket__r.tkt_profile__r.Last_Name__c}</Data></Cell>
+ <Cell><Data ss:Type="String">{!x.Ticket__r.tkt_profile__r.Email__c}</Data></Cell>
+ <Cell><Data ss:Type="String">{!x.Ticket__r.tkt_profile__r.TKT_Company__c}</Data></Cell>
+ <Cell><Data ss:Type="String"></Data></Cell>
+ </Row>
+ </apex:repeat>
+ </apex:repeat></apex:repeat>
+ </Table>
+ </Worksheet>
+ 
+</Workbook>
+</apex:page>

@@ -1,0 +1,515 @@
+<apex:page controller="BLN_ScansforAttendeesCon" standardStylesheets="false" sidebar="false" showHeader="false" readOnly="true" action="{!displayPermissions}">
+   <c:AjaxLoader LoaderImage="{!$Resource.AjaxLoaderImage}"/>
+    <!------------common styles component------------>
+    <c:ed_commonstyles ></c:ed_commonstyles>
+    <!------------//common styles component---------->
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/css/tables.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.edsr_master, 'edsr_root/datatable/css/jquery.dataTables-modified.css')}" />
+     <!------------start of popup component function------------------>
+    <c:ed_popupbox >
+    </c:ed_popupbox>
+    <!------------/close of popup component function------------------>
+    <c:ed_basictemplate BLN_UtillDisplayLinks="{!myticket}">
+        <apex:form id="fm">
+            <!---------------print and options button------------------>
+            <div class="print_export_cont">
+
+                <apex:outputText value="From: " style="float:left;padding-left: 10px;padding-top: 5px;padding-right: 5px;"/>
+                <apex:inputText styleClass="jqdatepicker" style="width: 12%;float:left;" value="{!fromVal}">
+                </apex:inputText>
+                <apex:outputText value=" To: "  style="float:left;padding-left: 10px;padding-top: 5px;padding-right: 5px;"/>
+                <apex:inputText styleClass="jqdatepicker" style="width: 12%;float:left;valign:center;" value="{!toVal}"/>
+                <apex:commandLink styleClass="datatables_btn" value="Go" action="{!go}"  reRender="pannel1"  style="float:left;margin-left: 5px;    margin-top: 2px;"/>
+                
+                
+                <!-------->
+                <nav class="togglebtnnav" style="display: inline-block;">
+                    <ul style="float: none; margin-top: 0px; margin-left: 4px;">
+                        <li id="login1">
+                            <span class="togglebtn"> 
+                           <i class="fa fa-gear">&nbsp;&nbsp;</i> <strong> Print <i class="fa fa-angle-down fa-1x"></i> </strong>
+                            </span>
+                            <ul class="login-content1">
+                                
+                                <li><a id="Print_summary" onclick="printselected();return false;" target="_new">Print Summary</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            
+                <nav class="togglebtnnav" style="display: inline-block;">
+                    <ul style="float: none; margin-top: 0px; margin-left: 4px;">
+                        <li id="login1">
+                            <span class="togglebtn"> 
+                           <i class="fa fa-gear">&nbsp;&nbsp;</i> <strong> Export <i class="fa fa-angle-down fa-1x"></i> </strong>
+                            </span>
+                            <ul class="login-content1">
+                                <li><a id="Export_Summary" onclick="selectedIds();return false;">Export Summary</a></li>
+                                <li><a id="Detail_Export" onclick="selectedIds1();return false;">Export Detail</a></li>
+                                <li><!--<a id="Export_All" onclick="exportAll();return false;">Export All</a>-->
+                                <apex:outputText > 
+                                  <a id="Export_All" onclick="checkTypeOfExportForAllScans();return false;">Export All</a>
+                                </apex:outputText>
+                                
+  
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                
+            </div>
+            <div class="clear"></div>
+
+            <!-------------//end of print options button-------->
+            <apex:outputPanel id="pannel1">
+                <div class="datatable-wrapper">
+                    <table style="width: 100%;auto;" id="example" class="display">
+                        <thead>
+                            <tr>
+                                <th style="width: 2px;"><input onclick="setChecked1(this)" name="selall[]" type="checkbox" /></th>
+                                <th style="width: 20;text-align:left;padding-left: 8px;">Name</th>
+                                <th style="width: 17;text-align:left;padding-left: 8px;">Title</th>
+                                <th style="width: 17;text-align:left;padding-left: 8px;">Company</th>
+                                <th style="width: 15;text-align:left;padding-left: 8px;">Phone</th>
+                                <th style="width: 15;text-align:left;padding-left: 8px;">Email</th>
+                                <th style="width: 13;text-align:left;padding-left: 8px;">No. of Booths Visited</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:repeat value="{!leadlist}" var="l">
+                                <tr>
+                                    <td style="width: 2px"><input type="checkbox" name="id[]" onClick="rowchk1(this)" value="1" id="{!l['i']}"/></td>
+                                    <td style="width: 20">{!l['fname']} &nbsp; {!l['lname']}</td>
+                                    <td style="width: 17">{!l['title']}</td>
+                                    <td style="width: 17">{!l['company']}</td>
+                                    <td style="width: 15">{!l['phone']}</td>
+                                    <td style="width: 15">{!l['email']}</td>
+                                    <td style="width: 13">  <apex:commandLink title="Details" status="AjaxLoader" value="{!l['cnt']}" onclick="callpopup('{!l['i']}','{!l['fname']}','{!l['lname']}','{!l['email']}');return false;">
+                                                             <apex:param value="{!l['i']}" name="scanee" /> 
+                                                             </apex:commandLink>                     
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                </div>
+<apex:inputHidden value="{!selectAll}" id="selectAll"/>
+
+<c:ed_popupbox ></c:ed_popupbox>  
+ <script>
+
+ function continueToBatch(clkbtn)
+ {
+     Alertconfirm.render('<h2>Your Batch Export will be scheduled. Data will be split into multiple files and will be sent to your email. Please check your email after 10 minutes.<br/> <br/>Are you sure you want to schedule this report?</h2>','Confirmation',clkbtn,'Continue','Cancel','Alertconfirm');
+ }
+ 
+ function callback(clkbtn , okbtnn){
+     if(clkbtn =='sendToMail')
+     {
+         exportBulkMethod();
+     }
+     
+}
+function callbackcancel(clkbtn,cnclbtnn)
+{
+    if(clkbtn =='sendToMail')
+     {
+         //alert('cancel');
+     }
+     return false;
+}
+
+  /* Action for : ExportAll Button */
+ function checkTypeOfExportForAllScans(){
+                
+
+                console.log('*****Hello @nil****EvntId Here '+'{!selectedeventid}');
+
+                ShowLoader();
+                
+                /* Checking Total Number Of ScannedAttendees */
+                Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.BLN_ScansforAttendeesCon.getCheckTypeOfExportForTotalScans}','{!selectedeventid}',
+                function(res, eve){
+
+
+                if(eve.status) 
+                {
+                HideLoader();
+                console.log('---Result Frm Remote Action---@getCheckTypeOfExportForTotalExbtorscans-- '+res); 
+                if(res==true){
+                
+            
+              continueToBatch('sendToMail'); /* Bulk Export Action Function */
+                return false;
+
+                }
+                else if(res==false){
+                exportnormal();     /* Normal Export Action Function */
+                }
+
+                } 
+                else if (eve.type === 'exception') 
+                {
+                 //Alert.render('We are Unable to Process your Request. Please try after some time!' ,'Alert','Ok');
+                console.log('--There is Some Exception in @RemoteAction Method: getCheckTypeOfExport---- '+eve.message);
+                }
+
+                });  
+                HideLoader();
+                }
+
+
+  </script>
+  
+<script>
+    $(document).ready(function() {
+    try{
+   // exportLoad();
+    }catch(e){}
+       
+     $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); 
+     
+    });
+
+</script>
+ 
+
+<script>
+function exportnormal(){
+setTimeout(function(){HideLoader()},5000);
+exportAll();
+}
+
+function selectedIds(){
+var searchkey=$('#example_filter').find('input').val();
+if(arr.length>=1){
+    /*if(allchecked == true){
+        Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+    }else{*/
+        var selectedck = JSON.stringify(arr);
+        //alert('unchecked'+unchecked);
+        setTimeout(function(){HideLoader()},5000);
+        exportReport(selectedck,unchecked,'Summary',searchkey);
+}else{
+    Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+    
+}
+}
+var arr=[];
+var uncheckedids=[];
+var unchecked ='';
+function rowchk1(rowchks)
+{
+    //alert('uncheckedids111'+uncheckedids);
+    if(rowchks.checked==true){
+        arr.push(rowchks.id);//adding into the arraylist
+         var allcheck = document.getElementsByName("selall[]");
+        if(allcheck[0].checked == true){
+          /*  if(uncheckedids.indexOf(rowchks.id) != -1){
+            alert('rowchks.id'+rowchks.id);
+                uncheckedids.replace(rowchks.id,"");
+                alert('uncheckedids'+uncheckedids);
+            }*/
+           //uncheckedids.remove(rowchks.id);
+           for(var i=0;i<uncheckedids.length;i++){
+           if(rowchks.id == uncheckedids[i])//comparing the rowid if already in the list
+           {
+               uncheckedids.splice(i,1);//removing the unselectedchkbox row id
+           }
+           }
+           unchecked = JSON.stringify(uncheckedids);
+           
+          // alert('uncheckedids'+uncheckedids);
+        }
+    }
+    else{
+       for(var i=0;i<arr.length;i++){
+           if(rowchks.id == arr[i])//comparing the rowid if already in the list
+           {
+               arr.splice(i,1);//removing the unselectedchkbox row id
+           }
+       }
+       var allcheck = document.getElementsByName("selall[]");
+       if(allcheck[0].checked == true){
+           uncheckedids.push(rowchks.id);
+           unchecked = JSON.stringify(uncheckedids);
+           
+          // alert('uncheckedids'+uncheckedids);
+       }
+    }
+    //alert(arr);
+}
+
+
+
+
+function selectedIds1(){
+var searchkey=$('#example_filter').find('input').val();
+var allcheck = document.getElementsByName("selall[]");
+if(allcheck[0].checked == true){
+   Alert.render('Please select indiviual records for Detail Export' ,'Alert','ok');
+}else if(arr.length>=1){
+        var selectedck = JSON.stringify(arr);
+        //alert('unchecked'+unchecked);
+                setTimeout(function(){HideLoader()},5000);
+
+        exportReport(selectedck,unchecked,'Detail',searchkey);
+}else{
+    Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+}
+}
+
+function printselected(){
+var searchkey=$('#example_filter').find('input').val();
+if(arr.length>=1){
+        var selectedck = JSON.stringify(arr);
+        //alert('unchecked'+unchecked);
+         setTimeout(function(){HideLoader()},5000);
+        printReport(selectedck,unchecked,'Summary',searchkey);
+}else{
+    Alert.render('Please Select Atleast One Record' ,'Alert','ok');
+}
+}
+
+
+var checkSize=0;
+var allchecked=false;
+  function setChecked1(obj) 
+    {     
+       var allcheck = document.getElementsByName("selall[]");
+       if(allcheck[0].checked == true){
+           allchecked=true;
+           $("[id$='selectAll']").val(true);
+       }else{
+           $("[id$='selectAll']").val(false);
+       }
+           
+           
+        var check = document.getElementsByName("id[]");
+        checkSize=check.length;
+     // alert(checkSize);
+        for (var i=0; i<check.length; i++) 
+         {
+          check[i].checked = obj.checked;
+           if(obj.checked==true){ 
+             arr.push(check[i].id);//id's adding into array 
+           }else{
+               arr=[];//on unchecked clearing the arraylist 
+           }
+        
+           }
+}
+</script>
+<script>
+try{
+calldt();
+}catch(e){}
+</script>
+            </apex:outputPanel>
+            <apex:actionFunction action="{!scanDetails}" name="scanDetails" reRender="pop" status="Ajaxloader">
+                <apex:param value="" name="scanee"/>
+                </apex:actionFunction>
+                
+           <apex:actionFunction Status="AjaxLoader"  action="{!exportReport}"
+                name="exportReport" ReRender="none">
+                <apex:param value="" name="selectedck" />
+                <apex:param value="" name="unchecked" />
+                <apex:param value="" name="type" />
+                <apex:param value="" name="searchkey" />
+           </apex:actionFunction>   
+            
+           <apex:actionFunction Status="AjaxLoader" action="{!printReport}"
+                name="printReport" ReRender="none">
+                <apex:param value="" name="selectedck" />
+                <apex:param value="" name="unchecked" />
+                <apex:param value="" name="type" />
+                <apex:param value="" name="searchkey" />
+           </apex:actionFunction> 
+           
+           
+           <apex:actionFunction status="AjaxLoader" action="{!exportAll}" name="exportAll" ReRender="none" />
+           <apex:actionFunction action="{!exportallmethod}" name="exportBulkMethod" ReRender="none" status="AjaxLoader" />     
+           <apex:inputHidden id="fnm" value="{!frstNm}"/>
+           <apex:inputHidden id="lnm" value="{!lastNm}"/>
+           <apex:inputHidden id="cmp" value="{!cmpny}"/>
+           <apex:inputHidden id="eml" value="{!email}"/>
+          <!---- <apex:actionfunction action="{!exportedMailData}" name="exportLoad" rerender="statrender" status="AjaxLoader" /> --->
+        </apex:form>
+    </c:ed_basictemplate>
+
+
+    <!--------//start of datatable js component------------->
+    <c:ed_datatablejs ></c:ed_datatablejs>
+
+    <script type="text/javascript" class="init">
+var j = jQuery.noConflict();
+j(document).ready(function() {
+    j('#example').dataTable( {
+        "pagingType": "full_numbers",
+         "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+        "iDisplayLength": 10,
+         "bAutoWidth": false, // Disable the auto width calculation
+        "bSort" : false,
+    
+    "fnDrawCallback": function()
+     {
+                         
+          
+          // name="selall[]"
+           var allcheck = document.getElementsByName("selall[]");
+           console.log(allcheck[0].checked);
+           if(allcheck[0].checked == true){
+         
+             var check = document.getElementsByName("id[]");
+            checkSize=check.length;
+            for (var i=0; i<check.length; i++) 
+             {
+                 
+                 if(unchecked.indexOf(check[i].id) == -1){
+                     check[i].checked = true;
+                 }
+           
+            }  
+             }
+             else
+             {
+                 var check = document.getElementsByName("id[]");
+            checkSize=check.length;
+        
+            for (var i=0; i<check.length; i++) 
+             {
+                  if(arr.indexOf(check[i].id) == -1){
+                  check[i].checked = false;
+                   }
+           
+            } 
+             
+             
+             }
+             }            
+    
+    } );
+   var allcheck = document.getElementsByName("selall[]");
+   allcheck[0].checked = false;
+   $("[id$='selectAll']").val(false);
+   var check = document.getElementsByName("id[]");
+        for (var i=0; i<check.length; i++) 
+        {
+          check[i].checked = false;
+        }
+})
+
+function calldt(){
+    j('#example').dataTable( {
+        "pagingType": "full_numbers",
+         "aLengthMenu": [[10,20,25, -1], [10,20, 25, "All"]],
+        "iDisplayLength": 10,
+         "bAutoWidth": false, // Disable the auto width calculation
+        "bSort" : false
+    
+        /**default orderid in asc sorting**/
+        <!---//!important to hide the sorting in the header for checkbox td------>
+  /****  "aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [0,3,5,7,9] },
+   ],
+   order: [] 
+        *******/   
+    } );
+
+}
+</script>
+    <!--------//end of datatable js component------------->
+<!----/************************Datepicker js************************************************/-->
+    
+<script type="text/javascript" src="{!URLFOR($Resource.edsr_master, 'edsr_root/js/jquery.datetimepicker.js')}"> </script>
+    
+<script>
+var dt = jQuery.noConflict();        
+dt('.jqdatepicker').datetimepicker({
+   formatDate: 'Y/m/d',
+  defaultTime:'5:00 PM',
+  step:15,
+    minDate:'{!YEAR(sdate)}/{!MONTH(sdate)}/{!DAY(sdate)}',
+    maxDate:'{!YEAR(edate)}/{!MONTH(edate)}/{!DAY(edate)}',
+    defaultDate:'{!YEAR(sdate)}/{!MONTH(sdate)}/{!DAY(sdate)}'
+
+});
+
+</script>
+
+<c:ed_commonjs ></c:ed_commonjs>
+
+    <script>
+    var Alert_scans = new Custom_formPopup(); //Scans popup
+    </script>
+
+    <!---------popup start------->
+   
+    <script>
+    function callpopup(scaneeid,fname,lname,email){
+   var comp=  $("[id$="+scaneeid+"]").parent().parent().find('td').eq(3)[0].innerHTML;
+   console.log(comp);
+    $("[id$='fnm']").val(fname);
+    $("[id$='lnm']").val(lname);
+    $("[id$='cmp']").val(comp);
+    $("[id$='eml']").val(email);
+    scanDetails(scaneeid);
+    }
+    </script>
+    <apex:form id="pop">
+    <script>
+    Alert_scans.render('dialogbox_scans','scans_dialogoverlay','Alert_scans' ,this); 
+    </script>
+    <!--close of dialogoverlay-->
+    <div class="dialogoverlay" id="scans_dialogoverlay"
+        style="z-index: 9999;"></div>
+    <div id="dialogbox_scans"
+        style="display: none; width:80%; margin-left:10%; z-index: 99991;">
+        <a id="close" onclick="Alert_scans.Cancel()">x</a>
+        <div class="grid-1"
+            style="width: 98%; margin-left: 1%; padding-right: 0px;">
+            <div class="title-grid">Scan Details</div>
+            <div class="content-gird" style="max-height:450px; overflow:auto;" >
+                <!------apex code-------->
+                <b>Name:</b> {!frstNm} &nbsp; {!lastNm} &nbsp; <b>Company:</b> {!cmpny} &nbsp; <b>Email:</b> {!email}<br/><br/>
+                <table style="width: 100%" id="example" class="display">
+                    <thead>
+                    <tr>
+                        <th style="text-align:left;padding-left: 8px;">Booth Number</th> <!--- style="width: 33%" --->
+                        <th style="text-align:left;padding-left: 8px;">Company Name</th>
+                        <th style="text-align:left;padding-left: 8px;">Scanned By</th><!---  style="width: 33%" ---> 
+                        <th style="text-align:left;padding-left: 8px;">Scan Time</th><!---  style="width: 34%" --->
+                    </tr>
+                    </thead>
+                    <tbody>
+                     <apex:repeat value="{!detailInner}" var="d">
+                    <tr>
+                        <td >{!d.boothno}</td> <!-- style="width: 33%" -->
+                        <td>{!d.company}</td>
+                        <td >{!d.fname}&nbsp;{!d.lname}</td> <!-- style="width: 33%" -->
+                        <td ><!-- style="width: 34%" -->
+                        <!--<c:MFSI_FormatDateTime date_Timevalue="{!d.scantime}"/>
+                        <apex:outputpanel rendered="{!d.scantime!=null}" >
+                        <c:EV_FormatDt date_Timevalue="{!d.scantime}" t_Zone="{!eventslist.Time_Zone__c}"/>
+                        </apex:outputpanel>-->
+                        {!d.scantime}
+                        </td>
+                    </tr>
+                    </apex:repeat>
+                    </tbody>
+                </table>
+                <!----------------------->
+            </div>
+            <!--close of content-grid--->
+        </div>
+        <!--close of grid-1----->
+    </div>
+    <!--close of dialogbox---->
+ 
+    <!------------end of popup------------->
+     
+</apex:form>
+
+</apex:page>
